@@ -1,0 +1,55 @@
+nodes:
+  - id: "gNB1"
+    type: "GNBSite"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+
+  - id: "gNB2"
+    type: "GNBSite"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+
+  - id: "relay1"
+    type: "Relay"
+    initial_energy: 0.8
+    coverage_area: "zoneA"
+
+  - id: "edgeUPF1"
+    type: "EdgeUPF"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+
+  - id: "core"
+    type: "Core"
+    initial_energy: 1.0
+
+links:
+  - id: "L1"
+    endpoints: ["gNB1", "relay1"]
+    capacity: 500
+    latency: 2
+    type: "fiber"
+
+  - id: "L2"
+    endpoints: ["gNB2", "relay1"]
+    capacity: 300
+    latency: 3
+    type: "microwave"
+
+  - id: "L3"
+    endpoints: ["relay1", "edgeUPF1"]
+    capacity: 800
+    latency: 1
+    type: "fiber"
+
+  - id: "L4"
+    endpoints: ["edgeUPF1", "core"]
+    capacity: 1000
+    latency: 5
+    type: "fiber"
+
+  - id: "L5"
+    endpoints: ["gNB1", "gNB2"]
+    capacity: 200
+    latency: 1
+    type: "iab"

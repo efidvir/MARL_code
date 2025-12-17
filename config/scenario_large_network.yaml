@@ -1,0 +1,143 @@
+name: "Large Network Island Mode Test"
+description: "Test island-mode operation in a 200-node network with DU/CU separation and random island formation"
+
+duration_ticks: 500
+
+events:
+  - tick: 100
+    type: "sever_core"
+    parameters: {}
+
+  - tick: 150
+    type: "traffic_surge"
+    parameters:
+      node_id: "DU_5"
+      duration: 50
+      multiplier: 3.0
+
+  - tick: 200
+    type: "fail_link"
+    parameters:
+      link_id: "backhaul_15"
+
+  - tick: 250
+    type: "traffic_surge"
+    parameters:
+      node_id: "CU_3"
+      duration: 40
+      multiplier: 2.5
+
+  - tick: 350
+    type: "energy_depletion"
+    parameters:
+      node_id: "RELAY_10"
+
+traffic_profiles:
+  # Sample traffic profiles for key nodes (would be auto-generated for all 200 nodes)
+  DU_1:
+    life_safety:
+      baseline_rate: 12.0
+      burst_probability: 0.03
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 18.0
+      burst_probability: 0.05
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 25.0
+      burst_probability: 0.08
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 35.0
+      burst_probability: 0.12
+      burst_multiplier: 2.2
+
+  DU_5:
+    life_safety:
+      baseline_rate: 15.0
+      burst_probability: 0.04
+      burst_multiplier: 1.6
+    operations:
+      baseline_rate: 22.0
+      burst_probability: 0.06
+      burst_multiplier: 2.1
+    telemetry:
+      baseline_rate: 30.0
+      burst_probability: 0.09
+      burst_multiplier: 1.9
+    best_effort:
+      baseline_rate: 40.0
+      burst_probability: 0.15
+      burst_multiplier: 2.5
+
+  CU_1:
+    life_safety:
+      baseline_rate: 8.0
+      burst_probability: 0.02
+      burst_multiplier: 1.3
+    operations:
+      baseline_rate: 25.0
+      burst_probability: 0.07
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 20.0
+      burst_probability: 0.06
+      burst_multiplier: 1.7
+    best_effort:
+      baseline_rate: 15.0
+      burst_probability: 0.08
+      burst_multiplier: 1.5
+
+  CU_3:
+    life_safety:
+      baseline_rate: 10.0
+      burst_probability: 0.03
+      burst_multiplier: 1.4
+    operations:
+      baseline_rate: 28.0
+      burst_probability: 0.08
+      burst_multiplier: 2.2
+    telemetry:
+      baseline_rate: 22.0
+      burst_probability: 0.07
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 18.0
+      burst_probability: 0.09
+      burst_multiplier: 1.6
+
+  RELAY_1:
+    life_safety:
+      baseline_rate: 5.0
+      burst_probability: 0.02
+      burst_multiplier: 1.2
+    operations:
+      baseline_rate: 12.0
+      burst_probability: 0.04
+      burst_multiplier: 1.8
+    telemetry:
+      baseline_rate: 18.0
+      burst_probability: 0.06
+      burst_multiplier: 1.5
+    best_effort:
+      baseline_rate: 8.0
+      burst_probability: 0.05
+      burst_multiplier: 1.3
+
+  EDGEUPF_1:
+    life_safety:
+      baseline_rate: 6.0
+      burst_probability: 0.02
+      burst_multiplier: 1.3
+    operations:
+      baseline_rate: 20.0
+      burst_probability: 0.05
+      burst_multiplier: 1.9
+    telemetry:
+      baseline_rate: 15.0
+      burst_probability: 0.05
+      burst_multiplier: 1.6
+    best_effort:
+      baseline_rate: 12.0
+      burst_probability: 0.06
+      burst_multiplier: 1.4
