@@ -190,10 +190,12 @@ class DiverseScenarioGenerator:
     zone_loss    : One geographic zone + core fully lost
     cascading    : Core lost first, then relay nodes fail one-by-one
 
-    Recovery
-    --------
-    From episode 3 onward, 70% of episodes include a restore_core event so
-    that agents learn graceful handover back to normal mode.
+    Island-only scope
+    -----------------
+    The simulation focuses exclusively on island-internal recovery.
+    Core reconnection (restore_core) is out of scope — the disaster-
+    affected island IS the entire operational world for the agents.
+    All scenario types always sever the core to guarantee island mode.
     """
 
     SCENARIO_TYPES = ('full_core', 'zone_loss', 'cascading', 'multi_enb_iops',
@@ -291,31 +293,19 @@ class DiverseScenarioGenerator:
         self._add_emergency_ues(events, sev_tick, rng)
         self._add_rescue_force(events, sev_tick, rng)
 
-        # Recovery (episode >= 3, 70% chance)
-        recovery_tick = -1
-        include_recovery = (episode >= 3) and (rng.random() < 0.70)
-        if include_recovery:
-            min_rt  = sev_tick + 100
-            max_rt  = min(sev_tick + 400, self.base_duration - 50)
-            if min_rt < max_rt:
-                recovery_tick = rng.randint(min_rt, max_rt)
-                events.append(ScenarioEvent(
-                    tick=recovery_tick,
-                    event_type='restore_core',
-                    parameters={'scenario_type': sc_type}
-                ))
+        # NOTE: restore_core is intentionally removed.
+        # The simulation focuses on island-internal recovery only.
+        # Reconnection to the functioning network is out of scope.
 
         traffic_profiles = self._build_traffic(rng)
 
-        recovery_str = (f"recovery@{recovery_tick}"
-                        if include_recovery else "no_recovery")
         return Scenario(
             name=f"Diverse-{sc_type}-ep{episode}",
             duration_ticks=self.base_duration,
             events=sorted(events, key=lambda e: e.tick),
             traffic_profiles=traffic_profiles,
             description=(f"ep={episode} type={sc_type} sev={sev_tick} "
-                         f"{recovery_str}"),
+                         f"island_only"),
             scenario_type=sc_type,
         )
 
@@ -450,16 +440,18 @@ class DiverseScenarioGenerator:
             }
         ))
         
-        # Also sever core if core nodes are in the blast
-        core_hit = any(nid in self._core_nodes for nid in destroyed_nodes)
-        if core_hit:
-            events.append(ScenarioEvent(
-                tick=sev_tick,
-                event_type='sever_core',
-                parameters={'include_edge_upf': False}
-            ))
+        # ALWAYS sever core — island mode is the prerequisite for all
+        # disaster recovery scenarios.  The disaster presupposes core
+        # disconnection regardless of whether core nodes are within
+        # the geographic blast radius.
+        events.append(ScenarioEvent(
+            tick=sev_tick,
+            event_type='sever_core',
+            parameters={'include_edge_upf': True}
+        ))
         
-        # Fail individual nodes that aren't core (core handled by sever_core)
+        # Fail individual nodes within the blast radius
+        # (core nodes are already handled by sever_core above)
         for nid in destroyed_nodes:
             if nid not in self._core_nodes:
                 events.append(ScenarioEvent(

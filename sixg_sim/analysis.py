@@ -39,25 +39,27 @@ try:
 except ImportError:
     HAS_MPL = False
 
-# ── palette (matches plot_learning.py) ────────────────────────────────────────
-DARK = '#0d1117'
-MID  = '#161b22'
-GRID = '#30363d'
-FG   = '#e6edf3'
-DIM  = '#8b949e'
-C1   = '#3d8ef8'
-C2   = '#34c759'
-C3   = '#e3b341'
-C4   = '#bf5af2'
-C5   = '#ff6b35'
-C6   = '#30d5c8'
-CSEV = '#ff3b30'
+# ── palette (light mode — article-ready) ──────────────────────────────────────
+DARK = '#ffffff'      # figure background  → white
+MID  = '#f8f9fa'      # axes background    → near-white
+GRID = '#dee2e6'      # grid lines         → light grey
+FG   = '#212529'      # text / labels      → near-black
+DIM  = '#6c757d'      # secondary text     → medium grey
+C1   = '#1b6ec2'      # blue
+C2   = '#2f9e44'      # green
+C3   = '#e67700'      # amber
+C4   = '#862e9c'      # purple
+C5   = '#d9480f'      # orange-red
+C6   = '#0c8599'      # teal
+CSEV = '#c92a2a'      # red (danger)
 
 SCENARIO_COLORS = {
-    'full_core':    C1,
-    'partial_core': C2,
-    'zone_loss':    C3,
-    'cascading':    C5,
+    'full_core':      C1,
+    'partial_core':   C2,
+    'zone_loss':      C3,
+    'cascading':      C5,
+    'multi_enb_iops': C4,
+    'geo_disaster':   CSEV,
 }
 
 
@@ -66,9 +68,10 @@ def _setup():
         'figure.facecolor': DARK, 'axes.facecolor': MID,
         'axes.edgecolor': GRID, 'axes.labelcolor': FG,
         'xtick.color': FG, 'ytick.color': FG, 'text.color': FG,
-        'grid.color': GRID, 'grid.alpha': 0.4, 'grid.linestyle': '--',
+        'grid.color': GRID, 'grid.alpha': 0.5, 'grid.linestyle': '--',
         'font.family': 'DejaVu Sans', 'font.size': 9,
-        'legend.framealpha': 0.35, 'legend.facecolor': MID,
+        'legend.framealpha': 0.85, 'legend.facecolor': '#ffffff',
+        'legend.edgecolor': GRID,
     })
 
 
