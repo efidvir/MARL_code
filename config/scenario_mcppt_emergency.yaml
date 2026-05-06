@@ -1,0 +1,223 @@
+name: "MCPTT Emergency Communication Test"
+description: "Test 3GPP TS 22.179 MCPTT emergency communication features during disaster"
+
+duration_ticks: 100
+
+events:
+  - tick: 30
+    type: "sever_core"
+    parameters: {}
+
+  - tick: 60
+    type: "rescue_force_arrival"
+    parameters:
+      num_ues: 10
+      coverage_area: "disaster_zone"
+
+  - tick: 70
+    type: "mcppt_emergency_alert"
+    parameters:
+      ue_id: "Rescue_UE_1"
+      emergency_type: "emergency"
+
+  - tick: 75
+    type: "mcppt_emergency_alert"
+    parameters:
+      ue_id: "Rescue_UE_2"
+      emergency_type: "imminent_peril"
+
+  - tick: 85
+    type: "mcppt_emergency_call"
+    parameters:
+      caller_ue: "Rescue_UE_1"
+      target_ue: "Rescue_UE_3"
+      emergency_type: "emergency"
+
+  - tick: 90
+    type: "mcppt_emergency_call"
+    parameters:
+      caller_ue: "Rescue_UE_2"
+      target_ue: "Rescue_UE_4"
+      emergency_type: "imminent_peril"
+
+traffic_profiles:
+  # Regular UEs with higher traffic patterns to support UE-to-UE communication
+  UE_1:
+    life_safety:
+      baseline_rate: 15.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 25.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 35.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 50.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  UE_2:
+    life_safety:
+      baseline_rate: 18.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 30.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 40.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 55.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  UE_3:
+    life_safety:
+      baseline_rate: 12.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 20.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 30.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 45.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  UE_4:
+    life_safety:
+      baseline_rate: 16.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 27.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 38.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 52.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  UE_5:  # Will trigger emergency alert
+    life_safety:
+      baseline_rate: 20.0
+      burst_probability: 0.08
+      burst_multiplier: 2.0
+    operations:
+      baseline_rate: 35.0
+      burst_probability: 0.12
+      burst_multiplier: 2.5
+    telemetry:
+      baseline_rate: 45.0
+      burst_probability: 0.18
+      burst_multiplier: 2.0
+    best_effort:
+      baseline_rate: 60.0
+      burst_probability: 0.25
+      burst_multiplier: 3.0
+
+  UE_6:
+    life_safety:
+      baseline_rate: 14.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 24.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 36.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 48.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  UE_7:
+    life_safety:
+      baseline_rate: 13.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 22.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 32.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 46.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  UE_8:
+    life_safety:
+      baseline_rate: 17.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 28.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 39.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 53.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  UE_9:
+    life_safety:
+      baseline_rate: 11.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    operations:
+      baseline_rate: 19.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 29.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 42.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  UE_10:  # Will trigger imminent peril alert
+    life_safety:
+      baseline_rate: 22.0
+      burst_probability: 0.1
+      burst_multiplier: 2.5
+    operations:
+      baseline_rate: 38.0
+      burst_probability: 0.15
+      burst_multiplier: 3.0
+    telemetry:
+      baseline_rate: 50.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+    best_effort:
+      baseline_rate: 70.0
+      burst_probability: 0.3
+      burst_multiplier: 3.5

@@ -1,0 +1,1764 @@
+nodes:
+- id: core1
+  type: Core
+  initial_energy: 1.0
+- id: core2
+  type: Core
+  initial_energy: 1.0
+- id: edgeUPF1
+  type: EdgeUPF
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: edgeUPF2
+  type: EdgeUPF
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: edgeUPF3
+  type: EdgeUPF
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: gNB_A1
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: gNB_A2
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: gNB_A3
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: gNB_A4
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: gNB_A5
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: gNB_A6
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: relay_A1
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneA
+- id: relay_A2
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneA
+- id: relay_A3
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneA
+- id: UE_A1
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A2
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A3
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A4
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A5
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A6
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A7
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A8
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A9
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A10
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A11
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A12
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A13
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A14
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A15
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A16
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A17
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A18
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A19
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A20
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A21
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A22
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A23
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A24
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A25
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A26
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A27
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A28
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A29
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: UE_A30
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+- id: Rescue_A1
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+  is_rescue_service: true
+- id: Rescue_A2
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneA
+  is_rescue_service: true
+- id: gNB_B1
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: gNB_B2
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: gNB_B3
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: gNB_B4
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: gNB_B5
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: gNB_B6
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: relay_B1
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneB
+- id: relay_B2
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneB
+- id: relay_B3
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneB
+- id: UE_B1
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B2
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B3
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B4
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B5
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B6
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B7
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B8
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B9
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B10
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B11
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B12
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B13
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B14
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B15
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B16
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B17
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B18
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B19
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B20
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B21
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B22
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B23
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B24
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B25
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B26
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B27
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B28
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B29
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: UE_B30
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+- id: Rescue_B1
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+  is_rescue_service: true
+- id: Rescue_B2
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneB
+  is_rescue_service: true
+- id: gNB_C1
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: gNB_C2
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: gNB_C3
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: gNB_C4
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: gNB_C5
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: gNB_C6
+  type: gNB-Site
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: relay_C1
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneC
+- id: relay_C2
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneC
+- id: relay_C3
+  type: Relay
+  initial_energy: 0.8
+  coverage_area: zoneC
+- id: UE_C1
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C2
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C3
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C4
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C5
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C6
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C7
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C8
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C9
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C10
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C11
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C12
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C13
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C14
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C15
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C16
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C17
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C18
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C19
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C20
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C21
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C22
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C23
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C24
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C25
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C26
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C27
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C28
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C29
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: UE_C30
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+- id: Rescue_C1
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+  is_rescue_service: true
+- id: Rescue_C2
+  type: UE
+  initial_energy: 1.0
+  coverage_area: zoneC
+  is_rescue_service: true
+links:
+- id: L1
+  endpoints:
+  - core1
+  - core2
+  capacity: 2000
+  latency: 1
+  type: fiber
+- id: L2
+  endpoints:
+  - edgeUPF1
+  - core1
+  capacity: 1000
+  latency: 3
+  type: fiber
+- id: L3
+  endpoints:
+  - edgeUPF1
+  - core2
+  capacity: 800
+  latency: 4
+  type: fiber
+- id: L4
+  endpoints:
+  - edgeUPF2
+  - core1
+  capacity: 1000
+  latency: 3
+  type: fiber
+- id: L5
+  endpoints:
+  - edgeUPF2
+  - core2
+  capacity: 800
+  latency: 4
+  type: fiber
+- id: L6
+  endpoints:
+  - edgeUPF3
+  - core1
+  capacity: 1000
+  latency: 3
+  type: fiber
+- id: L7
+  endpoints:
+  - edgeUPF3
+  - core2
+  capacity: 800
+  latency: 4
+  type: fiber
+- id: L8
+  endpoints:
+  - gNB_A1
+  - edgeUPF1
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L9
+  endpoints:
+  - gNB_A2
+  - edgeUPF1
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L10
+  endpoints:
+  - gNB_A3
+  - edgeUPF1
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L11
+  endpoints:
+  - gNB_A4
+  - edgeUPF1
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L12
+  endpoints:
+  - gNB_A5
+  - edgeUPF1
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L13
+  endpoints:
+  - gNB_A6
+  - edgeUPF1
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L14
+  endpoints:
+  - gNB_A1
+  - gNB_A2
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L15
+  endpoints:
+  - gNB_A1
+  - gNB_A3
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L16
+  endpoints:
+  - gNB_A2
+  - gNB_A3
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L17
+  endpoints:
+  - gNB_A2
+  - gNB_A4
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L18
+  endpoints:
+  - gNB_A3
+  - gNB_A4
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L19
+  endpoints:
+  - gNB_A3
+  - gNB_A5
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L20
+  endpoints:
+  - gNB_A4
+  - gNB_A5
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L21
+  endpoints:
+  - gNB_A4
+  - gNB_A6
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L22
+  endpoints:
+  - gNB_A5
+  - gNB_A6
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L23
+  endpoints:
+  - gNB_A5
+  - gNB_A1
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L24
+  endpoints:
+  - gNB_A6
+  - gNB_A1
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L25
+  endpoints:
+  - gNB_A6
+  - gNB_A2
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L26
+  endpoints:
+  - relay_A1
+  - gNB_A1
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L27
+  endpoints:
+  - relay_A1
+  - gNB_A2
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L28
+  endpoints:
+  - relay_A2
+  - gNB_A3
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L29
+  endpoints:
+  - relay_A2
+  - gNB_A4
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L30
+  endpoints:
+  - relay_A3
+  - gNB_A5
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L31
+  endpoints:
+  - relay_A3
+  - gNB_A6
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L32
+  endpoints:
+  - UE_A1
+  - gNB_A1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L33
+  endpoints:
+  - UE_A2
+  - gNB_A1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L34
+  endpoints:
+  - UE_A3
+  - gNB_A1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L35
+  endpoints:
+  - UE_A4
+  - gNB_A1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L36
+  endpoints:
+  - UE_A5
+  - gNB_A1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L37
+  endpoints:
+  - UE_A6
+  - gNB_A2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L38
+  endpoints:
+  - UE_A7
+  - gNB_A2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L39
+  endpoints:
+  - UE_A8
+  - gNB_A2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L40
+  endpoints:
+  - UE_A9
+  - gNB_A2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L41
+  endpoints:
+  - UE_A10
+  - gNB_A2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L42
+  endpoints:
+  - UE_A11
+  - gNB_A3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L43
+  endpoints:
+  - UE_A12
+  - gNB_A3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L44
+  endpoints:
+  - UE_A13
+  - gNB_A3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L45
+  endpoints:
+  - UE_A14
+  - gNB_A3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L46
+  endpoints:
+  - UE_A15
+  - gNB_A3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L47
+  endpoints:
+  - UE_A16
+  - gNB_A4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L48
+  endpoints:
+  - UE_A17
+  - gNB_A4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L49
+  endpoints:
+  - UE_A18
+  - gNB_A4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L50
+  endpoints:
+  - UE_A19
+  - gNB_A4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L51
+  endpoints:
+  - UE_A20
+  - gNB_A4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L52
+  endpoints:
+  - UE_A21
+  - gNB_A5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L53
+  endpoints:
+  - UE_A22
+  - gNB_A5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L54
+  endpoints:
+  - UE_A23
+  - gNB_A5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L55
+  endpoints:
+  - UE_A24
+  - gNB_A5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L56
+  endpoints:
+  - UE_A25
+  - gNB_A5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L57
+  endpoints:
+  - UE_A26
+  - gNB_A6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L58
+  endpoints:
+  - UE_A27
+  - gNB_A6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L59
+  endpoints:
+  - UE_A28
+  - gNB_A6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L60
+  endpoints:
+  - UE_A29
+  - gNB_A6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L61
+  endpoints:
+  - UE_A30
+  - gNB_A6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L62
+  endpoints:
+  - Rescue_A1
+  - gNB_A2
+  capacity: 80
+  latency: 1
+  type: microwave
+- id: L63
+  endpoints:
+  - Rescue_A2
+  - gNB_A3
+  capacity: 80
+  latency: 1
+  type: microwave
+- id: L64
+  endpoints:
+  - gNB_B1
+  - edgeUPF2
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L65
+  endpoints:
+  - gNB_B2
+  - edgeUPF2
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L66
+  endpoints:
+  - gNB_B3
+  - edgeUPF2
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L67
+  endpoints:
+  - gNB_B4
+  - edgeUPF2
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L68
+  endpoints:
+  - gNB_B5
+  - edgeUPF2
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L69
+  endpoints:
+  - gNB_B6
+  - edgeUPF2
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L70
+  endpoints:
+  - gNB_B1
+  - gNB_B2
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L71
+  endpoints:
+  - gNB_B1
+  - gNB_B3
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L72
+  endpoints:
+  - gNB_B2
+  - gNB_B3
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L73
+  endpoints:
+  - gNB_B2
+  - gNB_B4
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L74
+  endpoints:
+  - gNB_B3
+  - gNB_B4
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L75
+  endpoints:
+  - gNB_B3
+  - gNB_B5
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L76
+  endpoints:
+  - gNB_B4
+  - gNB_B5
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L77
+  endpoints:
+  - gNB_B4
+  - gNB_B6
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L78
+  endpoints:
+  - gNB_B5
+  - gNB_B6
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L79
+  endpoints:
+  - gNB_B5
+  - gNB_B1
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L80
+  endpoints:
+  - gNB_B6
+  - gNB_B1
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L81
+  endpoints:
+  - gNB_B6
+  - gNB_B2
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L82
+  endpoints:
+  - relay_B1
+  - gNB_B1
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L83
+  endpoints:
+  - relay_B1
+  - gNB_B2
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L84
+  endpoints:
+  - relay_B2
+  - gNB_B3
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L85
+  endpoints:
+  - relay_B2
+  - gNB_B4
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L86
+  endpoints:
+  - relay_B3
+  - gNB_B5
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L87
+  endpoints:
+  - relay_B3
+  - gNB_B6
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L88
+  endpoints:
+  - UE_B1
+  - gNB_B1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L89
+  endpoints:
+  - UE_B2
+  - gNB_B1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L90
+  endpoints:
+  - UE_B3
+  - gNB_B1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L91
+  endpoints:
+  - UE_B4
+  - gNB_B1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L92
+  endpoints:
+  - UE_B5
+  - gNB_B1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L93
+  endpoints:
+  - UE_B6
+  - gNB_B2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L94
+  endpoints:
+  - UE_B7
+  - gNB_B2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L95
+  endpoints:
+  - UE_B8
+  - gNB_B2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L96
+  endpoints:
+  - UE_B9
+  - gNB_B2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L97
+  endpoints:
+  - UE_B10
+  - gNB_B2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L98
+  endpoints:
+  - UE_B11
+  - gNB_B3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L99
+  endpoints:
+  - UE_B12
+  - gNB_B3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L100
+  endpoints:
+  - UE_B13
+  - gNB_B3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L101
+  endpoints:
+  - UE_B14
+  - gNB_B3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L102
+  endpoints:
+  - UE_B15
+  - gNB_B3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L103
+  endpoints:
+  - UE_B16
+  - gNB_B4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L104
+  endpoints:
+  - UE_B17
+  - gNB_B4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L105
+  endpoints:
+  - UE_B18
+  - gNB_B4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L106
+  endpoints:
+  - UE_B19
+  - gNB_B4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L107
+  endpoints:
+  - UE_B20
+  - gNB_B4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L108
+  endpoints:
+  - UE_B21
+  - gNB_B5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L109
+  endpoints:
+  - UE_B22
+  - gNB_B5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L110
+  endpoints:
+  - UE_B23
+  - gNB_B5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L111
+  endpoints:
+  - UE_B24
+  - gNB_B5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L112
+  endpoints:
+  - UE_B25
+  - gNB_B5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L113
+  endpoints:
+  - UE_B26
+  - gNB_B6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L114
+  endpoints:
+  - UE_B27
+  - gNB_B6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L115
+  endpoints:
+  - UE_B28
+  - gNB_B6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L116
+  endpoints:
+  - UE_B29
+  - gNB_B6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L117
+  endpoints:
+  - UE_B30
+  - gNB_B6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L118
+  endpoints:
+  - Rescue_B1
+  - gNB_B2
+  capacity: 80
+  latency: 1
+  type: microwave
+- id: L119
+  endpoints:
+  - Rescue_B2
+  - gNB_B3
+  capacity: 80
+  latency: 1
+  type: microwave
+- id: L120
+  endpoints:
+  - gNB_C1
+  - edgeUPF3
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L121
+  endpoints:
+  - gNB_C2
+  - edgeUPF3
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L122
+  endpoints:
+  - gNB_C3
+  - edgeUPF3
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L123
+  endpoints:
+  - gNB_C4
+  - edgeUPF3
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L124
+  endpoints:
+  - gNB_C5
+  - edgeUPF3
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L125
+  endpoints:
+  - gNB_C6
+  - edgeUPF3
+  capacity: 500
+  latency: 2
+  type: fiber
+- id: L126
+  endpoints:
+  - gNB_C1
+  - gNB_C2
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L127
+  endpoints:
+  - gNB_C1
+  - gNB_C3
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L128
+  endpoints:
+  - gNB_C2
+  - gNB_C3
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L129
+  endpoints:
+  - gNB_C2
+  - gNB_C4
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L130
+  endpoints:
+  - gNB_C3
+  - gNB_C4
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L131
+  endpoints:
+  - gNB_C3
+  - gNB_C5
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L132
+  endpoints:
+  - gNB_C4
+  - gNB_C5
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L133
+  endpoints:
+  - gNB_C4
+  - gNB_C6
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L134
+  endpoints:
+  - gNB_C5
+  - gNB_C6
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L135
+  endpoints:
+  - gNB_C5
+  - gNB_C1
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L136
+  endpoints:
+  - gNB_C6
+  - gNB_C1
+  capacity: 200
+  latency: 1
+  type: iab
+- id: L137
+  endpoints:
+  - gNB_C6
+  - gNB_C2
+  capacity: 150
+  latency: 2
+  type: microwave
+- id: L138
+  endpoints:
+  - relay_C1
+  - gNB_C1
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L139
+  endpoints:
+  - relay_C1
+  - gNB_C2
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L140
+  endpoints:
+  - relay_C2
+  - gNB_C3
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L141
+  endpoints:
+  - relay_C2
+  - gNB_C4
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L142
+  endpoints:
+  - relay_C3
+  - gNB_C5
+  capacity: 300
+  latency: 2
+  type: microwave
+- id: L143
+  endpoints:
+  - relay_C3
+  - gNB_C6
+  capacity: 250
+  latency: 3
+  type: microwave
+- id: L144
+  endpoints:
+  - UE_C1
+  - gNB_C1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L145
+  endpoints:
+  - UE_C2
+  - gNB_C1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L146
+  endpoints:
+  - UE_C3
+  - gNB_C1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L147
+  endpoints:
+  - UE_C4
+  - gNB_C1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L148
+  endpoints:
+  - UE_C5
+  - gNB_C1
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L149
+  endpoints:
+  - UE_C6
+  - gNB_C2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L150
+  endpoints:
+  - UE_C7
+  - gNB_C2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L151
+  endpoints:
+  - UE_C8
+  - gNB_C2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L152
+  endpoints:
+  - UE_C9
+  - gNB_C2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L153
+  endpoints:
+  - UE_C10
+  - gNB_C2
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L154
+  endpoints:
+  - UE_C11
+  - gNB_C3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L155
+  endpoints:
+  - UE_C12
+  - gNB_C3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L156
+  endpoints:
+  - UE_C13
+  - gNB_C3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L157
+  endpoints:
+  - UE_C14
+  - gNB_C3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L158
+  endpoints:
+  - UE_C15
+  - gNB_C3
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L159
+  endpoints:
+  - UE_C16
+  - gNB_C4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L160
+  endpoints:
+  - UE_C17
+  - gNB_C4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L161
+  endpoints:
+  - UE_C18
+  - gNB_C4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L162
+  endpoints:
+  - UE_C19
+  - gNB_C4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L163
+  endpoints:
+  - UE_C20
+  - gNB_C4
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L164
+  endpoints:
+  - UE_C21
+  - gNB_C5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L165
+  endpoints:
+  - UE_C22
+  - gNB_C5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L166
+  endpoints:
+  - UE_C23
+  - gNB_C5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L167
+  endpoints:
+  - UE_C24
+  - gNB_C5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L168
+  endpoints:
+  - UE_C25
+  - gNB_C5
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L169
+  endpoints:
+  - UE_C26
+  - gNB_C6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L170
+  endpoints:
+  - UE_C27
+  - gNB_C6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L171
+  endpoints:
+  - UE_C28
+  - gNB_C6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L172
+  endpoints:
+  - UE_C29
+  - gNB_C6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L173
+  endpoints:
+  - UE_C30
+  - gNB_C6
+  capacity: 50
+  latency: 1
+  type: microwave
+- id: L174
+  endpoints:
+  - Rescue_C1
+  - gNB_C2
+  capacity: 80
+  latency: 1
+  type: microwave
+- id: L175
+  endpoints:
+  - Rescue_C2
+  - gNB_C3
+  capacity: 80
+  latency: 1
+  type: microwave
+- id: L176
+  endpoints:
+  - gNB_A1
+  - gNB_B1
+  capacity: 300
+  latency: 5
+  type: microwave
+- id: L177
+  endpoints:
+  - gNB_B1
+  - gNB_C1
+  capacity: 300
+  latency: 5
+  type: microwave
+- id: L178
+  endpoints:
+  - gNB_C1
+  - gNB_A1
+  capacity: 300
+  latency: 5
+  type: microwave

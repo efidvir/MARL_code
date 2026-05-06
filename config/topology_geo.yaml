@@ -1,0 +1,3526 @@
+defaults:
+  link_capacity:
+    fiber: 10000
+    microwave: 1000
+    wireless: 500
+nodes:
+- id: Core_1
+  type: Core
+  x_pos: 2950
+  y_pos: 3030
+  zone: central
+- id: Core_2
+  type: Core
+  x_pos: 3050
+  y_pos: 3030
+  zone: central
+- id: Core_3
+  type: Core
+  x_pos: 3000
+  y_pos: 2960
+  zone: central
+- id: EdgeUPF_north
+  type: EdgeUPF
+  x_pos: 3200
+  y_pos: 5100
+  zone: north
+- id: EdgeUPF_south
+  type: EdgeUPF
+  x_pos: 2700
+  y_pos: 1100
+  zone: south
+- id: EdgeUPF_east
+  type: EdgeUPF
+  x_pos: 5200
+  y_pos: 3300
+  zone: east
+- id: EdgeUPF_west
+  type: EdgeUPF
+  x_pos: 1000
+  y_pos: 2800
+  zone: west
+- id: gNB_1
+  type: gNB-Site
+  x_pos: 3348
+  y_pos: 3426
+  zone: central
+- id: gNB_2
+  type: gNB-Site
+  x_pos: 2640
+  y_pos: 3582
+  zone: central
+- id: gNB_3
+  type: gNB-Site
+  x_pos: 3577
+  y_pos: 2655
+  zone: central
+- id: gNB_4
+  type: gNB-Site
+  x_pos: 2446
+  y_pos: 2659
+  zone: central
+- id: gNB_5
+  type: gNB-Site
+  x_pos: 3042
+  y_pos: 4071
+  zone: north
+- id: gNB_6
+  type: gNB-Site
+  x_pos: 2828
+  y_pos: 2028
+  zone: south
+- id: gNB_7
+  type: gNB-Site
+  x_pos: 3427
+  y_pos: 4743
+  zone: north
+- id: gNB_8
+  type: gNB-Site
+  x_pos: 2675
+  y_pos: 4579
+  zone: north
+- id: gNB_9
+  type: gNB-Site
+  x_pos: 3149
+  y_pos: 5574
+  zone: north
+- id: gNB_10
+  type: gNB-Site
+  x_pos: 3626
+  y_pos: 5263
+  zone: north
+- id: gNB_11
+  type: gNB-Site
+  x_pos: 2870
+  y_pos: 1559
+  zone: south
+- id: gNB_12
+  type: gNB-Site
+  x_pos: 2427
+  y_pos: 1176
+  zone: south
+- id: gNB_13
+  type: gNB-Site
+  x_pos: 3434
+  y_pos: 1070
+  zone: south
+- id: gNB_14
+  type: gNB-Site
+  x_pos: 2791
+  y_pos: 521
+  zone: south
+- id: gNB_15
+  type: gNB-Site
+  x_pos: 4560
+  y_pos: 3628
+  zone: east
+- id: gNB_16
+  type: gNB-Site
+  x_pos: 4807
+  y_pos: 2591
+  zone: east
+- id: gNB_17
+  type: gNB-Site
+  x_pos: 5359
+  y_pos: 3075
+  zone: east
+- id: gNB_18
+  type: gNB-Site
+  x_pos: 4406
+  y_pos: 2746
+  zone: east
+- id: gNB_19
+  type: gNB-Site
+  x_pos: 1443
+  y_pos: 3417
+  zone: west
+- id: gNB_20
+  type: gNB-Site
+  x_pos: 1144
+  y_pos: 2411
+  zone: west
+- id: Relay_1
+  type: Relay
+  x_pos: 3001
+  y_pos: 3659
+  zone: central
+- id: Relay_2
+  type: Relay
+  x_pos: 3060
+  y_pos: 2972
+  zone: central
+- id: Relay_3
+  type: Relay
+  x_pos: 3223
+  y_pos: 2685
+  zone: central
+- id: Relay_4
+  type: Relay
+  x_pos: 2874
+  y_pos: 3163
+  zone: central
+- id: Relay_5
+  type: Relay
+  x_pos: 2943
+  y_pos: 2890
+  zone: central
+- id: Relay_6
+  type: Relay
+  x_pos: 3232
+  y_pos: 3400
+  zone: central
+- id: Relay_7
+  type: Relay
+  x_pos: 3221
+  y_pos: 4816
+  zone: north
+- id: Relay_8
+  type: Relay
+  x_pos: 2885
+  y_pos: 5145
+  zone: north
+- id: Relay_9
+  type: Relay
+  x_pos: 3298
+  y_pos: 5510
+  zone: north
+- id: Relay_10
+  type: Relay
+  x_pos: 3135
+  y_pos: 3173
+  zone: central
+- id: Relay_11
+  type: Relay
+  x_pos: 2788
+  y_pos: 1266
+  zone: south
+- id: Relay_12
+  type: Relay
+  x_pos: 3095
+  y_pos: 1048
+  zone: south
+- id: Relay_13
+  type: Relay
+  x_pos: 2940
+  y_pos: 719
+  zone: south
+- id: Relay_14
+  type: Relay
+  x_pos: 3551
+  y_pos: 2094
+  zone: south
+- id: Relay_15
+  type: Relay
+  x_pos: 4642
+  y_pos: 3132
+  zone: east
+- id: Relay_16
+  type: Relay
+  x_pos: 5225
+  y_pos: 2836
+  zone: east
+- id: Relay_17
+  type: Relay
+  x_pos: 4783
+  y_pos: 2939
+  zone: east
+- id: Relay_18
+  type: Relay
+  x_pos: 2931
+  y_pos: 3007
+  zone: central
+- id: Relay_19
+  type: Relay
+  x_pos: 1493
+  y_pos: 2836
+  zone: west
+- id: Relay_20
+  type: Relay
+  x_pos: 2459
+  y_pos: 3099
+  zone: central
+- id: Relay_21
+  type: Relay
+  x_pos: 1751
+  y_pos: 1549
+  zone: south
+- id: Relay_22
+  type: Relay
+  x_pos: 2879
+  y_pos: 2070
+  zone: south
+- id: Relay_23
+  type: Relay
+  x_pos: 5053
+  y_pos: 2782
+  zone: east
+- id: Relay_24
+  type: Relay
+  x_pos: 2223
+  y_pos: 592
+  zone: south
+- id: Relay_25
+  type: Relay
+  x_pos: 3036
+  y_pos: 3574
+  zone: central
+- id: Relay_26
+  type: Relay
+  x_pos: 2980
+  y_pos: 4146
+  zone: north
+- id: Relay_27
+  type: Relay
+  x_pos: 2208
+  y_pos: 4973
+  zone: north
+- id: Relay_28
+  type: Relay
+  x_pos: 1854
+  y_pos: 3465
+  zone: west
+- id: Relay_29
+  type: Relay
+  x_pos: 2076
+  y_pos: 2604
+  zone: west
+- id: Relay_30
+  type: Relay
+  x_pos: 4048
+  y_pos: 2021
+  zone: south
+- id: Relay_31
+  type: Relay
+  x_pos: 2116
+  y_pos: 2814
+  zone: west
+- id: Relay_32
+  type: Relay
+  x_pos: 3646
+  y_pos: 3727
+  zone: north
+- id: Relay_33
+  type: Relay
+  x_pos: 1966
+  y_pos: 2250
+  zone: south
+- id: Relay_34
+  type: Relay
+  x_pos: 200
+  y_pos: 2651
+  zone: west
+- id: Relay_35
+  type: Relay
+  x_pos: 2696
+  y_pos: 1151
+  zone: south
+- id: Relay_36
+  type: Relay
+  x_pos: 2649
+  y_pos: 4913
+  zone: north
+- id: Relay_37
+  type: Relay
+  x_pos: 1753
+  y_pos: 3783
+  zone: north
+- id: Relay_38
+  type: Relay
+  x_pos: 2752
+  y_pos: 4705
+  zone: north
+- id: Relay_39
+  type: Relay
+  x_pos: 5087
+  y_pos: 1821
+  zone: south
+- id: Relay_40
+  type: Relay
+  x_pos: 2035
+  y_pos: 3144
+  zone: west
+- id: UE_1
+  type: UE
+  x_pos: 2610
+  y_pos: 1427
+  zone: south
+- id: UE_2
+  type: UE
+  x_pos: 2860
+  y_pos: 3533
+  zone: central
+- id: UE_3
+  type: UE
+  x_pos: 3599
+  y_pos: 4677
+  zone: north
+- id: UE_4
+  type: UE
+  x_pos: 2431
+  y_pos: 2749
+  zone: central
+- id: UE_5
+  type: UE
+  x_pos: 4602
+  y_pos: 2997
+  zone: east
+- id: UE_6
+  type: UE
+  x_pos: 3048
+  y_pos: 667
+  zone: south
+- id: UE_7
+  type: UE
+  x_pos: 3323
+  y_pos: 4226
+  zone: north
+- id: UE_8
+  type: UE
+  x_pos: 2892
+  y_pos: 4433
+  zone: north
+- id: UE_9
+  type: UE
+  x_pos: 3001
+  y_pos: 2061
+  zone: south
+- id: UE_10
+  type: UE
+  x_pos: 3241
+  y_pos: 3627
+  zone: central
+- id: UE_11
+  type: UE
+  x_pos: 3050
+  y_pos: 1726
+  zone: south
+- id: UE_12
+  type: UE
+  x_pos: 2960
+  y_pos: 692
+  zone: south
+- id: UE_13
+  type: UE
+  x_pos: 2586
+  y_pos: 4431
+  zone: north
+- id: UE_14
+  type: UE
+  x_pos: 2445
+  y_pos: 2796
+  zone: central
+- id: UE_15
+  type: UE
+  x_pos: 2839
+  y_pos: 3590
+  zone: central
+- id: UE_16
+  type: UE
+  x_pos: 2552
+  y_pos: 4768
+  zone: north
+- id: UE_17
+  type: UE
+  x_pos: 4529
+  y_pos: 3506
+  zone: east
+- id: UE_18
+  type: UE
+  x_pos: 2564
+  y_pos: 4362
+  zone: north
+- id: UE_19
+  type: UE
+  x_pos: 3454
+  y_pos: 4718
+  zone: north
+- id: UE_20
+  type: UE
+  x_pos: 3292
+  y_pos: 5285
+  zone: north
+- id: UE_21
+  type: UE
+  x_pos: 3029
+  y_pos: 5578
+  zone: north
+- id: UE_22
+  type: UE
+  x_pos: 5354
+  y_pos: 3197
+  zone: east
+- id: UE_23
+  type: UE
+  x_pos: 4319
+  y_pos: 3030
+  zone: east
+- id: UE_24
+  type: UE
+  x_pos: 3209
+  y_pos: 3699
+  zone: central
+- id: UE_25
+  type: UE
+  x_pos: 2941
+  y_pos: 5547
+  zone: north
+- id: UE_26
+  type: UE
+  x_pos: 2869
+  y_pos: 5305
+  zone: north
+- id: UE_27
+  type: UE
+  x_pos: 1172
+  y_pos: 2326
+  zone: west
+- id: UE_28
+  type: UE
+  x_pos: 2873
+  y_pos: 1560
+  zone: south
+- id: UE_29
+  type: UE
+  x_pos: 5209
+  y_pos: 3047
+  zone: east
+- id: UE_30
+  type: UE
+  x_pos: 1347
+  y_pos: 3280
+  zone: west
+- id: UE_31
+  type: UE
+  x_pos: 2762
+  y_pos: 3573
+  zone: central
+- id: UE_32
+  type: UE
+  x_pos: 3416
+  y_pos: 3723
+  zone: north
+- id: UE_33
+  type: UE
+  x_pos: 4501
+  y_pos: 2918
+  zone: east
+- id: UE_34
+  type: UE
+  x_pos: 3436
+  y_pos: 4770
+  zone: north
+- id: UE_35
+  type: UE
+  x_pos: 3835
+  y_pos: 2790
+  zone: east
+- id: UE_36
+  type: UE
+  x_pos: 2969
+  y_pos: 1410
+  zone: south
+- id: UE_37
+  type: UE
+  x_pos: 2618
+  y_pos: 2810
+  zone: central
+- id: UE_38
+  type: UE
+  x_pos: 3709
+  y_pos: 5108
+  zone: north
+- id: UE_39
+  type: UE
+  x_pos: 2717
+  y_pos: 556
+  zone: south
+- id: UE_40
+  type: UE
+  x_pos: 3733
+  y_pos: 5015
+  zone: north
+- id: UE_41
+  type: UE
+  x_pos: 3465
+  y_pos: 4890
+  zone: north
+- id: UE_42
+  type: UE
+  x_pos: 3496
+  y_pos: 1133
+  zone: south
+- id: UE_43
+  type: UE
+  x_pos: 2865
+  y_pos: 2141
+  zone: south
+- id: UE_44
+  type: UE
+  x_pos: 3657
+  y_pos: 5230
+  zone: north
+- id: UE_45
+  type: UE
+  x_pos: 3305
+  y_pos: 3396
+  zone: central
+- id: UE_46
+  type: UE
+  x_pos: 3470
+  y_pos: 4952
+  zone: north
+- id: UE_47
+  type: UE
+  x_pos: 1560
+  y_pos: 3485
+  zone: west
+- id: UE_48
+  type: UE
+  x_pos: 2888
+  y_pos: 1476
+  zone: south
+- id: UE_49
+  type: UE
+  x_pos: 4695
+  y_pos: 3459
+  zone: east
+- id: UE_50
+  type: UE
+  x_pos: 5392
+  y_pos: 3256
+  zone: east
+- id: UE_51
+  type: UE
+  x_pos: 2887
+  y_pos: 1893
+  zone: south
+- id: UE_52
+  type: UE
+  x_pos: 3713
+  y_pos: 5289
+  zone: north
+- id: UE_53
+  type: UE
+  x_pos: 1121
+  y_pos: 2197
+  zone: west
+- id: UE_54
+  type: UE
+  x_pos: 2794
+  y_pos: 4508
+  zone: north
+- id: UE_55
+  type: UE
+  x_pos: 2862
+  y_pos: 4451
+  zone: north
+- id: UE_56
+  type: UE
+  x_pos: 2862
+  y_pos: 3773
+  zone: central
+- id: UE_57
+  type: UE
+  x_pos: 2693
+  y_pos: 4662
+  zone: north
+- id: UE_58
+  type: UE
+  x_pos: 3583
+  y_pos: 2662
+  zone: central
+- id: UE_59
+  type: UE
+  x_pos: 1349
+  y_pos: 3517
+  zone: west
+- id: UE_60
+  type: UE
+  x_pos: 3403
+  y_pos: 954
+  zone: south
+- id: UE_61
+  type: UE
+  x_pos: 2525
+  y_pos: 4685
+  zone: north
+- id: UE_62
+  type: UE
+  x_pos: 3607
+  y_pos: 3634
+  zone: north
+- id: UE_63
+  type: UE
+  x_pos: 2648
+  y_pos: 2567
+  zone: central
+- id: UE_64
+  type: UE
+  x_pos: 2540
+  y_pos: 4761
+  zone: north
+- id: UE_65
+  type: UE
+  x_pos: 5387
+  y_pos: 2875
+  zone: east
+- id: UE_66
+  type: UE
+  x_pos: 4277
+  y_pos: 3019
+  zone: east
+- id: UE_67
+  type: UE
+  x_pos: 2483
+  y_pos: 2418
+  zone: central
+- id: UE_68
+  type: UE
+  x_pos: 4691
+  y_pos: 3621
+  zone: east
+- id: UE_69
+  type: UE
+  x_pos: 4454
+  y_pos: 2712
+  zone: east
+- id: UE_70
+  type: UE
+  x_pos: 4663
+  y_pos: 3767
+  zone: east
+- id: UE_71
+  type: UE
+  x_pos: 5368
+  y_pos: 3275
+  zone: east
+- id: UE_72
+  type: UE
+  x_pos: 4378
+  y_pos: 3009
+  zone: east
+- id: UE_73
+  type: UE
+  x_pos: 2930
+  y_pos: 2291
+  zone: central
+- id: UE_74
+  type: UE
+  x_pos: 4780
+  y_pos: 2482
+  zone: east
+- id: UE_75
+  type: UE
+  x_pos: 2880
+  y_pos: 4676
+  zone: north
+- id: UE_76
+  type: UE
+  x_pos: 3242
+  y_pos: 5648
+  zone: north
+- id: UE_77
+  type: UE
+  x_pos: 5398
+  y_pos: 3170
+  zone: east
+- id: UE_78
+  type: UE
+  x_pos: 2590
+  y_pos: 4575
+  zone: north
+- id: UE_79
+  type: UE
+  x_pos: 3715
+  y_pos: 2596
+  zone: south
+- id: UE_80
+  type: UE
+  x_pos: 2589
+  y_pos: 4521
+  zone: north
+- id: UE_81
+  type: UE
+  x_pos: 3107
+  y_pos: 1526
+  zone: south
+- id: UE_82
+  type: UE
+  x_pos: 3420
+  y_pos: 2527
+  zone: central
+- id: UE_83
+  type: UE
+  x_pos: 2646
+  y_pos: 4705
+  zone: north
+- id: UE_84
+  type: UE
+  x_pos: 3211
+  y_pos: 3859
+  zone: north
+- id: UE_85
+  type: UE
+  x_pos: 3562
+  y_pos: 2658
+  zone: central
+- id: UE_86
+  type: UE
+  x_pos: 2927
+  y_pos: 1488
+  zone: south
+- id: UE_87
+  type: UE
+  x_pos: 2581
+  y_pos: 455
+  zone: south
+- id: UE_88
+  type: UE
+  x_pos: 2749
+  y_pos: 813
+  zone: south
+- id: UE_89
+  type: UE
+  x_pos: 1734
+  y_pos: 3506
+  zone: west
+- id: UE_90
+  type: UE
+  x_pos: 3588
+  y_pos: 3700
+  zone: north
+- id: UE_91
+  type: UE
+  x_pos: 1444
+  y_pos: 3394
+  zone: west
+- id: UE_92
+  type: UE
+  x_pos: 3632
+  y_pos: 3430
+  zone: central
+- id: UE_93
+  type: UE
+  x_pos: 3835
+  y_pos: 5149
+  zone: north
+- id: UE_94
+  type: UE
+  x_pos: 2825
+  y_pos: 732
+  zone: south
+- id: UE_95
+  type: UE
+  x_pos: 4559
+  y_pos: 2858
+  zone: east
+- id: UE_96
+  type: UE
+  x_pos: 2699
+  y_pos: 4462
+  zone: north
+- id: UE_97
+  type: UE
+  x_pos: 3073
+  y_pos: 5498
+  zone: north
+- id: UE_98
+  type: UE
+  x_pos: 3349
+  y_pos: 3422
+  zone: central
+- id: UE_99
+  type: UE
+  x_pos: 3520
+  y_pos: 834
+  zone: south
+- id: UE_100
+  type: UE
+  x_pos: 4820
+  y_pos: 3415
+  zone: east
+- id: UE_101
+  type: UE
+  x_pos: 1223
+  y_pos: 2163
+  zone: west
+- id: UE_102
+  type: UE
+  x_pos: 3453
+  y_pos: 1038
+  zone: south
+- id: UE_103
+  type: UE
+  x_pos: 3192
+  y_pos: 3579
+  zone: central
+- id: UE_104
+  type: UE
+  x_pos: 2619
+  y_pos: 793
+  zone: south
+- id: UE_105
+  type: UE
+  x_pos: 4443
+  y_pos: 3375
+  zone: east
+- id: UE_106
+  type: UE
+  x_pos: 3044
+  y_pos: 5417
+  zone: north
+- id: UE_107
+  type: UE
+  x_pos: 3482
+  y_pos: 4717
+  zone: north
+- id: UE_108
+  type: UE
+  x_pos: 3039
+  y_pos: 1700
+  zone: south
+- id: UE_109
+  type: UE
+  x_pos: 3292
+  y_pos: 1135
+  zone: south
+- id: UE_110
+  type: UE
+  x_pos: 2679
+  y_pos: 777
+  zone: south
+- id: UE_111
+  type: UE
+  x_pos: 3590
+  y_pos: 2459
+  zone: south
+- id: UE_112
+  type: UE
+  x_pos: 4176
+  y_pos: 3037
+  zone: east
+- id: UE_113
+  type: UE
+  x_pos: 2264
+  y_pos: 1282
+  zone: south
+- id: UE_114
+  type: UE
+  x_pos: 3749
+  y_pos: 2940
+  zone: central
+- id: UE_115
+  type: UE
+  x_pos: 2786
+  y_pos: 3365
+  zone: central
+- id: UE_116
+  type: UE
+  x_pos: 2552
+  y_pos: 4779
+  zone: north
+- id: UE_117
+  type: UE
+  x_pos: 3468
+  y_pos: 3328
+  zone: central
+- id: UE_118
+  type: UE
+  x_pos: 2514
+  y_pos: 4592
+  zone: north
+- id: UE_119
+  type: UE
+  x_pos: 2538
+  y_pos: 2835
+  zone: central
+- id: UE_120
+  type: UE
+  x_pos: 3488
+  y_pos: 4908
+  zone: north
+- id: Rescue_UE_1
+  type: UE
+  x_pos: 3138
+  y_pos: 5435
+  zone: north
+  is_rescue_service: true
+- id: Rescue_UE_2
+  type: UE
+  x_pos: 1108
+  y_pos: 2333
+  zone: west
+  is_rescue_service: true
+- id: Rescue_UE_3
+  type: UE
+  x_pos: 3605
+  y_pos: 5346
+  zone: north
+  is_rescue_service: true
+- id: Rescue_UE_4
+  type: UE
+  x_pos: 3409
+  y_pos: 3644
+  zone: central
+  is_rescue_service: true
+- id: Rescue_UE_5
+  type: UE
+  x_pos: 3453
+  y_pos: 951
+  zone: south
+  is_rescue_service: true
+- id: Rescue_UE_6
+  type: UE
+  x_pos: 3574
+  y_pos: 2602
+  zone: central
+  is_rescue_service: true
+- id: Rescue_UE_7
+  type: UE
+  x_pos: 3611
+  y_pos: 5339
+  zone: north
+  is_rescue_service: true
+- id: Rescue_UE_8
+  type: UE
+  x_pos: 2677
+  y_pos: 3722
+  zone: central
+  is_rescue_service: true
+- id: Rescue_UE_9
+  type: UE
+  x_pos: 2839
+  y_pos: 485
+  zone: south
+  is_rescue_service: true
+- id: Rescue_UE_10
+  type: UE
+  x_pos: 5424
+  y_pos: 2956
+  zone: east
+  is_rescue_service: true
+- id: Rescue_UE_11
+  type: UE
+  x_pos: 2900
+  y_pos: 504
+  zone: south
+  is_rescue_service: true
+- id: Rescue_UE_12
+  type: UE
+  x_pos: 2835
+  y_pos: 685
+  zone: south
+  is_rescue_service: true
+- id: Rescue_UE_13
+  type: UE
+  x_pos: 3172
+  y_pos: 3940
+  zone: north
+  is_rescue_service: true
+- id: Rescue_UE_14
+  type: UE
+  x_pos: 5388
+  y_pos: 3225
+  zone: east
+  is_rescue_service: true
+- id: Rescue_UE_15
+  type: UE
+  x_pos: 4888
+  y_pos: 2673
+  zone: east
+  is_rescue_service: true
+- id: Rescue_UE_16
+  type: UE
+  x_pos: 1487
+  y_pos: 3415
+  zone: west
+  is_rescue_service: true
+- id: Rescue_UE_17
+  type: UE
+  x_pos: 2594
+  y_pos: 4592
+  zone: north
+  is_rescue_service: true
+- id: Rescue_UE_18
+  type: UE
+  x_pos: 4574
+  y_pos: 3687
+  zone: east
+  is_rescue_service: true
+- id: Rescue_UE_19
+  type: UE
+  x_pos: 1544
+  y_pos: 3422
+  zone: west
+  is_rescue_service: true
+- id: Rescue_UE_20
+  type: UE
+  x_pos: 3503
+  y_pos: 3516
+  zone: central
+  is_rescue_service: true
+links:
+- id: L0
+  endpoints:
+  - Core_1
+  - Core_2
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L1
+  endpoints:
+  - Core_1
+  - Core_3
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L2
+  endpoints:
+  - Core_2
+  - Core_3
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L3
+  endpoints:
+  - EdgeUPF_north
+  - Core_1
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L4
+  endpoints:
+  - EdgeUPF_north
+  - Core_2
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L5
+  endpoints:
+  - EdgeUPF_north
+  - Core_3
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L6
+  endpoints:
+  - EdgeUPF_south
+  - Core_1
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L7
+  endpoints:
+  - EdgeUPF_south
+  - Core_2
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L8
+  endpoints:
+  - EdgeUPF_south
+  - Core_3
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L9
+  endpoints:
+  - EdgeUPF_east
+  - Core_1
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L10
+  endpoints:
+  - EdgeUPF_east
+  - Core_2
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L11
+  endpoints:
+  - EdgeUPF_east
+  - Core_3
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L12
+  endpoints:
+  - EdgeUPF_west
+  - Core_1
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L13
+  endpoints:
+  - EdgeUPF_west
+  - Core_2
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L14
+  endpoints:
+  - EdgeUPF_west
+  - Core_3
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L15
+  endpoints:
+  - gNB_1
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 3
+- id: L16
+  endpoints:
+  - gNB_1
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 3
+- id: L17
+  endpoints:
+  - gNB_2
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 3
+- id: L18
+  endpoints:
+  - gNB_2
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 3
+- id: L19
+  endpoints:
+  - gNB_3
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 3
+- id: L20
+  endpoints:
+  - gNB_3
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 3
+- id: L21
+  endpoints:
+  - gNB_4
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L22
+  endpoints:
+  - gNB_4
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 3
+- id: L23
+  endpoints:
+  - gNB_5
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 2
+- id: L24
+  endpoints:
+  - gNB_5
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L25
+  endpoints:
+  - gNB_6
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L26
+  endpoints:
+  - gNB_6
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 3
+- id: L27
+  endpoints:
+  - gNB_7
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L28
+  endpoints:
+  - gNB_7
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L29
+  endpoints:
+  - gNB_8
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L30
+  endpoints:
+  - gNB_8
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L31
+  endpoints:
+  - gNB_9
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L32
+  endpoints:
+  - gNB_10
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L33
+  endpoints:
+  - gNB_10
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 5
+- id: L34
+  endpoints:
+  - gNB_11
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L35
+  endpoints:
+  - gNB_11
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L36
+  endpoints:
+  - gNB_12
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L37
+  endpoints:
+  - gNB_12
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L38
+  endpoints:
+  - gNB_13
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L39
+  endpoints:
+  - gNB_13
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 5
+- id: L40
+  endpoints:
+  - gNB_14
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L41
+  endpoints:
+  - gNB_14
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 5
+- id: L42
+  endpoints:
+  - gNB_15
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L43
+  endpoints:
+  - gNB_15
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L44
+  endpoints:
+  - gNB_16
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L45
+  endpoints:
+  - gNB_16
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 5
+- id: L46
+  endpoints:
+  - gNB_17
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L47
+  endpoints:
+  - gNB_17
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 5
+- id: L48
+  endpoints:
+  - gNB_18
+  - EdgeUPF_east
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L49
+  endpoints:
+  - gNB_18
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L50
+  endpoints:
+  - gNB_19
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L51
+  endpoints:
+  - gNB_19
+  - EdgeUPF_north
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L52
+  endpoints:
+  - gNB_20
+  - EdgeUPF_west
+  type: fiber
+  capacity: 10000
+  latency: 1
+- id: L53
+  endpoints:
+  - gNB_20
+  - EdgeUPF_south
+  type: fiber
+  capacity: 10000
+  latency: 4
+- id: L54
+  endpoints:
+  - Relay_1
+  - gNB_2
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L55
+  endpoints:
+  - Relay_1
+  - gNB_5
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L56
+  endpoints:
+  - Relay_2
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L57
+  endpoints:
+  - Relay_2
+  - gNB_3
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L58
+  endpoints:
+  - Relay_3
+  - gNB_3
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L59
+  endpoints:
+  - Relay_3
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L60
+  endpoints:
+  - Relay_4
+  - gNB_2
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L61
+  endpoints:
+  - Relay_4
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L62
+  endpoints:
+  - Relay_5
+  - gNB_4
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L63
+  endpoints:
+  - Relay_5
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L64
+  endpoints:
+  - Relay_6
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L65
+  endpoints:
+  - Relay_6
+  - gNB_2
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L66
+  endpoints:
+  - Relay_7
+  - gNB_7
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L67
+  endpoints:
+  - Relay_7
+  - gNB_8
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L68
+  endpoints:
+  - Relay_8
+  - gNB_9
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L69
+  endpoints:
+  - Relay_8
+  - gNB_8
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L70
+  endpoints:
+  - Relay_9
+  - gNB_9
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L71
+  endpoints:
+  - Relay_9
+  - gNB_10
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L72
+  endpoints:
+  - Relay_10
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L73
+  endpoints:
+  - Relay_10
+  - gNB_2
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L74
+  endpoints:
+  - Relay_11
+  - gNB_11
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L75
+  endpoints:
+  - Relay_11
+  - gNB_12
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L76
+  endpoints:
+  - Relay_12
+  - gNB_13
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L77
+  endpoints:
+  - Relay_12
+  - gNB_11
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L78
+  endpoints:
+  - Relay_13
+  - gNB_14
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L79
+  endpoints:
+  - Relay_13
+  - gNB_13
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L80
+  endpoints:
+  - Relay_14
+  - gNB_3
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L81
+  endpoints:
+  - Relay_14
+  - gNB_6
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L82
+  endpoints:
+  - Relay_15
+  - gNB_18
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L83
+  endpoints:
+  - Relay_15
+  - gNB_15
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L84
+  endpoints:
+  - Relay_16
+  - gNB_17
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L85
+  endpoints:
+  - Relay_16
+  - gNB_16
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L86
+  endpoints:
+  - Relay_17
+  - gNB_16
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L87
+  endpoints:
+  - Relay_17
+  - gNB_18
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L88
+  endpoints:
+  - Relay_18
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L89
+  endpoints:
+  - Relay_18
+  - gNB_4
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L90
+  endpoints:
+  - Relay_19
+  - gNB_20
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L91
+  endpoints:
+  - Relay_19
+  - gNB_19
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L92
+  endpoints:
+  - Relay_20
+  - gNB_4
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L93
+  endpoints:
+  - Relay_20
+  - gNB_2
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L94
+  endpoints:
+  - Relay_21
+  - gNB_12
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L95
+  endpoints:
+  - Relay_21
+  - gNB_20
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L96
+  endpoints:
+  - Relay_22
+  - gNB_6
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L97
+  endpoints:
+  - Relay_22
+  - gNB_11
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L98
+  endpoints:
+  - Relay_23
+  - gNB_16
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L99
+  endpoints:
+  - Relay_23
+  - gNB_17
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L100
+  endpoints:
+  - Relay_24
+  - gNB_14
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L101
+  endpoints:
+  - Relay_24
+  - gNB_12
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L102
+  endpoints:
+  - Relay_25
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L103
+  endpoints:
+  - Relay_25
+  - gNB_2
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L104
+  endpoints:
+  - Relay_26
+  - gNB_5
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L105
+  endpoints:
+  - Relay_26
+  - gNB_8
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L106
+  endpoints:
+  - Relay_27
+  - gNB_8
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L107
+  endpoints:
+  - Relay_27
+  - gNB_9
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L108
+  endpoints:
+  - Relay_28
+  - gNB_19
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L109
+  endpoints:
+  - Relay_28
+  - gNB_2
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L110
+  endpoints:
+  - Relay_29
+  - gNB_4
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L111
+  endpoints:
+  - Relay_29
+  - gNB_6
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L112
+  endpoints:
+  - Relay_30
+  - gNB_3
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L113
+  endpoints:
+  - Relay_30
+  - gNB_18
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L114
+  endpoints:
+  - Relay_31
+  - gNB_4
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L115
+  endpoints:
+  - Relay_31
+  - gNB_19
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L116
+  endpoints:
+  - Relay_32
+  - gNB_1
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L117
+  endpoints:
+  - Relay_32
+  - gNB_5
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L118
+  endpoints:
+  - Relay_33
+  - gNB_4
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L119
+  endpoints:
+  - Relay_33
+  - gNB_20
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L120
+  endpoints:
+  - Relay_34
+  - gNB_20
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L121
+  endpoints:
+  - Relay_34
+  - gNB_19
+  type: microwave
+  capacity: 1000
+  latency: 4
+- id: L122
+  endpoints:
+  - Relay_35
+  - gNB_12
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L123
+  endpoints:
+  - Relay_35
+  - gNB_11
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L124
+  endpoints:
+  - Relay_36
+  - gNB_8
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L125
+  endpoints:
+  - Relay_36
+  - gNB_7
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L126
+  endpoints:
+  - Relay_37
+  - gNB_19
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L127
+  endpoints:
+  - Relay_37
+  - gNB_2
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L128
+  endpoints:
+  - Relay_38
+  - gNB_8
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L129
+  endpoints:
+  - Relay_38
+  - gNB_7
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L130
+  endpoints:
+  - Relay_39
+  - gNB_16
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L131
+  endpoints:
+  - Relay_39
+  - gNB_18
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L132
+  endpoints:
+  - Relay_40
+  - gNB_4
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L133
+  endpoints:
+  - Relay_40
+  - gNB_19
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L134
+  endpoints:
+  - Relay_1
+  - Relay_2
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L135
+  endpoints:
+  - Relay_1
+  - Relay_10
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L136
+  endpoints:
+  - Relay_1
+  - Relay_18
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L137
+  endpoints:
+  - Relay_1
+  - Relay_26
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L138
+  endpoints:
+  - Relay_1
+  - Relay_28
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L139
+  endpoints:
+  - Relay_1
+  - Relay_38
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L140
+  endpoints:
+  - Relay_2
+  - Relay_6
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L141
+  endpoints:
+  - Relay_2
+  - Relay_18
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L142
+  endpoints:
+  - Relay_2
+  - Relay_40
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L143
+  endpoints:
+  - Relay_3
+  - Relay_5
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L144
+  endpoints:
+  - Relay_3
+  - Relay_14
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L145
+  endpoints:
+  - Relay_3
+  - Relay_18
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L146
+  endpoints:
+  - Relay_3
+  - Relay_20
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L147
+  endpoints:
+  - Relay_3
+  - Relay_29
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L148
+  endpoints:
+  - Relay_3
+  - Relay_31
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L149
+  endpoints:
+  - Relay_3
+  - Relay_32
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L150
+  endpoints:
+  - Relay_4
+  - Relay_5
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L151
+  endpoints:
+  - Relay_4
+  - Relay_6
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L152
+  endpoints:
+  - Relay_4
+  - Relay_18
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L153
+  endpoints:
+  - Relay_4
+  - Relay_29
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L154
+  endpoints:
+  - Relay_4
+  - Relay_40
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L155
+  endpoints:
+  - Relay_5
+  - Relay_10
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L156
+  endpoints:
+  - Relay_5
+  - Relay_20
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L157
+  endpoints:
+  - Relay_5
+  - Relay_29
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L158
+  endpoints:
+  - Relay_5
+  - Relay_33
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L159
+  endpoints:
+  - Relay_5
+  - Relay_40
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L160
+  endpoints:
+  - Relay_6
+  - Relay_18
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L161
+  endpoints:
+  - Relay_6
+  - Relay_20
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L162
+  endpoints:
+  - Relay_6
+  - Relay_32
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L163
+  endpoints:
+  - Relay_7
+  - Relay_26
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L164
+  endpoints:
+  - Relay_7
+  - Relay_36
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L165
+  endpoints:
+  - Relay_7
+  - Relay_38
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L166
+  endpoints:
+  - Relay_8
+  - Relay_26
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L167
+  endpoints:
+  - Relay_9
+  - Relay_38
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L168
+  endpoints:
+  - Relay_10
+  - Relay_14
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L169
+  endpoints:
+  - Relay_10
+  - Relay_18
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L170
+  endpoints:
+  - Relay_10
+  - Relay_25
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L171
+  endpoints:
+  - Relay_11
+  - Relay_13
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L172
+  endpoints:
+  - Relay_11
+  - Relay_14
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L173
+  endpoints:
+  - Relay_11
+  - Relay_21
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L174
+  endpoints:
+  - Relay_11
+  - Relay_24
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L175
+  endpoints:
+  - Relay_11
+  - Relay_35
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L176
+  endpoints:
+  - Relay_12
+  - Relay_13
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L177
+  endpoints:
+  - Relay_12
+  - Relay_35
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L178
+  endpoints:
+  - Relay_14
+  - Relay_18
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L179
+  endpoints:
+  - Relay_14
+  - Relay_22
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L180
+  endpoints:
+  - Relay_16
+  - Relay_17
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L181
+  endpoints:
+  - Relay_16
+  - Relay_23
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L182
+  endpoints:
+  - Relay_17
+  - Relay_30
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L183
+  endpoints:
+  - Relay_17
+  - Relay_39
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L184
+  endpoints:
+  - Relay_18
+  - Relay_22
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L185
+  endpoints:
+  - Relay_18
+  - Relay_25
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L186
+  endpoints:
+  - Relay_18
+  - Relay_26
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L187
+  endpoints:
+  - Relay_18
+  - Relay_40
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L188
+  endpoints:
+  - Relay_19
+  - Relay_29
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L189
+  endpoints:
+  - Relay_19
+  - Relay_37
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L190
+  endpoints:
+  - Relay_19
+  - Relay_40
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L191
+  endpoints:
+  - Relay_20
+  - Relay_22
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L192
+  endpoints:
+  - Relay_20
+  - Relay_25
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L193
+  endpoints:
+  - Relay_20
+  - Relay_26
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L194
+  endpoints:
+  - Relay_20
+  - Relay_31
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L195
+  endpoints:
+  - Relay_21
+  - Relay_35
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L196
+  endpoints:
+  - Relay_22
+  - Relay_30
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L197
+  endpoints:
+  - Relay_22
+  - Relay_35
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L198
+  endpoints:
+  - Relay_23
+  - Relay_39
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L199
+  endpoints:
+  - Relay_24
+  - Relay_35
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L200
+  endpoints:
+  - Relay_25
+  - Relay_26
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L201
+  endpoints:
+  - Relay_25
+  - Relay_38
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L202
+  endpoints:
+  - Relay_26
+  - Relay_27
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L203
+  endpoints:
+  - Relay_26
+  - Relay_38
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L204
+  endpoints:
+  - Relay_27
+  - Relay_36
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L205
+  endpoints:
+  - Relay_27
+  - Relay_38
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L206
+  endpoints:
+  - Relay_28
+  - Relay_31
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L207
+  endpoints:
+  - Relay_29
+  - Relay_33
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L208
+  endpoints:
+  - Relay_31
+  - Relay_33
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L209
+  endpoints:
+  - Relay_31
+  - Relay_37
+  type: microwave
+  capacity: 1000
+  latency: 3
+- id: L210
+  endpoints:
+  - Relay_31
+  - Relay_40
+  type: microwave
+  capacity: 1000
+  latency: 1
+- id: L211
+  endpoints:
+  - Relay_37
+  - Relay_40
+  type: microwave
+  capacity: 1000
+  latency: 2
+- id: L212
+  endpoints:
+  - UE_1
+  - gNB_12
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L213
+  endpoints:
+  - UE_2
+  - gNB_2
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L214
+  endpoints:
+  - UE_3
+  - gNB_7
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L215
+  endpoints:
+  - UE_4
+  - gNB_4
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L216
+  endpoints:
+  - UE_5
+  - gNB_18
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L217
+  endpoints:
+  - UE_6
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L218
+  endpoints:
+  - UE_7
+  - gNB_5
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L219
+  endpoints:
+  - UE_8
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L220
+  endpoints:
+  - UE_9
+  - gNB_6
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L221
+  endpoints:
+  - UE_10
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L222
+  endpoints:
+  - UE_11
+  - gNB_11
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L223
+  endpoints:
+  - UE_12
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L224
+  endpoints:
+  - UE_13
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L225
+  endpoints:
+  - UE_14
+  - gNB_4
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L226
+  endpoints:
+  - UE_15
+  - gNB_2
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L227
+  endpoints:
+  - UE_16
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L228
+  endpoints:
+  - UE_17
+  - gNB_15
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L229
+  endpoints:
+  - UE_18
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L230
+  endpoints:
+  - UE_19
+  - gNB_7
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L231
+  endpoints:
+  - UE_20
+  - gNB_9
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L232
+  endpoints:
+  - UE_21
+  - gNB_9
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L233
+  endpoints:
+  - UE_22
+  - gNB_17
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L234
+  endpoints:
+  - UE_23
+  - gNB_18
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L235
+  endpoints:
+  - UE_24
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L236
+  endpoints:
+  - UE_25
+  - gNB_9
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L237
+  endpoints:
+  - UE_26
+  - gNB_9
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L238
+  endpoints:
+  - UE_27
+  - gNB_20
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L239
+  endpoints:
+  - UE_28
+  - gNB_11
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L240
+  endpoints:
+  - UE_29
+  - gNB_17
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L241
+  endpoints:
+  - UE_30
+  - gNB_19
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L242
+  endpoints:
+  - UE_31
+  - gNB_2
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L243
+  endpoints:
+  - UE_32
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L244
+  endpoints:
+  - UE_33
+  - gNB_18
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L245
+  endpoints:
+  - UE_34
+  - gNB_7
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L246
+  endpoints:
+  - UE_35
+  - gNB_3
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L247
+  endpoints:
+  - UE_36
+  - gNB_11
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L248
+  endpoints:
+  - UE_37
+  - gNB_4
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L249
+  endpoints:
+  - UE_38
+  - gNB_10
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L250
+  endpoints:
+  - UE_39
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L251
+  endpoints:
+  - UE_40
+  - gNB_10
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L252
+  endpoints:
+  - UE_41
+  - gNB_7
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L253
+  endpoints:
+  - UE_42
+  - gNB_13
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L254
+  endpoints:
+  - UE_43
+  - gNB_6
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L255
+  endpoints:
+  - UE_44
+  - gNB_10
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L256
+  endpoints:
+  - UE_45
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L257
+  endpoints:
+  - UE_46
+  - gNB_7
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L258
+  endpoints:
+  - UE_47
+  - gNB_19
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L259
+  endpoints:
+  - UE_48
+  - gNB_11
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L260
+  endpoints:
+  - UE_49
+  - gNB_15
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L261
+  endpoints:
+  - UE_50
+  - gNB_17
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L262
+  endpoints:
+  - UE_51
+  - gNB_6
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L263
+  endpoints:
+  - UE_52
+  - gNB_10
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L264
+  endpoints:
+  - UE_53
+  - gNB_20
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L265
+  endpoints:
+  - UE_54
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L266
+  endpoints:
+  - UE_55
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L267
+  endpoints:
+  - UE_56
+  - gNB_5
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L268
+  endpoints:
+  - UE_57
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L269
+  endpoints:
+  - UE_58
+  - gNB_3
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L270
+  endpoints:
+  - UE_59
+  - gNB_19
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L271
+  endpoints:
+  - UE_60
+  - gNB_13
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L272
+  endpoints:
+  - UE_61
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L273
+  endpoints:
+  - UE_62
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L274
+  endpoints:
+  - UE_63
+  - gNB_4
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L275
+  endpoints:
+  - UE_64
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L276
+  endpoints:
+  - UE_65
+  - gNB_17
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L277
+  endpoints:
+  - UE_66
+  - gNB_18
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L278
+  endpoints:
+  - UE_67
+  - gNB_4
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L279
+  endpoints:
+  - UE_68
+  - gNB_15
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L280
+  endpoints:
+  - UE_69
+  - gNB_18
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L281
+  endpoints:
+  - UE_70
+  - gNB_15
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L282
+  endpoints:
+  - UE_71
+  - gNB_17
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L283
+  endpoints:
+  - UE_72
+  - gNB_18
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L284
+  endpoints:
+  - UE_73
+  - gNB_6
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L285
+  endpoints:
+  - UE_74
+  - gNB_16
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L286
+  endpoints:
+  - UE_75
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L287
+  endpoints:
+  - UE_76
+  - gNB_9
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L288
+  endpoints:
+  - UE_77
+  - gNB_17
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L289
+  endpoints:
+  - UE_78
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L290
+  endpoints:
+  - UE_79
+  - gNB_3
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L291
+  endpoints:
+  - UE_80
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L292
+  endpoints:
+  - UE_81
+  - gNB_11
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L293
+  endpoints:
+  - UE_82
+  - gNB_3
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L294
+  endpoints:
+  - UE_83
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L295
+  endpoints:
+  - UE_84
+  - gNB_5
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L296
+  endpoints:
+  - UE_85
+  - gNB_3
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L297
+  endpoints:
+  - UE_86
+  - gNB_11
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L298
+  endpoints:
+  - UE_87
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L299
+  endpoints:
+  - UE_88
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L300
+  endpoints:
+  - UE_89
+  - gNB_19
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L301
+  endpoints:
+  - UE_90
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L302
+  endpoints:
+  - UE_91
+  - gNB_19
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L303
+  endpoints:
+  - UE_92
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L304
+  endpoints:
+  - UE_93
+  - gNB_10
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L305
+  endpoints:
+  - UE_94
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L306
+  endpoints:
+  - UE_95
+  - gNB_18
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L307
+  endpoints:
+  - UE_96
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L308
+  endpoints:
+  - UE_97
+  - gNB_9
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L309
+  endpoints:
+  - UE_98
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L310
+  endpoints:
+  - UE_99
+  - gNB_13
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L311
+  endpoints:
+  - UE_100
+  - gNB_15
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L312
+  endpoints:
+  - UE_101
+  - gNB_20
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L313
+  endpoints:
+  - UE_102
+  - gNB_13
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L314
+  endpoints:
+  - UE_103
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L315
+  endpoints:
+  - UE_104
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L316
+  endpoints:
+  - UE_105
+  - gNB_15
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L317
+  endpoints:
+  - UE_106
+  - gNB_9
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L318
+  endpoints:
+  - UE_107
+  - gNB_7
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L319
+  endpoints:
+  - UE_108
+  - gNB_11
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L320
+  endpoints:
+  - UE_109
+  - gNB_13
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L321
+  endpoints:
+  - UE_110
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L322
+  endpoints:
+  - UE_111
+  - gNB_3
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L323
+  endpoints:
+  - UE_112
+  - gNB_18
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L324
+  endpoints:
+  - UE_113
+  - gNB_12
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L325
+  endpoints:
+  - UE_114
+  - gNB_3
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L326
+  endpoints:
+  - UE_115
+  - gNB_2
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L327
+  endpoints:
+  - UE_116
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L328
+  endpoints:
+  - UE_117
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L329
+  endpoints:
+  - UE_118
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L330
+  endpoints:
+  - UE_119
+  - gNB_4
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L331
+  endpoints:
+  - UE_120
+  - gNB_7
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L332
+  endpoints:
+  - Rescue_UE_1
+  - gNB_9
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L333
+  endpoints:
+  - Rescue_UE_2
+  - gNB_20
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L334
+  endpoints:
+  - Rescue_UE_3
+  - gNB_10
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L335
+  endpoints:
+  - Rescue_UE_4
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L336
+  endpoints:
+  - Rescue_UE_5
+  - gNB_13
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L337
+  endpoints:
+  - Rescue_UE_6
+  - gNB_3
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L338
+  endpoints:
+  - Rescue_UE_7
+  - gNB_10
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L339
+  endpoints:
+  - Rescue_UE_8
+  - gNB_2
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L340
+  endpoints:
+  - Rescue_UE_9
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L341
+  endpoints:
+  - Rescue_UE_10
+  - gNB_17
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L342
+  endpoints:
+  - Rescue_UE_11
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L343
+  endpoints:
+  - Rescue_UE_12
+  - gNB_14
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L344
+  endpoints:
+  - Rescue_UE_13
+  - gNB_5
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L345
+  endpoints:
+  - Rescue_UE_14
+  - gNB_17
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L346
+  endpoints:
+  - Rescue_UE_15
+  - gNB_16
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L347
+  endpoints:
+  - Rescue_UE_16
+  - gNB_19
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L348
+  endpoints:
+  - Rescue_UE_17
+  - gNB_8
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L349
+  endpoints:
+  - Rescue_UE_18
+  - gNB_15
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L350
+  endpoints:
+  - Rescue_UE_19
+  - gNB_19
+  type: wireless
+  capacity: 500
+  latency: 1
+- id: L351
+  endpoints:
+  - Rescue_UE_20
+  - gNB_1
+  type: wireless
+  capacity: 500
+  latency: 1

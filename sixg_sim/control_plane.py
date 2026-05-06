@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass
 from collections import defaultdict
 import networkx as nx
+import random
 from .topology import Topology, Node, TrafficClass
 from .agent import ControlPostcard, NeighborSummary, StrainLevel, EnergyTier
 
@@ -39,25 +40,130 @@ class ControlOverlay:
 
 class IPOverlay(ControlOverlay):
     """
-    IP overlay control plane.
+    IP overlay control plane with realistic disaster degradation.
 
-    Allows normal control message exchange when IP connectivity exists.
+    Normal mode: Reliable IP connectivity
+    Disaster mode: Degraded reliability, congestion, and priority-based delivery
     """
+
+    def __init__(self, topology: Topology):
+        super().__init__(topology)
+        self.is_disaster_mode = False
+        self.disaster_start_tick = 0
+        self.message_failure_log = []  # Track failed transmissions for visualization
+
+    def set_disaster_mode(self, disaster_mode: bool, current_tick: int = 0):
+        """Enable disaster mode with degraded IP reliability."""
+        self.is_disaster_mode = disaster_mode
+        if disaster_mode and self.disaster_start_tick == 0:
+            self.disaster_start_tick = current_tick
 
     def can_exchange_messages(self, node_a: str, node_b: str) -> bool:
         """Check if IP path exists between nodes."""
         return self.topology.has_path(node_a, node_b)
 
     def get_message_latency(self, source: str, target: str) -> int:
-        """Get IP routing latency (simplified)."""
-        # Simple latency based on hop count
+        """Get IP routing latency (increases during disasters)."""
         try:
             path = self.topology.get_shortest_path(source, target)
-            if path:
-                return len(path) - 1  # Number of hops
-            return 1000  # Very high if no path
+            if not path:
+                return 1000
+
+            base_latency = len(path) - 1  # Number of hops
+
+            if self.is_disaster_mode:
+                # Disaster degradation: increased latency, jitter
+                disaster_time = max(1, 100)  # Assume current tick context
+                degradation_factor = min(5.0, 1.0 + (disaster_time / 100.0))  # Up to 5x latency
+                base_latency = int(base_latency * degradation_factor)
+                # Add jitter (±50% during disasters)
+                jitter = random.uniform(0.5, 1.5)
+                base_latency = int(base_latency * jitter)
+
+            return max(1, base_latency)
         except:
             return 1000
+
+    def attempt_message_delivery(self, source: str, target: str, message_priority: str = "normal") -> bool:
+        """
+        Attempt to deliver a message with realistic failure modes during disasters.
+
+        Priority levels: "critical" (life-safety), "high" (operations), "normal" (other)
+        """
+        # Handle broadcast case (target="broadcast")
+        if target == "broadcast":
+            # In broadcast, we try to reach multiple neighbors and succeed if at least one works
+            neighbors = [n for n in self.topology.get_neighbors(source) if self.can_exchange_messages(source, n)]
+            if not neighbors:
+                self._log_failed_transmission(source, target, "no_neighbors", message_priority)
+                return False
+
+            # Try to reach at least one neighbor
+            success_count = 0
+            for neighbor in neighbors[:3]:  # Try up to 3 neighbors
+                if self._attempt_direct_delivery(source, neighbor, message_priority):
+                    success_count += 1
+
+            success = success_count > 0
+            if not success:
+                self._log_failed_transmission(source, target, "all_broadcast_failed", message_priority)
+            return success
+
+        # Direct message delivery
+        return self._attempt_direct_delivery(source, target, message_priority)
+
+    def _attempt_direct_delivery(self, source: str, target: str, message_priority: str) -> bool:
+        """Attempt direct message delivery between two nodes."""
+        if not self.can_exchange_messages(source, target):
+            self._log_failed_transmission(source, target, "no_path", message_priority)
+            return False
+
+        if not self.is_disaster_mode:
+            return True  # Normal mode: assume success
+
+        # Disaster mode: realistic failure probabilities
+        disaster_duration = max(1, 100)  # Assume current tick context
+        base_failure_rate = min(0.3, disaster_duration / 200.0)  # Up to 30% base failure rate
+
+        # Priority affects success rate
+        priority_multiplier = {
+            "critical": 0.1,   # 10% of base failure rate for life-safety
+            "high": 0.3,       # 30% of base failure rate for operations
+            "normal": 1.0      # Full failure rate for other messages
+        }
+
+        effective_failure_rate = base_failure_rate * priority_multiplier.get(message_priority, 1.0)
+
+        # Network congestion: higher failure rate as disaster progresses
+        congestion_factor = min(2.0, 1.0 + (disaster_duration / 300.0))
+        effective_failure_rate *= congestion_factor
+
+        # Distance affects reliability (longer paths more likely to fail)
+        path_length = len(self.topology.get_shortest_path(source, target) or [])
+        distance_factor = 1.0 + (path_length - 1) * 0.1  # 10% additional failure per hop
+        effective_failure_rate *= distance_factor
+
+        # Final success check
+        success = random.random() > effective_failure_rate
+
+        if not success:
+            failure_reason = "congestion" if random.random() < 0.6 else "timeout"
+            self._log_failed_transmission(source, target, failure_reason, message_priority)
+
+        return success
+
+    def _log_failed_transmission(self, source: str, target: str, reason: str, priority: str):
+        """Log failed transmission for visualization."""
+        self.message_failure_log.append({
+            'source': source,
+            'target': target,
+            'reason': reason,
+            'priority': priority,
+            'tick': 0  # Will be set by caller
+        })
+        # Keep only recent failures for memory efficiency
+        if len(self.message_failure_log) > 1000:
+            self.message_failure_log = self.message_failure_log[-500:]
 
 
 class DisasterControlChannel(ControlOverlay):
@@ -136,17 +242,23 @@ class DisasterControlChannel(ControlOverlay):
 
 
 class ControlPlaneManager:
-    """Manages control overlays and message exchange."""
+    """Manages control overlays and message exchange with realistic disaster behavior."""
 
     def __init__(self, topology: Topology):
         self.topology = topology
         self.ip_overlay = IPOverlay(topology)
         self.dcc = DisasterControlChannel(topology)
         self.is_island_mode = False
+        self.is_disaster_mode = False  # Separate from island mode - can have disaster without full island
 
     def set_island_mode(self, island_mode: bool):
         """Set whether network is in island mode."""
         self.is_island_mode = island_mode
+
+    def set_disaster_mode(self, disaster_mode: bool, current_tick: int = 0):
+        """Set disaster mode affecting IP overlay reliability."""
+        self.is_disaster_mode = disaster_mode
+        self.ip_overlay.set_disaster_mode(disaster_mode, current_tick)
 
     def can_send_control_message(self, source: str, target: str) -> bool:
         """Check if control message can be sent from source to target."""
@@ -156,12 +268,31 @@ class ControlPlaneManager:
             return self.dcc.can_exchange_messages(source, target)
 
     def send_postcard(self, postcard: ControlPostcard, current_tick: int) -> bool:
-        """Send a postcard via appropriate overlay."""
+        """Send a postcard via appropriate overlay with realistic failure modes."""
         if not self.is_island_mode:
-            # In normal mode, postcards are sent via IP overlay (simplified)
-            return True  # Assume success for normal mode
+            # Normal mode: Use IP overlay with disaster degradation if applicable
+            priority = self._get_message_priority(postcard)
+            return self.ip_overlay.attempt_message_delivery(
+                postcard.sender_id, "broadcast", priority  # Broadcast to all reachable nodes
+            )
         else:
-            return self.dcc.send_postcard(postcard, current_tick)
+            # Island mode: Use DCC (limited to neighbors)
+            success = self.dcc.send_postcard(postcard, current_tick)
+            if not success:
+                # Log DCC failure too
+                self.ip_overlay._log_failed_transmission(
+                    postcard.sender_id, "neighbors", "dcc_limit", "high"
+                )
+            return success
+
+    def _get_message_priority(self, postcard: ControlPostcard) -> str:
+        """Determine message priority for delivery."""
+        if postcard.need_level == StrainLevel.NEAR_LIMIT:
+            return "critical"  # Life-safety level coordination needed
+        elif postcard.need_level == StrainLevel.DEGRADING:
+            return "high"  # Operations level coordination
+        else:
+            return "normal"  # Routine coordination
 
     def get_received_postcards(self, node_id: str, current_tick: int) -> List[ControlPostcard]:
         """Get postcards received by node at current tick."""
@@ -172,13 +303,15 @@ class ControlPlaneManager:
 
     def fuse_neighbor_summaries(self, node_id: str, received_postcards: List[ControlPostcard],
                                current_tick: int) -> NeighborSummary:
-        """Fuse information from neighbor postcards into summary."""
+        """Fuse information from neighbor postcards into summary, accounting for communication failures."""
         if not received_postcards:
-            # Default summary when no postcards received
+            # No postcards received - could be due to communication failures
+            # In disaster mode, this indicates poor connectivity
+            default_strain = StrainLevel.DEGRADING if self.is_disaster_mode else StrainLevel.OKAY
             return NeighborSummary(
                 most_needy_class=TrafficClass.BEST_EFFORT,
-                need_level=StrainLevel.OKAY,
-                strain_level=StrainLevel.OKAY,
+                need_level=default_strain,
+                strain_level=default_strain,
                 latest_policy_version=0,
                 neighbor_count=0
             )
@@ -217,6 +350,16 @@ class ControlPlaneManager:
             latest_policy_version=latest_version,
             neighbor_count=neighbor_count
         )
+
+    def get_failed_transmissions(self, since_tick: int = 0) -> List[Dict]:
+        """Get failed transmission log for visualization."""
+        return [f for f in self.ip_overlay.message_failure_log if f.get('tick', 0) >= since_tick]
+
+    def update_failure_log_ticks(self, current_tick: int):
+        """Update tick information in failure log."""
+        for failure in self.ip_overlay.message_failure_log:
+            if 'tick' not in failure or failure['tick'] == 0:
+                failure['tick'] = current_tick
 
     def reset_for_tick(self):
         """Reset control plane state for new tick."""

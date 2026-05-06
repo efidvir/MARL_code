@@ -1,0 +1,2863 @@
+links:
+- capacity: 10000
+  endpoints:
+  - Core
+  - NatUPF1
+  id: L0001
+  latency: 2
+  type: fiber
+- capacity: 10000
+  endpoints:
+  - Core
+  - NatUPF2
+  id: L0002
+  latency: 2
+  type: fiber
+- capacity: 5000
+  endpoints:
+  - NatUPF1
+  - EdgeUPF_north
+  id: L0003
+  latency: 3
+  type: fiber
+- capacity: 5000
+  endpoints:
+  - NatUPF2
+  - EdgeUPF_south
+  id: L0004
+  latency: 3
+  type: fiber
+- capacity: 5000
+  endpoints:
+  - NatUPF1
+  - EdgeUPF_east
+  id: L0005
+  latency: 3
+  type: fiber
+- capacity: 5000
+  endpoints:
+  - NatUPF2
+  - EdgeUPF_west
+  id: L0006
+  latency: 3
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_north_1
+  - EdgeUPF_north
+  id: L0007
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_north_2
+  - EdgeUPF_north
+  id: L0008
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_north_3
+  - EdgeUPF_north
+  id: L0009
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_north_4
+  - EdgeUPF_north
+  id: L0010
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_north_5
+  - EdgeUPF_north
+  id: L0011
+  latency: 2
+  type: fiber
+- capacity: 500
+  endpoints:
+  - gNB_north_1
+  - gNB_north_2
+  id: L0012
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_north_2
+  - gNB_north_3
+  id: L0013
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_north_3
+  - gNB_north_4
+  id: L0014
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_north_4
+  - gNB_north_5
+  id: L0015
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_north_5
+  - gNB_north_1
+  id: L0016
+  latency: 3
+  type: microwave
+- capacity: 1000
+  endpoints:
+  - gNB_south_1
+  - EdgeUPF_south
+  id: L0017
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_south_2
+  - EdgeUPF_south
+  id: L0018
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_south_3
+  - EdgeUPF_south
+  id: L0019
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_south_4
+  - EdgeUPF_south
+  id: L0020
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_south_5
+  - EdgeUPF_south
+  id: L0021
+  latency: 2
+  type: fiber
+- capacity: 500
+  endpoints:
+  - gNB_south_1
+  - gNB_south_2
+  id: L0022
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_south_2
+  - gNB_south_3
+  id: L0023
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_south_3
+  - gNB_south_4
+  id: L0024
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_south_4
+  - gNB_south_5
+  id: L0025
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_south_5
+  - gNB_south_1
+  id: L0026
+  latency: 3
+  type: microwave
+- capacity: 1000
+  endpoints:
+  - gNB_east_1
+  - EdgeUPF_east
+  id: L0027
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_east_2
+  - EdgeUPF_east
+  id: L0028
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_east_3
+  - EdgeUPF_east
+  id: L0029
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_east_4
+  - EdgeUPF_east
+  id: L0030
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_east_5
+  - EdgeUPF_east
+  id: L0031
+  latency: 2
+  type: fiber
+- capacity: 500
+  endpoints:
+  - gNB_east_1
+  - gNB_east_2
+  id: L0032
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_east_2
+  - gNB_east_3
+  id: L0033
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_east_3
+  - gNB_east_4
+  id: L0034
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_east_4
+  - gNB_east_5
+  id: L0035
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_east_5
+  - gNB_east_1
+  id: L0036
+  latency: 3
+  type: microwave
+- capacity: 1000
+  endpoints:
+  - gNB_west_1
+  - EdgeUPF_west
+  id: L0037
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_west_2
+  - EdgeUPF_west
+  id: L0038
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_west_3
+  - EdgeUPF_west
+  id: L0039
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_west_4
+  - EdgeUPF_west
+  id: L0040
+  latency: 2
+  type: fiber
+- capacity: 1000
+  endpoints:
+  - gNB_west_5
+  - EdgeUPF_west
+  id: L0041
+  latency: 2
+  type: fiber
+- capacity: 500
+  endpoints:
+  - gNB_west_1
+  - gNB_west_2
+  id: L0042
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_west_2
+  - gNB_west_3
+  id: L0043
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_west_3
+  - gNB_west_4
+  id: L0044
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_west_4
+  - gNB_west_5
+  id: L0045
+  latency: 3
+  type: microwave
+- capacity: 500
+  endpoints:
+  - gNB_west_5
+  - gNB_west_1
+  id: L0046
+  latency: 3
+  type: microwave
+- capacity: 300
+  endpoints:
+  - gNB_north_1
+  - gNB_east_5
+  id: L0047
+  latency: 5
+  type: microwave
+- capacity: 300
+  endpoints:
+  - gNB_north_1
+  - gNB_west_5
+  id: L0048
+  latency: 5
+  type: microwave
+- capacity: 300
+  endpoints:
+  - gNB_south_1
+  - gNB_east_5
+  id: L0049
+  latency: 5
+  type: microwave
+- capacity: 300
+  endpoints:
+  - gNB_south_1
+  - gNB_west_5
+  id: L0050
+  latency: 5
+  type: microwave
+- capacity: 300
+  endpoints:
+  - gNB_east_1
+  - gNB_west_5
+  id: L0051
+  latency: 5
+  type: microwave
+- capacity: 300
+  endpoints:
+  - gNB_north_1
+  - gNB_south_5
+  id: L0052
+  latency: 5
+  type: microwave
+- capacity: 400
+  endpoints:
+  - relay_north_1
+  - gNB_north_1
+  id: L0053
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_1
+  - gNB_north_2
+  id: L0054
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_north_1
+  - EdgeUPF_north
+  id: L0055
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_north_2
+  - gNB_north_2
+  id: L0056
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_2
+  - gNB_north_3
+  id: L0057
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_north_3
+  - gNB_north_3
+  id: L0058
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_3
+  - gNB_north_4
+  id: L0059
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_north_4
+  - gNB_north_4
+  id: L0060
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_4
+  - gNB_north_5
+  id: L0061
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_north_4
+  - EdgeUPF_north
+  id: L0062
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_north_5
+  - gNB_north_5
+  id: L0063
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_5
+  - gNB_north_1
+  id: L0064
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_north_6
+  - gNB_north_1
+  id: L0065
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_6
+  - gNB_north_2
+  id: L0066
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_north_7
+  - gNB_north_2
+  id: L0067
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_7
+  - gNB_north_3
+  id: L0068
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_north_7
+  - EdgeUPF_north
+  id: L0069
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_north_8
+  - gNB_north_3
+  id: L0070
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_8
+  - gNB_north_4
+  id: L0071
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_north_9
+  - gNB_north_4
+  id: L0072
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_9
+  - gNB_north_5
+  id: L0073
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_north_10
+  - gNB_north_5
+  id: L0074
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_north_10
+  - gNB_north_1
+  id: L0075
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_north_10
+  - EdgeUPF_north
+  id: L0076
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_south_1
+  - gNB_south_1
+  id: L0077
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_1
+  - gNB_south_2
+  id: L0078
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_south_1
+  - EdgeUPF_south
+  id: L0079
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_south_2
+  - gNB_south_2
+  id: L0080
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_2
+  - gNB_south_3
+  id: L0081
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_south_3
+  - gNB_south_3
+  id: L0082
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_3
+  - gNB_south_4
+  id: L0083
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_south_4
+  - gNB_south_4
+  id: L0084
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_4
+  - gNB_south_5
+  id: L0085
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_south_4
+  - EdgeUPF_south
+  id: L0086
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_south_5
+  - gNB_south_5
+  id: L0087
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_5
+  - gNB_south_1
+  id: L0088
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_south_6
+  - gNB_south_1
+  id: L0089
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_6
+  - gNB_south_2
+  id: L0090
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_south_7
+  - gNB_south_2
+  id: L0091
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_7
+  - gNB_south_3
+  id: L0092
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_south_7
+  - EdgeUPF_south
+  id: L0093
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_south_8
+  - gNB_south_3
+  id: L0094
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_8
+  - gNB_south_4
+  id: L0095
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_south_9
+  - gNB_south_4
+  id: L0096
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_9
+  - gNB_south_5
+  id: L0097
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_south_10
+  - gNB_south_5
+  id: L0098
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_south_10
+  - gNB_south_1
+  id: L0099
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_south_10
+  - EdgeUPF_south
+  id: L0100
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_east_1
+  - gNB_east_1
+  id: L0101
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_1
+  - gNB_east_2
+  id: L0102
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_east_1
+  - EdgeUPF_east
+  id: L0103
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_east_2
+  - gNB_east_2
+  id: L0104
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_2
+  - gNB_east_3
+  id: L0105
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_east_3
+  - gNB_east_3
+  id: L0106
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_3
+  - gNB_east_4
+  id: L0107
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_east_4
+  - gNB_east_4
+  id: L0108
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_4
+  - gNB_east_5
+  id: L0109
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_east_4
+  - EdgeUPF_east
+  id: L0110
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_east_5
+  - gNB_east_5
+  id: L0111
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_5
+  - gNB_east_1
+  id: L0112
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_east_6
+  - gNB_east_1
+  id: L0113
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_6
+  - gNB_east_2
+  id: L0114
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_east_7
+  - gNB_east_2
+  id: L0115
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_7
+  - gNB_east_3
+  id: L0116
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_east_7
+  - EdgeUPF_east
+  id: L0117
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_east_8
+  - gNB_east_3
+  id: L0118
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_8
+  - gNB_east_4
+  id: L0119
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_east_9
+  - gNB_east_4
+  id: L0120
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_9
+  - gNB_east_5
+  id: L0121
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_east_10
+  - gNB_east_5
+  id: L0122
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_east_10
+  - gNB_east_1
+  id: L0123
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_east_10
+  - EdgeUPF_east
+  id: L0124
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_west_1
+  - gNB_west_1
+  id: L0125
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_1
+  - gNB_west_2
+  id: L0126
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_west_1
+  - EdgeUPF_west
+  id: L0127
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_west_2
+  - gNB_west_2
+  id: L0128
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_2
+  - gNB_west_3
+  id: L0129
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_west_3
+  - gNB_west_3
+  id: L0130
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_3
+  - gNB_west_4
+  id: L0131
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_west_4
+  - gNB_west_4
+  id: L0132
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_4
+  - gNB_west_5
+  id: L0133
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_west_4
+  - EdgeUPF_west
+  id: L0134
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_west_5
+  - gNB_west_5
+  id: L0135
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_5
+  - gNB_west_1
+  id: L0136
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_west_6
+  - gNB_west_1
+  id: L0137
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_6
+  - gNB_west_2
+  id: L0138
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_west_7
+  - gNB_west_2
+  id: L0139
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_7
+  - gNB_west_3
+  id: L0140
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_west_7
+  - EdgeUPF_west
+  id: L0141
+  latency: 2
+  type: fiber
+- capacity: 400
+  endpoints:
+  - relay_west_8
+  - gNB_west_3
+  id: L0142
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_8
+  - gNB_west_4
+  id: L0143
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_west_9
+  - gNB_west_4
+  id: L0144
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_9
+  - gNB_west_5
+  id: L0145
+  latency: 3
+  type: iab
+- capacity: 400
+  endpoints:
+  - relay_west_10
+  - gNB_west_5
+  id: L0146
+  latency: 2
+  type: iab
+- capacity: 300
+  endpoints:
+  - relay_west_10
+  - gNB_west_1
+  id: L0147
+  latency: 3
+  type: iab
+- capacity: 600
+  endpoints:
+  - relay_west_10
+  - EdgeUPF_west
+  id: L0148
+  latency: 2
+  type: fiber
+- capacity: 50
+  endpoints:
+  - UE_north_01
+  - gNB_north_1
+  id: L0149
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_02
+  - gNB_north_2
+  id: L0150
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_03
+  - gNB_north_3
+  id: L0151
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_04
+  - gNB_north_4
+  id: L0152
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_05
+  - gNB_north_5
+  id: L0153
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_06
+  - gNB_north_1
+  id: L0154
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_07
+  - gNB_north_2
+  id: L0155
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_08
+  - gNB_north_3
+  id: L0156
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_09
+  - gNB_north_4
+  id: L0157
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_10
+  - gNB_north_5
+  id: L0158
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_11
+  - gNB_north_1
+  id: L0159
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_12
+  - gNB_north_2
+  id: L0160
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_13
+  - gNB_north_3
+  id: L0161
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_14
+  - gNB_north_4
+  id: L0162
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_15
+  - gNB_north_5
+  id: L0163
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_16
+  - gNB_north_1
+  id: L0164
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_17
+  - gNB_north_2
+  id: L0165
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_18
+  - gNB_north_3
+  id: L0166
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_19
+  - gNB_north_4
+  id: L0167
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_20
+  - gNB_north_5
+  id: L0168
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_21
+  - gNB_north_1
+  id: L0169
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_22
+  - gNB_north_2
+  id: L0170
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_23
+  - gNB_north_3
+  id: L0171
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_24
+  - gNB_north_4
+  id: L0172
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_25
+  - gNB_north_5
+  id: L0173
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_26
+  - gNB_north_1
+  id: L0174
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_27
+  - gNB_north_2
+  id: L0175
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_28
+  - gNB_north_3
+  id: L0176
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_29
+  - gNB_north_4
+  id: L0177
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_north_30
+  - gNB_north_5
+  id: L0178
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_north_1
+  - gNB_north_1
+  id: L0179
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_north_2
+  - gNB_north_2
+  id: L0180
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_north_3
+  - gNB_north_3
+  id: L0181
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_north_4
+  - gNB_north_4
+  id: L0182
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_north_5
+  - gNB_north_5
+  id: L0183
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_01
+  - gNB_south_1
+  id: L0184
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_02
+  - gNB_south_2
+  id: L0185
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_03
+  - gNB_south_3
+  id: L0186
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_04
+  - gNB_south_4
+  id: L0187
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_05
+  - gNB_south_5
+  id: L0188
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_06
+  - gNB_south_1
+  id: L0189
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_07
+  - gNB_south_2
+  id: L0190
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_08
+  - gNB_south_3
+  id: L0191
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_09
+  - gNB_south_4
+  id: L0192
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_10
+  - gNB_south_5
+  id: L0193
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_11
+  - gNB_south_1
+  id: L0194
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_12
+  - gNB_south_2
+  id: L0195
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_13
+  - gNB_south_3
+  id: L0196
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_14
+  - gNB_south_4
+  id: L0197
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_15
+  - gNB_south_5
+  id: L0198
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_16
+  - gNB_south_1
+  id: L0199
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_17
+  - gNB_south_2
+  id: L0200
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_18
+  - gNB_south_3
+  id: L0201
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_19
+  - gNB_south_4
+  id: L0202
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_20
+  - gNB_south_5
+  id: L0203
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_21
+  - gNB_south_1
+  id: L0204
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_22
+  - gNB_south_2
+  id: L0205
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_23
+  - gNB_south_3
+  id: L0206
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_24
+  - gNB_south_4
+  id: L0207
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_25
+  - gNB_south_5
+  id: L0208
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_26
+  - gNB_south_1
+  id: L0209
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_27
+  - gNB_south_2
+  id: L0210
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_28
+  - gNB_south_3
+  id: L0211
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_29
+  - gNB_south_4
+  id: L0212
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_south_30
+  - gNB_south_5
+  id: L0213
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_south_1
+  - gNB_south_1
+  id: L0214
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_south_2
+  - gNB_south_2
+  id: L0215
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_south_3
+  - gNB_south_3
+  id: L0216
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_south_4
+  - gNB_south_4
+  id: L0217
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_south_5
+  - gNB_south_5
+  id: L0218
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_01
+  - gNB_east_1
+  id: L0219
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_02
+  - gNB_east_2
+  id: L0220
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_03
+  - gNB_east_3
+  id: L0221
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_04
+  - gNB_east_4
+  id: L0222
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_05
+  - gNB_east_5
+  id: L0223
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_06
+  - gNB_east_1
+  id: L0224
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_07
+  - gNB_east_2
+  id: L0225
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_08
+  - gNB_east_3
+  id: L0226
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_09
+  - gNB_east_4
+  id: L0227
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_10
+  - gNB_east_5
+  id: L0228
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_11
+  - gNB_east_1
+  id: L0229
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_12
+  - gNB_east_2
+  id: L0230
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_13
+  - gNB_east_3
+  id: L0231
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_14
+  - gNB_east_4
+  id: L0232
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_15
+  - gNB_east_5
+  id: L0233
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_16
+  - gNB_east_1
+  id: L0234
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_17
+  - gNB_east_2
+  id: L0235
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_18
+  - gNB_east_3
+  id: L0236
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_19
+  - gNB_east_4
+  id: L0237
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_20
+  - gNB_east_5
+  id: L0238
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_21
+  - gNB_east_1
+  id: L0239
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_22
+  - gNB_east_2
+  id: L0240
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_23
+  - gNB_east_3
+  id: L0241
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_24
+  - gNB_east_4
+  id: L0242
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_25
+  - gNB_east_5
+  id: L0243
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_26
+  - gNB_east_1
+  id: L0244
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_27
+  - gNB_east_2
+  id: L0245
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_28
+  - gNB_east_3
+  id: L0246
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_29
+  - gNB_east_4
+  id: L0247
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_east_30
+  - gNB_east_5
+  id: L0248
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_east_1
+  - gNB_east_1
+  id: L0249
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_east_2
+  - gNB_east_2
+  id: L0250
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_east_3
+  - gNB_east_3
+  id: L0251
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_east_4
+  - gNB_east_4
+  id: L0252
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_east_5
+  - gNB_east_5
+  id: L0253
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_01
+  - gNB_west_1
+  id: L0254
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_02
+  - gNB_west_2
+  id: L0255
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_03
+  - gNB_west_3
+  id: L0256
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_04
+  - gNB_west_4
+  id: L0257
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_05
+  - gNB_west_5
+  id: L0258
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_06
+  - gNB_west_1
+  id: L0259
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_07
+  - gNB_west_2
+  id: L0260
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_08
+  - gNB_west_3
+  id: L0261
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_09
+  - gNB_west_4
+  id: L0262
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_10
+  - gNB_west_5
+  id: L0263
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_11
+  - gNB_west_1
+  id: L0264
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_12
+  - gNB_west_2
+  id: L0265
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_13
+  - gNB_west_3
+  id: L0266
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_14
+  - gNB_west_4
+  id: L0267
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_15
+  - gNB_west_5
+  id: L0268
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_16
+  - gNB_west_1
+  id: L0269
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_17
+  - gNB_west_2
+  id: L0270
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_18
+  - gNB_west_3
+  id: L0271
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_19
+  - gNB_west_4
+  id: L0272
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_20
+  - gNB_west_5
+  id: L0273
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_21
+  - gNB_west_1
+  id: L0274
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_22
+  - gNB_west_2
+  id: L0275
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_23
+  - gNB_west_3
+  id: L0276
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_24
+  - gNB_west_4
+  id: L0277
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_25
+  - gNB_west_5
+  id: L0278
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_26
+  - gNB_west_1
+  id: L0279
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_27
+  - gNB_west_2
+  id: L0280
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_28
+  - gNB_west_3
+  id: L0281
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_29
+  - gNB_west_4
+  id: L0282
+  latency: 1
+  type: microwave
+- capacity: 50
+  endpoints:
+  - UE_west_30
+  - gNB_west_5
+  id: L0283
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_west_1
+  - gNB_west_1
+  id: L0284
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_west_2
+  - gNB_west_2
+  id: L0285
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_west_3
+  - gNB_west_3
+  id: L0286
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_west_4
+  - gNB_west_4
+  id: L0287
+  latency: 1
+  type: microwave
+- capacity: 80
+  endpoints:
+  - RescueUE_west_5
+  - gNB_west_5
+  id: L0288
+  latency: 1
+  type: microwave
+nodes:
+- id: Core
+  initial_energy: 1.0
+  type: Core
+- id: NatUPF1
+  initial_energy: 1.0
+  type: Core
+- id: NatUPF2
+  initial_energy: 1.0
+  type: Core
+- coverage_area: north
+  id: EdgeUPF_north
+  initial_energy: 1.0
+  type: EdgeUPF
+- coverage_area: south
+  id: EdgeUPF_south
+  initial_energy: 1.0
+  type: EdgeUPF
+- coverage_area: east
+  id: EdgeUPF_east
+  initial_energy: 1.0
+  type: EdgeUPF
+- coverage_area: west
+  id: EdgeUPF_west
+  initial_energy: 1.0
+  type: EdgeUPF
+- coverage_area: north
+  id: gNB_north_1
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: north
+  id: gNB_north_2
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: north
+  id: gNB_north_3
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: north
+  id: gNB_north_4
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: north
+  id: gNB_north_5
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: south
+  id: gNB_south_1
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: south
+  id: gNB_south_2
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: south
+  id: gNB_south_3
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: south
+  id: gNB_south_4
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: south
+  id: gNB_south_5
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: east
+  id: gNB_east_1
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: east
+  id: gNB_east_2
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: east
+  id: gNB_east_3
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: east
+  id: gNB_east_4
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: east
+  id: gNB_east_5
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: west
+  id: gNB_west_1
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: west
+  id: gNB_west_2
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: west
+  id: gNB_west_3
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: west
+  id: gNB_west_4
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: west
+  id: gNB_west_5
+  initial_energy: 1.0
+  type: gNB-Site
+- coverage_area: north
+  id: relay_north_1
+  initial_energy: 0.86
+  type: Relay
+- coverage_area: north
+  id: relay_north_2
+  initial_energy: 0.61
+  type: Relay
+- coverage_area: north
+  id: relay_north_3
+  initial_energy: 0.71
+  type: Relay
+- coverage_area: north
+  id: relay_north_4
+  initial_energy: 0.69
+  type: Relay
+- coverage_area: north
+  id: relay_north_5
+  initial_energy: 0.89
+  type: Relay
+- coverage_area: north
+  id: relay_north_6
+  initial_energy: 0.87
+  type: Relay
+- coverage_area: north
+  id: relay_north_7
+  initial_energy: 0.96
+  type: Relay
+- coverage_area: north
+  id: relay_north_8
+  initial_energy: 0.63
+  type: Relay
+- coverage_area: north
+  id: relay_north_9
+  initial_energy: 0.77
+  type: Relay
+- coverage_area: north
+  id: relay_north_10
+  initial_energy: 0.61
+  type: Relay
+- coverage_area: south
+  id: relay_south_1
+  initial_energy: 0.69
+  type: Relay
+- coverage_area: south
+  id: relay_south_2
+  initial_energy: 0.8
+  type: Relay
+- coverage_area: south
+  id: relay_south_3
+  initial_energy: 0.61
+  type: Relay
+- coverage_area: south
+  id: relay_south_4
+  initial_energy: 0.68
+  type: Relay
+- coverage_area: south
+  id: relay_south_5
+  initial_energy: 0.86
+  type: Relay
+- coverage_area: south
+  id: relay_south_6
+  initial_energy: 0.82
+  type: Relay
+- coverage_area: south
+  id: relay_south_7
+  initial_energy: 0.69
+  type: Relay
+- coverage_area: south
+  id: relay_south_8
+  initial_energy: 0.84
+  type: Relay
+- coverage_area: south
+  id: relay_south_9
+  initial_energy: 0.92
+  type: Relay
+- coverage_area: south
+  id: relay_south_10
+  initial_energy: 0.6
+  type: Relay
+- coverage_area: east
+  id: relay_east_1
+  initial_energy: 0.92
+  type: Relay
+- coverage_area: east
+  id: relay_east_2
+  initial_energy: 0.88
+  type: Relay
+- coverage_area: east
+  id: relay_east_3
+  initial_energy: 0.74
+  type: Relay
+- coverage_area: east
+  id: relay_east_4
+  initial_energy: 0.66
+  type: Relay
+- coverage_area: east
+  id: relay_east_5
+  initial_energy: 0.98
+  type: Relay
+- coverage_area: east
+  id: relay_east_6
+  initial_energy: 0.73
+  type: Relay
+- coverage_area: east
+  id: relay_east_7
+  initial_energy: 0.64
+  type: Relay
+- coverage_area: east
+  id: relay_east_8
+  initial_energy: 0.64
+  type: Relay
+- coverage_area: east
+  id: relay_east_9
+  initial_energy: 0.94
+  type: Relay
+- coverage_area: east
+  id: relay_east_10
+  initial_energy: 0.84
+  type: Relay
+- coverage_area: west
+  id: relay_west_1
+  initial_energy: 0.92
+  type: Relay
+- coverage_area: west
+  id: relay_west_2
+  initial_energy: 0.89
+  type: Relay
+- coverage_area: west
+  id: relay_west_3
+  initial_energy: 0.81
+  type: Relay
+- coverage_area: west
+  id: relay_west_4
+  initial_energy: 0.99
+  type: Relay
+- coverage_area: west
+  id: relay_west_5
+  initial_energy: 0.75
+  type: Relay
+- coverage_area: west
+  id: relay_west_6
+  initial_energy: 0.82
+  type: Relay
+- coverage_area: west
+  id: relay_west_7
+  initial_energy: 0.93
+  type: Relay
+- coverage_area: west
+  id: relay_west_8
+  initial_energy: 0.85
+  type: Relay
+- coverage_area: west
+  id: relay_west_9
+  initial_energy: 0.94
+  type: Relay
+- coverage_area: west
+  id: relay_west_10
+  initial_energy: 0.83
+  type: Relay
+- coverage_area: north
+  id: UE_north_01
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_02
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_03
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_04
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_05
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_06
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_07
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_08
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_09
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_10
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_11
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_12
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_13
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_14
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_15
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_16
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_17
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_18
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_19
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_20
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_21
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_22
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_23
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_24
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_25
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_26
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_27
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_28
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_29
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: UE_north_30
+  initial_energy: 1.0
+  type: UE
+- coverage_area: north
+  id: RescueUE_north_1
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: north
+  id: RescueUE_north_2
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: north
+  id: RescueUE_north_3
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: north
+  id: RescueUE_north_4
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: north
+  id: RescueUE_north_5
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: south
+  id: UE_south_01
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_02
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_03
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_04
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_05
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_06
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_07
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_08
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_09
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_10
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_11
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_12
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_13
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_14
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_15
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_16
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_17
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_18
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_19
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_20
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_21
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_22
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_23
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_24
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_25
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_26
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_27
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_28
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_29
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: UE_south_30
+  initial_energy: 1.0
+  type: UE
+- coverage_area: south
+  id: RescueUE_south_1
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: south
+  id: RescueUE_south_2
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: south
+  id: RescueUE_south_3
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: south
+  id: RescueUE_south_4
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: south
+  id: RescueUE_south_5
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: east
+  id: UE_east_01
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_02
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_03
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_04
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_05
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_06
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_07
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_08
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_09
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_10
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_11
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_12
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_13
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_14
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_15
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_16
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_17
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_18
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_19
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_20
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_21
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_22
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_23
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_24
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_25
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_26
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_27
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_28
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_29
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: UE_east_30
+  initial_energy: 1.0
+  type: UE
+- coverage_area: east
+  id: RescueUE_east_1
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: east
+  id: RescueUE_east_2
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: east
+  id: RescueUE_east_3
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: east
+  id: RescueUE_east_4
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: east
+  id: RescueUE_east_5
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: west
+  id: UE_west_01
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_02
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_03
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_04
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_05
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_06
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_07
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_08
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_09
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_10
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_11
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_12
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_13
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_14
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_15
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_16
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_17
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_18
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_19
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_20
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_21
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_22
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_23
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_24
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_25
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_26
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_27
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_28
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_29
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: UE_west_30
+  initial_energy: 1.0
+  type: UE
+- coverage_area: west
+  id: RescueUE_west_1
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: west
+  id: RescueUE_west_2
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: west
+  id: RescueUE_west_3
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: west
+  id: RescueUE_west_4
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE
+- coverage_area: west
+  id: RescueUE_west_5
+  initial_energy: 1.0
+  is_rescue_service: true
+  type: UE

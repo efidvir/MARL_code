@@ -19,14 +19,27 @@ This proof-of-concept implements:
 sixg_sim/
 ├── topology.py      # Network graph, nodes, links
 ├── traffic.py       # Traffic generation, QoS profiles
-├── agent.py         # HeuristicAgent with observation/action interfaces
+├── agent.py         # RLAgent (MARL) and HeuristicAgent implementations
 ├── control_plane.py # IP overlay and DCC implementations
-├── simulation.py    # Main discrete-event engine
+├── simulation.py    # Main discrete-event engine with MARL training
 ├── scenario.py      # Event definitions and configurations
 ├── metrics.py       # KPI collection and analysis
 ├── analysis.py      # Plotting and reporting functions
 └── main.py          # CLI entry point
 ```
+
+### Agent Architecture
+
+- **RLAgent**: Multi-agent reinforcement learning using MAPPO
+  - Policy network with graph-based observations
+  - Centralized critic for multi-agent coordination
+  - Experience replay and PPO training
+  - Reward function: QoS (40%) + Energy (30%) + Coordination (20%) + Stability (10%)
+
+- **HeuristicAgent**: Rule-based policies for baseline comparison
+  - Hardcoded decision rules for traffic admission
+  - Priority-based scheduling policies
+  - Deterministic behavior for reproducible results
 
 ## Installation
 
@@ -52,6 +65,28 @@ This will:
 3. Trigger core severance at tick 50
 4. Generate traffic surges and link failures
 5. Export metrics and generate analysis plots
+
+### Multi-Agent Reinforcement Learning (MARL)
+
+To enable MARL agents instead of heuristic agents:
+
+```bash
+python -m sixg_sim.main --topology config/topology_example.yaml --scenario config/scenario_severance.yaml --output-dir results/ --use-rl
+```
+
+The MARL implementation uses:
+- **MAPPO (Multi-Agent PPO)** with centralized training, decentralized execution
+- **Cooperative learning** for network optimization in island mode
+- **Neural network policies** with 50-dimensional observation space
+- **Multi-objective reward function**: QoS (40%), Energy (30%), Coordination (20%), Stability (10%)
+- **Experience replay** and periodic policy updates every 10 ticks
+- **Centralized critic** for multi-agent value estimation
+
+Test MARL implementation:
+
+```bash
+python test_marl_agents.py
+```
 
 ## Configuration Files
 

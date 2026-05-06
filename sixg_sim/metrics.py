@@ -23,6 +23,12 @@ class TickMetrics:
     control_stats: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     island_mode_active: bool = False
     severance_tick: Optional[int] = None
+    # MARL communication paths: list of (source_node, target_node, message_type) tuples
+    marl_comm_paths: List[Tuple[str, str, str]] = field(default_factory=list)
+    # UE-to-UE communication stats
+    ue_to_ue_stats: Dict[str, Any] = field(default_factory=dict)
+    # Failed postcard transmissions for visualization
+    failed_postcard_transmissions: List[Dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -214,7 +220,10 @@ class MetricsCollector:
 
     def record_tick(self, tick: int, node_states: Dict[str, Any],
                    link_states: Dict[str, Any], traffic_stats: Dict[str, Any],
-                   control_stats: Dict[str, Any], island_mode: bool):
+                   control_stats: Dict[str, Any], island_mode: bool,
+                   marl_comm_paths: Optional[List[Tuple[str, str, str]]] = None,
+                   ue_to_ue_stats: Optional[Dict[str, Any]] = None,
+                   failed_postcard_transmissions: Optional[List[Dict[str, Any]]] = None):
         """Record metrics for a simulation tick."""
         metric = TickMetrics(
             tick=tick,
@@ -223,7 +232,10 @@ class MetricsCollector:
             traffic_stats=traffic_stats,
             control_stats=control_stats,
             island_mode_active=island_mode,
-            severance_tick=self.severance_tick
+            severance_tick=self.severance_tick,
+            marl_comm_paths=marl_comm_paths or [],
+            ue_to_ue_stats=ue_to_ue_stats or {},
+            failed_postcard_transmissions=failed_postcard_transmissions or []
         )
         self.metrics_history.append(metric)
 

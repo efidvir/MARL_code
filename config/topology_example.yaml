@@ -1,11 +1,11 @@
 nodes:
   - id: "gNB1"
-    type: "GNBSite"
+    type: "gNB-Site"
     initial_energy: 1.0
     coverage_area: "zoneA"
 
   - id: "gNB2"
-    type: "GNBSite"
+    type: "gNB-Site"
     initial_energy: 1.0
     coverage_area: "zoneA"
 
@@ -22,6 +22,38 @@ nodes:
   - id: "core"
     type: "Core"
     initial_energy: 1.0
+
+  - id: "UE1"
+    type: "UE"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+
+  - id: "UE2"
+    type: "UE"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+
+  - id: "Rescue_UE_1"
+    type: "UE"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+    is_rescue_service: true
+
+  - id: "UE3"
+    type: "UE"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+
+  - id: "UE4"
+    type: "UE"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+
+  - id: "Rescue_UE_2"
+    type: "UE"
+    initial_energy: 1.0
+    coverage_area: "zoneA"
+    is_rescue_service: true
 
 links:
   - id: "L1"
@@ -53,3 +85,39 @@ links:
     capacity: 200
     latency: 1
     type: "iab"
+
+  - id: "link_ue1"
+    endpoints: ["UE1", "gNB1"]
+    capacity: 50
+    latency: 1
+    type: "microwave"
+
+  - id: "link_ue2"
+    endpoints: ["UE2", "gNB1"]
+    capacity: 50
+    latency: 1
+    type: "microwave"
+
+  - id: "link_rescue1"
+    endpoints: ["Rescue_UE_1", "gNB1"]
+    capacity: 80
+    latency: 1
+    type: "microwave"
+
+  - id: "link_ue3"
+    endpoints: ["UE3", "gNB2"]
+    capacity: 50
+    latency: 1
+    type: "microwave"
+
+  - id: "link_ue4"
+    endpoints: ["UE4", "gNB2"]
+    capacity: 50
+    latency: 1
+    type: "microwave"
+
+  - id: "link_rescue2"
+    endpoints: ["Rescue_UE_2", "gNB2"]
+    capacity: 80
+    latency: 1
+    type: "microwave"

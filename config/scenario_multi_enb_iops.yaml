@@ -1,0 +1,179 @@
+name: "Multi-eNB IOPS - Emergency UE-to-UE Communication"
+description: >
+  ETSI TS 122 346 V16.0.0 Multi-eNB IOPS scenario.
+  Core severance triggers isolated multi-eNB operation with local EPC,
+  Nomadic eNB deployment, and MCPTT emergency group calls.
+  Validates UE-to-UE routing through surviving multi-eNB RAN mesh.
+
+scenario_type: "multi_enb_iops"
+duration_ticks: 600
+
+events:
+  # Phase 1: Normal operation (tick 0-79)
+
+  # Phase 2: Core severance (tick 80)
+  - tick: 80
+    type: "sever_core"
+    parameters:
+      include_edge_upf: true
+
+  # Phase 3: Multi-eNB IOPS initialization (tick 81)
+  - tick: 81
+    type: "multi_enb_iops_init"
+    parameters:
+      reason: "core_severance"
+
+  # Phase 4: Emergency alerts from UEs (ticks 85-110)
+  - tick: 85
+    type: "mcppt_emergency_alert"
+    parameters:
+      ue_id: "UE_1"
+      severity: "emergency"
+
+  - tick: 90
+    type: "mcppt_emergency_alert"
+    parameters:
+      ue_id: "UE_3"
+      severity: "imminent_peril"
+
+  - tick: 95
+    type: "mcppt_emergency_alert"
+    parameters:
+      ue_id: "UE_5"
+      severity: "emergency"
+
+  - tick: 100
+    type: "mcppt_emergency_alert"
+    parameters:
+      ue_id: "UE_8"
+      severity: "emergency"
+
+  - tick: 105
+    type: "mcppt_emergency_alert"
+    parameters:
+      ue_id: "UE_10"
+      severity: "emergency"
+
+  # Phase 5: Rescue force arrival with NeNBs (ticks 150-200)
+  - tick: 150
+    type: "rescue_force_arrival"
+    parameters:
+      count: 10
+
+  - tick: 160
+    type: "nenb_deployment"
+    parameters:
+      nenb_index: 0
+      coverage_area: null
+
+  - tick: 200
+    type: "nenb_deployment"
+    parameters:
+      nenb_index: 1
+      coverage_area: null
+
+  # Phase 6: MCPTT group calls within island (ticks 180-300)
+  - tick: 180
+    type: "mcptt_group_call"
+    parameters:
+      group_ues: ["UE_1", "UE_3", "UE_5"]
+      call_type: "mcptt_emergency"
+
+  - tick: 250
+    type: "mcptt_group_call"
+    parameters:
+      group_ues: ["UE_8", "UE_10", "UE_1"]
+      call_type: "mcptt_private"
+
+  # Phase 7: Additional link failure (cascading)
+  - tick: 300
+    type: "fail_link"
+    parameters:
+      link_id: "L2"
+
+  # Phase 8: Traffic surge on surviving infrastructure
+  - tick: 350
+    type: "traffic_surge"
+    parameters:
+      node_id: "gNB1"
+      duration: 50
+      multiplier: 3.0
+
+  # Phase 9: Optional core restoration (tick 500)
+  - tick: 500
+    type: "restore_core"
+    parameters:
+      scenario_type: "multi_enb_iops"
+
+traffic_profiles:
+  gNB1:
+    life_safety:
+      baseline_rate: 10.0
+      burst_probability: 0.08
+      burst_multiplier: 2.0
+    operations:
+      baseline_rate: 15.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 20.0
+      burst_probability: 0.15
+      burst_multiplier: 1.8
+    best_effort:
+      baseline_rate: 25.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  gNB2:
+    life_safety:
+      baseline_rate: 8.0
+      burst_probability: 0.06
+      burst_multiplier: 1.8
+    operations:
+      baseline_rate: 12.0
+      burst_probability: 0.1
+      burst_multiplier: 2.0
+    telemetry:
+      baseline_rate: 18.0
+      burst_probability: 0.15
+      burst_multiplier: 1.5
+    best_effort:
+      baseline_rate: 22.0
+      burst_probability: 0.2
+      burst_multiplier: 2.5
+
+  relay1:
+    life_safety:
+      baseline_rate: 3.0
+      burst_probability: 0.03
+      burst_multiplier: 1.3
+    operations:
+      baseline_rate: 6.0
+      burst_probability: 0.05
+      burst_multiplier: 1.5
+    telemetry:
+      baseline_rate: 10.0
+      burst_probability: 0.08
+      burst_multiplier: 1.3
+    best_effort:
+      baseline_rate: 12.0
+      burst_probability: 0.1
+      burst_multiplier: 1.8
+
+  edgeUPF1:
+    life_safety:
+      baseline_rate: 4.0
+      burst_probability: 0.04
+      burst_multiplier: 1.4
+    operations:
+      baseline_rate: 10.0
+      burst_probability: 0.08
+      burst_multiplier: 1.6
+    telemetry:
+      baseline_rate: 15.0
+      burst_probability: 0.12
+      burst_multiplier: 1.5
+    best_effort:
+      baseline_rate: 20.0
+      burst_probability: 0.18
+      burst_multiplier: 2.2
