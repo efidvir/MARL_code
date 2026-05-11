@@ -213,6 +213,20 @@ def main():
              "Adds IOPS pretraining episodes and activates peer learning."
     )
 
+    parser.add_argument(
+        "--eval-episodes",
+        type=int,
+        default=5,
+        help="Number of evaluation episodes with frozen trained policy (default: 5)."
+    )
+
+    parser.add_argument(
+        "--baseline-episodes",
+        type=int,
+        default=5,
+        help="Number of baseline episodes with random actions for comparison (default: 5)."
+    )
+
     args = parser.parse_args()
 
     # Validate input files
@@ -373,8 +387,8 @@ def main():
                             _decayed_ent = max(_cfg.entropy_min,
                                 0.10 * (_cfg.entropy_decay ** _resume_ep))
                             _cfg.entropy_coef = _decayed_ent
-                            _decayed_lr_a = max(5e-6, 1e-4 * (0.5 ** (_resume_ep / 20.0)))
-                            _decayed_lr_c = max(2e-5, 5e-4 * (0.5 ** (_resume_ep / 40.0)))
+                            _decayed_lr_a = max(1e-6, 1e-4 * (0.5 ** (_resume_ep / 50.0)))
+                            _decayed_lr_c = max(5e-6, 3e-4 * (0.5 ** (_resume_ep / 100.0)))
                             if mappo_trainer._actor_opt:
                                 for pg in mappo_trainer._actor_opt.param_groups:
                                     pg['lr'] = _decayed_lr_a
@@ -667,11 +681,11 @@ def main():
                         # LR decay: actor decays faster than critic
                         _ep_num = episode + 1
                         _base_lr_actor  = 1e-4
-                        _base_lr_critic = 5e-4
-                        # Actor: halve every 20 episodes (gentle)
-                        _decayed_lr_actor  = max(5e-6, _base_lr_actor * (0.5 ** (_ep_num / 20.0)))
-                        # Critic: halve every 40 episodes (very slow — let it converge)
-                        _decayed_lr_critic = max(2e-5, _base_lr_critic * (0.5 ** (_ep_num / 40.0)))
+                        _base_lr_critic = 3e-4
+                        # Actor: halve every 50 episodes (gentle for 200 ep run)
+                        _decayed_lr_actor  = max(1e-6, _base_lr_actor * (0.5 ** (_ep_num / 50.0)))
+                        # Critic: halve every 100 episodes (very slow — let it converge)
+                        _decayed_lr_critic = max(5e-6, _base_lr_critic * (0.5 ** (_ep_num / 100.0)))
                         if mappo_trainer._actor_opt is not None:
                             for pg in mappo_trainer._actor_opt.param_groups:
                                 pg['lr'] = _decayed_lr_actor
@@ -688,12 +702,15 @@ def main():
                             )
                             dashboard.render()
 
-                        # Save checkpoint after each episode
-                        for aid, agent in rl_agents.items():
-                            registries[aid].save(
-                                agent.policy_net,
-                                metadata={'episode': episode, 'avg_reward': avg_ep_reward}
-                            )
+                        # Save checkpoint after each episode (resilient to disk errors)
+                        try:
+                            for aid, agent in rl_agents.items():
+                                registries[aid].save(
+                                    agent.policy_net,
+                                    metadata={'episode': episode, 'avg_reward': avg_ep_reward}
+                                )
+                        except Exception as _ckpt_err:
+                            print(f"  [CKPT] WARNING: checkpoint save failed: {_ckpt_err}")
 
                         # Notify visualizer + live dashboard of episode end
                         conn_rate = float(getattr(sim, '_last_routed_flows', 0)) / max(1, float(getattr(sim, '_total_ue_flows', 1)))
@@ -768,10 +785,179 @@ def main():
                         print(f"Saved optimized policy to {args.save_policy_path}")
                         break # Just save one copy since they share weights in MAPPO normally
 
-            if args.train_episodes > 0 and not args.save_policy_path:
-                print("Finished Digital Twin training, but no save path provided. Continuing to live sim...")
+                # ══════════════════════════════════════════════════════════════════════
+                # EVALUATION PHASE — frozen trained policy, no exploration
+                # ══════════════════════════════════════════════════════════════════════
+                _eval_eps = getattr(args, 'eval_episodes', 5)
+                if _eval_eps > 0 and rl_agents:
+                    print(f"\n{'='*70}")
+                    print(f"EVALUATION PHASE ({_eval_eps} episodes, frozen policy)")
+                    print(f"{'='*70}")
+                    import torch as _torch
+                    # Freeze policy: disable gradients and set eval mode
+                    for agent in rl_agents.values():
+                        agent.policy_net.eval()
+                        for p in agent.policy_net.parameters():
+                            p.requires_grad_(False)
+
+                    for eval_ep in range(_eval_eps):
+                        ep_scenario = generator.generate(
+                            episode=args.train_episodes + eval_ep + 1,
+                            seed=args.seed + 10000 + eval_ep  # different seed space
+                        )
+                        print(f"\n--- Eval Episode {eval_ep+1}/{_eval_eps} "
+                              f"| scenario={ep_scenario.scenario_type} ---")
+
+                        config = SimulationConfig(enable_island_detection=True, verbose=False)
+                        ep_topology = get_fresh_topology()
+                        sim = Simulator(ep_topology, ep_scenario, config)
+                        sim._current_scenario_type = ep_scenario.scenario_type
+                        for aid, persistent_agent in rl_agents.items():
+                            if aid in sim.agents:
+                                persistent_agent.is_training = False  # Deterministic exploitation
+                                sim.agents[aid] = persistent_agent
+
+                        eval_rewards = []
+                        _last_losses = {}
+                        for tick in range(ep_scenario.duration_ticks):
+                            sim.current_tick = tick
+                            sim._process_events(tick)
+                            was_island = sim.island_mode
+                            sim.island_mode = sim._detect_island_mode()
+                            sim.control_plane.set_island_mode(sim.island_mode)
+                            if sim.island_mode and not was_island:
+                                sim.marl_ue_routing_enabled = True
+                            traffic_arrivals = sim._generate_traffic()
+                            sim._forward_traffic(traffic_arrivals)
+                            observations = sim._build_agent_observations()
+                            sim._execute_agent_actions(observations)
+
+                            # Compute reward (no gradient, no MAPPO update)
+                            try:
+                                global_conn_r = sim.compute_global_connectivity_reward()
+                            except Exception:
+                                global_conn_r = 0.0
+                            eval_rewards.append(global_conn_r)
+
+                            _tick_kpis = sim.get_island_kpis()
+                            _kpi_tracker.record_tick(
+                                tick=tick,
+                                episode=args.train_episodes + eval_ep + 1,
+                                island_mode=sim.island_mode,
+                                ue_conn_frac=_tick_kpis['ue_conn_frac'],
+                                transport_relay_count=_tick_kpis['transport_relay_count'],
+                                transport_link_count=_tick_kpis['transport_link_count'],
+                                reward=global_conn_r,
+                            )
+
+                        avg_eval_r = sum(eval_rewards) / len(eval_rewards) if eval_rewards else 0.0
+                        ep_rec = _kpi_tracker.close_episode(
+                            args.train_episodes + eval_ep + 1,
+                            scenario_type=ep_scenario.scenario_type,
+                            phase='eval'
+                        )
+                        print(f"  Eval {eval_ep+1}: reward={avg_eval_r:.4f}  "
+                              f"UE={ep_rec.post_sev_ue_conn:.1%}  "
+                              f"relays={ep_rec.post_sev_transport_relay:.1f}")
+
+                    # Re-enable gradients for potential further use
+                    for agent in rl_agents.values():
+                        agent.policy_net.train()
+                        for p in agent.policy_net.parameters():
+                            p.requires_grad_(True)
+
+                    print(f"\nEVALUATION PHASE COMPLETE")
+
+                # ══════════════════════════════════════════════════════════════════════
+                # BASELINE PHASE — random actions, no learning
+                # ══════════════════════════════════════════════════════════════════════
+                _base_eps = getattr(args, 'baseline_episodes', 5)
+                if _base_eps > 0:
+                    print(f"\n{'='*70}")
+                    print(f"BASELINE PHASE ({_base_eps} episodes, random actions)")
+                    print(f"{'='*70}")
+                    import random as _rng_mod
+                    import torch as _torch
+
+                    # Create a random-action policy wrapper
+                    class _RandomPolicyWrapper:
+                        """Wraps an RLAgent to force random actions."""
+                        def __init__(self, agent):
+                            self._agent = agent
+                            self._rng = _rng_mod.Random()
+                        def __getattr__(self, name):
+                            return getattr(self._agent, name)
+
+                    for base_ep in range(_base_eps):
+                        ep_scenario = generator.generate(
+                            episode=args.train_episodes + _eval_eps + base_ep + 1,
+                            seed=args.seed + 10000 + base_ep  # SAME seeds as eval for fair comparison
+                        )
+                        print(f"\n--- Baseline Episode {base_ep+1}/{_base_eps} "
+                              f"| scenario={ep_scenario.scenario_type} ---")
+
+                        config = SimulationConfig(enable_island_detection=True, verbose=False)
+                        ep_topology = get_fresh_topology()
+                        sim = Simulator(ep_topology, ep_scenario, config)
+                        sim._current_scenario_type = ep_scenario.scenario_type
+                        # DO NOT inject trained agents — use fresh default agents (random)
+                        for agent in sim.agents.values():
+                            agent.is_training = True  # Ensure they sample randomly
+
+                        base_rewards = []
+                        for tick in range(ep_scenario.duration_ticks):
+                            sim.current_tick = tick
+                            sim._process_events(tick)
+                            was_island = sim.island_mode
+                            sim.island_mode = sim._detect_island_mode()
+                            sim.control_plane.set_island_mode(sim.island_mode)
+                            if sim.island_mode and not was_island:
+                                sim.marl_ue_routing_enabled = True
+                            traffic_arrivals = sim._generate_traffic()
+                            sim._forward_traffic(traffic_arrivals)
+                            observations = sim._build_agent_observations()
+                            sim._execute_agent_actions(observations)
+
+                            try:
+                                global_conn_r = sim.compute_global_connectivity_reward()
+                            except Exception:
+                                global_conn_r = 0.0
+                            base_rewards.append(global_conn_r)
+
+                            _tick_kpis = sim.get_island_kpis()
+                            _kpi_tracker.record_tick(
+                                tick=tick,
+                                episode=args.train_episodes + _eval_eps + base_ep + 1,
+                                island_mode=sim.island_mode,
+                                ue_conn_frac=_tick_kpis['ue_conn_frac'],
+                                transport_relay_count=_tick_kpis['transport_relay_count'],
+                                transport_link_count=_tick_kpis['transport_link_count'],
+                                reward=global_conn_r,
+                            )
+
+                        avg_base_r = sum(base_rewards) / len(base_rewards) if base_rewards else 0.0
+                        ep_rec = _kpi_tracker.close_episode(
+                            args.train_episodes + _eval_eps + base_ep + 1,
+                            scenario_type=ep_scenario.scenario_type,
+                            phase='baseline'
+                        )
+                        print(f"  Baseline {base_ep+1}: reward={avg_base_r:.4f}  "
+                              f"UE={ep_rec.post_sev_ue_conn:.1%}  "
+                              f"relays={ep_rec.post_sev_transport_relay:.1f}")
+
+                    print(f"\nBASELINE PHASE COMPLETE")
+
+                # ── Save final KPIs (includes train + eval + baseline) ─────────
+                _kpi_tracker.save(_tracker_path)
+                print(f"[KPI] Final KPIs saved (train + eval + baseline) -> {_tracker_path}")
+
+                # ── Regenerate all 5 analysis plots ────────────────────────────
+                try:
+                    run_complete_analysis(output_dir=str(output_dir), kpi_json=_tracker_path)
+                    print(f"[Analysis] All 5 plots regenerated in {output_dir}/")
+                except Exception as _ae:
+                    print(f"[Analysis] Plot regeneration failed: {_ae}")
             
-            # Live Simulation execution
             print("Starting 6G Network LIVE Simulation...")
             print(f"Topology: {topology_path}")
             print(f"Scenario: {scenario_path}")
