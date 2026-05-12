@@ -35,16 +35,16 @@ class MAPPOConfig:
     gae_lambda:    float = 0.95
     clip_eps:      float = 0.20     # PPO epsilon
     entropy_coef:  float = 0.10     # Start higher for early exploration
-    entropy_decay: float = 0.97     # MULTIPLICATIVE decay per episode (× 0.97)
+    entropy_decay: float = 0.985    # MULTIPLICATIVE decay per episode (× 0.985)
     entropy_min:   float = 0.001    # Hard floor — forces exploitation
-    value_coef:    float = 0.5      # Balanced with policy loss (was 1.0)
+    value_coef:    float = 1.0      # Balanced with policy loss
     max_grad_norm: float = 0.50
-    n_epochs:      int   = 6        # More PPO passes per update for stability
+    n_epochs:      int   = 8        # More PPO passes per update for stability
     mini_batch:    int   = 512      # Large batch = fewer steps per epoch = fast
 
     # Learning rates
     lr_actor:      float = 1e-4
-    lr_critic:     float = 5e-4     # Higher critic LR — critic needs to converge faster
+    lr_critic:     float = 3e-4     # Higher critic LR — critic needs to converge faster
 
     # Shared pool capacity (32k = ~250 ticks x 130 agents)
     pool_capacity:  int  = 32768

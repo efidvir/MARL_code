@@ -458,6 +458,66 @@ def load_topology_from_yaml(file_path: str) -> Topology:
         )
         topology.add_link(link)
 
+    # Auto-generate geographic coordinates if missing (for dashboard Geo Map)
+    has_coords = any(n.x_pos != 0.0 or n.y_pos != 0.0 for n in topology.nodes.values())
+    if not has_coords and topology.nodes:
+        import math
+        import random
+        # Map compass zones to angles (degrees)
+        zone_angles = {
+            "N": 90, "NE": 45, "E": 0, "SE": 315,
+            "S": 270, "SW": 225, "W": 180, "NW": 135,
+            "north": 90, "east": 0, "south": 270, "west": 180,
+            "central": None, "core": None
+        }
+        
+        # Center of the "city" map
+        cx, cy = 5000.0, 5000.0
+        radius = 3500.0
+        
+        for nid, node in topology.nodes.items():
+            area = str(node.coverage_area or node.zone or "").lower().replace("zone", "")
+            
+            # Find matching zone
+            angle = None
+            for key, val in zone_angles.items():
+                if key.lower() == area:
+                    angle = val
+                    break
+            
+            # If no match or central, put near center
+            if angle is None:
+                if 'core' in nid.lower() or 'upf' in nid.lower():
+                    # Core nodes strictly in center
+                    node.x_pos = cx + random.uniform(-300, 300)
+                    node.y_pos = cy + random.uniform(-300, 300)
+                else:
+                    # Unknown nodes spread out
+                    a = random.uniform(0, 360)
+                    r = random.uniform(500, 4000)
+                    node.x_pos = cx + r * math.cos(math.radians(a))
+                    node.y_pos = cy + r * math.sin(math.radians(a))
+            else:
+                # Place in the specific geographic sector
+                base_x = cx + radius * math.cos(math.radians(angle))
+                base_y = cy + radius * math.sin(math.radians(angle))
+                
+                if 'upf' in nid.lower():
+                    node.x_pos = base_x + random.uniform(-100, 100)
+                    node.y_pos = base_y + random.uniform(-100, 100)
+                elif 'gnb' in nid.lower():
+                    node.x_pos = base_x + random.uniform(-600, 600)
+                    node.y_pos = base_y + random.uniform(-600, 600)
+                elif 'relay' in nid.lower():
+                    node.x_pos = base_x + random.uniform(-800, 800)
+                    node.y_pos = base_y + random.uniform(-800, 800)
+                elif 'ue' in nid.lower():
+                    node.x_pos = base_x + random.uniform(-1200, 1200)
+                    node.y_pos = base_y + random.uniform(-1200, 1200)
+                else:
+                    node.x_pos = base_x + random.uniform(-500, 500)
+                    node.y_pos = base_y + random.uniform(-500, 500)
+
     return topology
 
 

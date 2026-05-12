@@ -65,6 +65,8 @@ class EpisodeRecord:
     final_policy_loss:   float
     final_value_loss:    float
     final_entropy:       float
+    # phase must be last (has default)
+    phase:               str = 'train'  # train | eval | baseline
 
 
 class LearningTracker:
@@ -124,13 +126,14 @@ class LearningTracker:
     # ── Episode boundary ──────────────────────────────────────────────────────
 
     def close_episode(self, episode: int,
-                      scenario_type: str = 'full_core') -> EpisodeRecord:
+                      scenario_type: str = 'full_core',
+                      phase: str = 'train') -> EpisodeRecord:
         """Compute episode aggregate and reset per-episode state."""
         ticks = self._ep_ticks
         if not ticks:
             self._ep_ticks = []
             dummy = EpisodeRecord(episode=episode, duration_ticks=0,
-                severance_tick=-1, scenario_type=scenario_type,
+                severance_tick=-1, scenario_type=scenario_type, phase=phase,
                 pre_sev_ue_conn=0.0, post_sev_ue_conn=0.0,
                 post_sev_transport_relay=0.0, post_sev_transport_links=0.0, peak_transport_relay=0,
                 ep_reward_mean=0.0, final_policy_loss=float('nan'),
@@ -156,6 +159,7 @@ class LearningTracker:
             duration_ticks=len(ticks),
             severance_tick=sev_tick,
             scenario_type=scenario_type,
+            phase=phase,
             pre_sev_ue_conn=_mean([r.ue_conn_frac for r in pre_ticks]),
             post_sev_ue_conn=_mean([r.ue_conn_frac for r in post_ticks]),
             post_sev_transport_relay=_mean([r.transport_relay_count for r in post_ticks]),

@@ -568,12 +568,167 @@ def plot_traffic_statistics(traffic_metrics=None,
     print(f"[analysis] traffic_statistics saved -> {output_file}")
 
 
+# ── 5.  Baseline Comparison ───────────────────────────────────────────────────
+
+def plot_baseline_comparison(output_file: str = None,
+                              kpi_json: str = 'output/learning_kpis.json'):
+    """
+    Side-by-side comparison: Trained MARL (eval) vs Random Baseline.
+    Uses the 'phase' field in episode records to separate eval/baseline data.
+    """
+    if not HAS_MPL:
+        return
+    _setup()
+
+    episodes, ticks = _load_kpis(kpi_json)
+    if not episodes:
+        return
+
+    # Separate by phase
+    eval_eps = [e for e in episodes if e.get('phase') == 'eval']
+    base_eps = [e for e in episodes if e.get('phase') == 'baseline']
+    train_eps = [e for e in episodes if e.get('phase', 'train') == 'train']
+
+    if not eval_eps and not base_eps:
+        print("[analysis] No eval/baseline episodes found — skipping comparison plot")
+        return
+
+    fig = plt.figure(figsize=(14, 10), facecolor=DARK)
+    fig.suptitle('MARL Trained Policy vs. Random Baseline\n'
+                 '(Same scenarios, trained policy vs. untrained agents)',
+                 color=FG, fontsize=13, fontweight='bold', y=0.98)
+    gs = fig.add_gridspec(2, 2, hspace=0.35, wspace=0.30,
+                          top=0.88, bottom=0.08, left=0.08, right=0.95)
+
+    # Helper to compute stats
+    def _stats(ep_list, key):
+        vals = [e.get(key, 0) or 0 for e in ep_list]
+        if not vals:
+            return 0, 0, []
+        return sum(vals) / len(vals), max(vals) - min(vals) if len(vals) > 1 else 0, vals
+
+    # ── Panel 1: UE Connectivity ──────────────────────────────────────────
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.set_title('UE-to-UE Connectivity', fontsize=10, fontweight='bold', color=FG, pad=5)
+    ax1.set_ylabel('Post-severance UE connectivity', fontsize=8, color=FG)
+    ax1.grid(True)
+
+    eval_conn = [e.get('post_sev_ue_conn', 0) or 0 for e in eval_eps]
+    base_conn = [e.get('post_sev_ue_conn', 0) or 0 for e in base_eps]
+
+    x = [0, 1]
+    means = [sum(base_conn)/max(1,len(base_conn)), sum(eval_conn)/max(1,len(eval_conn))]
+    colors_bar = [CSEV, C1]
+    bars = ax1.bar(x, means, width=0.5, color=colors_bar, alpha=0.85,
+                   edgecolor=[CSEV, C1], linewidth=1.5)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(['Random\nBaseline', 'MARL\nTrained'], fontsize=9)
+    ax1.set_ylim(0, 1.05)
+    # Add value labels
+    for bar, val in zip(bars, means):
+        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.02,
+                 f'{val:.1%}', ha='center', va='bottom', fontsize=11, fontweight='bold', color=FG)
+    # Improvement annotation
+    if means[0] > 0:
+        improvement = (means[1] - means[0]) / means[0] * 100
+        ax1.annotate(f'+{improvement:.0f}%' if improvement > 0 else f'{improvement:.0f}%',
+                     xy=(0.5, max(means) + 0.08), fontsize=14, fontweight='bold',
+                     ha='center', color=C2 if improvement > 0 else CSEV)
+    # Scatter individual episodes
+    if base_conn:
+        ax1.scatter([0]*len(base_conn), base_conn, color=CSEV, s=40, zorder=5, alpha=0.7, edgecolors='white', linewidth=0.5)
+    if eval_conn:
+        ax1.scatter([1]*len(eval_conn), eval_conn, color=C1, s=40, zorder=5, alpha=0.7, edgecolors='white', linewidth=0.5)
+
+    # ── Panel 2: Mean Reward ──────────────────────────────────────────────
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.set_title('Episode Mean Reward', fontsize=10, fontweight='bold', color=FG, pad=5)
+    ax2.set_ylabel('Mean reward / tick', fontsize=8, color=FG)
+    ax2.grid(True)
+
+    eval_rwd = [e.get('ep_reward_mean', 0) or 0 for e in eval_eps]
+    base_rwd = [e.get('ep_reward_mean', 0) or 0 for e in base_eps]
+    means_r = [sum(base_rwd)/max(1,len(base_rwd)), sum(eval_rwd)/max(1,len(eval_rwd))]
+    bars_r = ax2.bar(x, means_r, width=0.5, color=colors_bar, alpha=0.85,
+                     edgecolor=[CSEV, C1], linewidth=1.5)
+    ax2.set_xticks(x)
+    ax2.set_xticklabels(['Random\nBaseline', 'MARL\nTrained'], fontsize=9)
+    for bar, val in zip(bars_r, means_r):
+        ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + abs(min(means_r))*0.05 + 0.5,
+                 f'{val:.1f}', ha='center', va='bottom', fontsize=11, fontweight='bold', color=FG)
+    if base_rwd:
+        ax2.scatter([0]*len(base_rwd), base_rwd, color=CSEV, s=40, zorder=5, alpha=0.7, edgecolors='white', linewidth=0.5)
+    if eval_rwd:
+        ax2.scatter([1]*len(eval_rwd), eval_rwd, color=C1, s=40, zorder=5, alpha=0.7, edgecolors='white', linewidth=0.5)
+
+    # ── Panel 3: Relay Usage ──────────────────────────────────────────────
+    ax3 = fig.add_subplot(gs[1, 0])
+    ax3.set_title('Transport Relay Activation', fontsize=10, fontweight='bold', color=FG, pad=5)
+    ax3.set_ylabel('Mean active relay nodes', fontsize=8, color=FG)
+    ax3.grid(True)
+
+    eval_rel = [e.get('post_sev_transport_relay', 0) or 0 for e in eval_eps]
+    base_rel = [e.get('post_sev_transport_relay', 0) or 0 for e in base_eps]
+    means_relay = [sum(base_rel)/max(1,len(base_rel)), sum(eval_rel)/max(1,len(eval_rel))]
+    bars_rl = ax3.bar(x, means_relay, width=0.5, color=colors_bar, alpha=0.85,
+                      edgecolor=[CSEV, C1], linewidth=1.5)
+    ax3.set_xticks(x)
+    ax3.set_xticklabels(['Random\nBaseline', 'MARL\nTrained'], fontsize=9)
+    for bar, val in zip(bars_rl, means_relay):
+        ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.3,
+                 f'{val:.1f}', ha='center', va='bottom', fontsize=11, fontweight='bold', color=FG)
+    if base_rel:
+        ax3.scatter([0]*len(base_rel), base_rel, color=CSEV, s=40, zorder=5, alpha=0.7, edgecolors='white', linewidth=0.5)
+    if eval_rel:
+        ax3.scatter([1]*len(eval_rel), eval_rel, color=C1, s=40, zorder=5, alpha=0.7, edgecolors='white', linewidth=0.5)
+
+    # ── Panel 4: Training curve with eval/baseline markers ────────────────
+    ax4 = fig.add_subplot(gs[1, 1])
+    ax4.set_title('Learning Curve + Eval/Baseline', fontsize=10, fontweight='bold', color=FG, pad=5)
+    ax4.set_xlabel('Episode', fontsize=8, color=FG)
+    ax4.set_ylabel('Mean reward / tick', fontsize=8, color=FG)
+    ax4.grid(True)
+
+    if train_eps:
+        train_rwd = [e.get('ep_reward_mean', 0) or 0 for e in train_eps]
+        train_x = list(range(1, len(train_rwd)+1))
+        ax4.plot(train_x, train_rwd, color=DIM, alpha=0.4, linewidth=1)
+        ax4.plot(train_x, _smooth(train_rwd, w=5), color=C1, linewidth=2, label='Training (smoothed)')
+
+    # Eval band
+    if eval_rwd:
+        eval_mean = sum(eval_rwd) / len(eval_rwd)
+        ax4.axhline(eval_mean, color=C2, linewidth=2, linestyle='-', label=f'Eval (mean={eval_mean:.1f})')
+        ax4.axhspan(min(eval_rwd), max(eval_rwd), alpha=0.15, color=C2)
+
+    # Baseline band
+    if base_rwd:
+        base_mean = sum(base_rwd) / len(base_rwd)
+        ax4.axhline(base_mean, color=CSEV, linewidth=2, linestyle='--', label=f'Baseline (mean={base_mean:.1f})')
+        ax4.axhspan(min(base_rwd), max(base_rwd), alpha=0.10, color=CSEV)
+
+    ax4.legend(fontsize=8, loc='lower right')
+
+    # Footer
+    n_train = len(train_eps)
+    n_eval = len(eval_eps)
+    n_base = len(base_eps)
+    fig.text(0.5, 0.01,
+             f'Training: {n_train} episodes  |  Eval: {n_eval} episodes (frozen policy)  |  '
+             f'Baseline: {n_base} episodes (random actions)',
+             ha='center', color=DIM, fontsize=8)
+
+    plt.savefig(output_file, dpi=160, bbox_inches='tight', facecolor=DARK)
+    plt.close(fig)
+    print(f"[analysis] baseline_comparison saved -> {output_file}")
+
+
 # ── Main entry point (called from main.py) ────────────────────────────────────
 
 def run_complete_analysis(metrics=None, topology_nodes=None,
                           output_dir: str = 'output',
                           kpi_json: str = None):
-    """Run complete analysis suite and regenerate all four plots."""
+    """Run complete analysis suite and regenerate all five plots."""
     os.makedirs(output_dir, exist_ok=True)
 
     # Locate kpi_json automatically if not provided
@@ -598,6 +753,9 @@ def run_complete_analysis(metrics=None, topology_nodes=None,
     plot_traffic_statistics(
         output_file=os.path.join(output_dir, 'traffic_statistics.png'),
         kpi_json=kpi_json)
+    plot_baseline_comparison(
+        output_file=os.path.join(output_dir, 'baseline_comparison.png'),
+        kpi_json=kpi_json)
 
     print(f"\n[analysis] All plots saved to {output_dir}/")
 
@@ -608,3 +766,4 @@ if __name__ == '__main__':
     kpi  = sys.argv[1] if len(sys.argv) > 1 else 'output/learning_kpis.json'
     odir = sys.argv[2] if len(sys.argv) > 2 else 'output'
     run_complete_analysis(output_dir=odir, kpi_json=kpi)
+

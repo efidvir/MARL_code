@@ -127,6 +127,9 @@ class TickSnapshot:
     scenario_type:      str   = ""
     # Learning postcard exchange pairs: [(sender, receiver), ...]
     learning_postcard_pairs: List[Tuple[str, str]] = field(default_factory=list)
+    # Theoretical optimal routing
+    optimal_paths:      List[Tuple[str, str]] = field(default_factory=list)
+    optimal_actions:    List[str] = field(default_factory=list)
 
 @dataclass
 class EpisodeSummary:
@@ -902,7 +905,9 @@ def build_snapshot(sim, tick: int, episode: int, phase: str,
     snap = TickSnapshot(tick=tick, episode=episode, phase=phase,
                         island_mode=getattr(sim, "island_mode", False),
                         policy_loss=policy_loss, value_loss=value_loss,
-                        entropy=entropy, episode_reward=episode_reward)
+                        entropy=entropy, episode_reward=episode_reward,
+                        optimal_paths=getattr(sim, "current_optimal_paths", []),
+                        optimal_actions=list(getattr(sim, "current_optimal_actions", set())))
 
     topo = sim.topology
 

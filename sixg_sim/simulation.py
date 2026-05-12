@@ -2037,6 +2037,56 @@ class Simulator:
         except Exception:
             return False
 
+    def _compute_optimal_scenario_routing(self):
+        """Calculate the theoretical shortest paths for all UE pairs assuming all transport relays are active."""
+        if not hasattr(self, 'current_optimal_paths'):
+            self.current_optimal_paths = []
+            self.current_optimal_actions = set()
+            
+        if not self.island_mode:
+            self.current_optimal_paths = []
+            self.current_optimal_actions = set()
+            return
+            
+        # Build "Max Connectivity Graph"
+        max_graph = nx.Graph()
+        for nid, node in self.topology.nodes.items():
+            if node.is_survivor:
+                max_graph.add_node(nid)
+                
+        for link in self.topology.links.values():
+            ep0, ep1 = link.endpoints
+            if ep0 in max_graph and ep1 in max_graph:
+                # If it's a transport link, assume it could be turned ON (except if severed)
+                # But wait, if it's severed (e.g. cut by scenario), it's already removed?
+                # Actually, in our topology, severed links have `link.is_up = False`.
+                # BUT MARL agents also set `link.is_up = False`. How to distinguish?
+                # Severed core links are between core nodes. Transport relays are 'TRANSPORT_RELAY' or 'MICROWAVE'.
+                # We can assume any TRANSPORT_RELAY or MICROWAVE link connected to a Relay node is available.
+                is_relay_link = link.link_type in (LinkType.TRANSPORT_RELAY, LinkType.MICROWAVE) and \
+                               (self.topology.nodes[ep0].node_type.value == 'Relay' or \
+                                self.topology.nodes[ep1].node_type.value == 'Relay')
+                
+                if link.is_up or is_relay_link:
+                    max_graph.add_edge(ep0, ep1, weight=link.latency)
+                    
+        self.current_optimal_paths = []
+        self.current_optimal_actions = set()
+        
+        for (src_ue, tgt_ue) in getattr(self, 'ue_to_ue_flows', []):
+            if src_ue in max_graph and tgt_ue in max_graph:
+                try:
+                    path = nx.shortest_path(max_graph, source=src_ue, target=tgt_ue, weight='weight')
+                    # Convert to link pairs for frontend
+                    for i in range(len(path)-1):
+                        self.current_optimal_paths.append((path[i], path[i+1]))
+                    # Record relays used
+                    for nid in path:
+                        if self.topology.nodes[nid].node_type.value == 'Relay':
+                            self.current_optimal_actions.add(nid)
+                except nx.NetworkXNoPath:
+                    pass
+
     def compute_optimal_connectivity(self) -> Dict[str, float]:
         """Compute optimal connectivity metrics.
         
@@ -2052,6 +2102,8 @@ class Simulator:
           - actual_flows:     currently routed flows
           - total_flows:      total UE-to-UE flows
         """
+        self._compute_optimal_scenario_routing()
+        
         ue_flows = getattr(self, 'ue_to_ue_flows', [])
         total_flows = len(ue_flows)
         actual_flows = getattr(self, '_last_routed_flows', 0)
@@ -2228,10 +2280,10 @@ class Simulator:
 
         if self.island_mode:
             # ── Primary connectivity signal ────────────────────────────────────
-            reward += 20.0 * frac
+            reward += 100.0 * frac
 
             if frac >= 1.0:
-                reward += 3.0  # Full-connectivity bonus
+                reward += 25.0  # Full-connectivity bonus
 
             # ── Relay reward: positive-only, no idle penalty ──────────────────
             relay_count = 0
@@ -2249,8 +2301,8 @@ class Simulator:
 
             # Extra reward when relay effort directly produces routed flows
             if routed_flows > 0 and relay_count > 0:
-                # Scale: 1 point per routed pair (capped so it can't dominate)
-                reward += min(10.0, float(routed_flows))
+                # Scale: 0.5 points per routed pair (capped so it can't dominate)
+                reward += min(20.0, float(routed_flows) * 0.5)
 
             # ── Recovery ramp ─────────────────────────────────────────────────
             if self._recovery_started_tick >= 0 and not self._recovery_complete:
@@ -2341,9 +2393,9 @@ class Simulator:
                     if nid not in self.topology.nodes:
                         continue
                     for lid, lnk in self.topology.links.items():
-                        src = getattr(lnk, 'source', None)
-                        dst = getattr(lnk, 'dest',   None)
-                        if not getattr(lnk, 'is_active', True):
+                        src = lnk.endpoints[0] if hasattr(lnk, 'endpoints') else None
+                        dst = lnk.endpoints[1] if hasattr(lnk, 'endpoints') else None
+                        if not getattr(lnk, 'is_up', True):
                             continue
                         nb = dst if src == nid else (src if dst == nid else None)
                         if nb and nb in survivor_nodes and nb not in visited:
@@ -2968,8 +3020,18 @@ class Simulator:
                 relay_cap = best_link.capacity * boost_factor * ps.prb_relay_fraction / 10.0
 
                 # Register this as the active relay path
-                self.transport_relay_model.create_link(
+                new_link_id = self.transport_relay_model.create_link(
                     node_id, best_peer, relay_cap, 15.0
+                )
+                self.topology.links[new_link_id] = Link(
+                    id=new_link_id,
+                    endpoints=(node_id, best_peer),
+                    capacity=relay_cap,
+                    latency=2,
+                    link_type=LinkType.TRANSPORT_RELAY,
+                    interface_type=InterfaceType.BACKHAUL,
+                    is_up=True,
+                    current_utilization=0.0
                 )
                 ps.relay_link_active   = True
                 ps.relay_peer_node     = best_peer
@@ -3514,6 +3576,9 @@ class Simulator:
                     self.topology, self.current_tick)
             except Exception:
                 pass  # Don't break sim if learning exchange fails
+
+        # Sync dynamic transport relay links to NetworkX routing graph
+        self.topology.update_link_statuses()
 
         # Debug output
         if self.config.verbose and self.island_mode and self.current_tick % 20 == 0:

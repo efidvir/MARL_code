@@ -311,8 +311,7 @@ def plot_convergence(kpi_json: str, out_png: str, dpi: int = 180) -> None:
              xlabel='Metric', ylabel='Value')
     ep1_data = episodes[0]
     epL_data = episodes[-1]
-    labels   = ['Policy\nLoss', 'Entropy', 'Transport
-Relays', 'Reward']
+    labels   = ['Policy\nLoss', 'Entropy', 'Transport\nRelays', 'Reward']
     def _safe(v):
         return float(v) if v is not None and not math.isnan(float(v if v is not None else float('nan'))) else 0.0
 

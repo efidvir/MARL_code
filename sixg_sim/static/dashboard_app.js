@@ -35,7 +35,7 @@ function pushChart(c,t,v){c.data.labels.push(t);v.forEach((x,i)=>c.data.datasets
 // Canvas setup
 const hierC = document.getElementById('hier-canvas'), geoC = document.getElementById('geo-canvas');
 const hCtx = hierC.getContext('2d'), gCtx = geoC.getContext('2d');
-let nodeMap={}, linkList=[], relayPaths=[], postcardFlashes=[], learningFlashes=[];
+let nodeMap={}, linkList=[], relayPaths=[], optimalPaths=[], optimalActions=[], postcardFlashes=[], learningFlashes=[];
 let hierPos={}, geoPos={}, layoutReady=false, _topoData=null;
 let activeTab='hier';
 const cam = {hier:{x:0,y:0,z:1}, geo:{x:0,y:0,z:1}};
@@ -164,6 +164,12 @@ function renderView(cv,c,cm,mode,posMap){
     else if(lt.includes('microwave')||lt.includes('ptp')){c.strokeStyle='#3d8ef8';c.lineWidth=1;c.setLineDash([]);c.globalAlpha=.5;}
     else{c.strokeStyle='#30363d';c.lineWidth=.6;c.setLineDash([]);c.globalAlpha=.35;}
     c.stroke();c.setLineDash([]);c.globalAlpha=1;});
+  // Optimal paths
+  optimalPaths.forEach(op=>{const ap=gp(op[0]),bp=gp(op[1]);
+    if(ap.x==null||bp.x==null)return;
+    c.beginPath();c.moveTo(ap.x,ap.y);c.lineTo(bp.x,bp.y);
+    c.strokeStyle='#3fb950';c.lineWidth=3.5;c.setLineDash([8,8]);c.globalAlpha=0.6;
+    c.stroke();c.setLineDash([]);c.globalAlpha=1;});
   // Relay paths
   const now=Date.now();
   relayPaths.forEach(rp=>{const ap=gp(rp.from),bp=gp(rp.to);
@@ -176,6 +182,7 @@ function renderView(cv,c,cm,mode,posMap){
     const r=nRad(n.type),col=nColor(n.type,n.severed),al=n.severed?.45:.95;
     if(n.island&&!n.severed){c.beginPath();c.arc(p.x,p.y,r+5,0,Math.PI*2);c.fillStyle=n._islandColor||'rgba(255,59,48,.18)';c.globalAlpha=.22;c.fill();c.globalAlpha=1;}
     if(n.severed){c.beginPath();c.arc(p.x,p.y,r+3,0,Math.PI*2);c.strokeStyle='#ff3b30';c.lineWidth=1.5;c.setLineDash([2,2]);c.stroke();c.setLineDash([]);}
+    if(optimalActions.has(n.id)){c.beginPath();c.arc(p.x,p.y,r+4,0,Math.PI*2);c.strokeStyle='#3fb950';c.lineWidth=2;c.setLineDash([3,3]);c.stroke();c.setLineDash([]);}
     c.beginPath();c.arc(p.x,p.y,r,0,Math.PI*2);c.fillStyle=col;c.globalAlpha=al;c.fill();c.globalAlpha=1;
     // Labels (non-UE)
     if(!((n.type||'').includes('UE')||nLayer(n.type)===4)){
@@ -231,6 +238,8 @@ sock.on('state_update',s=>{
   if(s.node_states)Object.entries(s.node_states).forEach(([id,st])=>{if(nodeMap[id])Object.assign(nodeMap[id],st);});
   if(s.severed_links){const ss=new Set(s.severed_links.map(l=>JSON.stringify(l.sort())));linkList.forEach(l=>{l.severed=ss.has(JSON.stringify([l.a,l.b].sort()));});}
   relayPaths=s.relay_paths||[];
+  optimalPaths=s.optimal_paths||[];
+  optimalActions=new Set(s.optimal_actions||[]);
   if(!isNaN(s.policy_loss))pushChart(lossChart,s.tick,[s.policy_loss,s.value_loss,s.entropy]);
   pushChart(rwdChart,s.tick,[s.episode_reward,s.ue_pairs_routed*100]);
   const cp=(s.ue_pairs_routed*100).toFixed(0);

@@ -172,6 +172,8 @@ def push_state(snap):
         "node_island_ids":     getattr(snap, 'node_island_ids', {}),
         "scenario_type":       getattr(snap, 'scenario_type', ''),
         "learning_postcard_pairs": getattr(snap, 'learning_postcard_pairs', []),
+        "optimal_paths":       getattr(snap, 'optimal_paths', []),
+        "optimal_actions":     getattr(snap, 'optimal_actions', []),
     }
     _sio.emit("state_update", payload)
 
