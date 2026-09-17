@@ -1,0 +1,62 @@
+== trained frozen executor (s1234), confirmatory set ==
+   {"A": {"n": 20, "ach": 43.553490285234616, "ach_sd": 5.81431648696978, "comps": 2.2342, "bridges": 1.1658, "at_opt": 11, "jpu_pooled": 0.23308206423253458}, "B": {"n": 20, "ach": 46.82684894553166, "ach_sd": 8.552194870557303, "comps": 1.5787, "bridges": 0.2713, "at_opt": 18, "jpu_pooled": 0.1683422675141873, "pre": 55.1647266012463}}
+
+== untrained actor, torch seed 1234 ==  fingerprint audit: 0 bad passes, 1 distinct fingerprints; missing {'A': [], 'B': []}
+   {"A": {"n": 20, "ach": 33.97953438074387, "ach_sd": 6.845648383026752, "comps": 3.4, "bridges": 0.0, "at_opt": 0, "jpu_pooled": 0.2773569210384488}, "B": {"n": 20, "ach": 37.08257604268793, "ach_sd": 8.276584718913387, "comps": 1.85, "bridges": 0.0, "at_opt": 14, "jpu_pooled": 0.20441149731101066, "pre": 43.74573491762882}, "fp_bad": 0, "n_fp": 1}
+  A achievability: trained frozen - untrained s1234          mean   +9.57  sd  5.24  95% CI [+7.12, +12.03]  positive on 19/20  sign p 0.0000  Wilcoxon p 0.00000
+  A achievability: untrained s1234 - uniform random          mean  +15.71  sd  4.89  95% CI [+13.42, +18.00]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  A achievability: untrained s1234 - best routing            mean   +2.97  sd  3.69  95% CI [+1.24, +4.70]  positive on 15/20  sign p 0.0414  Wilcoxon p 0.00143
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4088: UserWarning: Exact p-value calculation does not work if there are zeros. Switching to normal approximation.
+  warnings.warn("Exact p-value calculation does not work if there are "
+  A components: untrained s1234 - trained frozen             mean   +1.17  sd  0.76  95% CI [+0.81, +1.52]  positive on 17/20  sign p 0.0000  Wilcoxon p 0.00002
+  B achievability: trained frozen - untrained s1234          mean   +9.74  sd  4.60  95% CI [+7.59, +11.90]  positive on 19/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability: untrained s1234 - uniform random          mean  +17.27  sd  5.65  95% CI [+14.62, +19.91]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability: untrained s1234 - best routing            mean   +1.10  sd  3.10  95% CI [-0.36, +2.55]  positive on 14/20  sign p 0.1153  Wilcoxon p 0.14291
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4102: UserWarning: Sample size too small for normal approximation.
+  warnings.warn("Sample size too small for normal approximation.")
+  B components: untrained s1234 - trained frozen             mean   +0.27  sd  0.55  95% CI [+0.01, +0.53]  positive on  5/20  sign p 0.0625  Wilcoxon p 0.06250
+  A energy/unit: untrained s1234 - trained frozen            mean   +0.05  sd  0.06  95% CI [+0.02, +0.08]  positive on 18/20  sign p 0.0004  Wilcoxon p 0.00001
+
+== untrained actor, torch seed 2345 ==  fingerprint audit: 0 bad passes, 1 distinct fingerprints; missing {'A': [], 'B': []}
+   {"A": {"n": 20, "ach": 30.924368054896394, "ach_sd": 7.628261675156147, "comps": 3.4, "bridges": 0.0, "at_opt": 0, "jpu_pooled": 0.28599577719942637}, "B": {"n": 20, "ach": 36.99848451060866, "ach_sd": 8.736212376086293, "comps": 1.85, "bridges": 0.0, "at_opt": 14, "jpu_pooled": 0.192948752448929, "pre": 43.726389087768446}, "fp_bad": 0, "n_fp": 1}
+  A achievability: trained frozen - untrained s2345          mean  +12.63  sd  6.03  95% CI [+9.81, +15.45]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  A achievability: untrained s2345 - uniform random          mean  +12.66  sd  5.39  95% CI [+10.13, +15.18]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  A achievability: untrained s2345 - best routing            mean   -0.09  sd  2.64  95% CI [-1.32, +1.15]  positive on  8/20  sign p 0.5034  Wilcoxon p 0.62151
+  A components: untrained s2345 - trained frozen             mean   +1.17  sd  0.76  95% CI [+0.81, +1.52]  positive on 17/20  sign p 0.0000  Wilcoxon p 0.00002
+  B achievability: trained frozen - untrained s2345          mean   +9.83  sd  3.89  95% CI [+8.01, +11.65]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability: untrained s2345 - uniform random          mean  +17.18  sd  5.87  95% CI [+14.43, +19.93]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability: untrained s2345 - best routing            mean   +1.01  sd  2.98  95% CI [-0.38, +2.40]  positive on 13/20  sign p 0.2632  Wilcoxon p 0.13273
+  B components: untrained s2345 - trained frozen             mean   +0.27  sd  0.55  95% CI [+0.01, +0.53]  positive on  5/20  sign p 0.0625  Wilcoxon p 0.06250
+  A energy/unit: untrained s2345 - trained frozen            mean   +0.07  sd  0.07  95% CI [+0.03, +0.10]  positive on 18/20  sign p 0.0004  Wilcoxon p 0.00001
+
+== untrained actor, torch seed 3456 ==  fingerprint audit: 0 bad passes, 1 distinct fingerprints; missing {'A': [], 'B': []}
+   {"A": {"n": 20, "ach": 27.715140335493206, "ach_sd": 6.281254790485593, "comps": 3.4, "bridges": 0.0, "at_opt": 0, "jpu_pooled": 0.33086611844881253}, "B": {"n": 20, "ach": 31.387076247365876, "ach_sd": 6.018537997984058, "comps": 1.85, "bridges": 0.0, "at_opt": 14, "jpu_pooled": 0.23067413821275384, "pre": 37.39079587970057}, "fp_bad": 0, "n_fp": 1}
+  A achievability: trained frozen - untrained s3456          mean  +15.84  sd  4.93  95% CI [+13.53, +18.15]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  A achievability: untrained s3456 - uniform random          mean   +9.45  sd  3.88  95% CI [+7.63, +11.26]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  A achievability: untrained s3456 - best routing            mean   -3.30  sd  2.43  95% CI [-4.43, -2.16]  positive on  2/20  sign p 0.0004  Wilcoxon p 0.00010
+  A components: untrained s3456 - trained frozen             mean   +1.17  sd  0.76  95% CI [+0.81, +1.52]  positive on 17/20  sign p 0.0000  Wilcoxon p 0.00002
+  B achievability: trained frozen - untrained s3456          mean  +15.44  sd  4.80  95% CI [+13.19, +17.68]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability: untrained s3456 - uniform random          mean  +11.57  sd  3.52  95% CI [+9.92, +13.22]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability: untrained s3456 - best routing            mean   -4.60  sd  3.78  95% CI [-6.37, -2.83]  positive on  1/20  sign p 0.0000  Wilcoxon p 0.00005
+  B components: untrained s3456 - trained frozen             mean   +0.27  sd  0.55  95% CI [+0.01, +0.53]  positive on  5/20  sign p 0.0625  Wilcoxon p 0.06250
+  A energy/unit: untrained s3456 - trained frozen            mean   +0.11  sd  0.08  95% CI [+0.08, +0.15]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+
+== untrained actor, torch seed 4567 ==  fingerprint audit: 0 bad passes, 1 distinct fingerprints; missing {'A': [], 'B': []}
+   {"A": {"n": 20, "ach": 17.258650598190286, "ach_sd": 5.336846706243373, "comps": 3.4, "bridges": 0.0, "at_opt": 0, "jpu_pooled": 0.47517838358051234}, "B": {"n": 20, "ach": 31.704349951811835, "ach_sd": 5.689180564794187, "comps": 1.85, "bridges": 0.0, "at_opt": 14, "jpu_pooled": 0.2261624560452443, "pre": 37.36334198596608}, "fp_bad": 0, "n_fp": 1}
+  A achievability: trained frozen - untrained s4567          mean  +26.29  sd  7.38  95% CI [+22.84, +29.75]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  A achievability: untrained s4567 - uniform random          mean   -1.01  sd  5.00  95% CI [-3.35, +1.33]  positive on  8/20  sign p 0.5034  Wilcoxon p 0.21617
+  A achievability: untrained s4567 - best routing            mean  -13.75  sd  6.64  95% CI [-16.86, -10.64]  positive on  0/20  sign p 0.0000  Wilcoxon p 0.00000
+  A components: untrained s4567 - trained frozen             mean   +1.17  sd  0.76  95% CI [+0.81, +1.52]  positive on 17/20  sign p 0.0000  Wilcoxon p 0.00002
+  B achievability: trained frozen - untrained s4567          mean  +15.12  sd  4.84  95% CI [+12.86, +17.39]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability: untrained s4567 - uniform random          mean  +11.89  sd  3.58  95% CI [+10.21, +13.57]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability: untrained s4567 - best routing            mean   -4.28  sd  5.01  95% CI [-6.63, -1.94]  positive on  2/20  sign p 0.0004  Wilcoxon p 0.00001
+  B components: untrained s4567 - trained frozen             mean   +0.27  sd  0.55  95% CI [+0.01, +0.53]  positive on  5/20  sign p 0.0625  Wilcoxon p 0.06250
+  A energy/unit: untrained s4567 - trained frozen            mean   +0.26  sd  0.10  95% CI [+0.22, +0.31]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+
+== mean over the 4 untrained actors (per instance) ==
+  A achievability: trained frozen - mean untrained           mean  +16.08  sd  4.93  95% CI [+13.78, +18.39]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  A achievability by untrained actor: {1234: 33.98, 2345: 30.92, 3456: 27.72, 4567: 17.26}
+  B achievability: trained frozen - mean untrained           mean  +12.53  sd  3.92  95% CI [+10.70, +14.37]  positive on 20/20  sign p 0.0000  Wilcoxon p 0.00000
+  B achievability by untrained actor: {1234: 37.08, 2345: 37.0, 3456: 31.39, 4567: 31.7}
+
+written confirmatory/untrained_report.json
