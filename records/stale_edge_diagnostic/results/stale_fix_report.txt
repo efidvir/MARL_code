@@ -1,0 +1,99 @@
+fix pickles: ['output/fix_80_83.pkl', 'output/fix_84_87.pkl', 'output/fix_88_91.pkl', 'output/fix_92_95.pkl', 'output/fix_96_99.pkl']
+
+== R-fix minus frozen, paired per instance ==
+ marl_static A (n=20): fixed ach 44.16 vs frozen 43.55; comps 2.18 vs 2.23
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4088: UserWarning: Exact p-value calculation does not work if there are zeros. Switching to normal approximation.
+  warnings.warn("Exact p-value calculation does not work if there are "
+  achievability (pp)                                   mean   +0.603  95% CI [-0.181, +1.388]  >0 on  7/20  Wilcoxon p 0.0840
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4102: UserWarning: Sample size too small for normal approximation.
+  warnings.warn("Sample size too small for normal approximation.")
+  components                                           mean   -0.052  95% CI [-0.127, +0.023]  >0 on  1/20  Wilcoxon p 0.2500
+  bridges                                              mean   +0.052  95% CI [-0.023, +0.127]  >0 on  3/20  Wilcoxon p 0.2500
+  energy per unit                                      mean   +0.001  95% CI [-0.003, +0.006]  >0 on 13/20  Wilcoxon p 0.2611
+ marl_static B (n=20): fixed ach 46.24 vs frozen 46.83; comps 1.55 vs 1.58
+  achievability (pp)                                   mean   -0.589  95% CI [-1.314, +0.136]  >0 on  0/20  Wilcoxon p 0.1250
+  components                                           mean   -0.029  95% CI [-0.192, +0.135]  >0 on  1/20  Wilcoxon p 1.0000
+  bridges                                              mean   +0.029  95% CI [-0.135, +0.192]  >0 on  2/20  Wilcoxon p 1.0000
+  energy per unit                                      mean   +0.003  95% CI [+0.001, +0.005]  >0 on 14/20  Wilcoxon p 0.0013
+ xldet A (n=20): fixed ach 38.77 vs frozen 38.84; comps 1.70 vs 1.70
+  achievability (pp)                                   mean   -0.076  95% CI [-0.276, +0.123]  >0 on  1/20  Wilcoxon p 0.7500
+  components                                           mean   +0.000  95% CI [+0.000, +0.000]  >0 on  0/20  Wilcoxon p 1.0000
+  bridges                                              mean   +0.000  95% CI [+0.000, +0.000]  >0 on  0/20  Wilcoxon p 1.0000
+  energy per unit                                      mean   +0.001  95% CI [-0.000, +0.002]  >0 on 17/20  Wilcoxon p 0.0032
+ xldet B (n=20): fixed ach 41.56 vs frozen 41.56; comps 1.50 vs 1.50
+  achievability (pp)                                   mean   +0.000  95% CI [+0.000, +0.000]  >0 on  0/20  Wilcoxon p 1.0000
+  components                                           mean   +0.000  95% CI [+0.000, +0.000]  >0 on  0/20  Wilcoxon p 1.0000
+  bridges                                              mean   +0.000  95% CI [+0.000, +0.000]  >0 on  0/20  Wilcoxon p 1.0000
+  energy per unit                                      mean   +0.000  95% CI [-0.000, +0.001]  >0 on  2/20  Wilcoxon p 0.5000
+ random A (n=20): fixed ach 18.05 vs frozen 18.27; comps 2.57 vs 2.52
+  achievability (pp)                                   mean   -0.214  95% CI [-0.433, +0.005]  >0 on  6/20  Wilcoxon p 0.0577
+  components                                           mean   +0.049  95% CI [-0.012, +0.111]  >0 on  7/20  Wilcoxon p 0.3894
+  bridges                                              mean   -0.049  95% CI [-0.111, +0.012]  >0 on  8/20  Wilcoxon p 0.3817
+  energy per unit                                      mean   +0.019  95% CI [+0.012, +0.027]  >0 on 18/20  Wilcoxon p 0.0001
+ random B (n=20): fixed ach 19.47 vs frozen 19.82; comps 1.64 vs 1.65
+  achievability (pp)                                   mean   -0.344  95% CI [-0.626, -0.061]  >0 on  1/20  Wilcoxon p 0.0078
+  components                                           mean   -0.006  95% CI [-0.013, +0.002]  >0 on  0/20  Wilcoxon p 0.2500
+  bridges                                              mean   +0.005  95% CI [-0.002, +0.013]  >0 on  3/20  Wilcoxon p 0.2500
+  energy per unit                                      mean   +0.007  95% CI [+0.003, +0.012]  >0 on 19/20  Wilcoxon p 0.0000
+
+== pre-registered analysis, affected arms from R-fix (post hoc) ==
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4088: UserWarning: Exact p-value calculation does not work if there are zeros. Switching to normal approximation.
+  warnings.warn("Exact p-value calculation does not work if there are "
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4102: UserWarning: Sample size too small for normal approximation.
+  warnings.warn("Sample size too small for normal approximation.")
+instances: A=20 B=20   excluded (harness failures): {'A': [], 'B': []}
+
+Scenario A  (optimum 1 on 10/20, mean optimum 1.70, mean raw 3.40)
+  arm                    ach    thr  E/tick J/u pool    comps  atopt    pre
+  marl_static   44.2 +-  6.0    961   223.0   0.2341     2.18  12/20   41.5
+  xldet         38.8 +- 10.2    843   221.8   0.2629     1.70  20/20   41.5
+  sdn           34.7 +- 13.9    756   197.4   0.2654     2.00  17/20   41.5
+  ospf          31.0 +-  6.7    675   190.8   0.2847     3.40   0/20   41.5
+  olsr          31.0 +-  6.7    675   190.8   0.2834     3.40   0/20   41.5
+  batman        31.0 +-  6.7    675   186.5   0.2765     3.40   0/20   41.5
+  aodv          31.0 +-  6.7    675   186.4   0.2835     3.40   0/20   41.5
+  random        18.1 +-  2.9    393   197.7   0.4920     2.57   0/20   41.5
+  marl_freeze   42.7          (adapt-then-freeze, secondary)  J/u pool 0.2481  comps 1.88
+
+Scenario B  (optimum 1 on 10/20, mean optimum 1.50, mean raw 1.85)
+  arm                    ach    thr  E/tick J/u pool    comps  atopt    pre
+  marl_static   46.2 +-  8.3   1362   225.4   0.1712     1.55  19/20   55.0
+  xldet         41.6 +- 10.2   1226   219.9   0.1889     1.50  20/20   47.5
+  sdn           38.1 +-  8.4   1124   197.0   0.1846     1.50  20/20   43.7
+  ospf          36.0 +-  8.0   1060   195.4   0.1936     1.85  14/20   42.1
+  olsr          36.0 +-  8.0   1060   195.4   0.1936     1.85  14/20   42.1
+  batman        36.0 +-  8.0   1060   191.3   0.1900     1.85  14/20   42.1
+  aodv          36.0 +-  8.0   1060   191.0   0.1894     1.85  14/20   42.1
+  random        19.5 +-  3.4    574   201.4   0.3751     1.64  15/20   21.8
+  marl_freeze   51.8          (adapt-then-freeze, secondary)  J/u pool 0.1615  comps 1.55
+
+PRIMARY: arm marl_static (Holm over 9, exact Wilcoxon):
+  P1_A_ach_vs_xldet             +5.3913  CI [+1.1330, +9.6497]  wins 15/20  sign 0.0414  W 0.03277 (scipy 0.03277)  Holm 0.06554  not confirmed
+  P2_A_ach_vs_sdn               +9.4113  CI [+3.0452, +15.7774]  wins 16/20  sign 0.0118  W 0.00085 (scipy 0.00085)  Holm 0.00425  CONFIRMED
+  P3_A_ach_vs_best_routing     +13.1445  CI [+10.4796, +15.8094]  wins 20/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00002  CONFIRMED
+  P4_B_ach_vs_xldet             +4.6770  CI [+1.5440, +7.8100]  wins 15/20  sign 0.0414  W 0.00486 (scipy 0.00486)  Holm 0.01944  CONFIRMED
+  P5_B_ach_vs_sdn               +8.0940  CI [+6.0981, +10.0899]  wins 19/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00003  CONFIRMED
+  P6_B_ach_vs_best_routing     +10.2506  CI [+8.2339, +12.2673]  wins 20/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00002  CONFIRMED
+  P7_A_jpu_vs_xldet             -0.0513  CI [-0.1043, +0.0018]  wins 15/20  sign 0.0414  W 0.01923 (scipy 0.01923)  Holm 0.05770  not confirmed
+  P8_A_jpu_vs_sdn               -0.4826  CI [-1.1601, +0.1949]  wins 13/20  sign 0.2632  W 0.07585 (scipy 0.07585)  Holm 0.07585  not confirmed
+  P9_A_jpu_vs_best_routing      -0.0545  CI [-0.0882, -0.0208]  wins 18/20  sign 0.0004  W 0.00005 (scipy 0.00005)  Holm 0.00029  CONFIRMED
+
+SECONDARY:
+  S1_A_components_marl_minus_xldet   +0.4823  CI [+0.1543, +0.8103]  wins  8/20  sign 0.0078  W 0.00781
+  S1_B_components_marl_minus_xldet   +0.0500  CI [-0.0547, +0.1547]  wins  1/20  sign 1.0000  W 1.00000
+  S2_B_change_vs_xldet               -2.8679  CI [-4.0312, -1.7047]  wins  3/20  sign 0.0026  W 0.00004
+  S2_B_change_vs_sdn                 -3.2055  CI [-4.0507, -2.3603]  wins  0/20  sign 0.0000  W 0.00000
+  S2_B_change_vs_best_routing        -2.7315  CI [-3.6443, -1.8187]  wins  1/20  sign 0.0000  W 0.00005
+  S3_B_pre_level_vs_xldet            +7.5449  CI [+3.7285, +11.3613]  wins 17/20  sign 0.0026  W 0.00032
+  S3_B_pre_level_vs_sdn             +11.2995  CI [+8.7910, +13.8079]  wins 20/20  sign 0.0000  W 0.00000
+  S3_B_pre_level_vs_best_routing    +12.9788  CI [+10.6439, +15.3137]  wins 20/20  sign 0.0000  W 0.00000
+  S4_A_abs_energy_vs_xldet           +1.1507  CI [-3.8578, +6.1592]  wins 11/20  sign 0.8238  W 0.70118
+  S5_A_sli_vs_xldet                -6912.9610  CI [-14023.9823, +198.0603]  wins 17/20  sign 0.0007  W 0.00005
+  S6_B_jpu_vs_xldet                  -0.0267  CI [-0.0520, -0.0013]  wins 14/20  sign 0.1153  W 0.00831
+  S7_A_ach_marl_static_minus_marl_freeze   +1.4248  CI [-1.1508, +4.0003]  wins 11/20  sign 0.8238  W 0.31179
+  S7_A_components_marl_static_minus_marl_freeze   +0.3037  CI [+0.0465, +0.5609]  wins  1/20  sign 0.1250  W 0.03125
+  S7_B_ach_marl_static_minus_marl_freeze   -5.5314  CI [-8.3211, -2.7418]  wins  3/20  sign 0.0026  W 0.00048
+  S7_B_components_marl_static_minus_marl_freeze   +0.0000  CI [-0.1518, +0.1518]  wins  1/20  sign 1.0000  W 1.00000
+  shared_world_A_pre_event_spread_pp 0.0
+
+written confirmatory/stale_fix_prereg.json

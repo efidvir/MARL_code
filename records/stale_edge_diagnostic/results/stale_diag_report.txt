@@ -1,0 +1,17 @@
+diag pickles: ['output/diag_80_83.pkl', 'output/diag_84_87.pkl', 'output/diag_88_91.pkl', 'output/diag_92_95.pkl', 'output/diag_96_99.pkl']
+
+== identity of R-diag decisions with the frozen runs ==
+  marl_static  A: 0 instance-series differ []
+  marl_static  B: 0 instance-series differ []
+  xldet        A: 0 instance-series differ []
+  xldet        B: 0 instance-series differ []
+  random       A: 0 instance-series differ []
+  random       B: 0 instance-series differ []
+
+== stale-edge use in the evaluated (frozen) behaviour ==
+  marl_static  A: stale edges mean 8.76 (steady 9.07); share of delivered u2u volume crossing a stale edge: mean 20.0%, min 7.1%, max 36.2%
+  marl_static  B: stale edges mean 10.74 (steady 10.58); share of delivered u2u volume crossing a stale edge: mean 29.8%, min 1.9%, max 55.1%
+  xldet        A: stale edges mean 0.94 (steady 1.00); share of delivered u2u volume crossing a stale edge: mean 3.9%, min 0.0%, max 19.7%
+  xldet        B: stale edges mean 1.35 (steady 1.35); share of delivered u2u volume crossing a stale edge: mean 10.9%, min 0.0%, max 61.2%
+  random       A: stale edges mean 14.85 (steady 15.75); share of delivered u2u volume crossing a stale edge: mean 22.5%, min 14.1%, max 33.5%
+  random       B: stale edges mean 15.44 (steady 15.46); share of delivered u2u volume crossing a stale edge: mean 37.2%, min 18.6%, max 58.1%
