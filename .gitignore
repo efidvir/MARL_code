@@ -3,15 +3,14 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Todo2 - AI-powered task management directories
-.cursor/rules/todo2-overview.mdc
-.cursor/rules/todo2.mdc
-.cursor/mcp.json
-.todo2/
+# Run outputs (large; regenerate with the harness)
+output/
+logs/
+checkpoints/
 
-# IDE
+# IDE / tooling
 .vscode/
 .idea/
-
-# Gemini
+.cursor/
+.todo2/
 .gemini/

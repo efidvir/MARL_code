@@ -34,7 +34,7 @@ class TickMetrics:
 @dataclass
 class RecoveryMetrics:
     """Recovery time and success metrics."""
-    life_safety_success_ratio: float
+    life_safety_success_ratio: Optional[float]  # None if not computable from history
     recovery_time_ticks: Optional[int]  # Ticks to reach target after severance
     target_threshold: float = 0.95  # Target success ratio
     window_size: int = 20  # Ticks to average over
@@ -75,6 +75,38 @@ class RecoveryMetrics:
                 return window[0].tick - severance_tick
 
         return None  # Recovery not achieved
+
+    @classmethod
+    def calculate_life_safety_success_ratio(
+            cls, metrics_history: List[TickMetrics],
+            severance_tick: Optional[int] = None) -> Optional[float]:
+        """Delivered/offered ratio for life-safety traffic.
+
+        Aggregated over the post-severance window when a severance tick is
+        known (consistent with calculate_recovery_time), otherwise over the
+        full history. Returns None when the history contains no life-safety
+        offered load to measure against.
+        """
+        if not metrics_history:
+            return None
+
+        if severance_tick is not None:
+            window = [m for m in metrics_history if m.tick >= severance_tick]
+        else:
+            window = metrics_history
+
+        total_offered = 0.0
+        total_delivered = 0.0
+        for metric in window:
+            for node_stats in metric.traffic_stats.values():
+                if TrafficClass.LIFE_SAFETY in node_stats:
+                    ls_stats = node_stats[TrafficClass.LIFE_SAFETY]
+                    total_offered += ls_stats.get('offered_load', 0.0)
+                    total_delivered += ls_stats.get('delivered_load', 0.0)
+
+        if total_offered <= 0.0:
+            return None
+        return total_delivered / total_offered
 
 
 @dataclass
@@ -248,8 +280,11 @@ class MetricsCollector:
         recovery_time = RecoveryMetrics.calculate_recovery_time(
             self.metrics_history, self.severance_tick
         )
+        success_ratio = RecoveryMetrics.calculate_life_safety_success_ratio(
+            self.metrics_history, self.severance_tick
+        )
         return RecoveryMetrics(
-            life_safety_success_ratio=0.85,  # Placeholder - would calculate from history
+            life_safety_success_ratio=success_ratio,
             recovery_time_ticks=recovery_time
         )
 

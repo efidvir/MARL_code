@@ -1,0 +1,42 @@
+=== 2026-09-16 13:55:33 UTC  AMENDMENT-1 CHAIN START ===
+    freeze verified (86 files)
+=== 2026-09-16 13:55:33 UTC  step 1: replicate re-selection, static executor, seeds 60-66 ===
+    2026-09-16 15:00:17 UTC  A1_val_s2345.pkl exit=0
+    2026-09-16 15:02:49 UTC  A1_val_s1234.pkl exit=0
+    2026-09-16 16:03:26 UTC  A1_val_s4567.pkl exit=0
+    2026-09-16 16:06:31 UTC  A1_val_s3456.pkl exit=0
+=== 2026-09-16 16:06:31 UTC  VALIDATION WINNER (static executor): s1234 ===
+    rule: lowest mean steady components over validation seeds 60-66 (Scenario A); ties -> higher achievability
+      static s1234  components 1.567  achievability 43.5  (instances 7/7)
+      static s2345  components 3.184  achievability 34.4  (instances 7/7)
+      static s3456  components 2.143  achievability 43.3  (instances 7/7)
+      static s4567  components 2.688  achievability 32.8  (instances 7/7)
+    SELECTED: s1234
+    bbee30e4e9a4d26432753341d72e64661eea63c67139d290a2e831479f01e01f  /home/efid/MARL_run_6/ce_ck_s1234/policy_final.pt
+=== 2026-09-16 16:06:31 UTC  step 2: marl_static on confirmatory seeds 80-99 ===
+    2026-09-16 17:46:09 UTC  cf_corun_80_89.pkl exit=0
+    2026-09-16 19:26:46 UTC  cf_corun_90_99.pkl exit=0
+    split 80_89 -> marl_static only: {'recovery_multi': [80, 81, 82, 83, 84, 85, 86, 87, 88, 89], 'rescue_multi': [80, 81, 82, 83, 84, 85, 86, 87, 88, 89]}
+    split 90_99 -> marl_static only: {'recovery_multi': [90, 91, 92, 93, 94, 95, 96, 97, 98, 99], 'rescue_multi': [90, 91, 92, 93, 94, 95, 96, 97, 98, 99]}
+3f11a4ea4d5acad364f23a685af0d754e827399d7b3cd3875ceff15768c41261  output/cf_corun_80_89.pkl
+04b4cf09739babe85338708664fbc66c12fe0f62d1c08fd1c3348cd5a9292a22  output/cf_corun_90_99.pkl
+9de61e38e48352c71771e84e1ca8023e736db51633265a1b2b48e5bc45ca4f94  output/cf_static_80_89.pkl
+e56a2e46348f8d262ad5cf7f4cf3e3da452feacfbad8b91b586503e40864320b  output/cf_static_90_99.pkl
+=== 2026-09-16 19:26:48 UTC  step 3: marl_static on development seeds ===
+    2026-09-16 20:16:09 UTC  dev_static_50_59.pkl exit=0
+    2026-09-16 20:57:12 UTC  dev_static_70_79.pkl exit=0
+=== 2026-09-16 20:57:12 UTC  step 4: stress test and end-state dump ===
+    2026-09-16 21:27:24 UTC  stress_static_50_59.pkl exit=0
+    2026-09-16 21:47:18 UTC  end-state dump exit=0
+scenario A: 20 instances, 360 bins x 10 ticks
+scenario B: 20 instances, 360 bins x 10 ticks
+wrote confirmatory/timelines_dev_static.json
+=== 2026-09-16 21:47:23 UTC  step 6: waiting for the original confirmatory job (baseline arms) ===
+=== 2026-09-16 21:49:23 UTC  original job complete; amended pre-registered analysis ===
+    2026-09-16 21:49:29 UTC  confirmatory analysis exit=0
+    2026-09-16 21:49:34 UTC  development analysis exit=0
+    2026-09-16 21:49:40 UTC  sensitivity analysis exit=0
+scenario A: 20 instances, 360 bins x 10 ticks
+scenario B: 20 instances, 360 bins x 10 ticks
+wrote confirmatory/timelines_cf.json
+=== 2026-09-16 21:49:44 UTC  AMENDMENT-1 CHAIN COMPLETE ===

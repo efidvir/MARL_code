@@ -1,0 +1,185 @@
+diff --git a/run_timeline_comparison.py b/run6_static/run_timeline_comparison.py
+index 3ade06a..980fb59 100644
+--- a/run_timeline_comparison.py
++++ b/run6_static/run_timeline_comparison.py
+@@ -163,6 +163,22 @@ DROP_FRACTION           = 0.6    # "depressed" = below this fraction of the
+ # sampling noise, no gradient updates).
+ FREEZE_AFTER_LAST_EVENT_TICKS = 400
+ 
++# ── MARL STATIC arm ('marl_static') — the deployed controller ────────────
++# The architecture the paper describes: the parameters validated in the twin
++# are executed UNCHANGED from the first tick of the event to the last.
++#   * deterministic execution: argmax on every categorical head, Dirichlet
++#     mean for the resource split (is_training=False from the start);
++#   * no online PPO update, no exploration temperature, no EWC anchor;
++#   * no freeze guard and no snapshot restore (nothing reads the arm's own
++#     achievability);
++#   * the SAME trained checkpoint in both scenarios (it is not in MARL_ARMS,
++#     so its rescue_ops pass runs in Phase 1 from the base checkpoint and
++#     never loads weights adapted during a recovery pass).
++# Everything else — observations, detection floor, relay mechanics, engine
++# flags — is the MARL code path shared with every other MARL-family arm.
++# Invariants are ASSERTED at run time (is_training stays False every tick;
++# the policy parameters are bit-identical at the end of the pass).
++
+ # ── Guarded freeze (deployment-safety gate) ───────────────────────────
+ # Freezing is a one-way door: if the policy's deterministic argmax joint
+ # action is degenerate at the freeze tick (observed failure mode: enough
+@@ -336,7 +352,7 @@ MARL_BFD_DETECT_TICKS = int(os.environ.get('MARL_DETECT_TICKS',
+ # must be handed — or denied — a detection advantage the treated arms do
+ # not have.  Equal detection latency is what makes the comparison about the
+ # policy rather than about who noticed the severance first.
+-MARL_DETECTION_ARMS = ('marl', 'marl_freeze', 'random', 'xldet')
++MARL_DETECTION_ARMS = ('marl', 'marl_freeze', 'marl_static', 'random', 'xldet')
+ 
+ # ── Safe online adaptation (deployment PPO safety rails) ──────────────
+ # The 'MARL (pre-trained + online)' arm keeps updating throughout the
+@@ -4119,6 +4135,20 @@ def _adapted_checkpoint_path(checkpoint_path, suffix, topology_seed):
+     return s.replace('.pt', f'{suffix}_seed{topology_seed}.pt')
+ 
+ 
++def _policy_fingerprint(rl_agents):
++    """sha256 over every agent's policy parameters, agents in sorted order.
++    Used by the static arm to prove its parameters never change."""
++    import hashlib
++    h = hashlib.sha256()
++    for aid in sorted(rl_agents):
++        sd = rl_agents[aid].policy_net.state_dict()
++        for k in sorted(sd):
++            h.update(str(aid).encode())
++            h.update(k.encode())
++            h.update(sd[k].detach().cpu().contiguous().numpy().tobytes())
++    return h.hexdigest()
++
++
+ def _load_into_agent(agent, sd) -> bool:
+     """Load a per-agent state dict, installing an EnsemblePolicy first when
+     the weights are ensemble-shaped (keys `members.<k>.<layer>`), so that a
+@@ -4189,6 +4219,9 @@ def run_physics_pass(mode, topology_seed, checkpoint_path, scenario_name='recove
+     # freeze gating below differs.  mode_label keeps log lines per-arm.
+     arm = mode
+     is_freeze_arm = (arm == 'marl_freeze')
++    # 'marl_static' reuses every MARL code path with learning disabled from
++    # the first tick (see the MARL STATIC arm constants block).
++    is_static_arm = (arm == 'marl_static')
+     # 'random' also reuses every MARL code path; only the ACTION SOURCE
+     # differs (uniform sampling instead of the policy net) and all learning
+     # machinery is disabled.  That is the whole point: any difference in
+@@ -4202,10 +4235,11 @@ def run_physics_pass(mode, topology_seed, checkpoint_path, scenario_name='recove
+     # cross-layer controller with the same actuation and the same observations
+     # do as well?".  See sixg_sim/heuristic_controller.py.
+     is_xldet_arm = (arm == 'xldet')
+-    if is_freeze_arm or is_random_arm or is_xldet_arm:
++    if is_freeze_arm or is_static_arm or is_random_arm or is_xldet_arm:
+         mode = 'marl'
+     # True only for the arms that actually learn/adapt online.
+-    learns = (mode == 'marl') and not (is_random_arm or is_xldet_arm)
++    learns = (mode == 'marl') and not (is_random_arm or is_xldet_arm
++                                       or is_static_arm)
+     mode_label = arm.upper()
+ 
+     # Last scripted scenario event: severance (Scenario A) / rescue arrival
+@@ -4437,6 +4471,23 @@ def run_physics_pass(mode, topology_seed, checkpoint_path, scenario_name='recove
+     else:
+         sim.marl_ue_routing_enabled = False
+ 
++    # ── MARL STATIC: execute the loaded parameters unchanged, from tick 0 ──
++    _static_fp0 = None
++    _static_fp1 = None
++    if is_static_arm:
++        if not sim.marl_ue_routing_enabled or not rl_agents:
++            raise RuntimeError("marl_static needs a trained checkpoint and "
++                               "RL agents; none were loaded")
++        for _a in rl_agents.values():
++            _a.is_training = False          # argmax heads + Dirichlet mean
++        _frozen = True                      # closes every learning gate
++        torch.manual_seed(topology_seed)    # reproducible (argmax is anyway)
++        _static_fp0 = _policy_fingerprint(rl_agents)
++        print(f"[{mode_label} - {scenario_name}] STATIC DEPLOYMENT: loaded "
++              f"parameters executed unchanged from t=0 (deterministic; no "
++              f"online update, no freeze guard, no snapshot restore; base "
++              f"checkpoint in both scenarios); fingerprint {_static_fp0[:16]}")
++
+     mappo_cfg = MAPPOConfig()
+     if learns:
+         # ── Safe online adaptation (see DEPLOY_* constant docs) ──
+@@ -5039,6 +5090,9 @@ def run_physics_pass(mode, topology_seed, checkpoint_path, scenario_name='recove
+                 _cur_temp = _current_temperature(tick)
+                 for _a in rl_agents.values():
+                     _a._logit_temperature = _cur_temp
++            if is_static_arm and any(_a.is_training for _a in rl_agents.values()):
++                raise RuntimeError("marl_static invariant violated: an agent "
++                                   "switched to sampling at t=%d" % tick)
+ 
+             sim._execute_agent_actions(observations)
+ 
+@@ -6113,6 +6167,14 @@ def run_physics_pass(mode, topology_seed, checkpoint_path, scenario_name='recove
+         except Exception:
+             pass
+ 
++    if is_static_arm:
++        _static_fp1 = _policy_fingerprint(rl_agents)
++        if _static_fp1 != _static_fp0:
++            raise RuntimeError("marl_static invariant violated: policy "
++                               "parameters changed during the pass")
++        print(f"[{mode_label} - {scenario_name}] STATIC CHECK OK: parameters "
++              f"bit-identical after the pass ({_static_fp1[:16]})")
++
+     # Save adapted policy if MARL recovery completed (per-agent).
+     # The adapt-freeze arm saves under its own suffix so Phase 2's
+     # rescue_ops pass for each arm loads its own recovery-adapted weights.
+@@ -6168,7 +6230,7 @@ def run_physics_pass(mode, topology_seed, checkpoint_path, scenario_name='recove
+               "   (arm NOT eligible for Uu carrier aggregation, or its gate "
+               "never opened)")))
+ 
+-    return {
++    _pass_out = {
+         'conn': conn_log, 'energy': energy_log, 'hops': hops_log,
+         'fragments': fragments_log, 'relay_count': relay_count_log,
+         'fragments_raw': fragments_raw_log,
+@@ -6203,6 +6265,12 @@ def run_physics_pass(mode, topology_seed, checkpoint_path, scenario_name='recove
+         # fragment-aware re-points performed this run (MARL_RELAY_REPOINT)
+         'repoints':             int(getattr(sim, '_diag_repoints', 0)),
+     }
++    if is_static_arm:
++        # static-deployment audit trail, stored with the data itself so it
++        # does not depend on worker log output reaching the log file
++        _pass_out['static_fp_start'] = _static_fp0
++        _pass_out['static_fp_end'] = _static_fp1
++    return _pass_out
+ 
+ def steady_state_per_seed_pairs(all_data_multi, mode, key, seeds, window=None):
+     """(seed, steady_state_value) pairs — seeds without usable data omitted.
+@@ -9674,7 +9742,10 @@ def main(seeds_limit=None, overrides=None, seed_list=None,
+     # actuation, same observations, same locality mask, no learning.  It is
+     # the control for "is LEARNING necessary?", which the uniform-random arm
+     # cannot answer, and unlike 'random' it belongs IN the figures.
+-    modes = ['marl', 'marl_freeze', 'random', 'xldet',
++    # 'marl_static' is the deployed controller (parameters unchanged from
++    # t=0); it is deliberately NOT in MARL_ARMS below, so its rescue_ops pass
++    # runs in Phase 1 from the base checkpoint.
++    modes = ['marl', 'marl_freeze', 'marl_static', 'random', 'xldet',
+              'ospf', 'sdn', 'olsr', 'batman', 'aodv']
+     # --arms narrows the run.  WHY THIS EXISTS: only 'marl' and 'marl_freeze'
+     # read the evaluation checkpoint.  The other seven arms are functions of
+@@ -9795,10 +9866,16 @@ def main(seeds_limit=None, overrides=None, seed_list=None,
+                                  'rescue_ops', overrides))
+ 
+     n2 = min(len(phase2_tasks), multiprocessing.cpu_count())
+-    print(f"  Spawning pool with {n2} workers for {len(phase2_tasks)} "
+-          f"Phase-2 tasks (previously sequential on 1 core)...")
+-    with multiprocessing.Pool(processes=n2) as pool:
+-        phase2_results = pool.map(run_pass_wrapper, phase2_tasks)
++    if n2 == 0:
++        # No adapt-type arm in this run (e.g. --arms marl_static or a
++        # baseline-only run): there is nothing to schedule in Phase 2.
++        print("  Phase 2: no tasks (no online-adapting arm selected).")
++        phase2_results = []
++    else:
++        print(f"  Spawning pool with {n2} workers for {len(phase2_tasks)} "
++              f"Phase-2 tasks (previously sequential on 1 core)...")
++        with multiprocessing.Pool(processes=n2) as pool:
++            phase2_results = pool.map(run_pass_wrapper, phase2_tasks)
+ 
+     for _arm, _scen, _seed, _data in phase2_results:
+         if _data is None:

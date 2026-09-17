@@ -38,6 +38,7 @@ class ScenarioEvent:
         'partial_sever',         # Cut only a named subset of core nodes
         'sever_zone',            # Mark all nodes in a zone as non-survivor
         'geo_disaster',          # Radius-based geographic destruction
+        'backhaul_degradation',  # Degrade MW backhaul capacity (rain fade, debris)
         # Recovery
         'restore_core',          # Re-enable core links + restore nodes
         # Link / node
@@ -158,17 +159,18 @@ def _infer_zone(node_id: str) -> Optional[str]:
 _CURRICULUM: List[tuple] = [
     (1,   3,  ['full_core']),
     (4,   6,  ['full_core', 'zone_loss']),
-    (7,   9,  ['full_core', 'zone_loss', 'multi_enb_iops']),
+    (7,   9,  ['full_core', 'zone_loss', 'multi_enb_iops', 'backhaul_degradation']),
     (10, 999, ['full_core', 'zone_loss', 'cascading', 'multi_enb_iops',
-              'geo_disaster']),
+              'geo_disaster', 'backhaul_degradation']),
 ]
 
 _TYPE_WEIGHTS = {
-    'full_core':       0.20,
-    'zone_loss':       0.20,
-    'cascading':       0.15,
-    'multi_enb_iops':  0.20,
-    'geo_disaster':    0.25,
+    'full_core':              0.15,
+    'zone_loss':              0.15,
+    'cascading':              0.15,
+    'multi_enb_iops':         0.15,
+    'geo_disaster':           0.20,
+    'backhaul_degradation':   0.20,
 }
 
 
@@ -199,7 +201,7 @@ class DiverseScenarioGenerator:
     """
 
     SCENARIO_TYPES = ('full_core', 'zone_loss', 'cascading', 'multi_enb_iops',
-                      'geo_disaster')
+                      'geo_disaster', 'backhaul_degradation')
 
     def __init__(self, topology: Topology, base_duration: int = 800,
                  curriculum_start: int = 4):
@@ -288,6 +290,8 @@ class DiverseScenarioGenerator:
             self._add_multi_enb_iops(events, sev_tick, rng)
         elif sc_type == 'geo_disaster':
             self._add_geo_disaster(events, sev_tick, rng)
+        elif sc_type == 'backhaul_degradation':
+            self._add_backhaul_degradation(events, sev_tick, rng)
 
         # Post-severance emergency UEs + rescue force
         self._add_emergency_ues(events, sev_tick, rng)
@@ -460,6 +464,32 @@ class DiverseScenarioGenerator:
                     parameters={'node_id': nid}
                 ))
 
+    def _add_backhaul_degradation(self, events: list, sev_tick: int,
+                                  rng: random.Random):
+        """Core severed + MW backhaul links degraded by rain/debris/misalignment.
+
+        This creates backhaul congestion — the scenario where MARL's relay
+        path optimization (creating bypass routes around congested links)
+        provides the clearest advantage over static routing protocols.
+        """
+        # Phase 1: Core severance (required for island mode)
+        events.append(ScenarioEvent(
+            tick=sev_tick,
+            event_type='sever_core',
+            parameters={'include_edge_upf': True}
+        ))
+        # Phase 2: Backhaul degradation — a new event type handled by simulation
+        degradation_pct = rng.uniform(0.50, 0.80)  # 50-80% capacity loss
+        events.append(ScenarioEvent(
+            tick=sev_tick,
+            event_type='backhaul_degradation',
+            parameters={
+                'degradation_fraction': degradation_pct,
+                'reason': rng.choice(['rain_fade', 'debris', 'antenna_misalignment',
+                                      'power_fluctuation']),
+            }
+        ))
+
     def _add_emergency_ues(self, events: list, sev_tick: int,
                            rng: random.Random):
         """10-40 % of UEs declare emergency post-severance."""
@@ -469,12 +499,16 @@ class DiverseScenarioGenerator:
         for ue in rng.sample(self._ue_nodes, n):
             t = sev_tick + rng.randint(1, 25)
             if t < self.base_duration - 5:
+                severity = rng.choice(['emergency', 'imminent_peril'])
                 events.append(ScenarioEvent(
                     tick=t,
                     event_type='mcppt_emergency_alert',
                     parameters={
                         'ue_id': ue,
-                        'severity': rng.choice(['emergency', 'imminent_peril']),
+                        # Handler reads 'emergency_type'; keep 'severity' for
+                        # backward compatibility / logging.
+                        'emergency_type': severity,
+                        'severity': severity,
                     }
                 ))
 
@@ -487,7 +521,7 @@ class DiverseScenarioGenerator:
             events.append(ScenarioEvent(
                 tick=arrival,
                 event_type='rescue_force_arrival',
-                parameters={'count': n}
+                parameters={'num_ues': n}  # handler reads 'num_ues'
             ))
 
     def _build_traffic(self, rng: random.Random) -> Dict[str, NodeTrafficProfile]:
@@ -580,13 +614,16 @@ class DiverseScenarioGenerator:
             for ue in rng.sample(self._ue_nodes, n_emrg):
                 t = sev_tick + rng.randint(2, 30)
                 if t < self.base_duration - 5:
+                    severity = rng.choice(['emergency', 'imminent_peril'])
                     events.append(ScenarioEvent(
                         tick=t,
                         event_type='mcppt_emergency_alert',
                         parameters={
                             'ue_id': ue,
-                            'severity': rng.choice(
-                                ['emergency', 'imminent_peril']),
+                            # Handler reads 'emergency_type'; keep 'severity'
+                            # for backward compatibility / logging.
+                            'emergency_type': severity,
+                            'severity': severity,
                         }
                     ))
 

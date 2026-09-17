@@ -4,7 +4,8 @@ LearningTracker — per-tick and per-episode KPI recorder for MARL convergence a
 Tracked metrics (all computed from sim state every tick):
   - island_mode          : bool  — True once core is severed
   - ue_conn_frac         : [0,1] — fraction of UE pairs successfully routed THIS tick
-  - transport_relay_count      : int   — infra nodes currently in TRANSPORT_RELAY relay mode
+  - transport_relay_count      : int   — ACTIVE transport relay LINKS (not nodes in
+                                         relay mode; see Simulator.active_relay_links)
   - transport_link_count       : int   — active transport wireless backhaul links
   - island_node_count    : int   — live infra nodes inside the island
   - reward               : float — mean team reward this tick

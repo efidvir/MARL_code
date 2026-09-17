@@ -31,6 +31,17 @@ _ready  = threading.Event()
 def index():
     return send_from_directory(_app.static_folder, "dashboard.html")
 
+@_app.route("/internal_push", methods=["POST"])
+def internal_push():
+    from flask import request
+    import pickle
+    try:
+        snap = pickle.loads(request.data)
+        push_state(snap)
+    except Exception:
+        pass
+    return {"status": "ok"}, 200
+
 
 _last_topology_data = None   # cached for reconnect
 

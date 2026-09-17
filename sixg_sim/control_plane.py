@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from collections import defaultdict
 import networkx as nx
 import random
-from .topology import Topology, Node, TrafficClass
+from .topology import Topology, Node, NodeType, TrafficClass
 from .agent import ControlPostcard, NeighborSummary, StrainLevel, EnergyTier
 
 
@@ -181,10 +181,22 @@ class DisasterControlChannel(ControlOverlay):
         self.message_queues: Dict[str, List[ControlMessage]] = defaultdict(list)
         self.sent_this_tick: Dict[str, int] = defaultdict(int)
 
+    def _is_ue(self, node_id: str) -> bool:
+        """Return True if node_id is a UE (UEs do not participate in the DCC)."""
+        node = self.topology.nodes.get(node_id)
+        return node is not None and node.node_type == NodeType.UE
+
     def can_exchange_messages(self, node_a: str, node_b: str) -> bool:
-        """Check if DCC allows message exchange between neighbors."""
-        neighbors_a = set(self.topology.get_neighbors(node_a))
-        return node_b in neighbors_a and len(neighbors_a) <= self.max_neighbors
+        """Check if DCC allows message exchange between neighbors.
+
+        The DCC runs over infrastructure links only — UE (Uu) links inflate
+        raw topology degree but carry no DCC. Capacity is modelled by the
+        per-tick rate limit and the max_neighbors fan-out cap enforced in
+        send_postcard, not by gating on total graph degree.
+        """
+        if self._is_ue(node_a) or self._is_ue(node_b):
+            return False
+        return node_b in set(self.topology.get_neighbors(node_a))
 
     def get_message_latency(self, source: str, target: str) -> int:
         """Get DCC latency (very low, but bounded)."""

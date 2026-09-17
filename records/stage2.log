@@ -1,0 +1,7 @@
+=== 2026-09-16 13:07:20 UTC  STAGE 2 START: manifest generation for seeds 80-99 ===
+=== 2026-09-16 13:07:37 UTC  manifest exits: eval-env=0 steer-only=0 ===
+instances in manifest: 40
+engine-flag dependence of (raw, optimum): NONE
+  recovery   optimum==1 on 10/20, mean optimum 1.70, mean raw 3.40
+  rescue_ops optimum==1 on 10/20, mean optimum 1.50, mean raw 1.85
+=== 2026-09-16 13:07:37 UTC  manifest frozen into FREEZE.sha256; launching evaluation chain ===

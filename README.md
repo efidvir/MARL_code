@@ -1,278 +1,76 @@
-# 6G Network Simulation - Island Mode Proof of Concept
+# MARL-RIC: multi-agent reinforcement learning for 6G mesh recovery
 
-A discrete-event simulation of a 5G/early-6G RAN + transport network that demonstrates autonomous island-mode operation after core network severance. The simulation implements multi-agent cooperative recovery using semantic control overlays and constrained communication.
+This repository holds the simulator, training and evaluation code, the
+evaluated checkpoints and the confirmatory-protocol records behind the
+manuscript *Multi-Agent Reinforcement Learning for Autonomous 6G Mesh Network
+Recovery After Catastrophic Infrastructure Failure* (UNITY-6G, Work
+Package 4).
 
-## Overview
+The tag **`confirmatory-A1`** marks the tree that was evaluated in the
+manuscript's confirmatory test (Amendment 1, frozen executor). Everything at
+the repository root is that frozen tree, and every file listed in
+`records/FREEZE_A1.sha256` matches its digest.
 
-This proof-of-concept implements:
+## Layout
 
-- **Network Topology**: Graph-based model with nodes (gNB sites, relays, edge UPFs, core) and links (fiber, microwave, IAB)
-- **Traffic Classes**: Four QoS classes (life-safety, operations, telemetry, best-effort) with semantic slice policies
-- **Multi-Agent System**: Autonomous agents at each survivor node making local decisions
-- **Island Mode**: Automatic detection and transition to decentralized operation when core connectivity is lost
-- **Control Overlays**: IP overlay (normal mode) and Disaster Control Channel (DCC) for constrained communication
-- **Recovery Metrics**: Quantitative analysis of survival time, energy usage, connectivity, and traffic delivery
+| Path | Contents |
+|---|---|
+| `sixg_sim/`, `config/` | Simulator: topology, propagation, transport, agents, MAPPO trainer, baseline protocols |
+| `run_timeline_comparison.py` | Evaluation harness (all arms, both scenarios), as amended by Amendment 1 |
+| `train_on_comparison.py` | Training driver used for the four replicates |
+| `ce_ck_s1234/` ... `ce_ck_s4567/` | Trained shared-actor checkpoints; `ce_ck_s1234/policy_final.pt` is the evaluated one |
+| `benchmark_manifest*.json`, `build_benchmark_manifest.py` | Instance manifests (validation, development, confirmatory seeds 80–99) |
+| `confirmatory_analysis.py`, `A1_sensitivity.py`, `extract_timelines.py`, `dump_results_json.py` | Pre-registered analysis and result extraction |
+| `marl_static.diff` | The frozen-executor code change of Amendment 1 |
+| `original_harness/` | Harness and analysis script as frozen before Amendment 1 (first freeze list) |
+| `confirmatory/` | Run scripts, analysis reports and logs; `confirmatory/results/*.json.gz` hold the per-tick result series (confirmatory set, development set, development stress test) |
+| `records/` | Confirmatory-protocol records: pre-registration, Amendment 1, both freeze lists with SHA-256 digests and time stamps, the confirmatory results report, and the specifications and scripts of the two post hoc checks (untrained-actor control, stale relay-edge diagnostic) |
+| `paper_scripts/` | Scripts that regenerate the manuscript's numbers and timeline/process figures, with their output sheets |
+| `test_*.py`, `smoke*.sh` | Unit and smoke tests |
+| `archived/2026-05/` | The earlier project state (May 2026), kept for reference; also tagged `archive-2026-05` |
 
-## Architecture
-
-```
-sixg_sim/
-├── topology.py      # Network graph, nodes, links
-├── traffic.py       # Traffic generation, QoS profiles
-├── agent.py         # RLAgent (MARL) and HeuristicAgent implementations
-├── control_plane.py # IP overlay and DCC implementations
-├── simulation.py    # Main discrete-event engine with MARL training
-├── scenario.py      # Event definitions and configurations
-├── metrics.py       # KPI collection and analysis
-├── analysis.py      # Plotting and reporting functions
-└── main.py          # CLI entry point
-```
-
-### Agent Architecture
-
-- **RLAgent**: Multi-agent reinforcement learning using MAPPO
-  - Policy network with graph-based observations
-  - Centralized critic for multi-agent coordination
-  - Experience replay and PPO training
-  - Reward function: QoS (40%) + Energy (30%) + Coordination (20%) + Stability (10%)
-
-- **HeuristicAgent**: Rule-based policies for baseline comparison
-  - Hardcoded decision rules for traffic admission
-  - Priority-based scheduling policies
-  - Deterministic behavior for reproducible results
-
-## Installation
+## Verifying the frozen tree
 
 ```bash
-# Install dependencies
-pip install networkx numpy pandas matplotlib pyyaml
-
-# Clone/download the code
-cd sixg_sim/
+sha256sum -c records/FREEZE_A1.sha256
 ```
 
-## Quick Start
+Run it from the repository root. The first freeze list,
+`records/FREEZE.sha256`, was written for the pre-amendment tree. Its
+harness and analysis script are kept in `original_harness/`, and its
+pre-registration and manifest entries are in `records/`.
 
-Run a basic simulation with severance and recovery:
+## Reproducing an evaluation
+
+The harness runs one or more arms over a seed list and writes a pickle to
+`output/`. The engine and policy settings used for every reported run are
+those in `confirmatory/run_amendment1.sh`. That script was written for the
+evaluation server and changes into `~/MARL_run_6`, so adapt that line
+before using it. A single run with the same settings looks like this:
 
 ```bash
-python -m sixg_sim.main --topology config/topology_example.yaml --scenario config/scenario_severance.yaml --output-dir results/
+mkdir -p output logs
+export PYTHONHASHSEED=0 MARL_STEER_MODEL=actionable
+env MARL_TRANSPORT_POWER=planning MARL_RELAY_STATE=reconcile \
+    MARL_RELAY_REPOINT=fragment_aware MARL_POSTCARD_ALWAYS=1 \
+    MARL_REWARD_PROFILE=mission MARL_POSTCARD_FRAGMENTS=1 MARL_RELAY_ENTROPY_FLOOR=0.01 \
+    MARL_EVAL_CHECKPOINT=ce_ck_s1234/policy_final.pt \
+    python3 run_timeline_comparison.py --seed-list 80-89 --arms marl_static,xldet \
+        --no-figures --out example_80_89.pkl
+python3 confirmatory_analysis.py --pickles output/example_80_89.pkl \
+    --manifests benchmark_manifest_80_99.json --marl-arm marl_static --out example_report.json
 ```
 
-This will:
-1. Load a 5-node topology (2 gNBs, relay, edge UPF, core)
-2. Run 300 ticks of simulation
-3. Trigger core severance at tick 50
-4. Generate traffic surges and link failures
-5. Export metrics and generate analysis plots
+The pre-registered analysis needs every arm on all twenty confirmatory
+seeds. A full confirmatory run takes several hours on a multi-core server.
 
-### Multi-Agent Reinforcement Learning (MARL)
+## Implementation audit
 
-To enable MARL agents instead of heuristic agents:
-
-```bash
-python -m sixg_sim.main --topology config/topology_example.yaml --scenario config/scenario_severance.yaml --output-dir results/ --use-rl
-```
-
-The MARL implementation uses:
-- **MAPPO (Multi-Agent PPO)** with centralized training, decentralized execution
-- **Cooperative learning** for network optimization in island mode
-- **Neural network policies** with 50-dimensional observation space
-- **Multi-objective reward function**: QoS (40%), Energy (30%), Coordination (20%), Stability (10%)
-- **Experience replay** and periodic policy updates every 10 ticks
-- **Centralized critic** for multi-agent value estimation
-
-Test MARL implementation:
-
-```bash
-python test_marl_agents.py
-```
-
-## Configuration Files
-
-### Topology Configuration
-
-Define network nodes and links in YAML:
-
-```yaml
-nodes:
-  - id: "gNB1"
-    type: "GNBSite"
-    initial_energy: 1.0
-    coverage_area: "zoneA"
-
-links:
-  - id: "L1"
-    endpoints: ["gNB1", "core"]
-    capacity: 1000
-    latency: 5
-    type: "fiber"
-```
-
-**Node Types**: GNBSite, Relay, EdgeUPF, Core, SatelliteGateway, FieldGateway
-
-**Link Types**: fiber, microwave, iab, d2d, satellite
-
-### Scenario Configuration
-
-Define simulation events and traffic patterns:
-
-```yaml
-name: "Island Mode Test"
-duration_ticks: 300
-
-events:
-  - tick: 50
-    type: "sever_core"
-    parameters: {}
-  - tick: 100
-    type: "traffic_surge"
-    parameters:
-      node_id: "gNB1"
-      duration: 30
-      multiplier: 2.5
-
-traffic_profiles:
-  gNB1:
-    life_safety:
-      baseline_rate: 8.0
-      burst_probability: 0.05
-```
-
-**Event Types**: sever_core, fail_link, restore_link, energy_depletion, traffic_surge, node_failure, node_recovery
-
-## Key Concepts
-
-### Island Mode Detection
-
-The simulation automatically detects when survivor nodes lose connectivity to core/central controllers and switches to island mode:
-
-- Agents prioritize life-safety traffic
-- Control communication switches to constrained DCC
-- Routing biases toward reliable local paths
-- Energy conservation becomes critical
-
-### Agent Decision Making
-
-Each survivor node runs a `HeuristicAgent` that:
-
-1. **Observes**: Local state, energy level, neighbor summaries via postcards
-2. **Decides**: Admission policies, routing biases, control message sending
-3. **Acts**: Protects critical traffic, throttles non-essential services
-
-### Control Overlays
-
-- **IP Overlay**: Normal operation with full connectivity
-- **DCC**: Island mode with 1 postcard/tick limits and tiny message sizes
-
-### Traffic Classes & QoS
-
-| Class | Priority | Preemption | Stress Policy |
-|-------|----------|------------|---------------|
-| Life Safety | 4 | Yes | Always Admit |
-| Operations | 3 | No | Always Admit |
-| Telemetry | 2 | No | Throttle |
-| Best Effort | 1 | No | Hold |
-
-## Output Analysis
-
-The simulation generates:
-
-### Metrics Files
-- `per_tick_metrics.csv`: Time-series data
-- `simulation_summary.txt`: Key KPIs and statistics
-
-### Plots
-- Life-safety success ratio over time
-- Node energy consumption
-- Link utilization statistics
-- Traffic delivery rates by class
-
-### Key Metrics
-- **Recovery Time**: Ticks to achieve 95% life-safety delivery after severance
-- **Energy Usage**: Total consumption and depletion events
-- **Connectivity**: Island formation and reachability
-- **Traffic Stats**: Admission/delivery rates per class
-
-## Example Output
-
-```
-============================================================
-6G NETWORK SIMULATION SUMMARY
-============================================================
-
-RECOVERY METRICS:
-  Severance occurred at tick: 50
-  Recovery time: 25 ticks
-  Life safety success ratio: 0.87
-
-ENERGY METRICS:
-  gNB1: 125.3 units used, final SoC: 0.92
-  gNB2: 98.7 units used, final SoC: 0.95
-  relay1: 245.1 units used, final SoC: 0.78
-
-CONNECTIVITY METRICS:
-  Final number of islands: 2
-
-TRAFFIC METRICS:
-  Life Safety:
-    Total offered: 1847.2, delivered: 1608.9
-    Admission rate: 0.98, delivery rate: 0.87
-  Operations:
-    Total offered: 2893.4, delivered: 2521.8
-    Admission rate: 0.95, delivery rate: 0.87
-```
-
-## Extending the Simulation
-
-### Adding New Agent Policies
-
-Replace `HeuristicAgent` with RL-trained policies:
-
-```python
-class RLAgent(BaseAgent):
-    def compute_action(self, observation: AgentObservation) -> AgentAction:
-        # Use trained policy network
-        action_vector = self.policy_net(observation_to_tensor(observation))
-        return tensor_to_action(action_vector)
-```
-
-### Enhanced Control Plane
-
-Add more sophisticated control overlays:
-
-```python
-class DTNOverlay(ControlOverlay):
-    """Delay-tolerant networking for extreme disruptions"""
-```
-
-### Realistic Traffic Models
-
-Implement time-varying patterns:
-
-```python
-class RealisticTrafficGenerator(TrafficGenerator):
-    def generate_traffic(self, tick: int) -> Dict[str, Dict[TrafficClass, float]]:
-        # Add diurnal patterns, event-driven surges, etc.
-```
-
-## Limitations & Simplifications
-
-- Simplified PHY/MAC/RLC modeling
-- No actual 3GPP protocol stacks
-- Heuristic agents (no RL training)
-- Limited control message semantics
-- No UE-to-UE sidelink modeling
-- Simplified energy consumption model
-
-## Future Work
-
-- Integration with MARL frameworks (Ray, PettingZoo)
-- Real-time visualization dashboard
-- Multi-scenario optimization
-- Hardware-in-the-loop validation
-- 3GPP standard compliance improvements
-
-## License
-
-This is a research proof-of-concept implementation for academic and experimental use.
+The manuscript's implementation audit discloses departures of this code from
+the system as designed. They include a control-channel send counter that is
+never reset (one postcard per site per episode), simulator-computed fragment
+labels, an idealised link-state forwarding service, a modelled overhead
+proxy, bridge flapping and stale relay edges. They were left in place, so
+that the frozen tree is the evaluated one. `records/stale_edge_diagnostic/`
+contains the flag-gated patch used to measure the effect of the stale-edge
+defect.

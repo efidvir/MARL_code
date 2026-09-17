@@ -1,0 +1,7 @@
+rule: lowest mean steady components over validation seeds 60-66 (Scenario A); ties -> higher achievability
+  static s1234  components 1.567  achievability 43.5  (instances 7/7)
+  static s2345  components 3.184  achievability 34.4  (instances 7/7)
+  static s3456  components 2.143  achievability 43.3  (instances 7/7)
+  static s4567  components 2.688  achievability 32.8  (instances 7/7)
+SELECTED: s1234
+bbee30e4e9a4d26432753341d72e64661eea63c67139d290a2e831479f01e01f  /home/efid/MARL_run_6/ce_ck_s1234/policy_final.pt

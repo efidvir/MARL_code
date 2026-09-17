@@ -1,0 +1,27 @@
+== Service-loss integral medians, Scenario A (pp.s; per-instance, post-event ticks) ==
+  development 50-59,70-79: marl_static 3 (n=20) | marl_freeze 62 (n=20) | xldet 36 (n=20) | sdn 2095 (n=20) | ospf 7345 (n=20) | olsr 6765 (n=20) | batman 6412 (n=20) | aodv 9057 (n=20) | random 48736 (n=20)
+  confirmatory 80-99: marl_static 10 (n=20) | marl_freeze 61 (n=20) | xldet 64 (n=20) | sdn 2219 (n=20) | ospf 10239 (n=20) | olsr 9785 (n=20) | batman 9448 (n=20) | aodv 11902 (n=20) | random 54032 (n=20)
+
+== Interferer stress test (development seeds 50-59, onset t=2000) ==
+  seeds: ['50', '51', '52', '53', '54', '55', '56', '57', '58', '59']
+  marl_static  pre 47.7  post 34.7  loss 13.0 +- 6.7  components pre 2.11 post 2.01
+  marl_freeze  pre 46.9  post 35.5  loss 11.4 +- 4.7  components pre 1.56 post 1.56
+  xldet        pre 40.0  post 31.7  loss 8.2 +- 3.5  components pre 1.40 post 1.40
+  sdn          pre 34.6  post 11.3  loss 23.3 +- 9.4  components pre 1.50 post 1.50
+  ospf         pre 32.8  post 10.6  loss 22.2 +- 5.8  components pre 3.20 post 3.20
+  post-onset achievability, static - XL-DET    mean +2.94  sd 4.97  95% CI [-0.61, +6.50]  ahead on 8/10  sign p=0.109  Wilcoxon p=0.0840
+  loss, static - XL-DET                        mean +4.81  sd 6.26  95% CI [+0.33, +9.28]  ahead on 8/10  sign p=0.109  Wilcoxon p=0.0371
+  post-onset achievability, static - SDN       mean +23.38  sd 6.28  95% CI [+18.89, +27.87]  ahead on 10/10  sign p=0.002  Wilcoxon p=0.0020
+  static components pre/post per seed: {'50': (2.0, 2.0), '51': (1.0, 1.0), '52': (3.0, 3.0), '53': (2.0, 2.0), '54': (3.0, 2.0), '55': (2.0, 2.0), '56': (1.57, 1.57), '57': (2.0, 2.0), '58': (2.57, 2.57), '59': (2.0, 2.0)}
+
+== Detection floor (Scenario A): mean achievability over ticks [200, 200+k), zero-delivery ticks after t0 ==
+  development 50-59,70-79  marl_static  [200,203) 32.1  [200,204) 35.3  pre 40.9  instances with a zero-achievability tick 0, zero-delivered tick 0
+  development 50-59,70-79  marl_freeze  [200,203) 31.0  [200,204) 32.4  pre 40.9  instances with a zero-achievability tick 0, zero-delivered tick 0
+  development 50-59,70-79  xldet        [200,203) 31.3  [200,204) 31.8  pre 40.9  instances with a zero-achievability tick 0, zero-delivered tick 0
+  development 50-59,70-79  sdn          [200,203) 0.0  [200,204) 0.0  pre 40.9  instances with a zero-achievability tick 20, zero-delivered tick 20
+  development 50-59,70-79  ospf         [200,203) 0.0  [200,204) 0.0  pre 40.9  instances with a zero-achievability tick 20, zero-delivered tick 20
+  confirmatory 80-99       marl_static  [200,203) 31.5  [200,204) 34.6  pre 41.5  instances with a zero-achievability tick 0, zero-delivered tick 0
+  confirmatory 80-99       marl_freeze  [200,203) 30.2  [200,204) 31.8  pre 41.5  instances with a zero-achievability tick 0, zero-delivered tick 0
+  confirmatory 80-99       xldet        [200,203) 30.8  [200,204) 30.8  pre 41.5  instances with a zero-achievability tick 0, zero-delivered tick 0
+  confirmatory 80-99       sdn          [200,203) 0.0  [200,204) 0.0  pre 41.5  instances with a zero-achievability tick 20, zero-delivered tick 20
+  confirmatory 80-99       ospf         [200,203) 0.0  [200,204) 0.0  pre 41.5  instances with a zero-achievability tick 20, zero-delivered tick 20

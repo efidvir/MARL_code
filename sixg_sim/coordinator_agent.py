@@ -80,6 +80,20 @@ class GlobalPolicyVector:
     def default(cls) -> 'GlobalPolicyVector':
         return cls()
 
+    @classmethod
+    def neutral(cls) -> 'GlobalPolicyVector':
+        """
+        Fixed neutral policy that imposes NO active perturbation on agents.
+
+        The only field with an ACTIVE effect is min_emergency_prb_guarantee:
+        agents (agent.py / simulation.py) enforce it as a floor on their
+        emergency PRB fraction, overriding the sampled PRB split.  Setting it
+        to 0.0 disables the floor entirely.  The remaining fields are only
+        observed passively in Block D of the agent observation, so any fixed
+        constant is neutral there — defaults are kept for those.
+        """
+        return cls(min_emergency_prb_guarantee=0.0)
+
 
 # ─── Policy network ────────────────────────────────────────────────────────────
 
@@ -123,7 +137,9 @@ class CoordinatorAgent:
         self.optimizer      = torch.optim.Adam(
             self.policy_net.parameters(), lr=lr
         )
-        self.current_policy = GlobalPolicyVector.default()
+        # Fixed neutral policy — no PRB floor, no perturbation of agents
+        # (see update() for why the learned policy is disabled).
+        self.current_policy = GlobalPolicyVector.neutral()
         self._last_state:   Optional[torch.Tensor] = None
         self._experiences:  List[Tuple[torch.Tensor, float]] = []
 
@@ -266,29 +282,15 @@ class CoordinatorAgent:
              current_tick:          int,
              iops_controller=None) -> GlobalPolicyVector:
         """
-        Run coordinator inference once per COORD_INTERVAL ticks.
-        Returns GlobalPolicyVector (unchanged on off-ticks).
+        Return the coordinator policy vector for this tick.
+
+        The learned policy is currently DISABLED (see update()): running an
+        untrained network here produced arbitrary outputs, and its PRB-floor
+        output (min_emergency_prb_guarantee) actively perturbed the agents'
+        sampled PRB splits.  Until a proper policy-gradient treatment exists,
+        the coordinator emits a fixed neutral vector that imposes no floor
+        and no perturbation.
         """
-        if current_tick % self.interval != 0:
-            return self.current_policy
-
-        state = self._build_global_state(
-            postcards, phy_mac_states, iops_manager,
-            ticks_since_severance, topology,
-            iops_controller=iops_controller
-        )
-        self._last_state = state
-
-        with torch.no_grad():
-            vec = self.policy_net(state.unsqueeze(0)).squeeze(0).tolist()
-
-        self.current_policy = GlobalPolicyVector(
-            energy_save_mode            = vec[0],
-            relay_density_target        = vec[1],
-            min_emergency_prb_guarantee = vec[2],
-            handover_aggressiveness     = vec[3],
-            power_budget_mode           = vec[4],
-        )
         return self.current_policy
 
     # ── Learning ───────────────────────────────────────────────────────────────
@@ -305,33 +307,24 @@ class CoordinatorAgent:
 
     def update(self, batch_size: int = 32) -> float:
         """
-        REINFORCE update for coordinator (simple — coordinator acts slowly).
-        Returns loss value.
+        Coordinator training is DISABLED (intentional no-op).
+
+        The previous "REINFORCE" update here was not a policy-gradient method:
+        it minimised MSE(policy outputs, normalized_reward * 0.5 + 0.5),
+        broadcasting ONE scalar target to all 5 policy dimensions — every knob
+        moved together toward the reward z-score, which is not reinforcement
+        learning and (combined with the untrained PRB-floor output) actively
+        perturbed the local agents.
+
+        TODO: implement a proper policy-gradient treatment (e.g., treat the
+        5-dim vector as a Gaussian/Beta policy, collect (state, action,
+        return) tuples over coordinator intervals, and apply REINFORCE/PPO
+        with a baseline).  The CoordinatorPolicyNet class is kept for that
+        purpose.  Until then the coordinator emits fixed neutral defaults
+        (see GlobalPolicyVector.neutral()).
         """
-        if len(self._experiences) < batch_size:
-            return 0.0
-
-        batch  = self._experiences[-batch_size:]
-        states = torch.stack([e[0] for e in batch])
-        rew    = torch.tensor([e[1] for e in batch], dtype=torch.float32)
-
-        if rew.std() > 1e-6:
-            rew = (rew - rew.mean()) / (rew.std() + 1e-8)
-
-        preds  = self.policy_net(states)          # (B, 5)
-        # Supervise: high reward → push all policy outputs toward 0.5
-        # (neutral policy) then let the gradient from individual-agent rewards
-        # refine further via the multi-agent reward signal through Block D obs.
-        target = (rew.unsqueeze(1) * 0.5 + 0.5 * torch.ones_like(preds)).clamp(0, 1)
-        loss   = F.mse_loss(preds, target.detach())
-
-        self.optimizer.zero_grad()
-        loss.backward()
-        nn.utils.clip_grad_norm_(self.policy_net.parameters(), 0.5)
-        self.optimizer.step()
-
         self._experiences.clear()
-        return float(loss.item())
+        return 0.0
 
     # ── Persistence ────────────────────────────────────────────────────────────
 

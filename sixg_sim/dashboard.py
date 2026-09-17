@@ -5,13 +5,7 @@ Visualizes loss metrics, rewards, episode trajectories, and action distributions
 """
 
 import matplotlib
-try:
-    matplotlib.use('TkAgg') # Try Tkinter backend first
-except ImportError:
-    try:
-        matplotlib.use('Qt5Agg') # Fallback to Qt
-    except ImportError:
-        pass # It will just fall back to agg and print warnings
+matplotlib.use('Agg') # Force non-interactive backend to prevent headless deadlocks
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import numpy as np
@@ -94,7 +88,7 @@ class TrainingDashboard:
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         self.fig.canvas.draw()
         try:
-            plt.pause(0.001)
+            self.fig.canvas.draw()
         except Exception:
             pass
             
@@ -181,7 +175,6 @@ class TrainingDashboard:
             
         try:
             self.fig.canvas.draw()
-            plt.pause(0.001)
         except Exception:
             pass # Handle window closed during draw
             

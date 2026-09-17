@@ -1,0 +1,21 @@
+=== 2026-09-16 17:15:07 UTC  early analysis waiter start ===
+=== 2026-09-16 21:49:08 UTC  inputs ready: confirmatory analysis ===
+    2026-09-16 21:49:13 UTC  confirmatory analysis exit=0
+    2026-09-16 21:49:19 UTC  sensitivity exit=0
+scenario A: 20 instances, 360 bins x 10 ticks
+scenario B: 20 instances, 360 bins x 10 ticks
+wrote confirmatory/timelines_cf_early.json
+tag cf       arms/seeds: {'recovery_multi': {'aodv': 20, 'batman': 20, 'marl_freeze': 20, 'marl_static': 20, 'olsr': 20, 'ospf': 20, 'random': 20, 'sdn': 20, 'xldet': 20}, 'rescue_multi': {'aodv': 20, 'batman': 20, 'marl_freeze': 20, 'marl_static': 20, 'olsr': 20, 'ospf': 20, 'random': 20, 'sdn': 20, 'xldet': 20}}
+wrote confirmatory/ce_results_A1_cf.json
+=== 2026-09-16 21:49:52 UTC  CONFIRMATORY EARLY DONE ===
+=== 2026-09-16 21:49:52 UTC  inputs ready: development analysis ===
+    2026-09-16 21:49:57 UTC  development analysis exit=0
+scenario A: 20 instances, 360 bins x 10 ticks
+scenario B: 20 instances, 360 bins x 10 ticks
+wrote confirmatory/timelines_dev_static_early.json
+=== 2026-09-16 21:50:02 UTC  DEVELOPMENT EARLY DONE ===
+tag dev      arms/seeds: {'recovery_multi': {'aodv': 20, 'batman': 20, 'marl_freeze': 20, 'marl_static': 20, 'olsr': 20, 'ospf': 20, 'random': 20, 'sdn': 20, 'xldet': 20}, 'rescue_multi': {'aodv': 20, 'batman': 20, 'marl_freeze': 20, 'marl_static': 20, 'olsr': 20, 'ospf': 20, 'random': 20, 'sdn': 20, 'xldet': 20}}
+tag cf       arms/seeds: {'recovery_multi': {'aodv': 20, 'batman': 20, 'marl_freeze': 20, 'marl_static': 20, 'olsr': 20, 'ospf': 20, 'random': 20, 'sdn': 20, 'xldet': 20}, 'rescue_multi': {'aodv': 20, 'batman': 20, 'marl_freeze': 20, 'marl_static': 20, 'olsr': 20, 'ospf': 20, 'random': 20, 'sdn': 20, 'xldet': 20}}
+tag stress   arms/seeds: {'recovery_multi': {'marl_freeze': 10, 'marl_static': 10, 'ospf': 10, 'sdn': 10, 'xldet': 10}, 'rescue_multi': {'marl_freeze': 10, 'marl_static': 10, 'ospf': 10, 'sdn': 10, 'xldet': 10}}
+wrote confirmatory/ce_results_A1.json
+=== 2026-09-16 21:51:02 UTC  KPI DUMP DONE ===

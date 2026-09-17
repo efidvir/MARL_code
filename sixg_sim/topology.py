@@ -7,7 +7,7 @@ along with utilities for loading topology configurations from YAML/JSON.
 
 import networkx as nx
 import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
+from typing import ClassVar, Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 import math
@@ -119,6 +119,20 @@ def _parse_link_type(raw: str) -> LinkType:
     return LinkType(raw)
 
 
+def _parse_interface_type(raw: str) -> InterfaceType:
+    """Parse an interface type string by enum value (e.g. 'Uu', 'Open-FH')
+    or by enum name (e.g. 'OPEN_FH', 'uu')."""
+    raw = str(raw).strip()
+    try:
+        return InterfaceType(raw)
+    except ValueError:
+        pass
+    try:
+        return InterfaceType[raw.upper().replace('-', '_')]
+    except KeyError:
+        raise ValueError(f"Unknown interface type: {raw!r}")
+
+
 class TrafficClass(Enum):
     """Traffic classes with priority ordering."""
     LIFE_SAFETY = "life_safety"      # Mission-critical, highest priority
@@ -129,20 +143,94 @@ class TrafficClass(Enum):
 
 @dataclass
 class TrafficQueue:
-    """Represents a traffic queue for a specific class at a node."""
+    """Represents a traffic queue for a specific class at a node.
+
+    BACKLOG SEMANTICS (corrected).  `queued_load` used to be incremented as
+    `queued_load += delivered` in Simulator._forward_traffic and was never
+    reset by reset_tick(), which made it a MONOTONIC CUMULATIVE-DELIVERY
+    COUNTER — it went up every time traffic was successfully delivered, i.e.
+    it was largest exactly when the queue was healthiest.  It was nonetheless
+    fed to the policy as `LocalSliceState.current_queue_length`
+    (simulation.py, _build_agent_observations), so the "queue length"
+    observation was really "total bytes I have ever delivered", monotonically
+    rising with tick index and carrying no congestion information at all.
+
+    It is now a genuine BACKLOG, maintained by `update_backlog()`:
+
+        backlog_{t} = clamp( backlog_{t-1}·(1 − LEAK) + (offered − delivered),
+                             0, BUFFER_MBIT )
+
+    a leaky-bucket / RED-style average queue length in Mbit (tick = 1 s, so
+    Mbps·tick = Mbit).  It RISES while traffic is being dropped, DRAINS with
+    time constant 1/LEAK = 5 ticks once drops stop, and SATURATES at a finite
+    buffer, which is what a real node with finite memory does.
+
+    Why a leaky bucket rather than a strict FIFO backlog: a strict backlog
+    would require re-presenting the carried-over load to the router next tick,
+    which changes offered-volume accounting and therefore every arm's headline
+    delivery KPI.  The leak keeps the fix confined to the observation that was
+    wrong.  Nothing here alters delivered/dropped accounting.
+    """
     traffic_class: TrafficClass
     offered_load: float = 0.0  # Total traffic offered this tick
     admitted_load: float = 0.0  # Traffic admitted to queue
-    queued_load: float = 0.0    # Current queue length
+    queued_load: float = 0.0    # Current backlog (Mbit) — see class docstring
     delivered_load: float = 0.0 # Traffic successfully delivered this tick
     dropped_load: float = 0.0   # Traffic dropped this tick
+    # Tick index of the most recent successful delivery on this slice, or -1 if
+    # nothing has ever been delivered.  Feeds an honest
+    # LocalSliceState.current_freshness (age of information) instead of the
+    # hardcoded 5.0 the observation carried before.
+    last_delivered_tick: int = -1
+
+    # Leaky-bucket backlog parameters.
+    #   LEAK: service/ageing rate per tick.  0.2 => 5-tick drain time
+    #         constant, i.e. steady-state backlog = 5x the per-tick drop rate,
+    #         the same order as the 3GPP PDB range for the non-critical
+    #         slices in this model.
+    #   BUFFER_MBIT: finite node buffer.  500 Mbit ~ 62 MB, a plausible
+    #         per-slice buffer for an O-RU/O-DU class device, and it bounds
+    #         the observation so a permanently starved slice reports
+    #         "saturated" rather than an unbounded number.
+    QUEUE_LEAK_PER_TICK: ClassVar[float] = 0.20
+    QUEUE_BUFFER_MBIT:   ClassVar[float] = 500.0
 
     def reset_tick(self):
-        """Reset per-tick counters."""
+        """Reset per-tick counters.
+
+        `queued_load` and `last_delivered_tick` are deliberately NOT reset:
+        they are carried STATE (a backlog and an age), not per-tick counters.
+        """
         self.offered_load = 0.0
         self.admitted_load = 0.0
         self.delivered_load = 0.0
         self.dropped_load = 0.0
+
+    def update_backlog(self, tick: int):
+        """Advance the leaky-bucket backlog from this tick's offered/delivered.
+
+        Call ONCE per tick per queue, after offered_load / delivered_load have
+        been set.  See the class docstring for the recurrence.
+        """
+        undelivered = max(0.0, self.offered_load - self.delivered_load)
+        self.queued_load = min(
+            self.QUEUE_BUFFER_MBIT,
+            max(0.0, self.queued_load * (1.0 - self.QUEUE_LEAK_PER_TICK)
+                + undelivered))
+        if self.delivered_load > 0.0:
+            self.last_delivered_tick = int(tick)
+
+    def freshness_ticks(self, tick: int) -> float:
+        """Age of information for this slice, in ticks.
+
+        0 when something was delivered this tick; the number of ticks since the
+        last successful delivery otherwise; and the current tick index itself
+        when nothing has EVER been delivered (the honest answer to "how stale
+        is my information" for a slice that has never been served).
+        """
+        if self.last_delivered_tick < 0:
+            return float(max(0, tick))
+        return float(max(0, tick - self.last_delivered_tick))
 
 
 @dataclass
@@ -198,8 +286,9 @@ class Node:
         self.energy_soc = max(0.0, self.energy_soc - consumption / divisor)
 
         # Mark as non-survivor if energy depleted (only for UEs; infra assumed powered)
+        # Note: Disabled battery depletion deactivation for UEs to keep offered traffic constant
         if self.energy_soc <= 0.0 and self.node_type == NodeType.UE:
-            self.is_survivor = False
+            pass
 
 
     def reset_queues(self):
@@ -272,15 +361,25 @@ class Topology:
         except nx.NetworkXError:
             return False
 
+    def is_ue_node(self, node_id: str) -> bool:
+        """Return True if node_id is a UE (any UE, including dynamically added
+        rescue UEs like 'Rescue_UE_N'). Uses the node type when the node is
+        registered; falls back to name-based matching otherwise."""
+        node = self.nodes.get(node_id)
+        if node is not None:
+            return node.node_type == NodeType.UE
+        # Name-based fallback: 'UE_*' or '*_UE_*' (e.g. 'Rescue_UE_5')
+        return node_id.startswith('UE_') or '_UE_' in node_id
+
     def _build_infrastructure_graph(self):
         """Build and cache the infrastructure-only graph (no Uu links)."""
         if not hasattr(self, '_infra_graph_cache') or self._infra_graph_cache is None:
             self._infra_graph_cache = nx.Graph()
             for node in self.nodes:
-                if not node.startswith('UE_'):
+                if not self.is_ue_node(node):
                     self._infra_graph_cache.add_node(node)
             for link in self.links.values():
-                if link.is_up and not any(ep.startswith('UE_') for ep in link.endpoints):
+                if link.is_up and not any(self.is_ue_node(ep) for ep in link.endpoints):
                     self._infra_graph_cache.add_edge(link.endpoints[0], link.endpoints[1])
             self._cache_stale = False   # freshly rebuilt
 
@@ -307,77 +406,167 @@ class Topology:
             return None
 
     def update_link_statuses(self):
-        """Update graph based on current link statuses."""
+        """Update graph based on current link statuses.
+
+        An edge is present iff at least one link between its endpoints is up
+        (parallel links share a single edge in this undirected graph).
+        Handles full fail -> restore -> fail cycles symmetrically.
+        """
+        # Determine, per endpoint pair, whether any link is up
+        up_link_for_pair: Dict[Tuple[str, str], Link] = {}
+        all_pairs = set()
         for link in self.links.values():
-            edge_data = self.graph.get_edge_data(link.endpoints[0], link.endpoints[1])
-            if edge_data:
-                # Remove edge if link is down
-                if not link.is_up:
-                    self.graph.remove_edge(link.endpoints[0], link.endpoints[1])
-                # Add edge if link is up and not present
-                elif not self.graph.has_edge(link.endpoints[0], link.endpoints[1]):
-                    self.graph.add_edge(link.endpoints[0], link.endpoints[1],
-                                      link_id=link.id, capacity=link.capacity)
+            pair = tuple(sorted(link.endpoints))
+            all_pairs.add(pair)
+            if link.is_up and pair not in up_link_for_pair:
+                up_link_for_pair[pair] = link
+
+        changed = False
+        for pair in all_pairs:
+            u, v = pair
+            up_link = up_link_for_pair.get(pair)
+            if up_link is not None:
+                # Re-add edge if link is up and edge absent (e.g. restored link)
+                if not self.graph.has_edge(u, v):
+                    self.graph.add_edge(u, v,
+                                        link_id=up_link.id,
+                                        capacity=up_link.capacity)
+                    changed = True
+            elif self.graph.has_edge(u, v):
+                # Remove edge if all links between the pair are down
+                self.graph.remove_edge(u, v)
+                changed = True
+
+        if changed:
+            # Keep infrastructure connectivity cache consistent with the graph
+            self.invalidate_infrastructure_cache()
     
-    def add_ue_dynamically(self, ue_id: str, coverage_area: Optional[str] = None, 
-                           connect_to_rus: Optional[List[str]] = None) -> bool:
+    # Attachment radius for a dynamically joining UE, metres.  A UE can only
+    # camp on a cell whose signal it can actually hear; 1500 m is the FR1
+    # macro cell-edge distance at nominal power in this model (SINR ~16 dB at
+    # 23 dBm, comfortably above the QPSK_1/3 threshold), so it is the outer
+    # bound of a plausible attachment, not a free-for-all.
+    UE_ATTACH_MAX_DIST_M = 1500.0
+    UE_ATTACH_MAX_CELLS  = 2      # dual connectivity, matching the generated
+                                  # topology's 1-2 nearest-O-RU attachment
+
+    def add_ue_dynamically(self, ue_id: str, coverage_area: Optional[str] = None,
+                           connect_to_rus: Optional[List[str]] = None,
+                           x_pos: Optional[float] = None,
+                           y_pos: Optional[float] = None,
+                           rng: Optional[Any] = None) -> bool:
         """
         Dynamically add a UE to the topology.
-        
+
+        GEOMETRY AND ATTACHMENT (corrected).  This method previously created
+        the UE with no coordinates at all — Node's x_pos/y_pos defaults left
+        every dynamically added UE (all 20 rescue UEs of a `rescue_force_arrival`
+        event) sitting at (0, 0), the corner of the 8 km x 8 km deployment — and
+        then attached it to 2-3 cells chosen with `random.sample`, i.e. UNIFORMLY
+        AT RANDOM over every surviving O-RU regardless of distance.  Two
+        consequences, both of which flattered the results:
+          * a rescue UE at (0, 0) is up to 11 km from the incident it was
+            dispatched to, so `geo_disaster` radii, fragment membership and any
+            distance-based capacity model saw the wrong geometry entirely;
+          * random attachment gave every rescue UE a link to a cell it could not
+            physically hear, and (because the samples were independent) spread
+            the rescue population across fragments so that "rescue UE is
+            attached" was essentially guaranteed for free.
+
+        Now: the caller supplies real coordinates (see
+        Simulator._handle_scenario_event's rescue_force_arrival, which scatters
+        them around the incident zone), and attachment is NEAREST-CELL within
+        UE_ATTACH_MAX_DIST_M — the physically correct rule, and the same rule
+        build_comparison_topology uses for its static UE population.
+
         Args:
             ue_id: Unique identifier for the UE
             coverage_area: Coverage area for the UE
-            connect_to_rus: List of O-RU IDs to connect to (if None, auto-connect)
-        
+            connect_to_rus: explicit list of cell IDs to attach to.  When given
+                it overrides nearest-cell selection (used by scenario events
+                that pin an attachment deliberately).
+            x_pos, y_pos: UE coordinates in metres.  When omitted, the UE is
+                placed at the centroid of the cells in its coverage area (or of
+                all surviving cells), which is a far better default than (0, 0)
+                but callers with a real position should always pass one.
+            rng: optional random.Random for the per-link capacity/latency draw,
+                so a caller can keep the draw reproducible.
+
         Returns:
             True if UE was added successfully
         """
         if ue_id in self.nodes:
             return False  # UE already exists
-        
-        # Create UE node
+
+        import random as _random
+        _rng = rng if rng is not None else _random
+
+        # Candidate serving cells: surviving radio access nodes.  O_RU is the
+        # normal case; RELAY sites are included because a relay hosts its own
+        # FR1 small cell (integrated access node — design decision 2), so it
+        # is a legitimate attachment point.
+        access_types = {NodeType.O_RU, NodeType.RELAY}
+        cells = [nid for nid, node in self.nodes.items()
+                 if node.node_type in access_types and node.is_survivor]
+        area_cells = [nid for nid in cells
+                      if coverage_area and self.nodes[nid].coverage_area == coverage_area]
+
+        # ── Position ──────────────────────────────────────────────────────
+        if x_pos is None or y_pos is None:
+            ref = area_cells or cells
+            if ref:
+                x_pos = sum(self.nodes[c].x_pos for c in ref) / len(ref)
+                y_pos = sum(self.nodes[c].y_pos for c in ref) / len(ref)
+            else:
+                x_pos, y_pos = 0.0, 0.0
+
+        # Create UE node WITH coordinates
         ue_node = Node(
             id=ue_id,
             node_type=NodeType.UE,
             initial_energy=1.0,
-            coverage_area=coverage_area
+            coverage_area=coverage_area,
+            x_pos=float(x_pos),
+            y_pos=float(y_pos),
         )
         self.add_node(ue_node)
-        
-        # Connect to O-RUs
+
+        # ── Attachment: nearest cell(s) inside the attach radius ──────────
         if connect_to_rus is None:
-            # Auto-connect: find O-RUs in the same coverage area or nearby
-            o_ru_nodes = [nid for nid, node in self.nodes.items() 
-                         if node.node_type == NodeType.O_RU and node.is_survivor]
-            if not o_ru_nodes:
-                return True  # UE added but no O-RUs available
-            
-            # Filter by coverage area if specified
-            if coverage_area:
-                area_rus = [nid for nid in o_ru_nodes 
-                           if self.nodes[nid].coverage_area == coverage_area]
-                if area_rus:
-                    o_ru_nodes = area_rus
-            
-            # Connect to 2-3 O-RUs (multi-connectivity)
-            import random
-            num_connections = min(random.randint(2, 3), len(o_ru_nodes))
-            selected_rus = random.sample(o_ru_nodes, num_connections)
-            connect_to_rus = selected_rus
-        
+            pool = area_cells or cells
+            if not pool:
+                return True  # UE added but no access node available
+
+            def _d(cid):
+                n = self.nodes[cid]
+                return math.hypot(n.x_pos - ue_node.x_pos,
+                                  n.y_pos - ue_node.y_pos)
+
+            ranked = sorted(pool, key=_d)
+            in_range = [c for c in ranked if _d(c) <= self.UE_ATTACH_MAX_DIST_M]
+            if in_range:
+                connect_to_rus = in_range[:self.UE_ATTACH_MAX_CELLS]
+            else:
+                # Nothing in range.  Attach to the single nearest cell rather
+                # than to nothing: a UE out of coverage of every surviving cell
+                # is what `_reachable_ue_fraction` is supposed to be able to
+                # report, and the honest way to express "barely in coverage" is
+                # one weak link whose capacity the SINR model will then scale
+                # down (LinkType.WIRELESS is MCS-scaled in consume_path).
+                connect_to_rus = ranked[:1]
+
         # Create Uu (air interface) links
-        import random
         link_counter = len(self.links) + 1
         for ru_id in connect_to_rus:
             if ru_id not in self.nodes:
                 continue
-            
+
             link_id = f"Uu_{ue_id}_{ru_id}_{link_counter}"
             link_counter += 1
-            
-            capacity = random.choice([50, 100, 150, 200])  # Mbps
-            latency = random.randint(1, 5)  # ms
-            
+
+            capacity = _rng.choice([50, 100, 150, 200])  # Mbps
+            latency = _rng.randint(1, 5)  # ms
+
             uu_link = Link(
                 id=link_id,
                 endpoints=(ue_id, ru_id),
@@ -448,12 +637,25 @@ def load_topology_from_yaml(file_path: str) -> Topology:
 
     # Load links
     for link_config in config.get('links', []):
+        endpoints = tuple(link_config['endpoints'])
+        # Interface type: honor explicit key, else infer — a link with a UE
+        # endpoint is Uu (air interface), all others are backhaul. Matches the
+        # convention used by the code-built topologies (InterfaceType.Uu on
+        # UE<->O-RU links, BACKHAUL on transport).
+        raw_iface = link_config.get('interface', link_config.get('interface_type'))
+        if raw_iface is not None:
+            interface_type = _parse_interface_type(raw_iface)
+        elif any(topology.is_ue_node(ep) for ep in endpoints):
+            interface_type = InterfaceType.Uu
+        else:
+            interface_type = InterfaceType.BACKHAUL
         link = Link(
             id=link_config['id'],
-            endpoints=tuple(link_config['endpoints']),
+            endpoints=endpoints,
             capacity=link_config['capacity'],
             latency=link_config.get('latency', 1),
             link_type=_parse_link_type(link_config.get('type', 'fiber')),
+            interface_type=interface_type,
             is_up=link_config.get('is_up', True)
         )
         topology.add_link(link)

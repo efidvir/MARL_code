@@ -1,0 +1,60 @@
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4088: UserWarning: Exact p-value calculation does not work if there are zeros. Switching to normal approximation.
+  warnings.warn("Exact p-value calculation does not work if there are "
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4102: UserWarning: Sample size too small for normal approximation.
+  warnings.warn("Sample size too small for normal approximation.")
+instances: A=20 B=20   excluded (harness failures): {'A': [], 'B': []}
+
+Scenario A  (optimum 1 on 13/20, mean optimum 1.45, mean raw 3.25)
+  arm                    ach    thr  E/tick J/u pool    comps  atopt    pre
+  marl_static   47.3 +-  7.0   1030   222.3   0.2188     2.06   9/20   40.9
+  xldet         41.3 +-  6.9    898   224.4   0.2505     1.45  20/20   40.9
+  sdn           38.3 +- 10.7    833   201.7   0.2474     1.50  19/20   40.9
+  ospf          31.1 +-  6.7    678   193.3   0.2874     3.25   0/20   40.9
+  olsr          31.1 +-  6.7    678   193.3   0.2860     3.25   0/20   40.9
+  batman        31.1 +-  6.7    678   189.0   0.2792     3.25   0/20   40.9
+  aodv          31.1 +-  6.7    678   188.9   0.2862     3.25   0/20   40.9
+  random        18.6 +-  2.8    405   194.5   0.4576     2.26   1/20   40.9
+  marl_freeze   47.2          (adapt-then-freeze, secondary)  J/u pool 0.2252  comps 1.63
+
+Scenario B  (optimum 1 on 13/20, mean optimum 1.35, mean raw 1.75)
+  arm                    ach    thr  E/tick J/u pool    comps  atopt    pre
+  marl_static   46.3 +-  8.3   1364   223.3   0.1699     1.50  17/20   55.0
+  xldet         36.7 +- 10.1   1080   222.2   0.2141     1.35  20/20   42.7
+  sdn           36.3 +-  7.7   1069   198.8   0.1941     1.35  20/20   42.7
+  ospf          35.3 +-  7.3   1038   196.3   0.1980     1.75  13/20   41.5
+  olsr          35.3 +-  7.3   1038   196.3   0.1980     1.75  13/20   41.5
+  batman        35.3 +-  7.3   1038   192.1   0.1943     1.75  13/20   41.5
+  aodv          35.3 +-  7.3   1038   191.9   0.1937     1.75  13/20   41.5
+  random        19.0 +-  3.5    558   201.1   0.3728     1.49  14/20   22.8
+  marl_freeze   49.3          (adapt-then-freeze, secondary)  J/u pool 0.1710  comps 1.45
+
+PRIMARY: arm marl_static (Holm over 9, exact Wilcoxon):
+  P1_A_ach_vs_xldet             +6.0829  CI [+2.8797, +9.2862]  wins 15/20  sign 0.0414  W 0.00121 (scipy 0.00121)  Holm 0.00363  CONFIRMED
+  P2_A_ach_vs_sdn               +9.0672  CI [+3.5639, +14.5705]  wins 16/20  sign 0.0118  W 0.00021 (scipy 0.00021)  Holm 0.00084  CONFIRMED
+  P3_A_ach_vs_best_routing     +16.2000  CI [+12.4212, +19.9788]  wins 20/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00002  CONFIRMED
+  P4_B_ach_vs_xldet             +9.6431  CI [+6.3343, +12.9518]  wins 19/20  sign 0.0000  W 0.00001 (scipy 0.00001)  Holm 0.00003  CONFIRMED
+  P5_B_ach_vs_sdn              +10.0009  CI [+7.8607, +12.1410]  wins 20/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00002  CONFIRMED
+  P6_B_ach_vs_best_routing     +11.0583  CI [+8.9076, +13.2089]  wins 20/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00002  CONFIRMED
+  P7_A_jpu_vs_xldet             -0.0347  CI [-0.0580, -0.0115]  wins 16/20  sign 0.0118  W 0.00169 (scipy 0.00169)  Holm 0.00363  CONFIRMED
+  P8_A_jpu_vs_sdn               -0.2346  CI [-0.6899, +0.2208]  wins 15/20  sign 0.0414  W 0.02958 (scipy 0.02958)  Holm 0.02958  CONFIRMED
+  P9_A_jpu_vs_best_routing      -0.0737  CI [-0.1160, -0.0313]  wins 20/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00002  CONFIRMED
+
+SECONDARY:
+  S1_A_components_marl_minus_xldet   +0.6071  CI [+0.3145, +0.8997]  wins 11/20  sign 0.0010  W 0.00098
+  S1_B_components_marl_minus_xldet   +0.1500  CI [-0.0215, +0.3215]  wins  3/20  sign 0.2500  W 0.25000
+  S2_B_change_vs_xldet               -2.7259  CI [-4.5043, -0.9474]  wins  5/20  sign 0.0414  W 0.00199
+  S2_B_change_vs_sdn                 -2.3655  CI [-4.2467, -0.4844]  wins  4/20  sign 0.0118  W 0.00233
+  S2_B_change_vs_best_routing        -2.4565  CI [-4.3548, -0.5581]  wins  3/20  sign 0.0026  W 0.00199
+  S3_B_pre_level_vs_xldet           +12.3689  CI [+8.5277, +16.2102]  wins 20/20  sign 0.0000  W 0.00000
+  S3_B_pre_level_vs_sdn             +12.3664  CI [+10.1278, +14.6049]  wins 20/20  sign 0.0000  W 0.00000
+  S3_B_pre_level_vs_best_routing    +13.5117  CI [+11.2477, +15.7756]  wins 20/20  sign 0.0000  W 0.00000
+  S4_A_abs_energy_vs_xldet           -2.0619  CI [-6.8663, +2.7424]  wins  9/20  sign 0.8238  W 0.38838
+  S5_A_sli_vs_xldet                -1975.3683  CI [-4749.4102, +798.6737]  wins 17/20  sign 0.0001  W 0.00002
+  S6_B_jpu_vs_xldet                  -0.0594  CI [-0.0916, -0.0272]  wins 19/20  sign 0.0000  W 0.00001
+  S7_A_ach_marl_static_minus_marl_freeze   +0.1407  CI [-2.8856, +3.1671]  wins 11/20  sign 0.8238  W 0.95633
+  S7_A_components_marl_static_minus_marl_freeze   +0.4258  CI [+0.0981, +0.7535]  wins  1/20  sign 0.0215  W 0.01953
+  S7_B_ach_marl_static_minus_marl_freeze   -2.9694  CI [-6.2588, +0.3200]  wins  8/20  sign 0.5034  W 0.11399
+  S7_B_components_marl_static_minus_marl_freeze   +0.0500  CI [-0.1344, +0.2344]  wins  1/20  sign 1.0000  W 1.00000
+  shared_world_A_pre_event_spread_pp 0.0
+
+written confirmatory/dev_report_A1_early.json

@@ -1,0 +1,16 @@
+=== 2026-09-16 13:41:36 UTC smoke2 start ===
+static exit=0
+base_orig exit=0
+base_new exit=0
+static audit recovery_multi start=92dc2a7e5d023a54 end=92dc2a7e5d023a54 -> PASS
+static audit rescue_multi   start=92dc2a7e5d023a54 end=92dc2a7e5d023a54 -> PASS
+baseline identity recovery_multi xldet   exact on 23 series | differ: [] ['energy', 'latency'] [] -> FAIL
+baseline identity recovery_multi ospf    exact on 23 series | differ: [] ['energy', 'latency'] [] -> FAIL
+baseline identity recovery_multi sdn     exact on 23 series | differ: [] ['energy', 'latency'] [] -> FAIL
+baseline identity recovery_multi random  exact on 23 series | differ: [] ['energy', 'latency'] [] -> FAIL
+baseline identity rescue_multi   xldet   exact on 23 series -> PASS
+baseline identity rescue_multi   ospf    exact on 23 series -> PASS
+baseline identity rescue_multi   sdn     exact on 23 series -> PASS
+baseline identity rescue_multi   random  exact on 23 series -> PASS
+SMOKE2 RESULT: FAILURES PRESENT
+=== 2026-09-16 13:51:39 UTC smoke2 complete ===

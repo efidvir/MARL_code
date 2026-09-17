@@ -378,7 +378,9 @@ def main():
                         try:
                             _saved = _torch.load(_latest, map_location='cpu')
                             # Load into the shared reference actor
-                            mappo_trainer._ref_actor.load_state_dict(
+                            from sixg_sim.agent import load_policy_state_dict
+                            load_policy_state_dict(
+                                mappo_trainer._ref_actor,
                                 _saved.get('state_dict', _saved), strict=False)
                             _resume_ep = int(_saved.get('metadata', {}).get('episode', 0))
                             print(f"[Resume] Loaded checkpoint: {_latest}  (ep={_resume_ep})")
@@ -400,353 +402,164 @@ def main():
                     else:
                         print("[Resume] No checkpoints found — starting fresh")
 
-                # ── Episode training loop ──────────────────────────────────────────────
-                for episode in range(args.train_episodes):
-                    ep_num = episode + 1
-                    ep_scenario = generator.generate(
-                        episode=ep_num,
-                        seed=args.seed + episode
-                    )
-                    print(f"\n--- Training Episode {ep_num}/{args.train_episodes} "
-                          f"| scenario={ep_scenario.scenario_type} "
-                          f"| {ep_scenario.description} ---")
-
+                # ── Distributed Episode training loop ─────────────────────────────────
+                import concurrent.futures
+                from sixg_sim.worker import run_worker_episode
+                
+                batch_size = min(16, args.train_episodes)
+                for batch_start in range(0, args.train_episodes, batch_size):
+                    batch_end = min(batch_start + batch_size, args.train_episodes)
                     
-                    if dashboard:
-                        scenario_info = {
-                            'duration_ticks': ep_scenario.duration_ticks,
-                            'events': [vars(e) for e in ep_scenario.events]
-                        }
-                        dashboard.update_scenario(episode + 1, args.train_episodes, scenario_info)
-                        dashboard.render()
+                    print(f"\n{'='*50}")
+                    print(f"--- Launching Batch {batch_start+1} to {batch_end} ---")
+                    print(f"{'='*50}")
+
+                    # 1. Gather state dicts
+                    actor_sd = {k: v.cpu() for k, v in mappo_trainer._ref_actor.state_dict().items()}
+                    critic_sd = {k: v.cpu() for k, v in mappo_trainer.critic_net.state_dict().items()}
                     
-                    config = SimulationConfig(enable_island_detection=True, verbose=False)
-                    ep_topology = get_fresh_topology()
+                    futures = []
+                    # Note: no manual pool clear needed here — MAPPOTrainer.update()
+                    # clears the pool at the end of every successful update.
 
-                    # Build sim for this episode but REPLACE its agents with our persistent ones
-                    sim = Simulator(ep_topology, ep_scenario, config)
-                    sim._current_scenario_type = ep_scenario.scenario_type
-                    for aid, persistent_agent in rl_agents.items():
-                        if aid in sim.agents:
-                            sim.agents[aid] = persistent_agent
-                    # Clear per-episode experience buffers so each episode trains on fresh data
-                    for agent in rl_agents.values():
-                        agent.experiences.clear()
-                    # Per-episode state
-                    prev_global_obs    = None
-                    prev_global_action = {}
-                    episode_rewards    = []
-                    obs_tensors        = {}
-                    _last_losses       = {}
-                    # ── Tick loop ─────────────────────────────────────────────────────────
-                    for tick in range(ep_scenario.duration_ticks):
-                        sim.current_tick = tick
-                        sim._process_events(tick)
-                        was_island = sim.island_mode
-                        sim.island_mode = sim._detect_island_mode()
-                        sim.control_plane.set_island_mode(sim.island_mode)
+                    avg_ep_reward = 0.0
 
-                        if sim.island_mode and not was_island:
-                            sim.marl_ue_routing_enabled = True
-
-                        traffic_arrivals = sim._generate_traffic()
-                        sim._forward_traffic(traffic_arrivals)
-                        observations = sim._build_agent_observations()
-
-                        # ── Collect obs tensors (batched) + record current actions ──
-                        # _execute_agent_actions() will do the single batched forward;
-                        # here we just build the obs_tensor dict (one tensor per agent)
-                        # for MAPPO value/log-prob computation.
-                        obs_tensors = {}
-                        current_global_action = {}
-                        try:
-                            import torch as _torch
-                            _aids = [aid for aid in sim.agents if aid in observations]
-                            if _aids:
-                                _obs_stack = _torch.stack([
-                                    sim.agents[aid].observation_to_tensor(observations[aid])
-                                    for aid in _aids
-                                ])
-                                for i, aid in enumerate(_aids):
-                                    obs_tensors[aid] = _obs_stack[i]
-                        except Exception:
-                            for aid, agent in sim.agents.items():
-                                if aid in observations and hasattr(agent, 'compute_action'):
-                                    try:
-                                        obs_tensors[aid] = agent.observation_to_tensor(observations[aid])
-                                    except Exception:
-                                        pass
-
-                        # ── Store MAPPO experience + collect shaped reward ───────
-                        if mappo_trainer and prev_global_obs is not None and prev_global_action:
-                            global_rewards = {}
-                            g_mix = getattr(args, 'global_reward_mix', 0.6)
-                            try:
-                                global_conn_r = sim.compute_global_connectivity_reward()
-                            except Exception:
-                                global_conn_r = 0.0
-
-                            # ONE centralised critic call for all agents
-                            value = mappo_trainer.get_value(list(obs_tensors.values()))
-
-                            # Vectorised log_prob: batch all act_heads then call once
-                            _batch_aids = []
-                            _batch_obs  = []
-                            _batch_heads = []
-                            _batch_prb   = []
-                            _batch_r     = []
-
-                            # Parallel reward computation — each agent is independent
-                            from concurrent.futures import ThreadPoolExecutor as _TPE
-
-                            _eligible = [
-                                (aid, agent)
-                                for aid, agent in sim.agents.items()
-                                if (hasattr(agent, 'calculate_reward') and
-                                    aid in prev_global_obs and
-                                    aid in prev_global_action and
-                                    aid in observations and
-                                    aid in obs_tensors)
-                            ]
-
-                            def _compute_one_reward(item):
-                                aid, agent = item
-                                prev_act = prev_global_action[aid]
-                                reward_comps = agent.calculate_reward(
-                                    prev_global_obs[aid], prev_global_action[aid], observations[aid]
-                                )
-                                local_r = reward_comps.total_reward
-                                r = (1.0 - g_mix) * local_r + g_mix * global_conn_r
-                                act_heads = {
-                                    'tx_power':  prev_act.tx_power_step,
-                                    'mcs_emrg':  prev_act.mcs_emergency_idx,
-                                    'mcs_gen':   prev_act.mcs_general_idx,
-                                    'relay':     prev_act.relay_mode_idx,
-                                    'handover':  prev_act.handover_idx,
-                                    'scheduler': prev_act.scheduler_idx,
-                                    'postcard':  int(prev_act.send_postcard),
-                                }
-                                prb = [prev_act.prb_emergency_frac,
-                                       prev_act.prb_relay_frac,
-                                       prev_act.prb_general_frac]
-                                return aid, r, act_heads, prb
-
-                            _n_workers = min(8, max(1, len(_eligible)))
-                            if _n_workers > 1:
-                                with _TPE(max_workers=_n_workers) as _pool:
-                                    _reward_results = list(_pool.map(_compute_one_reward, _eligible))
-                            else:
-                                _reward_results = [_compute_one_reward(x) for x in _eligible]
-
-                            for aid, r, act_heads, prb in _reward_results:
-                                global_rewards[aid] = r
-                                _batch_aids.append(aid)
-                                _batch_obs.append(obs_tensors[aid])
-                                _batch_heads.append(act_heads)
-                                _batch_prb.append(prb)
-                                _batch_r.append(r)
-
-                            # Batch log_prob for all agents in one forward pass
-                            if _batch_aids:
-                                try:
-                                    import torch as _torch
-                                    _log_probs = mappo_trainer.compute_log_prob_batch(
-                                        _batch_aids, _torch.stack(_batch_obs), _batch_heads, _batch_prb
-                                    )
-                                except Exception:
-                                    _log_probs = [
-                                        mappo_trainer.compute_log_prob(aid, obs, heads, prb)
-                                        for aid, obs, heads, prb in
-                                        zip(_batch_aids, _batch_obs, _batch_heads, _batch_prb)
-                                    ]
-                                for j, aid in enumerate(_batch_aids):
-                                    mappo_trainer.collect(
-                                        aid, obs_tensors[aid],
-                                        _batch_heads[j], _batch_prb[j],
-                                        _log_probs[j], value, _batch_r[j], done=False
-                                    )
-
-                            if global_rewards:
-                                episode_rewards.append(sum(global_rewards.values()))
-
-                            # MAPPO update every 100 ticks (5× per episode)
-                            _upd_interval = getattr(args, 'mappo_update_interval', 100)
-                            if tick > 0 and tick % _upd_interval == 0 and mappo_trainer.buffer_size() >= 2048:
-                                try:
-                                    losses = mappo_trainer.update(
-                                        next_global_obs=list(obs_tensors.values())
-                                    )
-                                    _last_losses = losses
-                                    if live_dash:
-                                        live_dash.push_state(
-                                            __import__('sixg_sim.visualizer', fromlist=['build_snapshot'])
-                                            .build_snapshot(
-                                                sim, tick, episode+1, "train",
-                                                policy_loss=float(losses.get('policy_loss', float('nan'))),
-                                                value_loss =float(losses.get('value_loss',  float('nan'))),
-                                                entropy    =float(losses.get('entropy',     float('nan'))),
-                                                episode_reward=float(sum(global_rewards.values())/max(1,len(global_rewards))),
-                                            )
-                                        )
-                                except Exception as ex:
-                                    print(f"  [MAPPO] update error tick {tick}: {ex}")
-                                else:
-                                    _kpi_tracker.update_losses(
-                                        float(losses.get('policy_loss', float('nan'))),
-                                        float(losses.get('value_loss',  float('nan'))),
-                                        float(losses.get('entropy',     float('nan'))),
-                                    )
-
-                        sim._execute_agent_actions(observations)
-                        # Read actions computed by the batched forward in _execute_agent_actions
-                        for aid, agent in sim.agents.items():
-                            if aid in observations and agent.last_action is not None:
-                                current_global_action[aid] = agent.last_action
-                        prev_global_obs    = observations
-                        prev_global_action = current_global_action
-
-                        # ── LearningTracker: record per-tick KPIs ─────────────────
-                        _tick_kpis = sim.get_island_kpis()
-                        _mean_r = (
-                            sum(global_rewards.values()) / max(1, len(global_rewards))
-                            if 'global_rewards' in dir() and global_rewards else 0.0
-                        )
-                        _kpi_tracker.record_tick(
-                            tick=tick,
-                            episode=episode + 1,
-                            island_mode=sim.island_mode,
-                            ue_conn_frac=_tick_kpis['ue_conn_frac'],
-                            transport_relay_count=_tick_kpis['transport_relay_count'],
-                            transport_link_count=_tick_kpis['transport_link_count'],
-                            reward=_mean_r,
-                            policy_loss=float(_last_losses.get('policy_loss', float('nan'))),
-                            value_loss =float(_last_losses.get('value_loss',  float('nan'))),
-                            entropy    =float(_last_losses.get('entropy',     float('nan'))),
-                        )
-
-                        # ── Build snapshot for visualizer / live dashboard ────────
-                        _do_snap = (vis_hook is not None or live_dash is not None) and tick % 2 == 0
-                        if _do_snap:
-                            from sixg_sim.visualizer import build_snapshot
-                            _er = float(np.mean(episode_rewards[-5:])) if episode_rewards else 0.0
-                            snap = build_snapshot(
-                                sim, tick, episode+1, "train",
-                                policy_loss=float(_last_losses.get('policy_loss', float('nan'))),
-                                value_loss =float(_last_losses.get('value_loss',  float('nan'))),
-                                entropy    =float(_last_losses.get('entropy',     float('nan'))),
-                                episode_reward=_er
-                            )
-                            if vis_hook is not None:
-                                vis_hook.on_tick(snap)
-                            if live_dash is not None:
-                                try:
-                                    live_dash.push_state(snap)
-                                except Exception:
-                                    pass
-
-                    # ── End of episode ──────────────────────────────────────────────
-                    avg_ep_reward = sum(episode_rewards) / len(episode_rewards) if episode_rewards else 0.0
-                    # Compute optimal (theoretical max) connectivity
-                    _opt = sim.compute_optimal_connectivity()
-                    ep_rec = _kpi_tracker.close_episode(
-                        episode + 1,
-                        scenario_type=getattr(ep_scenario, 'scenario_type', 'full_core')
-                    )
-                    print(f"  Episode {episode + 1}: avg_reward={avg_ep_reward:.4f}  "
-                          f"post_sev_UE={ep_rec.post_sev_ue_conn:.1%}  "
-                          f"transport_relays={ep_rec.post_sev_transport_relay:.1f}  "
-                          f"peak_relays={ep_rec.peak_transport_relay}")
-                    print(f"  [OPTIMAL] theoretical_max={_opt['optimal_frac']:.1%}  "
-                          f"actual={_opt['actual_frac']:.1%}  "
-                          f"efficiency={_opt['efficiency']:.1%}  "
-                          f"({_opt['actual_flows']}/{_opt['optimal_flows']}/{_opt['total_flows']} "
-                          f"actual/optimal/total flows, {_opt['n_components']} components)")
-
-                    if mappo_trainer:
-                        # Final MAPPO update at episode end
-                        final_losses = mappo_trainer.update()
-                        pool_sz = final_losses.get('pool_size', '?')
-                        print(f"  [MAPPO] critic_loss={final_losses['value_loss']:.4f}  "
-                              f"policy_loss={final_losses['policy_loss']:.4f}  "
-                              f"entropy={final_losses['entropy']:.4f}  "
-                              f"pool={pool_sz}")
-
-                        # Entropy decay: MULTIPLICATIVE (×0.97/ep) with hard floor
-                        _cfg = mappo_trainer.config
-                        _cfg.entropy_coef = max(
-                            _cfg.entropy_min,
-                            _cfg.entropy_coef * _cfg.entropy_decay
-                        )
-
-                        # LR decay: actor decays faster than critic
-                        _ep_num = episode + 1
-                        _base_lr_actor  = 1e-4
-                        _base_lr_critic = 3e-4
-                        # Actor: halve every 50 episodes (gentle for 200 ep run)
-                        _decayed_lr_actor  = max(1e-6, _base_lr_actor * (0.5 ** (_ep_num / 50.0)))
-                        # Critic: halve every 100 episodes (very slow — let it converge)
-                        _decayed_lr_critic = max(5e-6, _base_lr_critic * (0.5 ** (_ep_num / 100.0)))
-                        if mappo_trainer._actor_opt is not None:
-                            for pg in mappo_trainer._actor_opt.param_groups:
-                                pg['lr'] = _decayed_lr_actor
-                            for pg in mappo_trainer.critic_opt.param_groups:
-                                pg['lr'] = _decayed_lr_critic
-                        print(f"  [MAPPO] entropy={_cfg.entropy_coef:.4f}  "
-                              f"lr_actor={_decayed_lr_actor:.2e}  lr_critic={_decayed_lr_critic:.2e}")
-
-                        if dashboard:
-                            dashboard.add_training_metrics(
-                                final_losses['value_loss'],
-                                final_losses['policy_loss'],
-                                avg_ep_reward
-                            )
-                            dashboard.render()
-
-                        # Save checkpoint after each episode (resilient to disk errors)
-                        try:
-                            for aid, agent in rl_agents.items():
-                                registries[aid].save(
-                                    agent.policy_net,
-                                    metadata={'episode': episode, 'avg_reward': avg_ep_reward}
-                                )
-                        except Exception as _ckpt_err:
-                            print(f"  [CKPT] WARNING: checkpoint save failed: {_ckpt_err}")
-
-                        # Notify visualizer + live dashboard of episode end
-                        conn_rate = float(getattr(sim, '_last_routed_flows', 0)) / max(1, float(getattr(sim, '_total_ue_flows', 1)))
-                        if vis_hook is not None:
-                            vis_hook.on_episode_end(episode + 1)
-                        if live_dash is not None:
-                            try:
-                                live_dash.push_episode_end(episode + 1, avg_ep_reward, conn_rate)
-                                # Push training progress with learning metrics
-                                _reward_history = [r.ep_reward_mean for r in _kpi_tracker.episodes[-5:]]
-                                _trend = ((_reward_history[-1] - _reward_history[0]) / max(1, len(_reward_history))
-                                         ) if len(_reward_history) >= 2 else 0.0
-                                live_dash.push_training_progress(
-                                    episode=episode + 1,
-                                    total_episodes=args.train_episodes,
-                                    scenario_type=getattr(ep_scenario, 'scenario_type', 'full_core'),
-                                    metrics={
-                                        "policy_loss":    final_losses.get('policy_loss') if mappo_trainer else None,
-                                        "critic_loss":    final_losses.get('value_loss') if mappo_trainer else None,
-                                        "entropy":        final_losses.get('entropy') if mappo_trainer else None,
-                                        "avg_reward":     avg_ep_reward,
-                                        "ue_connectivity": ep_rec.post_sev_ue_conn,
-                                        "relay_count":    ep_rec.post_sev_transport_relay,
-                                        "peak_relays":    ep_rec.peak_transport_relay,
-                                        "lr_actor":       _decayed_lr_actor if mappo_trainer else None,
-                                        "lr_critic":      _decayed_lr_critic if mappo_trainer else None,
-                                        "reward_trend":   _trend,
-                                        "optimal_frac":   _opt['optimal_frac'],
-                                        "efficiency":     _opt['efficiency'],
-                                        "n_components":   _opt['n_components'],
-                                    }
-                                )
-                            except Exception as _dash_err:
-                                print(f"  [Dashboard] push error: {_dash_err}")
+                    with concurrent.futures.ProcessPoolExecutor(max_workers=batch_size) as pool:
+                        for ep_idx in range(batch_start + 1, batch_end + 1):
+                            args_dict = {
+                                'topology_path': str(topology_path),
+                                'episode_idx': ep_idx,
+                                'seed': args.seed + ep_idx,
+                                'episode_ticks': getattr(args, 'episode_ticks', 800),
+                                'curriculum_start': getattr(args, 'curriculum_start', 4),
+                                'actor_state_dict': actor_sd,
+                                'critic_state_dict': critic_sd,
+                                'global_reward_mix': getattr(args, 'global_reward_mix', 0.6)
+                            }
+                            futures.append(pool.submit(run_worker_episode, args_dict))
                             
-                # ── Save LearningTracker + auto-generate convergence plots ─────────
+                        for future in concurrent.futures.as_completed(futures):
+                            try:
+                                res = future.result()
+                                ep_num = res['episode_idx']
+                                ep_rec = res['ep_rec']
+                                pool_data = res['pool_data']
+                                _opt = res['optimal_connectivity']
+                                avg_ep_reward = res['avg_ep_reward']
+                                
+                                # Combine PROCESSED data (advantages/returns were
+                                # computed per-agent, per-episode in the worker, so
+                                # merging worker pools in arbitrary order is safe —
+                                # no GAE is ever run over this merged pool).
+                                import torch
+                                obs_tensors = [torch.from_numpy(arr).float() for arr in pool_data['obs']]
+                                gobs_tensors = [torch.from_numpy(arr).float() for arr in pool_data['global_obs']]
+                                mappo_trainer._pool.obs.extend(obs_tensors)
+                                mappo_trainer._pool.global_obs.extend(gobs_tensors)
+                                mappo_trainer._pool.actions.extend(pool_data['actions'])
+                                mappo_trainer._pool.prb_acts.extend(pool_data['prb_acts'])
+                                mappo_trainer._pool.log_probs.extend(pool_data['log_probs'])
+                                mappo_trainer._pool.advantages.extend(pool_data['advantages'])
+                                mappo_trainer._pool.returns.extend(pool_data['returns'])
+                                
+                                # Update KPIs natively
+                                _kpi_tracker.episodes.append(ep_rec)
+                                
+                                print(f"  Worker Episode {ep_num}: avg_reward={avg_ep_reward:.4f}  "
+                                      f"post_sev_UE={ep_rec.post_sev_ue_conn:.1%}  "
+                                      f"transport_relays={ep_rec.post_sev_transport_relay:.1f}  "
+                                      f"peak_relays={ep_rec.peak_transport_relay}")
+                                print(f"  [OPTIMAL] theoretical_max={_opt['optimal_frac']:.1%}  "
+                                      f"actual={_opt['actual_frac']:.1%}  "
+                                      f"efficiency={_opt['efficiency']:.1%}  "
+                                      f"({_opt['actual_flows']}/{_opt['optimal_flows']}/{_opt['total_flows']} "
+                                      f"actual/optimal/total flows, {_opt['n_components']} components)")
+
+                            except Exception as e:
+                                print(f"Worker Error: {e}")
+
+                    # 2. End of Batch MAPPO Update
+                    print(f"--- End of Batch: Performing Global MAPPO Update ---")
+                    try:
+                        final_losses = mappo_trainer.update()
+                    except Exception as e:
+                        print(f"Global MAPPO Update Error: {e}")
+                        final_losses = {'value_loss': 0.0, 'policy_loss': 0.0, 'entropy': 0.0}
+
+                    # update() clears the pool afterwards — report the size it trained on
+                    pool_sz = final_losses.get('pool_size', 0)
+                    print(f"  [MAPPO] critic_loss={final_losses.get('value_loss', 0.0):.4f}  "
+                          f"policy_loss={final_losses.get('policy_loss', 0.0):.4f}  "
+                          f"entropy={final_losses.get('entropy', 0.0):.4f}  "
+                          f"pool={pool_sz}")
+
+                    # Entropy decay
+                    _cfg = mappo_trainer.config
+                    _cfg.entropy_coef = max(_cfg.entropy_min, _cfg.entropy_coef * _cfg.entropy_decay)
+
+                    # LR decay
+                    _base_lr_actor  = 1e-4
+                    _base_lr_critic = 3e-4
+                    _decayed_lr_actor  = max(1e-6, _base_lr_actor * (0.5 ** (batch_end / 50.0)))
+                    _decayed_lr_critic = max(5e-6, _base_lr_critic * (0.5 ** (batch_end / 100.0)))
+                    if mappo_trainer._actor_opt is not None:
+                        for pg in mappo_trainer._actor_opt.param_groups:
+                            pg['lr'] = _decayed_lr_actor
+                        for pg in mappo_trainer.critic_opt.param_groups:
+                            pg['lr'] = _decayed_lr_critic
+
+                    print(f"  [MAPPO] entropy={_cfg.entropy_coef:.4f}  "
+                          f"lr_actor={_decayed_lr_actor:.2e}  lr_critic={_decayed_lr_critic:.2e}")
+
+                    if dashboard:
+                        dashboard.add_training_metrics(
+                            final_losses.get('value_loss', 0.0),
+                            final_losses.get('policy_loss', 0.0),
+                            avg_ep_reward
+                        )
+                        dashboard.render()
+
+                    # Checkpoint at end of batch
+                    try:
+                        for aid, agent in rl_agents.items():
+                            registries[aid].save(
+                                agent.policy_net,
+                                metadata={'episode': batch_end, 'avg_reward': avg_ep_reward}
+                            )
+                    except Exception as _ckpt_err:
+                        print(f"  [CKPT] WARNING: checkpoint save failed: {_ckpt_err}")
+                        
+                    if live_dash is not None:
+                        try:
+                            conn_rate = ep_rec.post_sev_ue_conn if 'ep_rec' in locals() else 0.0
+                            live_dash.push_episode_end(batch_end, avg_ep_reward, conn_rate)
+                            
+                            _reward_history = [r.ep_reward_mean for r in _kpi_tracker.episodes[-5:]]
+                            _trend = ((_reward_history[-1] - _reward_history[0]) / max(1, len(_reward_history))
+                                     ) if len(_reward_history) >= 2 else 0.0
+                                     
+                            live_dash.push_training_progress(
+                                episode=batch_end,
+                                total_episodes=args.train_episodes,
+                                scenario_type=getattr(ep_scenario, 'scenario_type', 'full_core') if 'ep_scenario' in locals() else 'full_core',
+                                metrics={
+                                    "policy_loss":    final_losses.get('policy_loss') if mappo_trainer else None,
+                                    "critic_loss":    final_losses.get('value_loss') if mappo_trainer else None,
+                                    "entropy":        final_losses.get('entropy') if mappo_trainer else None,
+                                    "avg_reward":     avg_ep_reward,
+                                    "ue_connectivity": conn_rate,
+                                    "relay_count":    ep_rec.post_sev_transport_relay if 'ep_rec' in locals() else 0,
+                                    "peak_relays":    ep_rec.peak_transport_relay if 'ep_rec' in locals() else 0,
+                                    "lr_actor":       _decayed_lr_actor if mappo_trainer else None,
+                                    "lr_critic":      _decayed_lr_critic if mappo_trainer else None,
+                                    "reward_trend":   _trend,
+                                    "optimal_frac":   _opt['optimal_frac'] if '_opt' in locals() else 0.0,
+                                    "efficiency":     _opt['efficiency'] if '_opt' in locals() else 0.0,
+                                    "n_components":   _opt['n_components'] if '_opt' in locals() else 0,
+                                }
+                            )
+                        except Exception as _dash_err:
+                            print(f"  [Dashboard] push error: {_dash_err}")
                 _kpi_tracker.save(_tracker_path)
                 try:
                     from sixg_sim.plot_learning import plot_convergence
@@ -1063,4 +876,6 @@ def main():
 
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.set_start_method('spawn', force=True)
     main()

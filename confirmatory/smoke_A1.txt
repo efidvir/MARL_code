@@ -1,0 +1,26 @@
+=== 2026-09-16 13:25:48 UTC smoke start ===
+T2 exit=0
+T3b exit=0
+T3a exit=0
+T1 exit=0
+=== 2026-09-16 13:39:06 UTC smoke runs done ===
+T2 determinism recovery_multi: DIFFERENT
+T2 determinism rescue_multi: IDENTICAL
+T3 baseline identity recovery_multi xldet  : DIFFERENT
+T3 baseline identity recovery_multi ospf   : DIFFERENT
+T3 baseline identity recovery_multi sdn    : DIFFERENT
+T3 baseline identity recovery_multi random : DIFFERENT
+T3 baseline identity rescue_multi   xldet  : IDENTICAL
+T3 baseline identity rescue_multi   ospf   : IDENTICAL
+T3 baseline identity rescue_multi   sdn    : IDENTICAL
+T3 baseline identity rescue_multi   random : IDENTICAL
+T1 static setup line x2                     FAIL
+T1 static check OK x2                       FAIL
+T1 no FREEZE on static                      PASS
+T1 no EWC / safe adaptation on static       PASS
+T1 no adapted save on static                PASS
+T1 freeze arm still freezes                 PASS
+T1 phase 2 holds only marl_freeze (1 task)  PASS
+T1 detection floor covers marl_static       PASS
+SMOKE RESULT: FAILURES PRESENT
+=== 2026-09-16 13:39:06 UTC smoke complete ===

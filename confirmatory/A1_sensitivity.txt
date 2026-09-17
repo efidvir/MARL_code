@@ -1,0 +1,14 @@
+1. XL-DET decision-series reproducibility (original job vs co-run)
+   recovery_multi  20 instances, 23 decision series each: ALL BIT-IDENTICAL
+   rescue_multi    20 instances, 23 decision series each: ALL BIT-IDENTICAL
+   -> reproducible
+
+2. energy / latency accounting jitter between invocations (XL-DET)
+   recovery_multi  energy   run-mean relative difference: mean 1.85e-04  max 6.73e-04
+   recovery_multi  latency  run-mean relative difference: mean 2.18e-03  max 1.18e-02
+   rescue_multi    energy   run-mean relative difference: mean 0.00e+00  max 0.00e+00
+   rescue_multi    latency  run-mean relative difference: mean 0.00e+00  max 0.00e+00
+
+3. P7 against the co-run XL-DET (Scenario A, energy per delivered unit)
+   n=20  mean -0.0516  95% CI [-0.1033, +0.0001]  lower on 15/20  sign p=0.0414  Wilcoxon p=0.01069
+   (against the original-job XL-DET, as pre-registered: mean -0.0515, CI [-0.1032, +0.0001], Wilcoxon p=0.01069)

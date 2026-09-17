@@ -1,0 +1,42 @@
+============================================================
+6G NETWORK SIMULATION SUMMARY
+============================================================
+
+RECOVERY METRICS:
+  Severance occurred at tick: 30
+  Recovery: Not achieved
+.2f
+
+ENERGY METRICS:
+  gNB1: 0.0 units used, final SoC: 1.00
+  gNB2: 0.0 units used, final SoC: 1.00
+  relay1: 200.0 units used, final SoC: 0.80
+  edgeUPF1: 0.0 units used, final SoC: 1.00
+  core: 0.0 units used, final SoC: 1.00
+
+CONNECTIVITY METRICS:
+  Final number of islands: 3
+
+UTILIZATION METRICS:
+.1f
+.1f
+
+TRAFFIC METRICS:
+  Life Safety:
+.1f
+.2f
+.2f
+  Operations:
+.1f
+.2f
+.2f
+  Telemetry:
+.1f
+.2f
+.2f
+  Best Effort:
+.1f
+.2f
+.2f
+
+============================================================

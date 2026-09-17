@@ -1,0 +1,5 @@
+Freeze re-verification at result time (2026-09-16 21:52:07 UTC):
+  MARL_run_5  sha256sum -c confirmatory/FREEZE.sha256     -> 0 mismatches
+  MARL_run_6  sha256sum -c confirmatory/FREEZE_A1.sha256  -> 0 mismatches
+Analysis: confirmatory_analysis.py --marl-arm marl_static (as pre-registered in AMENDMENT_1.md 2.5)
+Canonical cf_report_A1.json is byte-identical to the early-waiter copy cf_report_A1_early.json.
