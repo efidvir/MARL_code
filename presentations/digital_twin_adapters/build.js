@@ -490,6 +490,149 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
   }
 
   // =====================================================================
+  // 5e/5f. Standards explained (two slides, three standards each)
+  // =====================================================================
+  {
+    const MONO = "Courier New";
+    // small figure helpers, drawn inside (fx, fy, fw, fh)
+    function mini(s, x, y, w, h, t, c) {
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, fill: { color: WHITE }, line: { color: c, width: 1.25 }, rectRadius: 0.05 });
+      txt(s, t, { x, y, w, h, fontSize: 8.5, bold: true, color: INK, align: "center", valign: "middle" });
+    }
+    function lab(s, x, y, w, t, c = MUTED) {
+      txt(s, t, { x, y, w, h: 0.18, fontSize: 7.5, bold: true, color: c, align: "center" });
+    }
+    const figs = {
+      ndtjob(s, fx, fy, fw) {
+        mini(s, fx + 0.1, fy + 0.15, 0.7, 0.45, "TFS", C_SDN);
+        mini(s, fx + fw - 0.8, fy + 0.15, 0.7, 0.45, "ns-3", C_SIM);
+        arrow(s, pres, fx + 0.85, fy + 0.28, fx + fw - 0.85, fy + 0.28, NAVY);
+        lab(s, fx + 0.85, fy + 0.07, fw - 1.7, "NDTJob", NAVY);
+        arrow(s, pres, fx + fw - 0.85, fy + 0.5, fx + 0.85, fy + 0.5, C_SIM);
+        lab(s, fx + 0.85, fy + 0.53, fw - 1.7, "NDTReport", C_SIM);
+      },
+      y3092(s, fx, fy, fw) {
+        const bw = 0.72, gap = (fw - 3 * bw) / 2;
+        mini(s, fx, fy + 0.15, bw, 0.45, "Mgmt", NAVY2);
+        mini(s, fx + bw + gap, fy + 0.15, bw, 0.45, "Twin", C_SIM);
+        mini(s, fx + 2 * (bw + gap), fy + 0.15, bw, 0.45, "Network", C_HW);
+        arrow(s, pres, fx + bw, fy + 0.375, fx + bw + gap, fy + 0.375, NAVY2, true);
+        arrow(s, pres, fx + 2 * bw + gap, fy + 0.375, fx + 2 * (bw + gap), fy + 0.375, C_HW, true);
+        lab(s, fx + bw - 0.25, fy + 0.62, gap + 0.5, "NDT-m", NAVY2);
+        lab(s, fx + 2 * bw + gap - 0.25, fy + 0.62, gap + 0.5, "NDT-p", C_HW);
+      },
+      topo(s, fx, fy, fw) {
+        const pts = [[0.35, 0.15], [1.0, 0.42], [1.65, 0.1], [2.2, 0.38]];
+        const edges = [[0, 1], [1, 2], [2, 3], [1, 3]];
+        for (const [a, b] of edges) {
+          const [x1, y1] = pts[a], [x2, y2] = pts[b];
+          s.addShape(pres.shapes.LINE, { x: fx + Math.min(x1, x2), y: fy + Math.min(y1, y2), w: Math.abs(x2 - x1), h: Math.abs(y2 - y1), flipV: (y2 < y1) !== (x2 < x1), line: { color: "AAB6C2", width: 1.5 } });
+        }
+        for (const [x, y] of pts) s.addShape(pres.shapes.OVAL, { x: fx + x - 0.12, y: fy + y - 0.12, w: 0.24, h: 0.24, fill: { color: C_SDN }, line: { color: WHITE, width: 1.5 } });
+        lab(s, fx, fy + 0.6, fw, "node · link · termination point");
+      },
+      push(s, fx, fy, fw) {
+        mini(s, fx + 0.1, fy + 0.15, 0.75, 0.45, "Radio", C_HW);
+        mini(s, fx + fw - 0.85, fy + 0.15, 0.75, 0.45, "Twin", C_SIM);
+        for (let k = 0; k < 3; k++) arrow(s, pres, fx + 0.9, fy + 0.22 + k * 0.15, fx + fw - 0.9, fy + 0.22 + k * 0.15, k === 1 ? C_HW : "AAB6C2");
+        lab(s, fx, fy + 0.62, fw, "periodic · on-change", C_HW);
+      },
+      lifecycle(s, fx, fy, fw) {
+        const st = ["Train", "Test", "Emulate", "Deploy"], pw = 0.52, g = (fw - 4 * pw) / 3;
+        for (let k = 0; k < 4; k++) {
+          const c = k === 2 ? C_SIM : NAVY2, px = fx + k * (pw + g);
+          s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: px, y: fy + 0.18, w: pw, h: 0.36, fill: { color: c }, line: { color: c }, rectRadius: 0.06 });
+          txt(s, st[k], { x: px, y: fy + 0.18, w: pw, h: 0.36, fontSize: 7.5, bold: true, color: WHITE, align: "center", valign: "middle" });
+          if (k < 3) arrow(s, pres, px + pw + 0.01, fy + 0.36, px + pw + g - 0.01, fy + 0.36, MUTED);
+        }
+        lab(s, fx, fy + 0.62, fw, "emulation = the twin run", C_SIM);
+      },
+      sandbox(s, fx, fy, fw) {
+        s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: fx, y: fy + 0.02, w: 1.45, h: 0.58, fill: { color: "FFF4E8" }, line: { color: C_SIM, width: 1, dashType: "dash" }, rectRadius: 0.06 });
+        lab(s, fx, fy + 0.04, 1.45, "SANDBOX", C_SIM);
+        mini(s, fx + 0.08, fy + 0.23, 0.6, 0.3, "ns-3", C_SIM);
+        mini(s, fx + 0.77, fy + 0.23, 0.6, 0.3, "ML", C_INTENT);
+        arrow(s, pres, fx + 1.47, fy + 0.38, fx + fw - 0.67, fy + 0.38, C_HW);
+        mini(s, fx + fw - 0.65, fy + 0.2, 0.65, 0.36, "Live", C_HW);
+        lab(s, fx + 1.2, fy + 0.62, 1.1, "KPIs ok", C_HW);
+      },
+    };
+
+    async function explainSlide(kicker, heading, items, notes) {
+      const s = pres.addSlide();
+      s.background = { color: WHITE };
+      title(s, kicker, heading);
+      const cw = 2.9, gap = 0.15, y0 = 1.3, ch = 4.0;
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        const x = 0.5 + i * (cw + gap);
+        s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: y0, w: cw, h: ch, fill: { color: TINT }, line: { color: TINT }, rectRadius: 0.08 });
+        await iconCircle(s, pres, it.icon, x + 0.15, y0 + 0.14, 0.42, it.color);
+        txt(s, it.code, { x: x + 0.66, y: y0 + 0.12, w: cw - 0.75, h: 0.25, fontFace: HEAD, fontSize: 11.5, bold: true, color: NAVY });
+        txt(s, it.name, { x: x + 0.66, y: y0 + 0.37, w: cw - 0.75, h: 0.2, fontSize: 8.5, color: MUTED });
+        // figure
+        s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.12, y: y0 + 0.66, w: cw - 0.24, h: 0.85, fill: { color: WHITE }, line: { color: WHITE }, rectRadius: 0.06 });
+        figs[it.fig](s, x + 0.2, y0 + 0.7, cw - 0.4);
+        // three explained rows
+        const rows = [["MADE FOR", it.madeFor], ["CAN DO", it.canDo], ["FOR OUR LINK", it.forUs]];
+        for (let r = 0; r < rows.length; r++) {
+          const yy = y0 + 1.62 + r * 0.54;
+          txt(s, rows[r][0], { x: x + 0.15, y: yy, w: cw - 0.3, h: 0.16, fontSize: 7.5, bold: true, color: it.color, charSpacing: 1 });
+          txt(s, rows[r][1], { x: x + 0.15, y: yy + 0.17, w: cw - 0.3, h: r === 2 ? 0.5 : 0.34, fontSize: 9, color: r === 2 ? INK : MUTED, bold: r === 2 });
+        }
+        // example
+        s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.12, y: y0 + 3.3, w: cw - 0.24, h: 0.6, fill: { color: NAVY }, line: { color: NAVY }, rectRadius: 0.06 });
+        txt(s, it.example, { x: x + 0.22, y: y0 + 3.3, w: cw - 0.4, h: 0.6, fontFace: MONO, fontSize: 7.5, color: "D6E4F0", valign: "middle" });
+      }
+      s.addNotes(notes);
+    }
+
+    await explainSlide("Standards explained · 1 of 2", "The standards that control the link", [
+      { icon: fa.FaSyncAlt, color: C_SDN, code: "3GPP TS 28.561", name: "Network digital twin management", fig: "ndtjob",
+        madeFor: "Running network digital twins as a 3GPP management service.",
+        canDo: "Declare twin capabilities; create, stop, delete sim jobs; report.",
+        forUs: "Each ns-3 what-if is one NDT job created by TFS.",
+        example: "create NDTJob\n capability: config verification\n scope: Tier-4 URLLC, 23 nodes" },
+      { icon: fa.FaLayerGroup, color: NAVY2, code: "ITU-T Y.3092", name: "Twins for mgmt & orchestration", fig: "y3092",
+        madeFor: "Using twins to manage and orchestrate 5G/6G networks.",
+        canDo: "Requirements, framework, NDT-m and NDT-p interfaces.",
+        forUs: "Job control on NDT-m, live network state on NDT-p.",
+        example: "NDT-m: start rain-fade job\nNDT-p: RSSI -58 dBm, MCS 8\n       MH-T261 -> TFS -> twin" },
+      { icon: fa.FaSitemap, color: C_HW, code: "IETF RFC 8345", name: "Network topology YANG model", fig: "topo",
+        madeFor: "A vendor-neutral topology model in YANG.",
+        canDo: "Nodes, links, ports, layers; per-technology extensions.",
+        forUs: "One graph schema shared by TFS and the ns-3 builder.",
+        example: "node MH-T261-A / tp eth0\nlink mw-07 -> MH-T261-B / tp eth0\n+ RFC 8561 microwave radio link" },
+    ],
+      "3GPP TS 28.561 (Management aspects of network digital twins). Made for: running network digital twins as a managed service of the 3GPP management system. Can do: NDTFunction describes what a twin supports; NDTJob is one simulation or emulation run for one scenario (for example configuration verification, signalling-storm analysis or data generation), with a scope and execution requirements such as maximum run time; NDTReport carries the result. All are created, modified and deleted with the generic TS 28.532 operations. For our link: TFS creates one NDTJob per what-if, scoped to the governor's subgraph, and reads the NDTReport with predicted latency, queue occupancy and drops. The example values are illustrative, not exact attribute encodings.\n" +
+      "ITU-T Y.3092 (09/2024, Digital twin for management and orchestration in IMT-2020 networks and beyond). Made for: using twins inside network management and orchestration. Can do: requirements, a functional framework (management and orchestration, control, modelling, data management), the NDT-m and NDT-p interfaces, data collection and security considerations. For our link: NDT-m carries job control between TFS and the twin; NDT-p carries live state from the Ceragon radios (relayed by TFS) into the twin.\n" +
+      "IETF RFC 8345 (A YANG Data Model for Network Topologies). Made for: a common, vendor-neutral topology model. Can do: networks, nodes, links and termination points, layered and supporting networks, and technology augmentations (L3 RFC 8346, TE RFC 8795, microwave radio links RFC 8561). For our link: TFS exports its topology once in this schema and the ns-3 scenario builder consumes it; microwave attributes can use the RFC 8561 model."
+    );
+
+    await explainSlide("Standards explained · 2 of 2", "The standards that feed and govern it", [
+      { icon: fa.FaSatelliteDish, color: C_HW, code: "IETF RFC 8641", name: "YANG-Push subscriptions", fig: "push",
+        madeFor: "Streaming datastore changes instead of polling.",
+        canDo: "Periodic or on-change subscriptions to any YANG path.",
+        forUs: "RF changes reach the twin as they happen.",
+        example: "subscribe radio-link/rssi\n  periodic 1 s | on-change\n-> resync twin when MCS drops" },
+      { icon: fa.FaBrain, color: C_INTENT, code: "3GPP TS 28.105", name: "AI/ML management", fig: "lifecycle",
+        madeFor: "Managing ML models across their whole lifecycle.",
+        canDo: "Train, test, emulate (Rel-19), deploy, monitor.",
+        forUs: "Python models are tested in the ns-3 twin before deploy.",
+        example: "ML entity: mappo-relay v3\ntrain -> emulate: storm scenario\ndeploy only if KPIs pass" },
+      { icon: fa.FaBoxOpen, color: C_SIM, code: "ITU-T Y.3181", name: "ML sandbox framework", fig: "sandbox",
+        madeFor: "Testing ML against simulators, isolated from live nets.",
+        canDo: "Sandbox architecture, reference points and APIs.",
+        forUs: "ns-3 + agents form the sandbox; only passing models reach TFS.",
+        example: "sandbox: ns-3 storm + RL agent\ncheck: latency <= 1.5 ms\npass -> promote to TFS" },
+    ],
+      "IETF RFC 8641 (Subscription to YANG Notifications for Datastore Updates, 'YANG-Push'), built on RFC 8639 (subscribed notifications). Made for: streaming datastore changes instead of polling. Can do: periodic or on-change subscriptions to any YANG subtree, with filters. For our link: subscribe to RSSI and MCS on the microwave links so the twin resyncs on change. OpenConfig gNMI Subscribe is the equivalent streaming option used by many vendors.\n" +
+      "3GPP TS 28.105 (AI/ML management). Made for: managing ML models in the 3GPP management system. Can do: ML training and testing, AI/ML inference emulation (Rel-19: running inference in an emulation environment to evaluate a model before deployment), deployment, inference control and performance management. For our link: register the Python models (for example the MAPPO relay policy from this repository) as ML entities, use the ns-3 twin as the emulation environment, and deploy only when emulation KPIs pass. The example values are illustrative.\n" +
+      "ITU-T Y.3181 (2022, Architectural framework for machine learning sandbox in future networks including IMT-2020). Made for: evaluating and validating ML models in an isolated environment using simulators before deployment. Can do: requirements, high-level architecture, components, reference points and APIs. For our link: the ns-3 twin plus the Python agents is the sandbox; a model is promoted to the live TFS loop only after it meets the sandbox KPIs, such as the 1.5 ms latency SLA. It pairs with ITU-T Y.3172 (ML pipeline architecture)."
+    );
+  }
+
+  // =====================================================================
   // 6. Storm scenario
   // =====================================================================
   {
