@@ -93,7 +93,7 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
     }
     s.addNotes(
       "What are the adapters? Software translators that bridge the different timing, data formats and control protocols of the four parts of the twin.\n" +
-      "Standards: TM Forum TMF921, 3GPP TS 28.561, ITU-T Y.3090, IRTF NMRG digital-twin drafts, IETF RFC 8040 RESTCONF / RFC 7950 YANG 1.1, with ETSI TeraFlowSDN as the SDN controller.\n" +
+      "Standards: TM Forum TMF921, 3GPP TS 28.561, ITU-T Y.3090, ITU-T Y.3092, IETF RFC 8040 RESTCONF / RFC 7950 YANG 1.1, with ETSI TeraFlowSDN as the SDN controller.\n" +
       "Closed-loop automation: every change is predicted in a discrete-event what-if run before it is actuated on hardware with a two-phase commit."
     );
   }
@@ -189,7 +189,7 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
     pill(2.5, rowA + 0.3, 1.45, "① Intent", "TM Forum TMF921");
     // adapter 2
     arrow(s, pres, 5.9, rowA + 0.5, 7.65, rowA + 0.5, NAVY, true);
-    pill(6.05, rowA + 0.3, 1.45, "② Simulation", "IRTF NMRG twin interface");
+    pill(6.05, rowA + 0.3, 1.45, "② Simulation", "TS 28.561 · Y.3092");
     // adapter 3
     arrow(s, pres, 5.025, rowA + 1.0, 5.025, 3.95, NAVY, true);
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 4.25, y: 3.07, w: 1.55, h: 0.4, fill: { color: NAVY }, line: { color: NAVY }, rectRadius: 0.2 });
@@ -203,7 +203,7 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
 
     s.addNotes(
       "Intent adapter: translates natural-language or SLA bounds into TeraFlowSDN service and CSPF requests (TM Forum TMF921).\n" +
-      "Simulation adapter: syncs the live TFS graph into the ns-3 C++ discrete-event engine, scopes fidelity (tiers 1-5) and returns microsecond traces. The IRTF NMRG network-digital-twin drafts describe this twin-to-simulator interface; they are research drafts, not IETF standards.\n" +
+      "Simulation adapter: syncs the live TFS graph into the ns-3 C++ discrete-event engine, scopes fidelity (tiers 1-5) and returns microsecond traces. Each simulation run is a 3GPP TS 28.561 NDT job over the ITU-T Y.3092 NDT-m interface (see the standards-alignment slide).\n" +
       "Southbound driver: stages candidate-datastore diffs and runs two-phase commits to the Ceragon MH-T261 over RFC 8040 RESTCONF.\n" +
       "ITU-T Y.3090 defines the layered twin reference model (physical network layer, digital twin layer, application layer). 3GPP TS 28.561 defines management of the network digital twin and its closed loop."
     );
@@ -224,8 +224,8 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
         "Governs the 4-gate pre-flight check before any action reaches the network."],
       [fa.FaLayerGroup, NAVY2, "ITU-T Y.3090", "ARCHITECTURE", "Twin network architecture",
         "Layered reference model; keeps the real-time shadow datastore in sync with the physical network."],
-      [fa.FaFlask, C_SIM, "IRTF NMRG drafts", "SIMULATION INTERFACE", "Twin–simulator interface",
-        "East-west twin ↔ simulator link: inject what-ifs (surge, rain fade), stream telemetry back."],
+      [fa.FaFlask, C_SIM, "ITU-T Y.3092", "SIMULATION INTERFACE", "NDT-m and NDT-p interfaces",
+        "Job control to the twin (NDT-m) and live state sync (NDT-p) for the what-if runs."],
       [fa.FaBroadcastTower, C_HW, "IETF RFC 8040 / 7950", "HARDWARE INTERFACE", "RESTCONF & YANG 1.1",
         "Southbound to the MH-T261: candidate staging, diff validation, two-phase commit."],
       [fa.FaProjectDiagram, C_SDN, "ETSI TeraFlowSDN", "SDN CONTROL", "Open-source SDN controller",
@@ -246,7 +246,7 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
       "TMF921: REST API for declarative intent and SLA expectations. The operator sets latency and availability without low-level scripts.\n" +
       "3GPP TS 28.561 (Management aspects of network digital twins): twin lifecycle and closed-loop control. In our platform it governs the 4-phase pre-flight gate: latency envelope, queue stability, hardware capability, spectral mask.\n" +
       "ITU-T Y.3090 (Digital twin network: requirements and architecture): layered reference model and synchronisation between the physical network and the twin. Powers our real-time shadow datastore.\n" +
-      "IRTF NMRG (Network Management Research Group) drafts: network-digital-twin architecture and interface drafts. Used as the model for the east-west protocol that injects what-if perturbations and streams discrete telemetry back. Note: these are research drafts, not standards.\n" +
+      "ITU-T Y.3092 (09/2024, Digital twin for management and orchestration in IMT-2020 networks and beyond): defines NDT-m (management system to twin) and NDT-p (physical network to twin). Our simulation adapter uses NDT-m for what-if job control and NDT-p for live state sync. The IRTF NMRG network-digital-twin drafts describe a similar split but are research drafts.\n" +
       "RFC 8040 / RFC 7950: RESTCONF over HTTP to YANG datastores. Southbound interface to the Ceragon MH-T261 (192.168.1.225:80).\n" +
       "ETSI TeraFlowSDN: open-source SDN controller hosted by an ETSI Open Source Group (not a standard itself). Context (gRPC :10010), Device driver (:10020), Service/PCE (:10030), Monitoring telemetry (:10040)."
     );
@@ -306,6 +306,70 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
       "Step 3: what-if stress is injected into ns-3: a 3.5x bulk traffic surge (bufferbloat) or ITU-R P.838 rain fade (ACM rate falls from 1 Gbps to 100 Mbps).\n" +
       "Step 4: ns-3 simulates microsecond packet events on cersrv-029, writes /tmp/tsn_wifi_ceragon_anim.xml, and the adapter streams queues, drops and latencies back to the twin.\n" +
       "Implementation: remote execution over SSH/JSON to ns-3.45 on cersrv-029, with an analytical local fallback for standalone mode. NetAnim AnimationInterface gives timeline playback (0.000-2.500 s) with 10 buffer slots and tail-drop alerts. Deterministic TSN mapping: 802.1Q PCP class 6 and EDCA AC_VO go to PfifoFast band 0."
+    );
+  }
+
+  // =====================================================================
+  // 5b. Adapter 2 on standard NDT interfaces (TS 28.561 + Y.3092)
+  // =====================================================================
+  {
+    const s = pres.addSlide();
+    s.background = { color: WHITE };
+    title(s, "Adapter ② · standards alignment", "TFS ↔ ns-3 as a standard NDT job");
+
+    const L = 1.5, R = 5.9;
+    function head(x, c, a, b) {
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x - 1.0, y: 1.3, w: 2.0, h: 0.72, fill: { color: WHITE }, line: { color: c, width: 1.5 }, rectRadius: 0.08 });
+      txt(s, a, { x: x - 1.0, y: 1.36, w: 2.0, h: 0.3, fontFace: HEAD, fontSize: 11.5, bold: true, align: "center" });
+      txt(s, b, { x: x - 1.0, y: 1.66, w: 2.0, h: 0.25, fontSize: 9.5, color: c, bold: true, align: "center" });
+    }
+    head(L, C_SDN, "TeraFlowSDN", "NDT MnS consumer");
+    head(R, C_SIM, "Sim adapter + ns-3", "NDT MnS producer");
+    for (const x of [L, R]) s.addShape(pres.shapes.LINE, { x, y: 2.02, w: 0, h: 3.1, line: { color: "AAB6C2", width: 1.25, dashType: "dash" } });
+
+    const msgs = [
+      [true, "① createMOI (NDTJob)", "capability: config verification · scope: 23-node Tier-4 graph", "NDT-m", NAVY2],
+      [true, "② Sync live state", "topology and RSSI / MCS from TFS Context feed the twin model", "NDT-p", C_HW],
+      [false, "③ NDTReport", "predicted latency 1.12 ms · queue occupancy · drops", "NDT-m", NAVY2],
+      [true, "④ modifyMOI / deleteMOI", "suspend or delete the job once the verdict is in", "NDT-m", NAVY2],
+    ];
+    for (let i = 0; i < msgs.length; i++) {
+      const [fwd, a, b, chip, cc] = msgs[i];
+      const y = 2.55 + i * 0.7;
+      txt(s, a, { x: L + 0.1, y: y - 0.3, w: R - L - 0.2, h: 0.26, fontSize: 11, bold: true, color: INK, align: "center" });
+      if (fwd) arrow(s, pres, L, y, R, y, NAVY); else arrow(s, pres, R, y, L, y, C_SIM);
+      txt(s, b, { x: L + 0.1, y: y + 0.05, w: R - L - 0.2, h: 0.24, fontSize: 9.5, color: MUTED, align: "center" });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: R + 0.15, y: y - 0.14, w: 0.75, h: 0.28, fill: { color: cc }, line: { color: cc }, rectRadius: 0.14 });
+      txt(s, chip, { x: R + 0.15, y: y - 0.14, w: 0.75, h: 0.28, fontSize: 9, bold: true, color: WHITE, align: "center", valign: "middle" });
+    }
+
+    const cards = [
+      [fa.FaSyncAlt, C_SDN, "3GPP TS 28.561", "HOW THE JOB RUNS", [
+        "NDTFunction, NDTJob, NDTReport are managed objects",
+        "Created and changed with TS 28.532 MnS operations",
+        "Job carries run-time and precision limits"]],
+      [fa.FaLayerGroup, NAVY2, "ITU-T Y.3092", "WHICH INTERFACE", [
+        "NDT-m: management ↔ twin (job control)",
+        "NDT-p: physical network ↔ twin (state sync)"]],
+    ];
+    let cy = 1.3;
+    for (const [I, c, code, tag, items] of cards) {
+      const h = 0.75 + items.length * 0.42;
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 7.1, y: cy, w: 2.4, h, fill: { color: TINT }, line: { color: TINT }, rectRadius: 0.08 });
+      await iconCircle(s, pres, I, 7.25, cy + 0.15, 0.42, c);
+      txt(s, code, { x: 7.77, y: cy + 0.14, w: 1.7, h: 0.25, fontFace: HEAD, fontSize: 11, bold: true, color: NAVY });
+      txt(s, tag, { x: 7.77, y: cy + 0.4, w: 1.7, h: 0.18, fontSize: 7.5, bold: true, color: c, charSpacing: 0.5 });
+      for (let j = 0; j < items.length; j++)
+        txt(s, items[j], { x: 7.25, y: cy + 0.72 + j * 0.42, w: 2.15, h: 0.4, fontSize: 9.5, color: INK });
+      cy += h + 0.2;
+    }
+
+    s.addNotes(
+      "This slide maps the simulation adapter onto two published specifications. It is the target alignment; confirm which messages the implementation already emits.\n" +
+      "3GPP TS 28.561 (Management aspects of network digital twins) models the twin as managed objects: NDTFunction (the twin, with supportedNDTCapabilities and nDTFunctionScope), NDTJob (one simulation/emulation run for one scenario) and NDTReport (its output). They are created, modified and deleted with the generic TS 28.532 operations (createMOI, modifyMOIAttributes, deleteMOI, getMOIAttributes).\n" +
+      "TFS acts as the NDT MnS consumer. It creates an NDTJob whose nDTCapability is configuration verification and whose nDTJobSynchScope is the Tier-4 URLLC subgraph (23 nodes). ndtJobExecutionRequirements carries limits such as maximum run time and precision, which is where the fidelity governor's tier choice belongs. The simulation adapter plus ns-3 is the NDT MnS producer; it returns an NDTReport with predicted latency, queue occupancy and drops. After the verdict the job is suspended or deleted.\n" +
+      "ITU-T Y.3092 (09/2024, Digital twin for management and orchestration in IMT-2020 networks and beyond) names the interfaces: NDT-m between the management system and the twin, NDT-p between the physical network and the twin. Job control (1, 3, 4) runs over NDT-m; the live topology and RF state sync (2) is the NDT-p role, relayed here through TFS Context.\n" +
+      "The IRTF NMRG network-digital-twin drafts describe the same split informally, but they are research drafts."
     );
   }
 
@@ -497,7 +561,7 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
     s.addTable([
       [{ text: "ADAPTER", options: hdr }, { text: "TRANSLATES", options: hdr }, { text: "STANDARD", options: hdr }],
       [cell("① Intent", { bold: true, color: "B8A8FF" }), cell("Natural language / SLA bounds → TFS service & CSPF requests"), cell("TM Forum TMF921")],
-      [cell("② Simulation", { bold: true, color: "F5B96E" }), cell("Live TFS graph → scoped ns-3 run → µs traces"), cell("IRTF NMRG twin drafts")],
+      [cell("② Simulation", { bold: true, color: "F5B96E" }), cell("Live TFS graph → scoped ns-3 run → µs traces"), cell("TS 28.561 · Y.3092")],
       [cell("③ Southbound", { bold: true, color: "6FD3A4" }), cell("Candidate diff → gated two-phase commit on MH-T261"), cell("RFC 8040 / 7950")],
     ], {
       x: 0.5, y: 3.6, w: 9.0, colW: [1.5, 5.3, 2.2], rowH: [0.3, 0.42, 0.42, 0.42],
@@ -505,7 +569,7 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
     });
     s.addNotes(
       "Zero-risk what-if validation: operators test severe perturbations (3.5x bulk surges, category-5 tropical rain fade, fibre cuts) in a microsecond-accurate twin without risking live production circuits.\n" +
-      "Standardised multi-vendor interoperability: built on open telecom specifications (TMF921, 3GPP TS 28.561, ITU-T Y.3090, IRTF NMRG twin drafts, RFC 8040 RESTCONF) with the open-source ETSI TeraFlowSDN controller.\n" +
+      "Standardised multi-vendor interoperability: built on open telecom specifications (TMF921, 3GPP TS 28.561, ITU-T Y.3090, ITU-T Y.3092, RFC 8040 RESTCONF) with the open-source ETSI TeraFlowSDN controller.\n" +
       "Seconds-scale closed loop: SLA intent is ingested, simulated, verified and actuated in about 1.9-2.2 s. (The original deck called this 'sub-second'; the measured end-to-end figure is about 2 s.)"
     );
   }
