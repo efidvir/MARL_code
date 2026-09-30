@@ -374,6 +374,122 @@ function arrow(slide, pres, x1, y1, x2, y2, color = MUTED, both = false) {
   }
 
   // =====================================================================
+  // 5c. TFS <-> ns-3 connectivity options: now and emerging
+  // =====================================================================
+  {
+    const s = pres.addSlide();
+    s.background = { color: WHITE };
+    title(s, "Adapter ② · connectivity options", "TFS ↔ ns-3: what exists today, what is coming");
+
+    const cL = 0.5, cN = 2.6, wN = 3.85, cF = 6.6, wF = 2.9;
+    txt(s, "AVAILABLE NOW", { x: cN, y: 1.3, w: wN, h: 0.22, fontSize: 9, bold: true, color: C_HW, charSpacing: 1.5 });
+    txt(s, "EMERGING · 2026–28", { x: cF, y: 1.3, w: wF, h: 0.22, fontSize: 9, bold: true, color: C_SIM, charSpacing: 1.5 });
+
+    function chip(x, y, w, t, now, star) {
+      if (now) s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: 0.36, fill: { color: star ? "DDF3E8" : TINT }, line: { color: star ? "DDF3E8" : TINT }, rectRadius: 0.06 });
+      else s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: 0.36, fill: { color: WHITE }, line: { color: C_SIM, width: 1, dashType: "dash" }, rectRadius: 0.06 });
+      txt(s, (star ? "★ " : "") + t, { x: x + 0.1, y, w: w - 0.15, h: 0.36, fontSize: 9.5, color: star ? "157A50" : INK, bold: !!star, valign: "middle" });
+    }
+    const rows = [
+      [fa.FaPlayCircle, NAVY2, "Job control", "start, steer, stop what-if runs",
+        [["3GPP TS 28.561 NDTJob over TS 28.532 REST", 1], ["ITU-T Y.3092 NDT-m interface", 0]],
+        ["3GPP Rel-20 NDT phase 2 (TR 28.883)", "ITU-T Q.SDTN twin signalling protocol"]],
+      [fa.FaSatelliteDish, C_HW, "State sync", "live topology, RF state, KPIs",
+        [["TFS Context / Monitoring gRPC", 1], ["YANG-Push (RFC 8641) · gNMI · Y.3092 NDT-p", 0]],
+        ["Rel-20 NDT data collection", "IRTF NMRG twin interface drafts"]],
+      [fa.FaSitemap, C_SDN, "Shared models", "what the graph and data mean",
+        [["IETF RFC 8345 network topology YANG", 1], ["ITU-T Y.3093 data · Y.3094 model domain", 0]],
+        ["Multi-twin collaboration (TR 28.883)", "O-RAN nGRG digital-twin research"]],
+    ];
+    for (let i = 0; i < rows.length; i++) {
+      const [I, c, a, b, now, next] = rows[i];
+      const y = 1.6 + i * 1.0;
+      if (i > 0) s.addShape(pres.shapes.LINE, { x: cL, y: y - 0.09, w: 9.0, h: 0, line: { color: LINE, width: 0.75 } });
+      await iconCircle(s, pres, I, cL, y + 0.17, 0.46, c);
+      txt(s, a, { x: cL + 0.58, y: y + 0.13, w: 1.45, h: 0.27, fontFace: HEAD, fontSize: 11.5, bold: true });
+      txt(s, b, { x: cL + 0.58, y: y + 0.4, w: 1.45, h: 0.4, fontSize: 9, color: MUTED });
+      for (let j = 0; j < 2; j++) {
+        chip(cN, y + j * 0.43, wN, now[j][0], true, now[j][1]);
+        chip(cF, y + j * 0.43, wF, next[j], false, false);
+      }
+    }
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.5, y: 4.62, w: 9.0, h: 0.6, fill: { color: NAVY }, line: { color: NAVY }, rectRadius: 0.08 });
+    txt(s, [
+      { text: "Frameworks: ", options: { bold: true, color: "8FA3B8" } },
+      { text: "ITU-T Y.3090  ·  ETSI GR ZSM 015  ·  IRTF NMRG twin architecture", options: { color: WHITE } },
+      { text: "      ★ = our recommended stack", options: { bold: true, color: "6FD3A4" } },
+    ], { x: 0.7, y: 4.62, w: 8.7, h: 0.6, fontSize: 10.5, valign: "middle" });
+
+    s.addNotes(
+      "The TFS to ns-3 link has three jobs, and each has a standard option today and a coming one.\n" +
+      "Job control. Now: 3GPP TS 28.561 models each what-if run as an NDTJob, created and managed with the generic TS 28.532 REST management-service operations; ITU-T Y.3092 (09/2024) calls this the NDT-m interface. Coming: 3GPP Release 20 'NDT phase 2' (study TR 28.883, completed March 2026, now normative work) adds NDT interaction with network and automation functions, multi-NDT collaboration, data collection and NDT job runtime behaviour. ITU-T Q.SDTN (SG11, 'Signalling and protocol for digital twin network supported for IMT-2020 and beyond') is still under study, target around December 2026, and defines the data-exchange interfaces between the twin, third-party applications and the physical network.\n" +
+      "State sync. Now: TeraFlowSDN's own Context and Monitoring gRPC services are the de facto source; standard streaming alternatives are IETF YANG-Push (RFC 8641) and OpenConfig gNMI. Y.3092 names this the NDT-p interface. Coming: Rel-20 NDT data-collection enhancements; IRTF NMRG twin interface drafts (research, not standards track).\n" +
+      "Shared models. Now: IETF RFC 8345 (ietf-network / ietf-network-topology YANG) as the common topology model; ITU-T Y.3093 (data domain, 08/2025) and Y.3094 (model domain). Coming: multi-NDT collaboration from TR 28.883; the O-RAN nGRG digital-twin research line (O-RAN co-funded the Colosseum O-RAN digital-twin platform in 2025).\n" +
+      "Frameworks that frame all of this: ITU-T Y.3090 (digital twin network architecture), ETSI GR ZSM 015 (2024, network digital twin in zero-touch management), IRTF NMRG network digital twin architecture draft.\n" +
+      "Recommended stack: TS 28.561 NDTJob for control, TFS gRPC for live state, RFC 8345 for the topology model."
+    );
+  }
+
+  // =====================================================================
+  // 5d. AI/ML scripts inside simulation runs
+  // =====================================================================
+  {
+    const s = pres.addSlide();
+    s.background = { color: WHITE };
+    title(s, "AI/ML in the loop", "Python AI/ML inside simulation runs");
+
+    // flow figure
+    async function node(x, w, I, c, a, b) {
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.35, w, h: 0.85, fill: { color: WHITE }, line: { color: c, width: 1.5 }, rectRadius: 0.08 });
+      await iconCircle(s, pres, I, x + 0.12, 1.53, 0.46, c);
+      txt(s, a, { x: x + 0.66, y: 1.44, w: w - 0.72, h: 0.3, fontFace: HEAD, fontSize: 11, bold: true });
+      txt(s, b, { x: x + 0.66, y: 1.74, w: w - 0.72, h: 0.38, fontSize: 9, color: MUTED });
+    }
+    await node(0.5, 2.1, fa.FaFlask, C_SIM, "ns-3 run", "twin scenario, µs events");
+    await node(3.95, 2.1, fa.FaBrain, C_INTENT, "Python agent", "PyTorch / RL policy");
+    await node(7.4, 2.1, fa.FaArchive, NAVY2, "ML registry", "versioned models, results");
+    arrow(s, pres, 2.65, 1.78, 3.9, 1.78, NAVY, true);
+    txt(s, "obs · reward ⇄ action", { x: 2.6, y: 1.44, w: 1.35, h: 0.3, fontSize: 8.5, bold: true, color: NAVY, align: "center" });
+    arrow(s, pres, 6.1, 1.78, 7.35, 1.78, NAVY, true);
+    txt(s, "ONNX · metrics", { x: 6.05, y: 1.44, w: 1.35, h: 0.3, fontSize: 8.5, bold: true, color: NAVY, align: "center" });
+
+    const cols = [
+      [C_SIM, "1  COUPLE IN-RUN", "Step the agent in-run",
+        [["ns3-ai shared memory (≈100× faster IPC)", 1], ["Gymnasium env API · ns3-gym (ZMQ)", 0]],
+        "Open-source, de facto: no SDO standard"],
+      [C_INTENT, "2  PACKAGE & SERVE", "Same model in twin and network",
+        [["ONNX model format", 1], ["Open Inference Protocol (REST / gRPC)", 0]],
+        "Industry open formats"],
+      [NAVY2, "3  GOVERN THE LIFECYCLE", "Train → test → emulate → deploy",
+        [["3GPP TS 28.105 AI/ML mgmt · inference emulation", 1], ["ITU-T Y.3181 ML sandbox · Y.3172 ML pipeline", 0]],
+        "Next: Rel-20 NDT ↔ ML collaboration"],
+    ];
+    const cw = 2.9, gap = 0.15;
+    for (let i = 0; i < cols.length; i++) {
+      const [c, k, t, items, foot] = cols[i];
+      const x = 0.5 + i * (cw + gap), y = 2.5;
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: 2.72, fill: { color: TINT }, line: { color: TINT }, rectRadius: 0.08 });
+      txt(s, k, { x: x + 0.18, y: y + 0.16, w: cw - 0.3, h: 0.2, fontSize: 9, bold: true, color: c, charSpacing: 1 });
+      txt(s, t, { x: x + 0.18, y: y + 0.4, w: cw - 0.3, h: 0.3, fontFace: HEAD, fontSize: 11.5, bold: true, color: NAVY });
+      for (let j = 0; j < items.length; j++) {
+        const yy = y + 0.85 + j * 0.62;
+        const star = items[j][1];
+        s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.15, y: yy, w: cw - 0.3, h: 0.52, fill: { color: star ? "DDF3E8" : WHITE }, line: { color: star ? "DDF3E8" : WHITE }, rectRadius: 0.06 });
+        txt(s, (star ? "★ " : "") + items[j][0], { x: x + 0.25, y: yy, w: cw - 0.45, h: 0.52, fontSize: 9.5, bold: !!star, color: star ? "157A50" : INK, valign: "middle" });
+      }
+      txt(s, foot, { x: x + 0.18, y: y + 2.2, w: cw - 0.3, h: 0.35, fontSize: 9, italic: true, color: MUTED, valign: "middle" });
+    }
+
+    s.addNotes(
+      "Three layers keep Python AI/ML inside twin runs organised.\n" +
+      "1. Couple in-run. The agent must exchange observations, rewards and actions with ns-3 at every simulation step. There is no SDO standard for this; the de facto options are ns3-ai (shared-memory IPC between C++ and Python, reported up to about 100x faster than socket IPC, with a Gymnasium-style interface) and ns3-gym (ZeroMQ sockets, OpenAI Gym / Gymnasium API). Recommendation: expose every scenario as a Gymnasium environment so any agent, including the MAPPO shared actor from the MARL-RIC code in this repository (ce_ck_s1234/policy_final.pt), plugs in the same way.\n" +
+      "2. Package and serve. Export trained models to ONNX so the identical artefact runs in the twin and in the live controller; serve it behind the KServe Open Inference Protocol (REST/gRPC) when the agent runs outside the ns-3 process. These are open industry formats, not SDO standards.\n" +
+      "3. Govern the lifecycle. 3GPP TS 28.105 (AI/ML management) covers ML training, testing, deployment and inference; Release 19 adds AI/ML inference emulation, i.e. running inference in an emulation environment to evaluate a model before it is deployed, which is exactly what a twin run is. ITU-T Y.3181 (2022) defines an ML sandbox: an isolated environment with simulators for validating ML before deployment, with reference points and APIs. ITU-T Y.3172 defines the ML pipeline architecture (sources, pre-processing, model, policy, sinks) and the ML function orchestrator.\n" +
+      "Coming: 3GPP Rel-20 NDT phase 2 (TR 28.883) covers how NDTs work with machine-learning and automation functions, which links NDT jobs (TS 28.561) to ML entities (TS 28.105)."
+    );
+  }
+
+  // =====================================================================
   // 6. Storm scenario
   // =====================================================================
   {
