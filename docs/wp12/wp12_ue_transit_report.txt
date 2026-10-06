@@ -1,0 +1,107 @@
+WP12(a) UE-transit probe report: <server-home>/MARL_run_9b/output/wp12_ue_transit.pkl
+tree 2ba4be7  digest 11475cc5ee20  hashseed 0  ticks 1200  severance 200
+
+arm         scenario   seed |  u2u_post   transit   frac ticks  runs |  gen_post  gfrac | mismatch   inc   nUE | pre-event transit
+----------------------------------------------------------------------------------------------------------------------------------
+marl_static recovery     82 |   1033987  115245.7  0.111  1000     1 |    982995  0.003 |        0     0    18 | 7149.4 of 169889
+marl_static recovery     91 |    882416   70305.9  0.080  1000     1 |    431092  0.000 |        0     0    13 | 1250.0 of 157003
+ospf        recovery     82 |    809809   14706.8  0.018   952     1 |    181024  0.000 |        0     0     4 | 7149.4 of 169889
+ospf        recovery     91 |    678810   29849.4  0.044   952     1 |     25013  0.000 |        0     0     7 | 1250.0 of 157003
+marl_static rescue_ops   82 |   1674745  162774.6  0.097  1200     1 |    924938  0.000 |        0     0    10 | 0.0 of 0
+marl_static rescue_ops   91 |   1336300    7651.4  0.006  1200     1 |    785264  0.000 |        0     0     2 | 0.0 of 0
+ospf        rescue_ops   82 |   1247268  127578.8  0.102  1200     1 |    505063  0.000 |        0     0    11 | 0.0 of 0
+ospf        rescue_ops   91 |   1108015    7500.0  0.007  1200     1 |    135098  0.000 |        0     0     1 | 0.0 of 0
+
+Phase view (post-event ticks): bridge physically up but not in the routing view / bridge in view / no bridge; per phase: mean delivered u2u per tick, of which over a UE-transit path (transit) and over infrastructure-only paths (non-transit); ticks with transit >= 100 units
+  marl_static recovery     82: not-in-view  457 ticks u2u  1071.3 transit  233.3 non-transit   838.0 (>=100: 456) | in-view  512 ticks u2u  1000.1 transit   16.0 non-transit   984.1 (>=100:   0) | no-bridge   31 ticks u2u  1043.0 transit   14.3 non-transit  1028.7 (>=100:   0) | dual-UE mean 70
+  marl_static recovery     91: not-in-view  313 ticks u2u   958.3 transit   66.8 non-transit   891.5 (>=100:   2) | in-view  687 ticks u2u   847.8 transit   71.9 non-transit   775.9 (>=100:   0) | no-bridge    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | dual-UE mean 83
+  ospf        recovery     82: not-in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | no-bridge 1000 ticks u2u   809.8 transit   14.7 non-transit   795.1 (>=100:   0) | dual-UE mean 70
+  ospf        recovery     91: not-in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | no-bridge 1000 ticks u2u   678.8 transit   29.8 non-transit   649.0 (>=100:   0) | dual-UE mean 83
+  marl_static rescue_ops   82: not-in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | in-view 1200 ticks u2u  1395.6 transit  135.6 non-transit  1260.0 (>=100: 1198) | no-bridge    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | dual-UE mean 70
+  marl_static rescue_ops   91: not-in-view    3 ticks u2u  1143.1 transit    8.0 non-transit  1135.1 (>=100:   0) | in-view 1197 ticks u2u  1113.5 transit    6.4 non-transit  1107.1 (>=100:   0) | no-bridge    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | dual-UE mean 83
+  ospf        rescue_ops   82: not-in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | no-bridge 1200 ticks u2u  1039.4 transit  106.3 non-transit   933.1 (>=100: 911) | dual-UE mean 70
+  ospf        rescue_ops   91: not-in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | in-view    0 ticks u2u     nan transit    nan non-transit     nan (>=100:   0) | no-bridge 1200 ticks u2u   923.3 transit    6.2 non-transit   917.1 (>=100:   0) | dual-UE mean 83
+
+Phase-lock check (the mapping's '+70 to +130 units/tick while a bridge is up but not yet in the routing view'): u2u gap = not-in-view minus in-view, split into the UE-transit and the infrastructure-only share
+  marl_static recovery     82: gap   +71.2 = transit  +217.2 + non-transit  -146.1  (457 not-in-view ticks)
+  marl_static recovery     91: gap  +110.5 = transit    -5.1 + non-transit  +115.6  (313 not-in-view ticks)
+  ospf        recovery     82: not applicable (no bridge phases: 0 not-in-view / 0 in-view ticks)
+  ospf        recovery     91: not applicable (no bridge phases: 0 not-in-view / 0 in-view ticks)
+  marl_static rescue_ops   82: not applicable (no bridge phases: 0 not-in-view / 1200 in-view ticks)
+  marl_static rescue_ops   91: gap   +29.6 = transit    +1.6 + non-transit   +27.9  (3 not-in-view ticks)
+  ospf        rescue_ops   82: not applicable (no bridge phases: 0 not-in-view / 0 in-view ticks)
+  ospf        rescue_ops   91: not applicable (no bridge phases: 0 not-in-view / 0 in-view ticks)
+
+Transit runs (post-event tick+length), first 12 per pass:
+  marl_static recovery     82: 200+1000
+  marl_static recovery     91: 200+1000
+  ospf        recovery     82: 248+952
+  ospf        recovery     91: 248+952
+  marl_static rescue_ops   82: 0+1200
+  marl_static rescue_ops   91: 0+1200
+  ospf        rescue_ops   82: 0+1200
+  ospf        rescue_ops   91: 0+1200
+
+Example UE-transit paths from the FIRST ticks of each pass (tick: path; pre-event for Scenario A):
+  marl_static recovery     82  t=   0: UE_44 > O-RU_23 > O-DU_21 > O-RU_29 > UE_62 > O-RU_27 > UE_106
+  marl_static recovery     82  t=   0: UE_48 > O-RU_27 > UE_70 > O-RU_25 > UE_99
+  marl_static recovery     82  t=   0: UE_49 > O-RU_27 > UE_48 > O-RU_30 > UE_173
+  marl_static recovery     91  t=   0: UE_48 > O-RU_30 > UE_176 > O-RU_27 > UE_99
+  marl_static recovery     91  t=   1: UE_48 > O-RU_30 > UE_176 > O-RU_27 > UE_99
+  marl_static recovery     91  t=   2: UE_48 > O-RU_30 > UE_176 > O-RU_27 > UE_99
+  ospf        recovery     82  t=   0: UE_44 > O-RU_23 > O-DU_21 > O-RU_29 > UE_62 > O-RU_27 > UE_106
+  ospf        recovery     82  t=   0: UE_48 > O-RU_27 > UE_70 > O-RU_25 > UE_99
+  ospf        recovery     82  t=   0: UE_49 > O-RU_27 > UE_48 > O-RU_30 > UE_173
+  ospf        recovery     91  t=   0: UE_48 > O-RU_30 > UE_176 > O-RU_27 > UE_99
+  ospf        recovery     91  t=   1: UE_48 > O-RU_30 > UE_176 > O-RU_27 > UE_99
+  ospf        recovery     91  t=   2: UE_48 > O-RU_30 > UE_176 > O-RU_27 > UE_99
+  marl_static rescue_ops   82  t=   0: UE_101 > O-RU_25 > UE_70 > O-RU_27 > UE_180
+  marl_static rescue_ops   82  t=   0: UE_102 > O-RU_30 > UE_48 > O-RU_27 > UE_75
+  marl_static rescue_ops   82  t=   0: UE_104 > O-RU_27 > UE_62 > O-RU_29 > UE_152
+  marl_static rescue_ops   91  t=   0: UE_107 > O-RU_30 > UE_176 > O-RU_27 > UE_156
+  marl_static rescue_ops   91  t=   1: UE_130 > O-RU_27 > UE_176 > O-RU_30 > UE_68
+  marl_static rescue_ops   91  t=   2: UE_130 > O-RU_27 > UE_176 > O-RU_30 > UE_68
+  ospf        rescue_ops   82  t=   0: UE_101 > O-RU_25 > UE_70 > O-RU_27 > UE_180
+  ospf        rescue_ops   82  t=   0: UE_102 > O-RU_30 > UE_48 > O-RU_27 > UE_75
+  ospf        rescue_ops   82  t=   0: UE_104 > O-RU_27 > UE_62 > O-RU_29 > UE_152
+  ospf        rescue_ops   91  t=   0: UE_107 > O-RU_30 > UE_176 > O-RU_27 > UE_156
+  ospf        rescue_ops   91  t=   1: UE_107 > O-RU_30 > UE_176 > O-RU_27 > UE_156
+  ospf        rescue_ops   91  t=   2: UE_107 > O-RU_30 > UE_176 > O-RU_27 > UE_156
+
+Example UE-transit paths from POST-EVENT ticks (tick phase: path; up to 2 per phase per pass; phase = bridge up but not in the routing view / in view / no bridge):
+  marl_static recovery     82  t= 200 in-view    : UE_56 > O-RU_23 > O-DU_18 > O-RU_25 > UE_134 > O-RU_27 > UE_70
+  marl_static recovery     82  t= 201 in-view    : UE_96 > O-RU_27 > UE_48 > O-RU_30 > UE_126
+  marl_static recovery     82  t= 203 not-in-view: UE_101 > O-RU_25 > UE_70 > O-RU_27 > UE_180
+  marl_static recovery     82  t= 203 not-in-view: UE_103 > O-RU_28 > UE_53 > O-RU_30 > UE_85
+  marl_static recovery     82  t= 206 no-bridge  : UE_132 > O-RU_30 > UE_48 > O-RU_27 > O-DU_17 > O-RU_24 > UE_66
+  marl_static recovery     82  t= 206 no-bridge  : UE_188 > O-RU_26 > O-DU_20 > O-RU_25 > UE_134 > O-RU_27 > UE_70
+  marl_static recovery     91  t= 200 in-view    : UE_107 > O-RU_24 > UE_44 > O-RU_27 > UE_139
+  marl_static recovery     91  t= 200 in-view    : UE_113 > O-RU_29 > O-DU_18 > O-RU_24 > UE_44 > O-RU_27 > UE_101
+  marl_static recovery     91  t= 203 not-in-view: UE_104 > O-RU_25 > UE_49 > O-RU_29 > O-DU_18 > O-RU_26 > UE_152
+  marl_static recovery     91  t= 203 not-in-view: UE_104 > O-RU_25 > UE_49 > O-RU_29 > UE_179
+  ospf        recovery     82  t= 248 no-bridge  : UE_132 > O-RU_30 > UE_48 > O-RU_27 > O-DU_17 > O-RU_24 > UE_66
+  ospf        recovery     82  t= 248 no-bridge  : UE_61 > O-RU_26 > UE_66 > O-RU_24 > UE_191
+  ospf        recovery     91  t= 248 no-bridge  : UE_168 > O-RU_28 > UE_63 > O-RU_27 > UE_130
+  ospf        recovery     91  t= 249 no-bridge  : UE_101 > O-RU_27 > UE_44 > O-RU_24 > O-DU_18 > O-RU_23 > UE_60
+  marl_static rescue_ops   82  t=   0 in-view    : UE_101 > O-RU_25 > UE_70 > O-RU_27 > UE_180
+  marl_static rescue_ops   82  t=   0 in-view    : UE_102 > O-RU_30 > UE_48 > O-RU_27 > UE_75
+  marl_static rescue_ops   91  t=   0 in-view    : UE_107 > O-RU_30 > UE_176 > O-RU_27 > UE_156
+  marl_static rescue_ops   91  t=   1 in-view    : UE_130 > O-RU_27 > UE_176 > O-RU_30 > UE_68
+  marl_static rescue_ops   91  t=   3 not-in-view: UE_173 > O-RU_25 > UE_49 > O-RU_29 > UE_110
+  marl_static rescue_ops   91  t=   3 not-in-view: UE_177 > O-RU_30 > UE_176 > O-RU_27 > UE_183
+  ospf        rescue_ops   82  t=   0 no-bridge  : UE_101 > O-RU_25 > UE_70 > O-RU_27 > UE_180
+  ospf        rescue_ops   82  t=   0 no-bridge  : UE_102 > O-RU_30 > UE_48 > O-RU_27 > UE_75
+  ospf        rescue_ops   91  t=   0 no-bridge  : UE_107 > O-RU_30 > UE_176 > O-RU_27 > UE_156
+  ospf        rescue_ops   91  t=   1 no-bridge  : UE_107 > O-RU_30 > UE_176 > O-RU_27 > UE_156
+
+Interior UEs per recorded example path {count: paths} (first-ticks budget | post-event budget), each with the source of the count:
+  recorded = the per-example count stored by the probe with the predicate that classified that tick's records (is_ue_node); name-fallback = the pickle carries no such counts (written before they existed) and the report recounted the interior nodes with name_is_ue, is_ue_node's own name rule; count-length-mismatch = counts were stored but do not line up with the examples -- an anomaly, counted in interior_ue_count_anomalies, answered by the name rule.
+  marl_static recovery     82: {1: 24} [name-fallback] | {1: 24} [name-fallback]
+  marl_static recovery     91: {1: 24} [name-fallback] | {1: 24} [name-fallback]
+  ospf        recovery     82: {1: 24} [name-fallback] | {1: 12} [name-fallback]
+  ospf        recovery     91: {1: 24} [name-fallback] | {1: 12} [name-fallback]
+  marl_static rescue_ops   82: {1: 24} [name-fallback] | {1: 12} [name-fallback]
+  marl_static rescue_ops   91: {1: 24} [name-fallback] | {1: 16} [name-fallback]
+  ospf        rescue_ops   82: {1: 24} [name-fallback] | {1: 12} [name-fallback]
+  ospf        rescue_ops   91: {1: 24} [name-fallback] | {1: 12} [name-fallback]
+  sources over 8 passes: name-fallback; count-length-mismatch anomalies: 0

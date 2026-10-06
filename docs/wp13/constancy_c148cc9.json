@@ -1,0 +1,3384 @@
+{
+ "constant_in_every_pass": [
+  "g_isolated_ue_count",
+  "g_multi_island_bridge",
+  "g_nenb_count",
+  "g_reachable_ue_fraction"
+ ],
+ "constant_in_some_pass": [
+  "a_emergency_fraction",
+  "g_core_distance",
+  "g_intra_island_reachability",
+  "g_island_member_count",
+  "g_local_epc_health",
+  "g_pending_iops",
+  "g_xn_mesh_density"
+ ],
+ "fields": {
+  "a_coverage": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.1354419191919192,
+     "distinct": 45,
+     "max": 1.0,
+     "min": 0.05596802846420849,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.10056329354518559
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.13578282828282828,
+     "distinct": 45,
+     "max": 1.0,
+     "min": 0.05596802846420849,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.10070811334488361
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.13617424242424242,
+     "distinct": 45,
+     "max": 1.0,
+     "min": 0.05596802846420849,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.10129790319974184
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.14325757575757575,
+     "distinct": 45,
+     "max": 1.0,
+     "min": 0.05596802846420849,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.10586437139443118
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.143510101010101,
+     "distinct": 45,
+     "max": 1.0,
+     "min": 0.05596802846420849,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.10591728552344483
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.14444444444444443,
+     "distinct": 45,
+     "max": 1.0,
+     "min": 0.05596802846420849,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.10677492435974645
+    }
+   ],
+   "samples": 475200
+  },
+  "a_emergency_fraction": {
+   "constant_in": 3,
+   "constant_values": [
+    0.0
+   ],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9722222222222222,
+     "distinct": 2,
+     "max": 0.2597402597402597,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0018219715189412154
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9722222222222222,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.02700617283950617
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9722222222222222,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.02700617283950617
+    }
+   ],
+   "samples": 475200
+  },
+  "a_own_link_max_util": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.5393686868686869,
+     "distinct": 19688,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.041018493539265545
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6493181818181818,
+     "distinct": 17237,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.016224181067324494
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5461237373737374,
+     "distinct": 19533,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.013859902464135588
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5393686868686869,
+     "distinct": 19509,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.005118355234711376
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6245580808080808,
+     "distinct": 17281,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.018082807692186058
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.4577020202020202,
+     "distinct": 23700,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.023844336094206654
+    }
+   ],
+   "samples": 475200
+  },
+  "a_own_link_min_avail": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.3638131313131313,
+     "distinct": 4815,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.08817921223725489
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.36440656565656565,
+     "distinct": 9684,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.08090967633542641
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3578914141414141,
+     "distinct": 7668,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.08566819946325653
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3638131313131313,
+     "distinct": 4820,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.08115501430593969
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3712752525252525,
+     "distinct": 5851,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.08570162773484069
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3638131313131313,
+     "distinct": 7079,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0924156847973259
+    }
+   ],
+   "samples": 475200
+  },
+  "a_relay_link_active": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.6372348484848485,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.23116659636134068
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6487247474747475,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.22788094948857263
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6547222222222222,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.2260610339506173
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6663383838383838,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.22233154206203448
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6668434343434343,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.2221632684164881
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6641161616161616,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.22306588549637793
+    }
+   ],
+   "samples": 475200
+  },
+  "a_relay_mode": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.36275252525252527,
+     "distinct": 3,
+     "max": 0.75,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.10207365988443463
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.35154040404040404,
+     "distinct": 3,
+     "max": 0.75,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.10208753407656107
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.36926767676767674,
+     "distinct": 3,
+     "max": 0.75,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.10294062786960514
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3341035353535354,
+     "distinct": 3,
+     "max": 0.75,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.09735716459696396
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3361868686868687,
+     "distinct": 3,
+     "max": 0.75,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.09691359363840424
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3358838383838384,
+     "distinct": 3,
+     "max": 0.75,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.09743104621817927
+    }
+   ],
+   "samples": 475200
+  },
+  "a_sinr_mean": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.19616161616161615,
+     "distinct": 57381,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.06930598363855958
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.25424242424242427,
+     "distinct": 53544,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.056841738496787586
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.2389520202020202,
+     "distinct": 55014,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.05423109899425346
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.27498737373737375,
+     "distinct": 55661,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.06312091358180591
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.314280303030303,
+     "distinct": 52978,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.055263842391167155
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.28958333333333336,
+     "distinct": 55198,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.04849008297636862
+    }
+   ],
+   "samples": 475200
+  },
+  "a_sinr_min": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.25573232323232326,
+     "distinct": 50350,
+     "max": 0.7603459232661277,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.029357996251417624
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.29368686868686866,
+     "distinct": 48913,
+     "max": 0.745452600244073,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.026645938608317005
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.26830808080808083,
+     "distinct": 51737,
+     "max": 0.787365901642136,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.028378085405432085
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.32198232323232323,
+     "distinct": 50955,
+     "max": 0.7603459232661277,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.028593534635144302
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.35556818181818184,
+     "distinct": 48143,
+     "max": 0.745452600244073,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.02608456408358594
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.317739898989899,
+     "distinct": 52148,
+     "max": 0.7761926788777621,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.027364340112198775
+    }
+   ],
+   "samples": 475200
+  },
+  "a_spectral_efficiency": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.24825757575757576,
+     "distinct": 9,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.06343926272795981
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.32064393939393937,
+     "distinct": 9,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.04799037468281931
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.2969823232323232,
+     "distinct": 9,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.04636834157702964
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3368939393939394,
+     "distinct": 9,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.055096669667167406
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3750378787878788,
+     "distinct": 9,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.04625380990616749
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.35664141414141415,
+     "distinct": 9,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.03885131498171149
+    }
+   ],
+   "samples": 475200
+  },
+  "a_tx_power": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.13790404040404042,
+     "distinct": 24,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.10817659293252116
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.1374621212121212,
+     "distinct": 24,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.10886563702238583
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.1439141414141414,
+     "distinct": 24,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.10970316269061506
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.1478030303030303,
+     "distinct": 24,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.11472353821886111
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.14650252525252525,
+     "distinct": 24,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.1152805147144624
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.1542929292929293,
+     "distinct": 24,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.11643798679466902
+    }
+   ],
+   "samples": 475200
+  },
+  "a_ue_count": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 8,
+     "max": 0.57,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.027251446280991732
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 10,
+     "max": 0.39,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.019724943076200773
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 9,
+     "max": 0.52,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.021894656715577495
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 9,
+     "max": 0.77,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.03348825885113764
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6085858585858586,
+     "distinct": 10,
+     "max": 0.39,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.01965933323130293
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6085858585858586,
+     "distinct": 9,
+     "max": 0.52,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.021841863075196408
+    }
+   ],
+   "samples": 475200
+  },
+  "b_any_neighbour_relaying": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.8160353535353535,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.15012165531578409
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.8116540404040404,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.15287175909983675
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.8405176767676767,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.13404771180874403
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.8960606060606061,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.09313599632690542
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.8729545454545454,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.11090490702479339
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9057575757575758,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.08536078971533517
+    }
+   ],
+   "samples": 475200
+  },
+  "b_fresh_neighbour_count": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.5371464646464646,
+     "distinct": 6,
+     "max": 0.6,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.02767209258621569
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5927651515151515,
+     "distinct": 7,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.03861123988464188
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5418055555555555,
+     "distinct": 7,
+     "max": 0.6,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.022606880954430673
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.7268686868686869,
+     "distinct": 7,
+     "max": 0.8,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.03630782511988572
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.7268686868686869,
+     "distinct": 7,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.052103372302571165
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.7268686868686869,
+     "distinct": 7,
+     "max": 0.8,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.029947724109784715
+    }
+   ],
+   "samples": 475200
+  },
+  "b_interferer_fraction": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.43497474747474746,
+     "distinct": 11,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.1203245725946332
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.45840909090909093,
+     "distinct": 14,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.10868231940458879
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.438510101010101,
+     "distinct": 13,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.1121521022507624
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3706060606060606,
+     "distinct": 18,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.10251669356677473
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.39295454545454545,
+     "distinct": 24,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.09442382169735418
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.35904040404040405,
+     "distinct": 20,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.09381760944526428
+    }
+   ],
+   "samples": 475200
+  },
+  "b_neighbour_freshness": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.09416666666666666,
+     "distinct": 11,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.04937945679012346
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.10424242424242425,
+     "distinct": 31,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.07670225586674831
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.09498737373737373,
+     "distinct": 31,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.05345886758136217
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.1,
+     "distinct": 11,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.00955786616941015
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.09545454545454546,
+     "distinct": 11,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.04044219754202377
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.1,
+     "distinct": 11,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.00955786616941015
+    }
+   ],
+   "samples": 475200
+  },
+  "b_neighbour_relay_share": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.06,
+     "distinct": 3990,
+     "max": 0.8913463627491194,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.03261163843309761
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.10424242424242425,
+     "distinct": 4564,
+     "max": 0.8882406812835869,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.03309138089386685
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.06277777777777778,
+     "distinct": 5035,
+     "max": 0.8954433171143596,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.03119575055840299
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.0007575757575757576,
+     "distinct": 3961,
+     "max": 0.8913463627491194,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.02440722379993903
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.04598484848484848,
+     "distinct": 3241,
+     "max": 0.8157058395844021,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.027352756457710944
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.0005555555555555556,
+     "distinct": 3961,
+     "max": 0.8349646289788758,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.021401093143263956
+    }
+   ],
+   "samples": 475200
+  },
+  "b_neighbour_sinr_best": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.07755050505050505,
+     "distinct": 2582,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0768793707702804
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.133270202020202,
+     "distinct": 2580,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.07015371983169567
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.10029040404040404,
+     "distinct": 2919,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.055754325876886356
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.051515151515151514,
+     "distinct": 2541,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.069810455509402
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.06202020202020202,
+     "distinct": 2161,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.059040448556486734
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.029722222222222223,
+     "distinct": 2665,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.039828452389778154
+    }
+   ],
+   "samples": 475200
+  },
+  "b_neighbour_sinr_mean": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.06631313131313131,
+     "distinct": 3870,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.03754549847447542
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.10424242424242425,
+     "distinct": 4275,
+     "max": 0.9993959562913142,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.03198536492631889
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.0629040404040404,
+     "distinct": 4803,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.027906338847712757
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.03611111111111111,
+     "distinct": 3718,
+     "max": 0.8816230797865621,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.03697424951402015
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.04598484848484848,
+     "distinct": 3163,
+     "max": 0.9253977943809333,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.032469125299629434
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.029166666666666667,
+     "distinct": 3791,
+     "max": 0.7311127311158004,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.014520210708320597
+    }
+   ],
+   "samples": 475200
+  },
+  "b_neighbour_tx_power_mean": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.0618939393939394,
+     "distinct": 243,
+     "max": 0.696969696969697,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.02923672689048542
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.10751262626262627,
+     "distinct": 304,
+     "max": 0.696969696969697,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.026276890922679447
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.06542929292929293,
+     "distinct": 296,
+     "max": 0.696969696969697,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.028560548039440477
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.06906565656565657,
+     "distinct": 333,
+     "max": 0.696969696969697,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.02506576260803192
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.06833333333333333,
+     "distinct": 439,
+     "max": 0.696969696969697,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.023064551974135317
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.06320707070707071,
+     "distinct": 409,
+     "max": 0.696969696969697,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.023665165682530884
+    }
+   ],
+   "samples": 475200
+  },
+  "b_own_sinr_drop": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.5653914141414141,
+     "distinct": 33456,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.06237298219647408
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5765404040404041,
+     "distinct": 32597,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.05958940052290696
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5676388888888889,
+     "distinct": 33413,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.06035665644198722
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5550252525252525,
+     "distinct": 34505,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.06054091397811565
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5738257575757576,
+     "distinct": 33138,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.05462545825262024
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5495959595959596,
+     "distinct": 35071,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.058393999674683686
+    }
+   ],
+   "samples": 475200
+  },
+  "b_relaying_neighbour_fraction": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.40575757575757576,
+     "distinct": 11,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.13746038125077942
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.381729797979798,
+     "distinct": 14,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.1363438018610275
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.4197853535353535,
+     "distinct": 13,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.1294144296897142
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.38002525252525254,
+     "distinct": 18,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.1031212173458013
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.36042929292929293,
+     "distinct": 24,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.11074847979075755
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3638636363636364,
+     "distinct": 21,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.09821368818955838
+    }
+   ],
+   "samples": 475200
+  },
+  "c_anchored_flow_demand": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.23140495867768596
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.23140495867768596
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.23140495867768596
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.23140495867768596
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6085858585858586,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.23820911131517195
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6085858585858586,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.23820911131517195
+    }
+   ],
+   "samples": 475200
+  },
+  "c_live_infra_neighbours": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.3771464646464647,
+     "distinct": 9,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.07285576193755738
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.32065656565656564,
+     "distinct": 9,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.07094438474230946
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3643813131313131,
+     "distinct": 11,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.06402160238751148
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.36353535353535354,
+     "distinct": 5,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.10052083011937556
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.36353535353535354,
+     "distinct": 6,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.09087149677169422
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.36353535353535354,
+     "distinct": 5,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.10888963083964645
+    }
+   ],
+   "samples": 475200
+  },
+  "c_own_relay_capacity": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.36275252525252527,
+     "distinct": 50467,
+     "max": 0.7197575696956429,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.012114092218608182
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3512626262626263,
+     "distinct": 51365,
+     "max": 0.7188422734008519,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.009609716913615498
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.345239898989899,
+     "distinct": 51850,
+     "max": 0.7198689475426877,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.00967540116457557
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.33366161616161616,
+     "distinct": 52768,
+     "max": 0.7197575696956429,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.009917792479666954
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.33315656565656565,
+     "distinct": 52802,
+     "max": 0.7188422734008519,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.00871468716136669
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.3358838383838384,
+     "distinct": 52594,
+     "max": 0.7193128048429297,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.008043223156773159
+    }
+   ],
+   "samples": 475200
+  },
+  "d_local_isolation": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.9402777777777778,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.05615547839506173
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9402904040404041,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.05614436010993776
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9402904040404041,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.05614436010993776
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9997222222222222,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0002777006172839506
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9997222222222222,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0002777006172839506
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9997222222222222,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0002777006172839506
+    }
+   ],
+   "samples": 475200
+  },
+  "d_ticks_since_local_isolation": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.885,
+     "distinct": 201,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.07047011959876544
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.8850126262626262,
+     "distinct": 201,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.07045969926538109
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.8850126262626262,
+     "distinct": 201,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.07045969926538109
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 201,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.01787829861111111
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 201,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.01787829861111111
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 201,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.01787829861111111
+    }
+   ],
+   "samples": 475200
+  },
+  "g_active_relay_paths": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.19,
+     "distinct": 15,
+     "max": 0.8181818181818182,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.023661794077134986
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.18583333333333332,
+     "distinct": 15,
+     "max": 0.8181818181818182,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.023029912604581163
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.19333333333333333,
+     "distinct": 15,
+     "max": 0.8181818181818182,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.02480492280762167
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.19583333333333333,
+     "distinct": 15,
+     "max": 0.8181818181818182,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.00825585000892766
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.18944444444444444,
+     "distinct": 16,
+     "max": 0.8181818181818182,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.008487360824150596
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.2011111111111111,
+     "distinct": 15,
+     "max": 0.7727272727272727,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.008073534428884806
+    }
+   ],
+   "samples": 475200
+  },
+  "g_bridge_node_flag": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.8707575757575757,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.11253882001836546
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.8712121212121212,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.11220156106519742
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.8742550505050505,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.10993315717146207
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9545454545454546,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.043388429752066124
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9090909090909091,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.08264462809917354
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9090909090909091,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.08264462809917354
+    }
+   ],
+   "samples": 475200
+  },
+  "g_core_distance": {
+   "constant_in": 3,
+   "constant_values": [
+    1.0
+   ],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 3,
+     "max": 1.0,
+     "min": 0.2,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.030725436179981636
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 3,
+     "max": 1.0,
+     "min": 0.2,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.030725436179981636
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 3,
+     "max": 1.0,
+     "min": 0.2,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.030725436179981636
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  },
+  "g_intra_island_reachability": {
+   "constant_in": 3,
+   "constant_values": [
+    1.0
+   ],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.8508333333333333,
+     "distinct": 3,
+     "max": 1.0,
+     "min": 0.4117647058823529,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.03267871381393163
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6277777777777778,
+     "distinct": 6,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.04750080863288437
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.36027777777777775,
+     "distinct": 10,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0575867523851306
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  },
+  "g_island_member_count": {
+   "constant_in": 3,
+   "constant_values": [
+    0.4375
+   ],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.7952777777777778,
+     "distinct": 4,
+     "max": 0.4375,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.01440052228245902
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.5722222222222222,
+     "distinct": 6,
+     "max": 0.4375,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.016305640782429725
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.36027777777777775,
+     "distinct": 9,
+     "max": 0.4375,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.017105995781281882
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.4375,
+     "min": 0.4375,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.4375,
+     "min": 0.4375,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.4375,
+     "min": 0.4375,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  },
+  "g_island_size": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 2,
+     "max": 0.21875,
+     "min": 0.18229166666666666,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 6.974250364369002e-05
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 2,
+     "max": 0.21875,
+     "min": 0.18229166666666666,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 6.974250364369002e-05
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 2,
+     "max": 0.21875,
+     "min": 0.18229166666666666,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 6.974250364369002e-05
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6111111111111112,
+     "distinct": 2,
+     "max": 0.18229166666666666,
+     "min": 0.1650943396226415,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 7.028580377887422e-05
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6111111111111112,
+     "distinct": 2,
+     "max": 0.18229166666666666,
+     "min": 0.1650943396226415,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 7.028580377887422e-05
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6111111111111112,
+     "distinct": 2,
+     "max": 0.18229166666666666,
+     "min": 0.1650943396226415,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 7.028580377887422e-05
+    }
+   ],
+   "samples": 475200
+  },
+  "g_island_ue_load_balance": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.601010101010101,
+     "distinct": 3,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.21952479338842976
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.601010101010101,
+     "distinct": 3,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.21582819100091824
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.601010101010101,
+     "distinct": 3,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.21785559573002755
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6363636363636364,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.23140495867768596
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6085858585858586,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.23820911131517195
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6085858585858586,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.23820911131517195
+    }
+   ],
+   "samples": 475200
+  },
+  "g_isolated_ue_count": {
+   "constant_in": 6,
+   "constant_values": [
+    0.0
+   ],
+   "dead": true,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  },
+  "g_local_epc_health": {
+   "constant_in": 3,
+   "constant_values": [
+    1.0
+   ],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.05246913580246914
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9347474747474748,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.06099463320069381
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.940050505050505,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.056355553004795424
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  },
+  "g_multi_island_bridge": {
+   "constant_in": 6,
+   "constant_values": [
+    0.0
+   ],
+   "dead": true,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  },
+  "g_nenb_count": {
+   "constant_in": 6,
+   "constant_values": [
+    0.0
+   ],
+   "dead": true,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  },
+  "g_pending_iops": {
+   "constant_in": 3,
+   "constant_values": [
+    0.0
+   ],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 0.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6111111111111112,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.23765432098765432
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6111111111111112,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.23765432098765432
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.6111111111111112,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.23765432098765432
+    }
+   ],
+   "samples": 475200
+  },
+  "g_reachable_ue_fraction": {
+   "constant_in": 6,
+   "constant_values": [
+    1.0
+   ],
+   "dead": true,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  },
+  "g_ue_to_ue_routed": {
+   "constant_in": 0,
+   "constant_values": [],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.020833333333333332,
+     "distinct": 116,
+     "max": 0.5405405405405406,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.013379163541669799
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.025555555555555557,
+     "distinct": 116,
+     "max": 0.581081081081081,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.00899839777214652
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.019444444444444445,
+     "distinct": 136,
+     "max": 0.6891891891891891,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.014565296771997222
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.0125,
+     "distinct": 291,
+     "max": 0.6621621621621622,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.015240514269884875
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.0125,
+     "distinct": 226,
+     "max": 0.5135135135135135,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.007162047529831853
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.012222222222222223,
+     "distinct": 275,
+     "max": 0.6171171171171171,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.010665828270951926
+    }
+   ],
+   "samples": 475200
+  },
+  "g_xn_mesh_density": {
+   "constant_in": 3,
+   "constant_values": [
+    1.0
+   ],
+   "dead": false,
+   "passes": 6,
+   "per_pass": [
+    {
+     "constant": false,
+     "constant_fraction": 0.9444444444444444,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.05246913580246914
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.9347474747474748,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.06099463320069381
+    },
+    {
+     "constant": false,
+     "constant_fraction": 0.940050505050505,
+     "distinct": 2,
+     "max": 1.0,
+     "min": 0.0,
+     "n": 79200,
+     "scenario": "recovery",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.056355553004795424
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 50,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 71,
+     "ticks": 3600,
+     "variance": 0.0
+    },
+    {
+     "constant": true,
+     "constant_fraction": 1.0,
+     "distinct": 1,
+     "max": 1.0,
+     "min": 1.0,
+     "n": 79200,
+     "scenario": "rescue_ops",
+     "seed": 82,
+     "ticks": 3600,
+     "variance": 0.0
+    }
+   ],
+   "samples": 475200
+  }
+ },
+ "passes": 6,
+ "reports": [
+  "output/wp13/constancy_c148cc9_recovery_s50.json",
+  "output/wp13/constancy_c148cc9_recovery_s71.json",
+  "output/wp13/constancy_c148cc9_recovery_s82.json",
+  "output/wp13/constancy_c148cc9_rescue_ops_s50.json",
+  "output/wp13/constancy_c148cc9_rescue_ops_s71.json",
+  "output/wp13/constancy_c148cc9_rescue_ops_s82.json"
+ ],
+ "schema_id": "obs1-48327117f57a86a2",
+ "seeds_by_scenario": {
+  "recovery": [
+   50,
+   71,
+   82
+  ],
+  "rescue_ops": [
+   50,
+   71,
+   82
+  ]
+ }
+}

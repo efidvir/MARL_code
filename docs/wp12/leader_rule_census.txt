@@ -1,0 +1,53 @@
+WP12 leader-rule census (D12.3 item 4): parallel links, and the up-link-degree election rule against the distinct-peer rule
+seeds 80-99, scenarios recovery,rescue_ops -- 40 cases, 20 topologies, no simulator
+
+parallel links (node pairs carrying more than one link):
+  raw topology:        0 of 20 seeds have any (max multiplicity 1 over 338 links)
+  post-severance graph: 0 of 40 cases have any (this is the graph the election runs on)
+
+election rule over every fragment component with >= 3 switches (the _fragment_table loop):
+  62 components elect a leader; divergences (leader or eccentricity): 0
+
+per case: seed scen | parallel raw/post | components (size leader ecc)
+    80 recovery   | 0/0 | 18 O-RU_24 3; 15 O-RU_25 4; 1 no-election; 1 no-election
+    80 rescue_ops | 0/0 | 33 O-RU_25 4; 1 no-election; 1 no-election
+    81 recovery   | 0/0 | 17 O-RU_29 3; 14 O-RU_25 3; 3 EdgeUPF_39 1; 1 no-election
+    81 rescue_ops | 0/0 | 34 O-RU_25 5; 1 no-election
+    82 recovery   | 0/0 | 18 O-RU_28 4; 15 O-RU_27 3; 1 no-election; 1 no-election
+    82 rescue_ops | 0/0 | 35 O-RU_27 5
+    83 recovery   | 0/0 | 21 O-RU_23 4; 12 O-RU_27 3; 1 no-election; 1 no-election
+    83 rescue_ops | 0/0 | 34 O-RU_23 5; 1 no-election
+    84 recovery   | 0/0 | 15 O-RU_30 4; 20 O-RU_29 5
+    84 rescue_ops | 0/0 | 35 O-RU_30 5
+    85 recovery   | 0/0 | 21 O-RU_26 4; 12 O-RU_24 4; 1 no-election; 1 no-election
+    85 rescue_ops | 0/0 | 34 O-RU_24 4; 1 no-election
+    86 recovery   | 0/0 | 24 O-RU_24 6; 11 O-RU_28 3
+    86 rescue_ops | 0/0 | 35 O-RU_28 5
+    87 recovery   | 0/0 | 15 O-RU_25 4; 19 O-RU_23 4; 1 no-election
+    87 rescue_ops | 0/0 | 34 O-RU_25 4; 1 no-election
+    88 recovery   | 0/0 | 24 O-RU_25 4; 9 O-RU_27 4; 1 no-election; 1 no-election
+    88 rescue_ops | 0/0 | 33 O-RU_25 4; 1 no-election; 1 no-election
+    89 recovery   | 0/0 | 19 O-RU_29 4; 15 O-RU_26 5; 1 no-election
+    89 rescue_ops | 0/0 | 34 O-RU_29 5; 1 no-election
+    90 recovery   | 0/0 | 21 O-RU_29 5; 14 O-RU_24 4
+    90 rescue_ops | 0/0 | 35 O-RU_25 5
+    91 recovery   | 0/0 | 26 O-RU_29 4; 7 O-RU_27 4; 1 no-election; 1 no-election
+    91 rescue_ops | 0/0 | 34 O-RU_27 4; 1 no-election
+    92 recovery   | 0/0 | 13 O-RU_25 5; 12 O-RU_27 3; 9 O-RU_28 2; 1 no-election
+    92 rescue_ops | 0/0 | 34 O-RU_25 5; 1 no-election
+    93 recovery   | 0/0 | 18 O-RU_28 3; 15 O-RU_24 5; 1 no-election; 1 no-election
+    93 rescue_ops | 0/0 | 34 O-RU_24 5; 1 no-election
+    94 recovery   | 0/0 | 19 O-RU_27 4; 16 O-RU_29 3
+    94 rescue_ops | 0/0 | 35 O-RU_29 5
+    95 recovery   | 0/0 | 13 O-RU_26 3; 20 O-RU_29 4; 1 no-election; 1 no-election
+    95 rescue_ops | 0/0 | 34 O-RU_29 4; 1 no-election
+    96 recovery   | 0/0 | 25 O-RU_27 5; 9 O-RU_29 3; 1 no-election
+    96 rescue_ops | 0/0 | 34 O-RU_29 4; 1 no-election
+    97 recovery   | 0/0 | 12 O-RU_25 4; 21 O-RU_29 4; 1 no-election; 1 no-election
+    97 rescue_ops | 0/0 | 34 O-RU_29 4; 1 no-election
+    98 recovery   | 0/0 | 15 O-RU_28 5; 18 O-RU_29 3; 1 no-election; 1 no-election
+    98 rescue_ops | 0/0 | 34 O-RU_29 5; 1 no-election
+    99 recovery   | 0/0 | 21 O-RU_27 5; 13 O-RU_24 4; 1 no-election
+    99 rescue_ops | 0/0 | 34 O-RU_24 5; 1 no-election
+
+no divergent component: on this seed set the two rules elect the same leader with the same eccentricity everywhere, so the pre-fix _fragment_table and the fixed one produce the same infra_comp_leaders / infra_comp_ecc.

@@ -1,0 +1,72 @@
+{
+ "identical": true,
+ "strict": false,
+ "nothing_compared": [],
+ "precondition_not_established": [],
+ "n_compared": 268,
+ "n_different": 0,
+ "n_missing": 0,
+ "arms": [
+  "marl_static"
+ ],
+ "seeds": [
+  200,
+  201
+ ],
+ "scenarios": [
+  "recovery",
+  "rescue_ops"
+ ],
+ "differences": [],
+ "missing": [],
+ "accounting_jitter": {
+  "energy": {
+   "max_rel_mean_diff": 0.0,
+   "n_series": 4,
+   "n_identical": 4
+  },
+  "latency": {
+   "max_rel_mean_diff": 0.0,
+   "n_series": 4,
+   "n_identical": 4
+  }
+ },
+ "provenance": {
+  "A": {
+   "tree_head": "6b53f3f",
+   "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6",
+   "schema_id": "obs1-542eb7fc0d277d1d",
+   "pythonhashseed": "0",
+   "checkpoint_sha256": [
+    "7e640ce090b4a414de5abb0aa5847288b599c0547eca768213de1e335406dfa9"
+   ],
+   "total_ticks": 3600
+  },
+  "B": {
+   "tree_head": "6b53f3f",
+   "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6",
+   "schema_id": "obs1-542eb7fc0d277d1d",
+   "pythonhashseed": "1",
+   "checkpoint_sha256": [
+    "7e640ce090b4a414de5abb0aa5847288b599c0547eca768213de1e335406dfa9"
+   ],
+   "total_ticks": 3600
+  }
+ },
+ "decision_series": {
+  "key": "decision_digest",
+  "runs_with_key": 4,
+  "runs_without_key": 0,
+  "arms_without_key": [],
+  "required": true,
+  "coverage": "decisions (per-tick digest) and their consequences"
+ },
+ "accounting_note": "energy/latency are compared as jitter only (not --strict): a hash-order-dependent decision whose only visible trace is in energy/latency is not detected unless the per-tick decision digest is recorded and identical",
+ "same_hashseed": false,
+ "same_tree": true,
+ "note": null,
+ "files": {
+  "A": "output/final/s6_cf_b0.pkl",
+  "B": "output/final/s6h_hash1.pkl"
+ }
+}

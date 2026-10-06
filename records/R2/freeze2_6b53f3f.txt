@@ -1,0 +1,47 @@
+freeze 2 at 2026-10-05T18:59:05Z, head 6b53f3f
+== confirmatory/FREEZE_FINAL_real.txt
+FREEZE_FINAL  profile=real  sealed 2026-10-05T18:55:34Z
+tree: <server-home>/MARL_run_9
+tree_head            6b53f3f
+tree_head_source     .synced_head
+tree_sha256          9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6
+tree_files           198
+schema_id            obs1-542eb7fc0d277d1d
+pythonhashseed       0
+provenance_complete  True
+manifest             bb1ae9ac40a2c97ae616d88cfabca6d2a85318b271c23c4e3fb739f3ccb8e864  confirmatory/final_manifest_200_219.json
+selected_checkpoint  7e640ce090b4a414de5abb0aa5847288b599c0547eca768213de1e335406dfa9  output/final/ck_s4567/policy_final.pt
+dev/stress pickles verified: 8
+  ee0361c031417aee9430e435f44d1501180df7c5a6d69cfc069fc90738e2d3d5  output/final/s1_dev_b0.pkl
+  367fc2c38eb71aba356d4e73c66eac8b88105fecd7a12519608d2303ac502d78  output/final/s1_dev_b1.pkl
+  e4433771c03261fda925d1620ecb05a22d74e5d75dc3c12636feb8708ecc06a1  output/final/s1_dev_b2.pkl
+  c66545a2477b6f7ed737078e433296e99e6731988bd4093578160bb5403f23cf  output/final/s1_dev_b3.pkl
+  9ac94767e86288c11ecf9059b0a7d6e3a84a21c40c82b307d97709aaad98e47e  output/final/s1_dev_b4.pkl
+  fdcbfe743e760df307d552929e8ae9f2d22d22bfc1ed553e1fbac040f4a047f1  output/final/s1_stress_b0.pkl
+  ad0c0603edc607641637d50b1ee11161698c23e85f5c9c6e2e4e6275342fdd8f  output/final/s4_dev_static.pkl
+  5386275f42ad40b26672acb012514e2af90dd2d127aebf5f8d01e2cd4b52f4a0  output/final/s4_stress_static.pkl
+8db53d46d3e76032b1263609de4127f4a65bbe70025b6cb02da2ff41c902dd85  confirmatory/FREEZE_FINAL_real.txt
+== confirmatory/SELECTED_real.txt
+output/final/ck_s4567/policy_final.pt
+# selected replicate: torch seed 4567
+# sha256 7e640ce090b4a414de5abb0aa5847288b599c0547eca768213de1e335406dfa9
+# rule: lowest mean steady components over validation seeds [60, 61, 62, 63, 64, 65, 66] (Scenario A); ties -> higher achievability
+# replicates scored: 4
+# steady window: last 500 of 3600 ticks; severance 200, rescue 1400
+#   s1234 components 1.285714 achievability 53.8000 instances 7
+#   s2345 components 1.485714 achievability 37.1250 instances 7
+#   s3456 components 1.285714 achievability 46.9987 instances 7
+#   s4567 components 1.142857 achievability 45.9400 instances 7
+a606b1dae9e0dd7b6fd857707d89c6b53ceac86ae81a3312983fcdaee8b5a5a2  confirmatory/SELECTED_real.txt
+== untrained checkpoints (4)
+59e927c85d679d79c1054c92bf3315af9556c5148a94534cbbd9ed66a887a6cc  output/final/untrained_s1234/policy_init.pt
+978819fe018204f2e69abca1da036c57806749c9589b99336e12eb09fa5b63de  output/final/untrained_s2345/policy_init.pt
+1b0911312c66ba636f2e5d327fbd923436df9fe252f91bb3721f471e7f1067de  output/final/untrained_s3456/policy_init.pt
+9a23fec06a8484177cea9c342197129ba0575e10d99e0d6c9c2a410529bc2089  output/final/untrained_s4567/policy_init.pt
+== confirmatory/final_dev_report.txt (tail)
+  random             0 [      0,    86.5]       0 [      0,    42.8]       1 [  0.946,       1] 1.1e+04 [1.06e+04, 1.11e+04] 1.46e+04 [1.4e+04, 1.47e+04] 2/20
+
+HARD ASSERTS: enforced, 0 failure(s)
+
+written confirmatory/final_dev_report.json
+ac2312e9c3e7609b1c9886f4e14a1b3f67d64c4d4ee9109a5fbaf708991adda5  output/seed_audit_200_219.json

@@ -1,0 +1,86 @@
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4088: UserWarning: Exact p-value calculation does not work if there are zeros. Switching to normal approximation.
+  warnings.warn("Exact p-value calculation does not work if there are "
+/usr/lib/python3/dist-packages/scipy/stats/_morestats.py:4102: UserWarning: Sample size too small for normal approximation.
+  warnings.warn("Sample size too small for normal approximation.")
+instances: A=20 B=20   excluded (harness failures): {'A': [], 'B': []}
+
+Scenario A  (optimum 1 on 16/20, mean optimum 1.25, mean raw 3.20)
+  arm                    ach    thr  E/tick J/u pool    comps  atopt    pre
+  marl_static   44.6 +-  9.5    970   238.0   0.2453     1.30  19/20   44.2
+  xldet         45.0 +-  9.3    978   227.3   0.2331     1.25  20/20   44.2
+  sdn           42.0 +-  9.3    913   204.3   0.2272     1.25  20/20   44.2
+  ospf          30.0 +-  6.0    652   191.4   0.2936     3.20   0/20   44.2
+  olsr          30.0 +-  6.0    652   191.4   0.2923     3.20   0/20   44.2
+  batman        30.0 +-  6.0    652   187.1   0.2852     3.20   0/20   44.2
+  aodv          30.0 +-  6.0    652   187.0   0.2897     3.20   0/20   44.2
+  random        20.4 +-  3.8    444   199.5   0.4294     1.54   0/20   44.2
+
+Scenario B  (optimum 1 on 16/20, mean optimum 1.20, mean raw 1.75)
+  arm                    ach    thr  E/tick J/u pool    comps  atopt    pre
+  marl_static   43.1 +-  5.7   1279   233.5   0.1903     1.20  20/20   50.3
+  xldet         39.7 +- 10.0   1180   225.7   0.2002     1.20  20/20   45.9
+  sdn           37.9 +-  6.3   1127   199.1   0.1851     1.20  20/20   44.7
+  ospf          35.9 +-  6.1   1067   195.6   0.1918     1.75  10/20   42.9
+  olsr          35.9 +-  6.1   1067   195.6   0.1918     1.75  10/20   42.9
+  batman        35.9 +-  6.1   1067   191.4   0.1882     1.75  10/20   42.9
+  aodv          35.9 +-  6.1   1067   191.2   0.1876     1.75  10/20   42.9
+  random        20.4 +-  3.4    605   200.4   0.3443     1.25  14/20   24.2
+
+PRIMARY: arm marl_static (Holm over 9, exact Wilcoxon):
+  P1_A_ach_vs_xldet             -0.3547  CI [-4.2847, +3.5752]  wins  8/20  sign 0.5034  W 0.59582 (scipy 0.59582)  Holm 0.59582  not confirmed
+  P2_A_ach_vs_sdn               +2.6150  CI [+0.0550, +5.1751]  wins 18/20  sign 0.0004  W 0.00558 (scipy 0.00558)  Holm 0.02790  CONFIRMED
+  P3_A_ach_vs_best_routing     +14.6173  CI [+10.3573, +18.8773]  wins 20/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00002  CONFIRMED
+  P4_B_ach_vs_xldet             +3.3976  CI [-1.2998, +8.0949]  wins 13/20  sign 0.2632  W 0.29425 (scipy 0.29425)  Holm 0.58850  not confirmed
+  P5_B_ach_vs_sdn               +5.1472  CI [+2.9844, +7.3100]  wins 18/20  sign 0.0001  W 0.00002 (scipy 0.00021)  Holm 0.00013  CONFIRMED
+  P6_B_ach_vs_best_routing      +7.1496  CI [+4.6436, +9.6556]  wins 20/20  sign 0.0000  W 0.00000 (scipy 0.00000)  Holm 0.00002  CONFIRMED
+  P7_A_jpu_vs_xldet             +0.0145  CI [-0.0057, +0.0347]  wins  7/20  sign 0.2632  W 0.15365 (scipy 0.15365)  Holm 0.46094  not confirmed
+  P8_A_jpu_vs_sdn               +0.0168  CI [+0.0042, +0.0294]  wins  6/20  sign 0.1153  W 0.01208 (scipy 0.01208)  Holm 0.04832  not confirmed
+  P9_A_jpu_vs_best_routing      -0.0403  CI [-0.0654, -0.0152]  wins 16/20  sign 0.0118  W 0.00315 (scipy 0.00315)  Holm 0.01892  CONFIRMED
+
+SECONDARY:
+  S1_A_components_marl_minus_xldet   +0.0500  CI [-0.0547, +0.1547]  wins  1/20  sign 1.0000  W 1.00000
+  S1_B_components_marl_minus_xldet   +0.0000  CI [+0.0000, +0.0000]  wins  0/20  sign 1.0000  W 1.00000
+  S2_B_change_vs_xldet               -1.0076  CI [-2.4847, +0.4694]  wins  8/20  sign 0.5034  W 0.26110
+  S2_B_change_vs_sdn                 -0.4360  CI [-1.1244, +0.2524]  wins  8/20  sign 0.6476  W 0.31241
+  S2_B_change_vs_best_routing        -0.2521  CI [-0.9949, +0.4908]  wins 10/20  sign 1.0000  W 0.75617
+  S3_B_pre_level_vs_xldet            +4.4052  CI [-1.3616, +10.1720]  wins 14/20  sign 0.1153  W 0.23051
+  S3_B_pre_level_vs_sdn              +5.5832  CI [+3.2744, +7.8919]  wins 16/20  sign 0.0013  W 0.00008
+  S3_B_pre_level_vs_best_routing     +7.3982  CI [+4.9188, +9.8776]  wins 20/20  sign 0.0000  W 0.00000
+  S4_A_abs_energy_vs_xldet          +10.7309  CI [+3.6453, +17.8165]  wins 15/20  sign 0.0414  W 0.00639
+  S5_A_sli_vs_xldet                -400.6328  CI [-4393.6040, +3592.3384]  wins 12/20  sign 0.3593  W 0.54122
+  S6_B_jpu_vs_xldet                  -0.0225  CI [-0.0548, +0.0098]  wins 11/20  sign 0.8238  W 0.57060
+  shared_world_A_pre_event_spread_pp 0.0
+
+S9 STABILITY FAMILY: marl_static minus xldet (Holm over 6, exact Wilcoxon; < 6 non-zero differences = not assessable):
+  S9a  A M2     +0.2500  CI [-0.2733, +0.7733]  wins  1/20  nonzero  1  W 1.00000  not assessable
+  S9b  B M2     +0.0000  CI [+0.0000, +0.0000]  wins  0/20  nonzero  0  W 1.00000  not assessable
+  S9c  A M4     -0.0473  CI [-0.1462, +0.0516]  wins  2/20  nonzero  2  W 0.50000  not assessable
+  S9d  B M4     +0.0000  CI [+0.0000, +0.0000]  wins  0/20  nonzero  0  W 1.00000  not assessable
+  S9e  A M7     +0.8385  CI [+0.5004, +1.1766]  wins 16/20  nonzero 16  W 0.00003  Holm 0.00015  CONFIRMED
+  S9f  B M7     +2.1534  CI [-0.9866, +5.2934]  wins 18/20  nonzero 18  W 0.00001  Holm 0.00005  CONFIRMED
+
+S10 STABILITY (descriptive; median [q25, q75] over instances):
+  Scenario A
+  arm          M1                       M2                       M4                       M7                       M9                       M6 censored
+  marl_static        1 [      1,       1]       0 [      0,       0]   0.995 [  0.995,   0.995]    2.35 [   1.77,    2.94]    6.39 [   6.11,    6.67] 1/20
+  xldet              1 [      1,       1]       0 [      0,       0]   0.995 [  0.995,   0.995]    1.47 [   1.18,    1.54]    5.97 [   5.83,    6.11] 0/20
+  sdn                1 [      1,       1]       0 [      0,       0]   0.979 [  0.979,    0.98]       0 [      0,       0]    6.11 [   6.11,    6.11] 0/20
+  ospf               0 [      0,       0]       0 [      0,       0]       0 [      0,       0]       0 [      0,       0]    6.11 [   6.11,    6.11] 20/20
+  olsr               0 [      0,       0]       0 [      0,       0]       0 [      0,       0]       0 [      0,       0]    6.11 [   6.11,    6.11] 20/20
+  batman             0 [      0,       0]       0 [      0,       0]       0 [      0,       0]       0 [      0,       0]       0 [      0,       0] 20/20
+  aodv               0 [      0,       0]       0 [      0,       0]       0 [      0,       0]       0 [      0,       0]       0 [      0,       0] 20/20
+  random           394 [    306,     509]     196 [    152,     254]   0.741 [  0.596,   0.825] 9.9e+03 [9.53e+03, 1.01e+04] 1.24e+04 [1.18e+04, 1.27e+04] 5/20
+  Scenario B
+  arm          M1                       M2                       M4                       M7                       M9                       M6 censored
+  marl_static      0.5 [      0,       1]       0 [      0,       0]   0.999 [  0.999,       1]    2.22 [   1.94,     2.5]    6.67 [   6.39,    6.74] 0/20
+  xldet            0.5 [      0,       1]       0 [      0,       0]   0.999 [  0.999,       1]    1.67 [   1.39,    1.67]    6.11 [   6.11,    6.11] 0/20
+  sdn              0.5 [      0,       1]       0 [      0,       0]   0.997 [  0.995,       1]       0 [      0,       0]    6.11 [   6.11,    6.11] 0/20
+  ospf               0 [      0,       0]       0 [      0,       0]     0.5 [      0,       1]       0 [      0,       0]    6.11 [   6.11,    6.11] 10/20
+  olsr               0 [      0,       0]       0 [      0,       0]     0.5 [      0,       1]       0 [      0,       0]    18.3 [   18.3,    18.3] 10/20
+  batman             0 [      0,       0]       0 [      0,       0]     0.5 [      0,       1]       0 [      0,       0]       0 [      0,       0] 10/20
+  aodv               0 [      0,       0]       0 [      0,       0]     0.5 [      0,       1]       0 [      0,       0]       0 [      0,       0] 10/20
+  random           0.5 [      0,      49]       0 [      0,      24]   0.999 [  0.962,       1] 1.08e+04 [1.06e+04, 1.1e+04] 1.44e+04 [1.4e+04, 1.47e+04] 2/20
+
+HARD ASSERTS: enforced, 0 failure(s)
+
+written confirmatory/final_cf_report.json

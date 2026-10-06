@@ -1,0 +1,10 @@
+output/final/ck_s4567/policy_final.pt
+# selected replicate: torch seed 4567
+# sha256 7e640ce090b4a414de5abb0aa5847288b599c0547eca768213de1e335406dfa9
+# rule: lowest mean steady components over validation seeds [60, 61, 62, 63, 64, 65, 66] (Scenario A); ties -> higher achievability
+# replicates scored: 4
+# steady window: last 500 of 3600 ticks; severance 200, rescue 1400
+#   s1234 components 1.285714 achievability 53.8000 instances 7
+#   s2345 components 1.485714 achievability 37.1250 instances 7
+#   s3456 components 1.285714 achievability 46.9987 instances 7
+#   s4567 components 1.142857 achievability 45.9400 instances 7

@@ -1,0 +1,130 @@
+{
+ "analyses": {
+  "S12_untrained": {
+   "controls": 4,
+   "state": "computed"
+  },
+  "S7_secondary_marl_freeze": {
+   "pickles": 1,
+   "state": "computed"
+  },
+  "S8_hash_invariance": {
+   "exit": "0",
+   "json": "confirmatory/final_s8_hash.json",
+   "state": "identical"
+  },
+  "full_report": {
+   "path": "confirmatory/final_cf_report_full.json",
+   "primary_report_reproduced": "identical",
+   "state": "computed"
+  }
+ },
+ "failures": 0,
+ "pickles": {
+  "output/final/s10_sens_install.pkl": {
+   "arms": [
+    "marl_static"
+   ],
+   "passes": 40,
+   "provenance": {
+    "pythonhashseed": "0",
+    "schema_id": "obs1-542eb7fc0d277d1d",
+    "tree_head": "6b53f3f",
+    "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+   }
+  },
+  "output/final/s11_sens_repoint.pkl": {
+   "arms": [
+    "marl_static"
+   ],
+   "passes": 40,
+   "provenance": {
+    "pythonhashseed": "0",
+    "schema_id": "obs1-542eb7fc0d277d1d",
+    "tree_head": "6b53f3f",
+    "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+   }
+  },
+  "output/final/s6h_hash1.pkl": {
+   "arms": [
+    "marl_static"
+   ],
+   "passes": 4,
+   "provenance": {
+    "pythonhashseed": "1",
+    "schema_id": "obs1-542eb7fc0d277d1d",
+    "tree_head": "6b53f3f",
+    "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+   }
+  },
+  "output/final/s8_untrained_s1234.pkl": {
+   "arms": [
+    "marl_static"
+   ],
+   "passes": 40,
+   "provenance": {
+    "pythonhashseed": "0",
+    "schema_id": "obs1-542eb7fc0d277d1d",
+    "tree_head": "6b53f3f",
+    "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+   }
+  },
+  "output/final/s8_untrained_s2345.pkl": {
+   "arms": [
+    "marl_static"
+   ],
+   "passes": 40,
+   "provenance": {
+    "pythonhashseed": "0",
+    "schema_id": "obs1-542eb7fc0d277d1d",
+    "tree_head": "6b53f3f",
+    "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+   }
+  },
+  "output/final/s8_untrained_s3456.pkl": {
+   "arms": [
+    "marl_static"
+   ],
+   "passes": 40,
+   "provenance": {
+    "pythonhashseed": "0",
+    "schema_id": "obs1-542eb7fc0d277d1d",
+    "tree_head": "6b53f3f",
+    "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+   }
+  },
+  "output/final/s8_untrained_s4567.pkl": {
+   "arms": [
+    "marl_static"
+   ],
+   "passes": 40,
+   "provenance": {
+    "pythonhashseed": "0",
+    "schema_id": "obs1-542eb7fc0d277d1d",
+    "tree_head": "6b53f3f",
+    "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+   }
+  },
+  "output/final/s9_freeze.pkl": {
+   "arms": [
+    "marl_freeze"
+   ],
+   "passes": 40,
+   "provenance": {
+    "pythonhashseed": "0",
+    "schema_id": "obs1-542eb7fc0d277d1d",
+    "tree_head": "6b53f3f",
+    "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+   }
+  }
+ },
+ "stages": [
+  "S6h=complete(1)",
+  "S8=complete(4)",
+  "S9=complete(1)",
+  "S10=complete(1)",
+  "S11=complete(1)"
+ ],
+ "total_passes": 284,
+ "untrained_analysis": "not called: untrained_analysis.py is the first study's script (seeds 80-99, run_5/run_6 trees); analysis S12 is computed by confirmatory_analysis.py --untrained in the full report"
+}

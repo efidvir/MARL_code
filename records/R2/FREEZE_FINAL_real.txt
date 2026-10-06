@@ -1,0 +1,20 @@
+FREEZE_FINAL  profile=real  sealed 2026-10-05T18:55:34Z
+tree: <server-home>/MARL_run_9
+tree_head            6b53f3f
+tree_head_source     .synced_head
+tree_sha256          9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6
+tree_files           198
+schema_id            obs1-542eb7fc0d277d1d
+pythonhashseed       0
+provenance_complete  True
+manifest             bb1ae9ac40a2c97ae616d88cfabca6d2a85318b271c23c4e3fb739f3ccb8e864  confirmatory/final_manifest_200_219.json
+selected_checkpoint  7e640ce090b4a414de5abb0aa5847288b599c0547eca768213de1e335406dfa9  output/final/ck_s4567/policy_final.pt
+dev/stress pickles verified: 8
+  ee0361c031417aee9430e435f44d1501180df7c5a6d69cfc069fc90738e2d3d5  output/final/s1_dev_b0.pkl
+  367fc2c38eb71aba356d4e73c66eac8b88105fecd7a12519608d2303ac502d78  output/final/s1_dev_b1.pkl
+  e4433771c03261fda925d1620ecb05a22d74e5d75dc3c12636feb8708ecc06a1  output/final/s1_dev_b2.pkl
+  c66545a2477b6f7ed737078e433296e99e6731988bd4093578160bb5403f23cf  output/final/s1_dev_b3.pkl
+  9ac94767e86288c11ecf9059b0a7d6e3a84a21c40c82b307d97709aaad98e47e  output/final/s1_dev_b4.pkl
+  fdcbfe743e760df307d552929e8ae9f2d22d22bfc1ed553e1fbac040f4a047f1  output/final/s1_stress_b0.pkl
+  ad0c0603edc607641637d50b1ee11161698c23e85f5c9c6e2e4e6275342fdd8f  output/final/s4_dev_static.pkl
+  5386275f42ad40b26672acb012514e2af90dd2d127aebf5f8d01e2cd4b52f4a0  output/final/s4_stress_static.pkl
