@@ -1,0 +1,56 @@
+%% Abstract and key points (written for the white paper; all claims are taken from the body)
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+\markboth{Abstract}{}
+
+Sixth-generation networks are expected to be managed at the timescales on which they change, by
+intelligence placed throughout the infrastructure rather than concentrated above it. In UNITY-6G that
+intelligence is contributed by many partners, addresses different domains---the core, the open radio
+access network, non-terrestrial segments, wireless transport, non-3GPP access, the AI/ML domain,
+vertical applications and digital twins---and is realized with techniques ranging from rules and
+solvers through trained models to language-model reasoning. Yet it acts on shared infrastructure, often
+on the same resources, toward objectives that pull against each other.
+
+This white paper specifies the \emph{AI-native agentic framework} under which such intelligence is
+hosted. The unit of hosting is the \emph{agent}: a composition of four capabilities---the Monitoring
+System, the Analytics Engine, the Decision Engine and the Actuator---instantiated against a declared
+objective, described by a signed descriptor, and holding only the authority the platform grants it.
+The framework treats authority to change the network as a shared resource: granted at admission,
+bounded by a declared scope and action space, held in a registry, mediated by a conflict fabric before
+any intent reaches the network, verified against independently observed state, and revocable at any
+time. Its contracts are stated precisely enough to be implemented without further interpretation:
+every declaration has a schema, every check a point at which it runs, and every obligation a party
+that carries it.
+
+\begin{keybox}[title={Key points}]
+\begin{itemize}
+  \item \textbf{Authority is a platform resource.} An agent never grants itself authority and never
+        approves its own decision; authority is allocated at admission, bounded and revocable.
+  \item \textbf{Four capabilities, each defined by what it never produces.} The Monitoring System
+        produces evidence, never conclusions; the Analytics Engine insight, never action; the Decision
+        Engine intent, never a controller command; the Actuator executes, verifies and reports one of
+        four typed outcomes.
+  \item \textbf{One contract per agent.} The agent descriptor declares what an agent is, what it may
+        touch, how fast it runs, where it may be placed, how it fails and who answers for it.
+  \item \textbf{Mediation before actuation.} Intents that could conflict are resolved synchronously and
+        fail-closed by the conflict fabric, off the per-decision fast path.
+  \item \textbf{Verified, honest assurance.} An acknowledgement is not proof of change; outcomes that
+        cannot be verified are reported as unverified, and assurance is built from platform events.
+  \item \textbf{Technique-neutral and standards-bound.} The same contracts hold whether a capability is
+        realized by rules, solvers, trained models or language models, and the framework binds to the
+        O-RAN latency classes and the 3GPP management vocabulary.
+\end{itemize}
+\end{keybox}
+
+\subsection*{How this paper is organized}
+Section~\ref{introduction} introduces the problem and the agent; Section~\ref{lineage-and-state-of-the-art}
+traces the lineage of the four-capability pattern and states what is new. Section~\ref{the-ai-native-agent-framework}
+defines the framework itself---terms, principles, taxonomy, the agent descriptor, the execution model,
+latency classes and the authority bound stack. Sections~\ref{the-monitoring-system}--\ref{the-actuator}
+specify each of the four capabilities, and Sections~\ref{interconnection}--\ref{integration} cover
+interconnection, lifecycle, conflict resolution and governance, and integration.
+Section~\ref{key-performance-indicators-and-value-indicators} relates the framework to the project's
+key performance and value indicators. Normative requirements appear as numbered requirement cards;
+Annex~\ref{annex-a-json-schemas-of-the-agent-descriptor-and-related-documents} gives the JSON Schemas
+of the descriptor and Annex~\ref{annex-b-initial-content-of-the-type-catalog} the initial content of the
+type catalog.

@@ -1,0 +1,9 @@
+*.aux
+*.log
+*.out
+*.toc
+*.lot
+*.lof
+*.pdf
+*.zip
+__pycache__/

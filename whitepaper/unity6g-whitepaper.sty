@@ -1,0 +1,191 @@
+%% unity6g-whitepaper.sty -- layout for the UNITY-6G agentic framework whitepaper
+%% Compiles with pdfLaTeX (Overleaf default), XeLaTeX or LuaLaTeX.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{unity6g-whitepaper}[2026/10/11 UNITY-6G whitepaper style]
+
+%% ------------------------------------------------------------------ engine & fonts
+\RequirePackage{iftex}
+\ifPDFTeX
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage[utf8]{inputenc}
+  \RequirePackage{textcomp}
+  \RequirePackage[sc]{mathpazo}          % Palatino text and math
+  \RequirePackage[scaled=0.90]{helvet}   % Helvetica for headings
+  \renewcommand\ttdefault{lmtt}
+  \RequirePackage{newunicodechar}
+  % characters the source uses that pdfLaTeX does not map by default
+  \newunicodechar{−}{\ensuremath{-}}
+  \newunicodechar{Σ}{\ensuremath{\Sigma}}
+  \newunicodechar{≤}{\ensuremath{\leq}}
+  \newunicodechar{≥}{\ensuremath{\geq}}
+\else
+  \RequirePackage{fontspec}
+  \setmainfont{TeX Gyre Pagella}
+  \setsansfont{TeX Gyre Heros}[Scale=0.90]
+  \setmonofont{Latin Modern Mono}
+\fi
+\RequirePackage{microtype}
+
+%% ------------------------------------------------------------------ page
+\RequirePackage[a4paper,top=25mm,bottom=25mm,left=24mm,right=24mm,
+  headheight=14pt,headsep=8mm,footskip=11mm]{geometry}
+\RequirePackage{setspace}
+\setstretch{1.08}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em plus 0.15em minus 0.1em}
+\setlength{\emergencystretch}{3em}
+\RequirePackage{xurl}
+
+%% ------------------------------------------------------------------ colours
+\RequirePackage[table]{xcolor}
+\definecolor{wpnavy}{HTML}{0B2545}
+\definecolor{wpteal}{HTML}{0E8C84}
+\definecolor{wpsky}{HTML}{E8F1F5}
+\definecolor{wpgray}{HTML}{5B6670}
+\definecolor{wprule}{HTML}{C9D3DB}
+\definecolor{wpmust}{HTML}{B3261E}
+\definecolor{wpshould}{HTML}{C77700}
+\definecolor{wpmay}{HTML}{2E7D32}
+
+%% ------------------------------------------------------------------ packages used by the pandoc body
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{graphicx}
+\RequirePackage{longtable,booktabs,array,calc,multirow}
+\RequirePackage{etoolbox}
+\RequirePackage[shortlabels]{enumitem}
+\RequirePackage{fvextra}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{tikz}
+\RequirePackage{titlesec}
+\RequirePackage{fancyhdr}
+\RequirePackage[font={small,sf},labelfont={bf,color=wpnavy},labelsep=period,
+  skip=6pt,justification=raggedright,singlelinecheck=false]{caption}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\real}[1]{#1}
+\def\LTcaptype{table}
+
+\setlist{itemsep=0.15em,topsep=0.3em,parsep=0.2em}
+\setlist[itemize,1]{label={\color{wpteal}\small$\blacktriangleright$}}
+\setlist[itemize,2]{label={\color{wpteal}\textendash}}
+
+%% booktabs rules in the brand colour, airier rows
+\setlength{\heavyrulewidth}{0.9pt}
+\setlength{\lightrulewidth}{0.5pt}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\LTpre}{4pt}
+\setlength{\LTpost}{6pt}
+\arrayrulecolor{wpnavy}
+
+%% ------------------------------------------------------------------ headings
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\titleformat{\section}[display]
+  {\sffamily\bfseries\color{wpnavy}}
+  {\color{wpteal}\fontsize{40}{40}\selectfont\thesection}
+  {4pt}
+  {\LARGE\raggedright}
+  [\vspace{2pt}{\color{wpteal}\titlerule[1.2pt]}]
+\titlespacing*{\section}{0pt}{0pt}{18pt}
+\titleformat{\subsection}
+  {\sffamily\bfseries\Large\color{wpnavy}\raggedright}{\color{wpteal}\thesubsection}{0.8em}{}
+\titlespacing*{\subsection}{0pt}{18pt}{6pt}
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\large\color{wpnavy}\raggedright}{\color{wpteal}\thesubsubsection}{0.8em}{}
+\titlespacing*{\subsubsection}{0pt}{14pt}{4pt}
+\titleformat{\paragraph}[hang]
+  {\sffamily\bfseries\normalsize\color{wpnavy}}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{10pt}{3pt}
+%% every chapter-level section starts on a fresh page
+\pretocmd{\section}{\clearpage}{}{}
+
+%% annexes are labelled "Annex A", "Annex B"
+\newif\ifwp@annex
+\apptocmd{\appendix}{\wp@annextrue
+  \titleformat{\section}[display]
+    {\sffamily\bfseries\color{wpnavy}}
+    {\color{wpteal}\Large ANNEX \thesection}
+    {4pt}{\LARGE\raggedright}
+    [\vspace{2pt}{\color{wpteal}\titlerule[1.2pt]}]%
+  \addtocontents{toc}{\protect\vspace{6pt}}}{}{}
+
+%% ------------------------------------------------------------------ header / footer
+\newcommand{\wpshorttitle}{UNITY-6G AI-Native Agentic Framework}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{{\color{wprule}\hrule width\headwidth height\headrulewidth}}
+\fancyhead[L]{\sffamily\footnotesize\color{wpgray}\wpshorttitle}
+\fancyhead[R]{\sffamily\footnotesize\color{wpgray}\nouppercase{\leftmark}}
+\fancyfoot[L]{\sffamily\footnotesize\color{wpgray}White Paper \textbullet{} \textcopyright{} 2025--2027 UNITY-6G}
+\fancyfoot[R]{\sffamily\footnotesize\color{wpnavy}\bfseries\thepage}
+\renewcommand{\sectionmark}[1]{\markboth{\ifwp@annex Annex\ \fi\thesection\quad #1}{}}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[R]{\sffamily\footnotesize\color{wpnavy}\bfseries\thepage}}
+
+%% ------------------------------------------------------------------ captions with the document's own numbers
+%% The source numbers tables and figures per chapter ("Table 3-4"); keep them verbatim
+%% so that the cross-references in the running text stay correct.
+\newcommand{\captionnum}[1]{\renewcommand{\thefigure}{#1}\renewcommand{\thetable}{#1}}
+%% Captions sit inside the longtable head (pandoc places them there), so they
+%% never get separated from the table at a page break.
+\newenvironment{wptable}[1]{%
+  \par\begingroup\small
+  \ifstrempty{#1}{}{\captionnum{#1}}%
+  \captionsetup{type=table,position=top}%
+}{\endgroup\par}
+
+%% mark used in the requirement-to-KPI mapping matrices
+\newcommand{\kpimark}{\textcolor{wpteal}{\rule{1.4ex}{1.4ex}}}
+
+%% ------------------------------------------------------------------ requirement cards
+\newcommand{\wp@setprio}[1]{%
+  \ifstrequal{#1}{MUST}{\colorlet{wpprio}{wpmust}}{%
+  \ifstrequal{#1}{MUST NOT}{\colorlet{wpprio}{wpmust}}{%
+  \ifstrequal{#1}{SHOULD}{\colorlet{wpprio}{wpshould}}{%
+  \ifstrequal{#1}{SHOULD NOT}{\colorlet{wpprio}{wpshould}}{\colorlet{wpprio}{wpmay}}}}}}
+\newcommand{\wpbadge}[1]{%
+  \tcbox[on line,colback=wpprio,colframe=wpprio,
+    boxrule=0pt,arc=2pt,left=4pt,right=4pt,top=1pt,bottom=1pt,
+    fontupper=\sffamily\scriptsize\bfseries\color{white}]{#1}}
+
+\newtcolorbox{requirementbox}[3]{%
+  enhanced,breakable,
+  colback=white,colframe=wprule,boxrule=0.6pt,arc=2pt,
+  borderline west={3pt}{0pt}{wpteal},
+  colbacktitle=wpsky,coltitle=wpnavy,
+  title={\texttt{\bfseries #1}\hspace{0.8em}\sffamily\bfseries #3\hfill\wpbadge{#2}},
+  fonttitle=\normalsize,
+  left=8pt,right=8pt,top=4pt,bottom=4pt,
+  before skip=10pt,after skip=10pt,
+  fontupper=\small}
+\newenvironment{requirement}[3]{\wp@setprio{#2}\begin{requirementbox}{#1}{#2}{#3}}{\end{requirementbox}}
+
+\newlength{\wp@reqlabel}
+\setlength{\wp@reqlabel}{3.1cm}
+\newcommand{\reqfield}[2]{%
+  \par\noindent
+  \begin{minipage}[t]{\wp@reqlabel}\raggedright\leavevmode
+    \sffamily\footnotesize\bfseries\color{wpgray}#1\end{minipage}%
+  \hfill
+  \begin{minipage}[t]{\dimexpr\linewidth-\wp@reqlabel-6pt\relax}\raggedright
+    \setlist{nosep,leftmargin=1.2em}%
+    #2\end{minipage}\par\vspace{3pt}}
+
+%% ------------------------------------------------------------------ code listings (JSON Schema annex)
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{%
+  fontsize=\footnotesize,breaklines,breakanywhere,
+  frame=leftline,framerule=2pt,rulecolor=\color{wpteal},
+  xleftmargin=6pt,framesep=8pt}
+
+%% ------------------------------------------------------------------ call-out boxes for the front matter
+\newtcolorbox{keybox}[1][]{enhanced,breakable,colback=wpsky,colframe=wpsky,
+  borderline west={3pt}{0pt}{wpnavy},arc=0pt,left=10pt,right=10pt,top=8pt,bottom=8pt,
+  fonttitle=\sffamily\bfseries\color{wpnavy},coltitle=wpnavy,colbacktitle=wpsky,
+  attach title to upper={\par\smallskip},#1}
+
+%% ------------------------------------------------------------------ hyperlinks (last)
+\RequirePackage[hidelinks,bookmarksnumbered,bookmarksopen]{hyperref}
+\hypersetup{colorlinks=true,linkcolor=wpnavy,urlcolor=wpteal,citecolor=wpteal}
+\RequirePackage{bookmark}
+
+\endinput
