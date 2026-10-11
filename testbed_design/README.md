@@ -120,5 +120,6 @@ row); editable `.svg` next to each. Numbers: `out/tables.md`; every check:
 | `bom.py` | Writes `out/hardware.md`, the bill of materials per option (conducted bench, V-band RF mesh sizing) |
 | `hwdraw.py` | Isometric line-art drawings of the devices (carts, IP-50, TG units, attenuators, racks, cables) |
 | `iso_render.py` | Writes `out/iso_*.png`, the exploded isometric bench per option |
+| `animate.py` | Writes `out/anim_*.gif`: normal → broken → reconnected, with the TG beams turning slowly to their new peers |
 
 Requires `matplotlib` and `networkx`.
