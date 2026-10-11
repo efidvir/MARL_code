@@ -38,42 +38,42 @@ Service flow W2→N (single-homed pocket, MARL only): W2–W1–CORE–N
 
 | Pair | Distance | MCS | Margin | Feasible | Chosen |
 |---|---|---|---|---|---|
-| W1–E1 | 540 m | 16QAM | 13.9 dB | yes | bridge 3 (E1→W1) |
+| W1–E1 | 540 m | 16QAM | 13.9 dB | yes |  |
 | W1–E2 | 649 m | 16QAM | 10.7 dB | yes |  |
-| W1–S | 702 m | 16QAM | 9.2 dB | yes |  |
-| W1–N | 504 m | 64QAM | 15.0 dB | yes | bridge 2 (N→W1) |
+| W1–S | 747 m | QPSK 1/2 | 8.0 dB | yes | bridge 3 (W1 ignites) |
+| W1–N | 504 m | 64QAM | 15.0 dB | yes |  |
 | W2–E1 | 649 m | 16QAM | 10.7 dB | yes |  |
-| W2–E2 | 540 m | 16QAM | 13.9 dB | yes |  |
-| W2–S | 395 m | 64QAM | 18.8 dB | yes | bridge 1 (S→W2) |
+| W2–E2 | 540 m | 16QAM | 13.9 dB | yes | bridge 1 (E2 ignites) |
+| W2–S | 431 m | 64QAM | 17.5 dB | yes |  |
 | W2–N | 831 m | QPSK 1/2 | 5.8 dB | yes |  |
-| E1–S | 702 m | 16QAM | 9.2 dB | yes |  |
-| E1–N | 504 m | 64QAM | 15.0 dB | yes |  |
-| E2–S | 395 m | 64QAM | 18.8 dB | yes |  |
+| E1–S | 747 m | QPSK 1/2 | 8.0 dB | yes |  |
+| E1–N | 504 m | 64QAM | 15.0 dB | yes | bridge 2 (E1 ignites) |
+| E2–S | 431 m | 64QAM | 17.5 dB | yes |  |
 | E2–N | 831 m | QPSK 1/2 | 5.8 dB | yes |  |
-| S–N | 1074 m | no link | -0.1 dB | no: CN-CN not allowed; out of range at 23 dBm |  |
+| S–N | 1122 m | no link | -1.2 dB | no: CN-CN not allowed; out of range at 23 dBm |  |
 
-**Beam changes** (head = the steering site that forms the bridge)
+**Beam changes** (the node-class end ignites the bridge)
 
-- S (head): the beam that served HUB turns 43° to W2 (same sector)
-- W2 (peer): the beam that served HUB turns 81° to S (another sector)
-- N (head): the beam that served CORE turns 32° to W1 (same sector)
-- W1 (peer): the beam that served HUB turns 91° to N (another sector)
-- E1 (head): the beam that served HUB turns 34° to W1 (same sector)
-- W1 (peer): the beam that served HUB turns 34° to E1 (same sector)
+- E2 (initiator): west sector beam that served HUB turns 34° to W2
+- W2 (responder): east sector beam that served HUB turns 34° to E2
+- E1 (initiator): north sector (idle sector) points at N
+- N (responder): its sector beam that served CORE turns 32° to E1
+- W1 (initiator): south sector (idle sector) points at S
+- S (responder): its sector beam that served HUB turns 21° to W1
 
-**TG polarity plan** (set before the event; hybrid per sector): CORE north = odd, E1 west = odd, E2 west = odd, HUB east = even, HUB west = odd, HUB south = odd, N sector = even, S sector = even, W1 east = even, W1 north = odd, W2 east = even, W2 south = odd
+**TG polarity plan** (set before the event; hybrid per sector): CORE north = odd, E1 north = odd, E1 west = odd, E2 west = odd, HUB east = even, HUB west = odd, HUB south = odd, N sector = even, S sector = even, W1 east = even, W1 south = odd, W2 east = even
 
 ## Configuration B - 6 IP-50 + 6 TG
 
 | Site | Role | IP-50 units | TG unit | After the event |
 |---|---|---|---|---|
 | W1 | West site | 1 | node-class (DN) | island 1 |
-| W2 | West site | - | node-class (DN) | island 3 |
+| W2 | West site | - | node-class (DN) | island 1 |
 | CORE | Core + MW hub | 2 | - | destroyed |
 | HUB | TG PtMP hub | - | node-class (DN) | destroyed |
 | E1 | Incident site | 2 | node-class (DN) | island 2 |
 | E2 | Incident site | 1 | node-class (DN) | island 2 |
-| S | Shelter (responders) | - | terminal-class (CN) | island 4 |
+| S | Shelter (responders) | - | terminal-class (CN) | island 3 |
 
 Totals: 6 IP-50 (3 fixed PtP links), 6 TG. Lost in the event: 2 IP-50, 1 TG.
 
@@ -84,50 +84,49 @@ Totals: 6 IP-50 (3 fixed PtP links), 6 TG. Lost in the event: 2 IP-50, 1 TG.
 | F1 W1→E1 | a | W1–CORE–E1 | MW + MW |
 | F1 W1→E1 | b | W1–HUB–E1 | TG + TG |
 | F2 W2→E2 | a | W2–HUB–E2 | TG + TG |
-| F2 W2→E2 | b | W2–HUB–E1–E2 | TG + TG + MW |
+| F2 W2→E2 | b | W2–W1–CORE–E1–E2 | TG + MW + MW + MW |
 
 Shared TG sectors (the flows' TG candidates contend for this airtime): HUB west sector serves W1, W2; HUB east sector serves E1, E2
 
 Service flow W1→S (single-homed pocket, MARL only): W1–HUB–S
 
-**Islands after the event**: 1: W1; 2: E1, E2; 3: W2; 4: S
+Fixed links on a spare sector of installed TG nodes (no extra radio): W1–W2
+
+**Islands after the event**: 1: W1, W2; 2: E1, E2; 3: S
 
 **Bridge candidates**
 
 | Pair | Distance | MCS | Margin | Feasible | Chosen |
 |---|---|---|---|---|---|
-| W1–W2 | 360 m | 64QAM | 20.1 dB | yes | bridge 1 (W2→W1) |
-| W1–E1 | 540 m | 16QAM | 13.9 dB | yes | bridge 2 (E1→W1) |
+| W1–E1 | 540 m | 16QAM | 13.9 dB | yes | bridge 1 (E1 ignites) |
 | W1–E2 | 649 m | 16QAM | 10.7 dB | yes |  |
-| W1–S | 702 m | 16QAM | 9.2 dB | yes |  |
+| W1–S | 747 m | QPSK 1/2 | 8.0 dB | yes |  |
 | W2–E1 | 649 m | 16QAM | 10.7 dB | yes |  |
 | W2–E2 | 540 m | 16QAM | 13.9 dB | yes |  |
-| W2–S | 395 m | 64QAM | 18.8 dB | yes | bridge 3 (S→W2) |
-| E1–S | 702 m | 16QAM | 9.2 dB | yes |  |
-| E2–S | 395 m | 64QAM | 18.8 dB | yes |  |
+| W2–S | 431 m | 64QAM | 17.5 dB | yes |  |
+| E1–S | 747 m | QPSK 1/2 | 8.0 dB | yes |  |
+| E2–S | 431 m | 64QAM | 17.5 dB | yes | bridge 2 (E2 ignites) |
 
-**Beam changes** (head = the steering site that forms the bridge)
+**Beam changes** (the node-class end ignites the bridge)
 
-- W2 (head): the beam that served HUB turns 56° to W1 (another sector)
-- W1 (peer): the beam that served HUB turns 56° to W2 (another sector)
-- E1 (head): the beam that served HUB turns 34° to W1 (same sector)
-- W1 (peer): the beam that served HUB turns 34° to E1 (same sector)
-- S (head): the beam that served HUB turns 43° to W2 (same sector)
-- W2 (peer): the beam that served HUB turns 81° to S (another sector)
+- E1 (initiator): west sector beam that served HUB turns 34° to W1
+- W1 (responder): east sector beam that served HUB turns 34° to E1
+- E2 (initiator): south sector (idle sector) points at S
+- S (responder): its sector beam that served HUB turns 39° to E2
 
-**TG polarity plan** (set before the event; hybrid per sector): E1 west = odd, E2 west = odd, HUB east = even, HUB west = odd, HUB south = odd, S sector = even, W1 east = even, W1 south = odd, W2 east = even, W2 north = even, W2 south = odd
+**TG polarity plan** (set before the event; hybrid per sector): E1 west = odd, E2 west = odd, E2 south = odd, HUB east = even, HUB west = odd, HUB south = odd, S sector = even, W1 east = even, W1 south = odd, W2 east = even, W2 north = even
 
 ## Configuration C - 4 IP-50 + 6 TG
 
 | Site | Role | IP-50 units | TG unit | After the event |
 |---|---|---|---|---|
 | W1 | West site | 1 | node-class (DN) | island 1 |
-| W2 | West site | - | node-class (DN) | island 3 |
+| W2 | West site | - | node-class (DN) | island 1 |
 | CORE | Core + MW hub | 2 | - | destroyed |
 | HUB | TG PtMP hub | - | node-class (DN) | destroyed |
 | E1 | Incident site | 1 | node-class (DN) | island 2 |
-| E2 | Incident site | - | node-class (DN) | island 4 |
-| S | Shelter (responders) | - | terminal-class (CN) | island 5 |
+| E2 | Incident site | - | node-class (DN) | island 2 |
+| S | Shelter (responders) | - | terminal-class (CN) | island 3 |
 
 Totals: 4 IP-50 (2 fixed PtP links), 6 TG. Lost in the event: 2 IP-50, 1 TG.
 
@@ -137,44 +136,38 @@ Totals: 4 IP-50 (2 fixed PtP links), 6 TG. Lost in the event: 2 IP-50, 1 TG.
 |---|---|---|---|
 | F1 W1→E1 | a | W1–CORE–E1 | MW + MW |
 | F1 W1→E1 | b | W1–HUB–E1 | TG + TG |
-| F2 W1→E2 | a | W1–HUB–E2 | TG + TG |
-| F2 W1→E2 | b | W1–CORE–E1–HUB–E2 | MW + MW + TG + TG |
-| F3 W2→E1 | a | W2–HUB–E1 | TG + TG |
-| F3 W2→E1 | b | W2–HUB–W1–CORE–E1 | TG + TG + MW + MW |
+| F2 W2→E2 | a | W2–HUB–E2 | TG + TG |
+| F2 W2→E2 | b | W2–W1–CORE–E1–E2 | TG + MW + MW + TG |
 
 Shared TG sectors (the flows' TG candidates contend for this airtime): HUB west sector serves W1, W2; HUB east sector serves E1, E2
 
 Service flow W1→S (single-homed pocket, MARL only): W1–HUB–S
 
-**Islands after the event**: 1: W1; 2: E1; 3: W2; 4: E2; 5: S
+Fixed links on a spare sector of installed TG nodes (no extra radio): W1–W2, E1–E2
+
+**Islands after the event**: 1: W1, W2; 2: E1, E2; 3: S
 
 **Bridge candidates**
 
 | Pair | Distance | MCS | Margin | Feasible | Chosen |
 |---|---|---|---|---|---|
-| W1–W2 | 360 m | 64QAM | 20.1 dB | yes | bridge 1 (W2→W1) |
-| W1–E1 | 540 m | 16QAM | 13.9 dB | yes | bridge 2 (E1→W1) |
+| W1–E1 | 540 m | 16QAM | 13.9 dB | yes | bridge 1 (E1 ignites) |
 | W1–E2 | 649 m | 16QAM | 10.7 dB | yes |  |
-| W1–S | 702 m | 16QAM | 9.2 dB | yes |  |
+| W1–S | 747 m | QPSK 1/2 | 8.0 dB | yes |  |
 | W2–E1 | 649 m | 16QAM | 10.7 dB | yes |  |
 | W2–E2 | 540 m | 16QAM | 13.9 dB | yes |  |
-| W2–S | 395 m | 64QAM | 18.8 dB | yes | bridge 3 (S→W2) |
-| E1–E2 | 360 m | 64QAM | 20.1 dB | yes | bridge 4 (E2→E1) |
-| E1–S | 702 m | 16QAM | 9.2 dB | yes |  |
-| E2–S | 395 m | 64QAM | 18.8 dB | yes |  |
+| W2–S | 431 m | 64QAM | 17.5 dB | yes |  |
+| E1–S | 747 m | QPSK 1/2 | 8.0 dB | yes |  |
+| E2–S | 431 m | 64QAM | 17.5 dB | yes | bridge 2 (E2 ignites) |
 
-**Beam changes** (head = the steering site that forms the bridge)
+**Beam changes** (the node-class end ignites the bridge)
 
-- W2 (head): the beam that served HUB turns 56° to W1 (another sector)
-- W1 (peer): the beam that served HUB turns 56° to W2 (another sector)
-- E1 (head): the beam that served HUB turns 34° to W1 (same sector)
-- W1 (peer): the beam that served HUB turns 34° to E1 (same sector)
-- S (head): the beam that served HUB turns 43° to W2 (same sector)
-- W2 (peer): the beam that served HUB turns 81° to S (another sector)
-- E2 (head): the beam that served HUB turns 56° to E1 (another sector)
-- E1 (peer): the beam that served HUB turns 56° to E2 (another sector)
+- E1 (initiator): west sector beam that served HUB turns 34° to W1
+- W1 (responder): east sector beam that served HUB turns 34° to E1
+- E2 (initiator): south sector (idle sector) points at S
+- S (responder): its sector beam that served HUB turns 39° to E2
 
-**TG polarity plan** (set before the event; hybrid per sector): E1 west = odd, E1 south = odd, E2 north = even, E2 west = odd, HUB east = even, HUB west = odd, HUB south = odd, S sector = even, W1 east = even, W1 south = odd, W2 east = even, W2 north = even, W2 south = odd
+**TG polarity plan** (set before the event; hybrid per sector): E1 west = odd, E1 south = odd, E2 north = even, E2 west = odd, E2 south = odd, HUB east = even, HUB west = odd, HUB south = odd, S sector = even, W1 east = even, W1 south = odd, W2 east = even, W2 north = even
 
 ## Configuration D - 4 IP-50 + 4 TG
 
@@ -184,7 +177,7 @@ Service flow W1→S (single-homed pocket, MARL only): W1–HUB–S
 | CORE | Core + MW hub | 2 | - | destroyed |
 | HUB | TG PtMP hub | - | node-class (DN) | destroyed |
 | E1 | Incident site | 1 | node-class (DN) | island 2 |
-| E2 | Incident site | - | node-class (DN) | island 3 |
+| E2 | Incident site | - | node-class (DN) | island 2 |
 
 Totals: 4 IP-50 (2 fixed PtP links), 4 TG. Lost in the event: 2 IP-50, 1 TG.
 
@@ -195,26 +188,25 @@ Totals: 4 IP-50 (2 fixed PtP links), 4 TG. Lost in the event: 2 IP-50, 1 TG.
 | F1 W1→E1 | a | W1–CORE–E1 | MW + MW |
 | F1 W1→E1 | b | W1–HUB–E1 | TG + TG |
 | F2 W1→E2 | a | W1–HUB–E2 | TG + TG |
-| F2 W1→E2 | b | W1–CORE–E1–HUB–E2 | MW + MW + TG + TG |
+| F2 W1→E2 | b | W1–CORE–E1–E2 | MW + MW + TG |
 
 Shared TG sectors (the flows' TG candidates contend for this airtime): HUB east sector serves E1, E2
 
-**Islands after the event**: 1: W1; 2: E1; 3: E2
+Fixed links on a spare sector of installed TG nodes (no extra radio): E1–E2
+
+**Islands after the event**: 1: W1; 2: E1, E2
 
 **Bridge candidates**
 
 | Pair | Distance | MCS | Margin | Feasible | Chosen |
 |---|---|---|---|---|---|
-| W1–E1 | 540 m | 16QAM | 13.9 dB | yes | bridge 1 (E1→W1) |
+| W1–E1 | 540 m | 16QAM | 13.9 dB | yes | bridge 1 (E1 ignites) |
 | W1–E2 | 649 m | 16QAM | 10.7 dB | yes |  |
-| E1–E2 | 360 m | 64QAM | 20.1 dB | yes | bridge 2 (E2→E1) |
 
-**Beam changes** (head = the steering site that forms the bridge)
+**Beam changes** (the node-class end ignites the bridge)
 
-- E1 (head): the beam that served HUB turns 34° to W1 (same sector)
-- W1 (peer): the beam that served HUB turns 34° to E1 (same sector)
-- E2 (head): the beam that served HUB turns 56° to E1 (another sector)
-- E1 (peer): the beam that served HUB turns 56° to E2 (another sector)
+- E1 (initiator): west sector beam that served HUB turns 34° to W1
+- W1 (responder): east sector beam that served HUB turns 34° to E1
 
 **TG polarity plan** (set before the event; hybrid per sector): E1 west = odd, E1 south = odd, E2 north = even, E2 west = odd, HUB east = even, HUB west = odd, W1 east = even
 

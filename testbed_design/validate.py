@@ -74,6 +74,8 @@ def build_graph(cfg):
         g.add_edge(a, b, tech="MW")
     for a, b in cfg["tg_links"]:
         g.add_edge(a, b, tech="TG")
+    for a, b in cfg.get("tg_fixed", []):
+        g.add_edge(a, b, tech="TG", fixed=True)
     return g
 
 
@@ -125,7 +127,11 @@ def analyze(key):
     check(sum(ip_units.values()) == cfg["ip50"],
           f"IP-50 units = {sum(ip_units.values())} (budget {cfg['ip50']}, 2 per microwave link)")
     check(len(cfg["tg_units"]) == cfg["tg"], f"TG units = {len(cfg['tg_units'])} (budget {cfg['tg']})")
-    for a, b in cfg["tg_links"]:
+    tg_all = list(cfg["tg_links"]) + list(cfg.get("tg_fixed", []))
+    for a, b in cfg.get("tg_fixed", []):
+        check(all(x in {y for e in cfg["tg_links"] for y in e} for x in (a, b)),
+              f"fixed link {a}-{b} uses a spare sector of TG nodes installed for steering (no extra radio)")
+    for a, b in tg_all:
         check(a in cfg["tg_units"] and b in cfg["tg_units"], f"TG link {a}-{b} has a TG unit at both ends")
         check("DN" in (cfg["tg_units"][a], cfg["tg_units"][b]), f"TG link {a}-{b} has a node-class end (no CN-CN)")
         bud = tg_budget(dist(pos[a], pos[b]))
@@ -133,7 +139,7 @@ def analyze(key):
               f"{bud['margin']:.0f} dB above outage at {P_PLAN} dBm")
     cn_mount = {}
     for s, kind in cfg["tg_units"].items():
-        peers = [b if a == s else a for a, b in cfg["tg_links"] if s in (a, b)]
+        peers = [b if a == s else a for a, b in tg_all if s in (a, b)]
         if kind == "CN":
             check(len(peers) == 1, f"terminal-class unit at {s} holds a single link")
             cn_mount[s] = bearing(pos[s], pos[peers[0]])
@@ -142,7 +148,7 @@ def analyze(key):
     def end_sector(s, peer):
         return (s, sector(cfg["tg_units"][s], bearing(pos[s], pos[peer])))
     shared = {}
-    for a, b in cfg["tg_links"]:
+    for a, b in tg_all:
         for x, y in ((a, b), (b, a)):
             shared.setdefault(end_sector(x, y), []).append((x, y))
     shared = {k: v for k, v in shared.items() if len(v) >= 2 and cfg["tg_units"][k[0]] == "DN"}
@@ -154,7 +160,11 @@ def analyze(key):
     for fid, s, t in cfg["flows"]:
         ps = diverse_paths(g0, s, t)
         dpir[fid] = ps
-        check(len(ps) == 2, f"DPIR {fid} {s}->{t} has 2 diverse candidate paths")
+        check(len(ps) == 2, f"DPIR {fid} {s}->{t} has 2 candidate paths")
+        if len(ps) == 2:
+            e0 = {frozenset(e) for e in zip(ps[0], ps[0][1:])}
+            e1 = {frozenset(e) for e in zip(ps[1], ps[1][1:])}
+            check(not (e0 & e1), f"DPIR {fid}: the two candidates share no link")
         for p in ps:
             covered |= {frozenset(e) for e in zip(p, p[1:])}
     service = {}
@@ -162,7 +172,7 @@ def analyze(key):
         service[(s, t)] = nx.shortest_path(g0, s, t)
         p = service[(s, t)]
         covered |= {frozenset(e) for e in zip(p, p[1:])}
-    links = {frozenset(e) for e in cfg["mw"] + cfg["tg_links"]}
+    links = {frozenset(e) for e in cfg["mw"] + tg_all}
     check(not (links - covered), "every link is on a DPIR candidate or a pocket's service path"
           + (f" (unused: {[tuple(e) for e in links - covered]})" if links - covered else ""))
 
@@ -182,7 +192,8 @@ def analyze(key):
         for f, ps in dpir.items():
             if f != fid:
                 others |= contention_keys(ps)
-        check(mine & others, f"DPIR {fid} contends with another flow (shared link or shared TG sector airtime)")
+        check({k for k in mine & others if k[0] == "sector"},
+              f"DPIR {fid} contends with another flow for TG sector airtime")
 
     # ---- the event -----------------------------------------------------------
     zone_sites = [s for s in cfg["sites"] if in_zone(pos[s])]
@@ -228,77 +239,94 @@ def analyze(key):
         if s in cfg["destroyed"]:
             served = [b if a == s else a for a, b in cfg["tg_links"] if s in (a, b)]
             check(all(x in can_steer for x in served),
-                  f"TG at {s} (lost) serves only sites that re-steer once it is gone: {', '.join(served)}")
+                  f"TG at {s} (lost) serves only sites that can re-steer once it is gone: {', '.join(served)}")
         else:
-            check(s in can_steer, f"TG at {s} can steer to a bridge peer")
+            check(s in can_steer, f"TG at {s} can steer to a feasible bridge peer")
 
     # ---- recovery plan --------------------------------------------------------
-    # Greedy highest-capacity tree over the islands (SNR at the planning
-    # power, then prefer joining W1's network, then the shorter hop); a
-    # terminal holds one link.  Oriented from W1's island, so each cut-off
-    # island's head points back at the network it joins: one bridge per head.
-    root = comp["W1"]
-    uf = {i: i for i in range(len(islands))}
+    # Which sites engage is the policy's decision; the peer of an engaged head
+    # is the bridge-peer planner's (an engine service, paper Sec. IV-D).  The
+    # figures show one plan that obeys the paper's rules: every island joined
+    # with no redundant bridge, and one new link per site (an engaged head
+    # holds one steerable link).  The ranking used to pick it is given below.
+    # The initiator is a node-class end (Terragraph: a CN cannot initiate).
+    need = len(islands) - 1
+    plans = []
+    for combo in itertools.combinations(feas, need):
+        ends = [x for c in combo for x in (c["a"], c["b"])]
+        if len(set(ends)) != len(ends):
+            continue
+        h = nx.Graph()
+        h.add_nodes_from(range(len(islands)))
+        h.add_edges_from((comp[c["a"]], comp[c["b"]]) for c in combo)
+        if nx.is_connected(h):
+            plans.append(combo)
+    check(plans, f"{len(plans)} valid recovery plans (every island joined, one new link per site)")
 
-    def find(i):
-        while uf[i] != i:
-            i = uf[i]
-        return i
-    tree = []
-    while len({find(i) for i in uf}) > 1:
-        used_cn = {x for c in tree for x in (c["a"], c["b"]) if cfg["tg_units"][x] == "CN"}
-        opts = [c for c in feas if find(comp[c["a"]]) != find(comp[c["b"]])
-                and not ({c["a"], c["b"]} & used_cn)]
-        check(opts, "a bridge exists for every remaining island")
-        if not opts:
-            break
-        best = min(opts, key=lambda c: (
-            -round(c["budget"]["snr"], 3),
-            0 if find(root) in (find(comp[c["a"]]), find(comp[c["b"]])) else 1,
-            round(c["d"]), tuple(sorted((c["a"], c["b"])))))
-        tree.append(best)
-        uf[find(comp[best["a"]])] = find(comp[best["b"]])
-    adj = {}
-    for c in tree:
-        adj.setdefault(comp[c["a"]], []).append(c)
-        adj.setdefault(comp[c["b"]], []).append(c)
-    bridges, seen, queue = [], {root}, [root]
-    while queue:
-        i = queue.pop(0)
-        for c in sorted(adj.get(i, []), key=lambda c: c["d"]):
-            j = comp[c["b"]] if comp[c["a"]] == i else comp[c["a"]]
-            if j in seen:
-                continue
-            seen.add(j)
-            queue.append(j)
-            head = c["a"] if comp[c["a"]] == j else c["b"]
-            bridges.append((head, c["b"] if head == c["a"] else c["a"]))
+    def turn(x, y):
+        """Turn of x's beam toward y if the same sector served a destroyed peer."""
+        b_new = bearing(pos[x], pos[y])
+        sec = end_sector(x, y)
+        dead = [b if a == x else a for a, b in tg_all if x in (a, b)]
+        dead = [o for o in dead if o in cfg["destroyed"] and end_sector(x, o) == sec]
+        return min((angdiff(bearing(pos[x], pos[o]), b_new) for o in dead), default=None)
+
+    def still(p):
+        """Bridge ends whose beam would barely move (bridge lies along a dead link)."""
+        return sum(1 for c in p for x, y in ((c["a"], c["b"]), (c["b"], c["a"]))
+                   if turn(x, y) is not None and turn(x, y) < 10)
+    # Prefer plans whose weakest bridge keeps >= 7.5 dB margin, then plans in
+    # which every steering beam visibly turns, then the strongest weakest link.
+    plans.sort(key=lambda p: (min(c["budget"]["margin"] for c in p) < 7.5, still(p),
+                              -round(min(c["budget"]["snr"] for c in p), 3),
+                              -round(sum(c["budget"]["snr"] for c in p), 3),
+                              sorted(tuple(sorted((c["a"], c["b"]))) for c in p)))
+    plan = list(plans[0]) if plans else []
+
+    def initiator(c):
+        dns = [x for x in (c["a"], c["b"]) if cfg["tg_units"][x] == "DN"]
+        return min(dns, key=lambda x: (-len(islands[comp[x]]), x))
+    bridges = []
+    for c in sorted(plan, key=lambda c: (comp[c["a"]] + comp[c["b"]], c["d"])):
+        i = initiator(c)
+        bridges.append((i, c["b"] if i == c["a"] else c["a"]))
     cfg["bridges"] = bridges
 
     g2 = g1.copy()
-    steer, heads = [], set()
-    for head, peer in bridges:
-        check(head not in heads, f"head {head} forms one bridge (paper Sec. IV-D)")
-        heads.add(head)
-        check(not g0.has_edge(head, peer), f"bridge {head}-{peer} is a new link")
-        check(not nx.has_path(g2, head, peer), f"bridge {head}-{peer} joins two islands")
-        g2.add_edge(head, peer, tech="BR")
-        for x, y in ((head, peer), (peer, head)):
-            b_new = bearing(pos[x], pos[y])
-            dead = [b if a == x else a for a, b in cfg["tg_links"] if x in (a, b)]
-            dead = [o for o in dead if o in cfg["destroyed"]]
-            ref = min(dead, key=lambda o: angdiff(bearing(pos[x], pos[o]), b_new)) if dead else None
-            b_old = bearing(pos[x], pos[ref]) if ref else None
-            steer.append(dict(unit=x, old=ref, new=y, b_old=b_old, b_new=b_new,
-                              delta=angdiff(b_old, b_new) if ref else None,
-                              role="head" if x == head else "peer",
-                              same_sector=bool(ref) and sector(cfg["tg_units"][x], b_old)
-                              == sector(cfg["tg_units"][x], b_new)))
-    for s, kind in cfg["tg_units"].items():
-        if kind == "CN":
-            check(sum(s in b for b in bridges) <= 1, f"terminal-class unit at {s} is in at most one bridge")
+    g2.add_edges_from(((a, b, {"tech": "BR"}) for a, b in bridges))
     check(nx.is_connected(g2), "after the bridges every surviving site is in one network")
-    check(len(bridges) == len(islands) - 1, f"{len(bridges)} bridges for {len(islands)} islands")
+
+    # beam bookkeeping per (site, sector)
+    steer = []
+    for ini, rsp in bridges:
+        for x, y in ((ini, rsp), (rsp, ini)):
+            kind_u = cfg["tg_units"][x]
+            b_new = bearing(pos[x], pos[y])
+            sec = sector(kind_u, b_new)
+            pre = [b if a == x else a for a, b in tg_all if x in (a, b)]
+            pre = [o for o in pre if end_sector(x, o) == (x, sec)]
+            dead = [o for o in pre if o in cfg["destroyed"]]
+            live = [o for o in pre if o not in cfg["destroyed"]]
+            if dead:
+                ref = min(dead, key=lambda o: angdiff(bearing(pos[x], pos[o]), b_new))
+                b_old = bearing(pos[x], pos[ref])
+                change = "re-steer"
+            else:
+                ref, b_old = None, None
+                change = "shares a sector with " + ", ".join(live) if live else "idle sector"
+            steer.append(dict(unit=x, old=ref, new=y, b_old=b_old, b_new=b_new, sector=sec,
+                              delta=angdiff(b_old, b_new) if ref else None, change=change,
+                              role="initiator" if x == ini else "responder"))
+
+    # geometric slack: no link end within 5 deg of a sector edge / scan limit
+    for a, b in tg_all + bridges:
+        for x, y in ((a, b), (b, a)):
+            bb = bearing(pos[x], pos[y])
+            if cfg["tg_units"][x] == "CN":
+                slack = CN_HALF_SCAN - angdiff(bb, cn_mount[x])
+            else:
+                slack = 45 - angdiff(bb, sector(cfg["tg_units"][x], bb) * 90)
+            check(slack >= 5, f"{x} toward {y}: {slack:.1f} deg from the sector edge / scan limit")
 
     # ---- Terragraph polarity --------------------------------------------------
     # Every TG link must join an odd and an even sector.  The core (and the
@@ -306,7 +334,7 @@ def analyze(key):
     # beforehand and must already suit the bridges.  Multi-sector units may
     # mix polarities across sectors (hybrid polarity).
     pg = nx.Graph()
-    for a, b in list(cfg["tg_links"]) + bridges:
+    for a, b in tg_all + bridges:
         pg.add_edge(end_sector(a, b), end_sector(b, a))
     bip = nx.is_bipartite(pg)
     check(bip, "a per-sector odd/even polarity plan supports every pre-event link and every bridge")
@@ -328,6 +356,7 @@ def analyze(key):
                 service=service, g0=g0, islands=islands, comp=comp, lost_ip=lost_ip,
                 lost_tg=lost_tg, cands=cands, steer=steer, g_post=g2, post=post,
                 shared=shared, polarity=polarity, cn_mount=cn_mount, end_sector=end_sector,
+                n_plans=len(plans), tg_all=tg_all,
                 path_tech=lambda p, g=g0: path_tech(g, p))
 
 
@@ -340,7 +369,7 @@ def main():
             print(("  PASS  " if ok else "  FAIL  ") + msg)
             bad += not ok
         print("  islands:", r["islands"])
-        print("  bridges (head -> peer):", r["cfg"]["bridges"])
+        print("  bridges (initiator -> responder):", r["cfg"]["bridges"], f"[{r['n_plans']} valid plans]")
         for fid, ps in r["dpir"].items():
             for p in ps:
                 print(f"  {fid}: {'-'.join(p)}  {r['path_tech'](p)}")
@@ -351,8 +380,8 @@ def main():
             print(f"  cand {c['a']}-{c['b']} {c['d']:.0f} m  {b['mcs']}  margin {b['margin']:.1f} dB"
                   f"  {'OK' if c['feasible'] else 'X ' + '; '.join(c['why'])}")
         for s in r["steer"]:
-            d = f"{s['delta']:.0f} deg" if s["delta"] is not None else "-"
-            print(f"  beam {s['unit']} ({s['role']}): {s['old']} -> {s['new']}  {d}")
+            d = f"{s['delta']:.0f} deg" if s["delta"] is not None else ""
+            print(f"  beam {s['unit']} ({s['role']}, sector {s['sector']}): {s['change']} -> {s['new']} {d}")
         print("  polarity:", {f"{k[0]}.s{k[1]}": v for k, v in sorted(r["polarity"].items())})
     print("FAILURES:", bad)
     sys.exit(1 if bad else 0)

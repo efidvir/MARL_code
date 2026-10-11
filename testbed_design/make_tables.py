@@ -38,6 +38,9 @@ def main():
                                   for (site, sec), v in r["shared"].items())]
         for (s, t), p in r["service"].items():
             lines.append(f"\nService flow {s}→{t} (single-homed pocket, MARL only): {'–'.join(p)}")
+        if cfg.get("tg_fixed"):
+            lines.append("\nFixed links on a spare sector of installed TG nodes (no extra radio): "
+                         + ", ".join(f"{a}–{b}" for a, b in cfg["tg_fixed"]))
         lines += ["", "**Islands after the event**: " + "; ".join(
             f"{i + 1}: {', '.join(isl)}" for i, isl in enumerate(r["islands"])), ""]
         lines += ["**Bridge candidates**", "",
@@ -49,15 +52,15 @@ def main():
             ch = chosen.get(frozenset((c["a"], c["b"])))
             lines.append(f"| {c['a']}–{c['b']} | {c['d']:.0f} m | {b['mcs'] or 'no link'} | "
                          f"{b['margin']:.1f} dB | {f} | "
-                         f"{f'bridge {ch[0]} ({ch[1][0]}→{ch[1][1]})' if ch else ''} |")
-        lines += ["", "**Beam changes** (head = the steering site that forms the bridge)", ""]
+                         f"{f'bridge {ch[0]} ({ch[1][0]} ignites)' if ch else ''} |")
+        lines += ["", "**Beam changes** (the node-class end ignites the bridge)", ""]
         for st in r["steer"]:
+            where = SECTOR[st["sector"]] + " sector" if cfg["tg_units"][st["unit"]] == "DN" else "its sector"
             if st["old"]:
-                lines.append(f"- {st['unit']} ({st['role']}): the beam that served {st['old']} turns "
-                             f"{st['delta']:.0f}° to {st['new']}"
-                             + (" (same sector)" if st["same_sector"] else " (another sector)"))
+                lines.append(f"- {st['unit']} ({st['role']}): {where} beam that served {st['old']} turns "
+                             f"{st['delta']:.0f}° to {st['new']}")
             else:
-                lines.append(f"- {st['unit']} ({st['role']}): a free sector takes {st['new']}")
+                lines.append(f"- {st['unit']} ({st['role']}): {where} ({st['change']}) points at {st['new']}")
         lines += ["", "**TG polarity plan** (set before the event; hybrid per sector): "
                   + ", ".join(f"{s} {SECTOR[sec] if cfg['tg_units'][s] == 'DN' else 'sector'} = {v}"
                               for (s, sec), v in sorted(r["polarity"].items())), ""]

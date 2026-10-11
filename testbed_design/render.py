@@ -78,13 +78,13 @@ def beam(ax, xy, toward, color=TG, length=230, half=8, alpha=0.30, ls="-", fill=
 
 def tg_icon(ax, xy, kind, color=TG, alpha=1.0, z=7):
     if kind == "DN":
-        ax.add_patch(RegularPolygon(xy, 6, radius=34, orientation=math.pi / 6, fc=color, ec="white",
-                                    lw=1.2, alpha=alpha, zorder=z))
-        for k in range(4):  # four 90-degree sectors
-            a = math.radians(45 + 90 * k)
-            ax.plot([xy[0] + 12 * math.cos(a), xy[0] + 27 * math.cos(a)],
-                    [xy[1] + 12 * math.sin(a), xy[1] + 27 * math.sin(a)],
-                    color="white", lw=1.1, alpha=alpha, zorder=z + 0.1)
+        ax.add_patch(Circle(xy, 25, fc=color, ec="white", lw=1.2, alpha=alpha, zorder=z))
+        for k in range(4):  # four 90-degree sector panels (east, north, west, south)
+            a = math.radians(90 * k)
+            c = (xy[0] + 27 * math.cos(a), xy[1] + 27 * math.sin(a))
+            w, h = (10, 26) if k % 2 == 0 else (26, 10)
+            ax.add_patch(Rectangle((c[0] - w / 2, c[1] - h / 2), w, h, fc=color, ec="white", lw=0.9,
+                                   alpha=alpha, zorder=z + 0.1))
     else:
         ax.add_patch(Rectangle((xy[0] - 22, xy[1] - 22), 44, 44, fc=color, ec="white", lw=1.2,
                                alpha=alpha, zorder=z))
@@ -247,6 +247,13 @@ def draw_sites(ax, r, dead=(), devices=True, tg_alpha=1.0):
             cross(ax, xy)
 
 
+def fixed_tg(ax, a, b, dead=False):
+    """TG link that never steers, carried on a spare sector of installed nodes."""
+    link_line(ax, a, b, TG if not dead else LOST, 2.6, ls=(0, (5, 2.5)))
+    beam(ax, a, b, length=150, half=6, alpha=0.22)
+    beam(ax, b, a, length=150, half=6, alpha=0.22)
+
+
 def panel_before(ax, r):
     cfg, pos = r["cfg"], r["pos"]
     frame(ax, r)
@@ -257,6 +264,8 @@ def panel_before(ax, r):
         link_line(ax, pos[a], pos[b], TG, 2.6)
         beam(ax, pos[a], pos[b])
         beam(ax, pos[b], pos[a])
+    for a, b in cfg.get("tg_fixed", []):
+        fixed_tg(ax, pos[a], pos[b])
     draw_sites(ax, r)
     labels(ax, r)
     # flow tags at sources / destinations
@@ -311,7 +320,7 @@ def panel_event(ax, r):
                              zorder=0.6))
         top = max(hull, key=lambda p: p[1] if "S" not in isl else -p[1])
         cx = sum(pos[s][0] for s in isl) / len(isl)
-        name = f"Island {k + 1} · " + island_name(isl)
+        name = f"Island {k + 1} · {{{', '.join(isl)}}}"
         y = max(p[1] for p in hull) + 14
         va = "bottom"
         if isl == ["S"]:
@@ -324,6 +333,8 @@ def panel_event(ax, r):
             link_line(ax, pos[a], pos[b], LOST, 1.5, ls=(0, (3, 3)), alpha=0.75)
         else:
             link_line(ax, pos[a], pos[b], tech, 3.4 if tech == MW else 2.6)
+    for a, b in cfg.get("tg_fixed", []):
+        fixed_tg(ax, pos[a], pos[b])
     # surviving TG beams: the ones that served a destroyed peer now point at nothing
     for a, b in cfg["tg_links"]:
         for x, y in ((a, b), (b, a)):
@@ -359,7 +370,7 @@ def bridge_label_point(a, b):
     return best[len(best) // 2]
 
 
-def panel_recovery(ax, r):
+def panel_recovery(ax, r, table=True):
     cfg, pos = r["cfg"], r["pos"]
     dead = set(cfg["destroyed"])
     frame(ax, r)
@@ -392,27 +403,30 @@ def panel_recovery(ax, r):
         if d["tech"] == "BR":
             continue
         tech = d["tech"]
+        if d.get("fixed"):
+            fixed_tg(ax, pos[a], pos[b])
+            continue
         link_line(ax, pos[a], pos[b], MW if tech == "MW" else TG, 3.4 if tech == "MW" else 2.6)
         if tech == "TG":
             beam(ax, pos[a], pos[b])
             beam(ax, pos[b], pos[a])
     # bridges
+    rows = []
     for i, (h, p) in enumerate(cfg["bridges"], 1):
         link_line(ax, pos[h], pos[p], BRIDGE, 4.6, z=2.5)
         c = [c for c in r["cands"] if {c["a"], c["b"]} == {h, p}][0]
         bud = c["budget"]
         m = bridge_label_point(pos[h], pos[p])
-        txt = (f"bridge {i}: {h}→{p}\n{c['d']:.0f} m · {bud['mcs']}\n"
-               f"{bud['margin']:.0f} dB margin @{P_PLAN} dBm")
-        ax.text(m[0], m[1], txt, ha="center", va="center", fontsize=7.4, color=BRIDGE, zorder=23,
-                linespacing=1.15, fontweight="bold",
-                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=BRIDGE, lw=1.0, alpha=0.95))
+        ax.text(m[0], m[1], str(i), ha="center", va="center", fontsize=9, color="white", zorder=23,
+                fontweight="bold", bbox=dict(boxstyle="circle,pad=0.25", fc=BRIDGE, ec="white", lw=1.2))
+        rows.append(f"{i}  {h} ⇄ {p}   {c['d']:.0f} m · SNR {bud['snr']:.0f} dB → {bud['mcs']}"
+                    f"   ({h} ignites)")
     # re-steered beams
     for st in r["steer"]:
         x = pos[st["unit"]]
         tgt = pos[st["new"]]
         beam(ax, x, tgt, color=BRIDGE, alpha=0.45, length=250, half=7, z=4)
-        if st["old"] is not None and st["role"] == "head":
+        if st["old"] is not None:
             old = pos[st["old"]]
             beam(ax, x, old, color="#9ca3af", fill=False, ls=(0, (3, 2)), length=200, z=4)
             a0, a1 = st["b_old"], st["b_new"]
@@ -431,6 +445,12 @@ def panel_recovery(ax, r):
                     bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.85))
     draw_sites(ax, r, dead=dead)
     labels(ax, r, dead=dead, small=True)
+    if not table:
+        return
+    ax.text(0.01, -0.01, "\n".join(rows) + f"\nSNR: MARL-paper link model at {P_PLAN} dBm; MCS = paper Table II class",
+            transform=ax.transAxes, ha="left", va="top", fontsize=7.6, color=BRIDGE,
+            linespacing=1.4, zorder=30, fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.4", fc="white", ec=BRIDGE, lw=0.8, alpha=0.95))
 
 
 def panel_flow(ax, r, fid, paths, graph_edges, title, bridges=(), post=False):
@@ -487,13 +507,13 @@ def legend(ax):
     ax.set_ylim(0, 10)
     y = 9.6
     ax.text(0, y, "Legend", fontsize=11, fontweight="bold", color=INK, va="top")
-    y -= 0.95
+    y -= 0.85
 
     def row(draw, text):
         nonlocal y
         draw(y)
         ax.text(1.45, y, text, va="center", fontsize=8.2, color=INK)
-        y -= 0.78
+        y -= 0.66
 
     sc = 0.0042  # metre -> legend unit
 
@@ -502,23 +522,35 @@ def legend(ax):
         ax.plot([0.62, 0.92], [yy, yy], color=MW, lw=1.6)
         ax.add_patch(Circle((0.95, yy), 0.06, fc=MW, ec="none"))
     row(dish_l, "IP-50 microwave unit (fixed dish, cannot re-aim)")
-    row(lambda yy: ax.add_patch(RegularPolygon((0.55, yy), 6, radius=0.27, orientation=math.pi / 6,
-                                               fc=TG, ec="white")),
-        "TG node-class unit (DN, 4×90° = 360°)")
+    def dn_l(yy):
+        ax.add_patch(Circle((0.6, yy), 0.2, fc=TG, ec="white"))
+        for k in range(4):
+            a = math.radians(90 * k)
+            cx, cy = 0.6 + 0.24 * math.cos(a), yy + 0.24 * math.sin(a)
+            w, h = (0.09, 0.22) if k % 2 == 0 else (0.22, 0.09)
+            ax.add_patch(Rectangle((cx - w / 2, cy - h / 2), w, h, fc=TG, ec="white", lw=0.5))
+    row(dn_l, "TG node-class unit (DN, 4×90° sectors = 360°)")
     row(lambda yy: ax.add_patch(Rectangle((0.38, yy - 0.17), 0.34, 0.34, fc=TG, ec="white")),
         "TG terminal-class unit (CN, steers ±45°)")
     row(lambda yy: ax.add_patch(Wedge((0.1, yy), 1.0, -9, 9, fc=TG, alpha=0.35, ec=TG, lw=0.8)),
         "60 GHz beam (directivity)")
     row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=MW, lw=3.2), "IP-50 microwave link (2 units)")
-    row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=TG, lw=2.4), "TG 60 GHz link")
+    row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=TG, lw=2.4), "TG 60 GHz link to the hub")
+    row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=TG, lw=2.4, ls=(0, (5, 2.5))),
+        "fixed TG link on a spare sector (no extra radio)")
     row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=LOST, lw=1.5, ls=(0, (3, 3))),
         "link lost with a destroyed site")
     row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=BRIDGE, lw=4.2),
-        "MARL bridge (new TG link after re-steer)")
+        "MARL bridge, numbered (new TG link after re-steer)")
     row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=CAND, lw=1.4, ls=(0, (1.5, 3))),
         "best alternative bridge (not chosen)")
     row(lambda yy: ax.add_patch(Rectangle((0.1, yy - 0.25), 1.0, 0.5, fc=ZONE, alpha=0.15, ec=ZONE,
                                           hatch="////", lw=0.5)), "disaster zone (sites destroyed)")
+    row(lambda yy: (ax.plot([0.1, 1.1], [yy, yy], color=FLOW["F1"], lw=3),
+                    ax.plot([0.1, 1.1], [yy - 0.18, yy - 0.18], color=FLOW["F1"], lw=2.2, ls=(0, (6, 3)))),
+        "DPIR candidate a (solid) / b (dashed)")
+    row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=SVC, lw=2.2, ls=(0, (2, 1.5))),
+        "pocket service flow (MARL only)")
     _ = sc
 
 
@@ -528,7 +560,7 @@ def config_figure(key):
     nfl = len(cfg["flows"])
     fig = plt.figure(figsize=(22, 15.5), facecolor="white")
     gs = fig.add_gridspec(2, 1, height_ratios=[2.2, 1.25], hspace=0.17, left=0.015, right=0.985,
-                          top=0.865, bottom=0.04)
+                          top=0.865, bottom=0.075)
     top = gs[0].subgridspec(1, 3, wspace=0.03)
     bot = gs[1].subgridspec(1, nfl + 2, wspace=0.06, width_ratios=[1] * (nfl + 1) + [1.3])
 
@@ -537,7 +569,9 @@ def config_figure(key):
     fig.text(0.015, 0.975, f"Configuration {cfg['name'].replace(' - ', ' — ')}",
              fontsize=20, fontweight="bold", color=INK, va="top")
     sub = (f"{len(r['pos'])} sites · {len(cfg['mw'])} microwave links ({cfg['ip50']} IP-50 units) · "
-           f"{len(cfg['tg_links'])} TG links ({cfg['tg']} TG units: "
+           f"{len(cfg['tg_links'])} TG links"
+           + (f" + {len(cfg['tg_fixed'])} on spare sectors" if cfg.get("tg_fixed") else "")
+           + f" ({cfg['tg']} TG units: "
            f"{sum(1 for v in cfg['tg_units'].values() if v == 'DN')} node, "
            f"{sum(1 for v in cfg['tg_units'].values() if v == 'CN')} terminal) · "
            f"{nfl} DPIR flows · event destroys {lost} ({r['lost_ip']} IP-50 + {r['lost_tg']} TG) → "
@@ -551,11 +585,11 @@ def config_figure(key):
     n_feas = sum(c["feasible"] for c in r["cands"])
     for ax, n, t1, t2 in (
         (a1, "1", "Before the event",
-         "DPIR: each flow can go through the core (IP-50) or the TG hub; every link is on a DPIR path"),
+         "DPIR: each flow can go via the core (IP-50) or the TG hub, whose sectors the flows share"),
         (a2, "2", f"Event: core severed, {lost} destroyed → {n_isl} islands",
          "IP-50 dishes are fixed; TG beams that pointed at the hub lose their peer; no route crosses"),
         (a3, "3", f"MARL recovery: {len(cfg['bridges'])} bridge{'s' if len(cfg['bridges']) > 1 else ''}",
-         "surviving TG beams re-steer; green outline = one network again; dotted = best alternative bridge"),
+         "policy: whether each site relays · planner: the peer · DN end ignites (core gone: local agents)"),
     ):
         ax.text(0.0, 1.075, n, transform=ax.transAxes, fontsize=13, fontweight="bold", color="white",
                 ha="left", va="center", bbox=dict(boxstyle="circle,pad=0.3", fc=INK, ec="none"))
@@ -563,7 +597,8 @@ def config_figure(key):
                 va="center")
         ax.text(0.06, 1.035, t2, transform=ax.transAxes, fontsize=9.4, color=MUTED, va="center")
 
-    edges0 = [(a, b, "MW") for a, b in cfg["mw"]] + [(a, b, "TG") for a, b in cfg["tg_links"]]
+    edges0 = ([(a, b, "MW") for a, b in cfg["mw"]] + [(a, b, "TG") for a, b in cfg["tg_links"]]
+              + [(a, b, "TG") for a, b in cfg.get("tg_fixed", [])])
     for i, (fid, s, t) in enumerate(cfg["flows"]):
         ax = fig.add_subplot(bot[0, i])
         ps = r["dpir"][fid]
@@ -599,19 +634,21 @@ def config_figure(key):
 
 def overview():
     keys = list(CONFIGS)
-    fig = plt.figure(figsize=(19, 6.0 * len(keys) + 1.2), facecolor="white")
+    H = 6.0 * len(keys) + 1.2 + 3.4
+    fig = plt.figure(figsize=(19, H), facecolor="white")
     gs = fig.add_gridspec(len(keys), 3, wspace=0.02, hspace=0.12, left=0.11, right=0.995,
-                          top=1 - 1.0 / (6.0 * len(keys) + 1.2), bottom=0.01)
-    fig.text(0.01, 1 - 0.25 / (6.0 * len(keys) + 1.2), "Joint DPIR + MARL testbed — four equipment levels",
+                          top=1 - 1.0 / H, bottom=3.5 / H)
+    fig.text(0.01, 1 - 0.25 / H, "Joint DPIR + MARL testbed — four equipment levels",
              fontsize=20, fontweight="bold", color=INK, va="top")
-    cols = ["1 · Before the event (DPIR)", "2 · Event → islands", "3 · MARL recovery"]
+    legend(fig.add_axes([0.11, 0.2 / H, 0.42, 3.2 / H]))
+    cols = ["1 · Before the event", "2 · Event → islands", "3 · MARL recovery"]
     for i, k in enumerate(keys):
         r = analyze(k)
         cfg = r["cfg"]
         axs = [fig.add_subplot(gs[i, j]) for j in range(3)]
         panel_before(axs[0], r)
         panel_event(axs[1], r)
-        panel_recovery(axs[2], r)
+        panel_recovery(axs[2], r, table=False)
         for j, ax in enumerate(axs):
             if i == 0:
                 ax.set_title(cols[j], fontsize=13, fontweight="bold", color=INK, pad=6)

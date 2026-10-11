@@ -6,17 +6,21 @@ Design rules
   core sits on the microwave aggregation hub inside the disaster zone.
 * A TG radio is installed only where a beam may have to steer: the TG PtMP
   hub in the zone, and the surviving sites it serves, whose beams re-point
-  across the gap after the hub is lost.  Every link that never steers (core
-  spokes, links inside one side of the network) is a fixed IP-50 PtP link.
+  across the gap after the hub is lost.  Links that never steer (core spokes,
+  links inside one side of the network) are fixed IP-50 PtP links where the
+  budget has them; otherwise (B, C, D) a link inside one side uses a spare
+  sector of two TG nodes that are already installed for steering, so no
+  radio is bought for it.
 * Every link carries at least one DPIR candidate path (or is the only link
   of a single-homed pocket, S or N, whose traffic is a MARL service flow),
   and the event breaks every path, so only MARL bridges can rejoin it.
 * DPIR flows are between dual-homed sites.  Their TG candidates contend for
   the airtime of the same hub sector even where they use different links,
   which is the interference coupling DPIR plans around.
-* The four configurations are nested: D is C without W2 and S, C is B
-  without the E1-E2 fixed link, B is A without the W1-W2 fixed link and the
-  field-hospital spur.  One physical testbed covers all four.
+* The four configurations are nested: B is A without the W1-W2 IP-50 link
+  (a spare TG sector carries it) and the field-hospital spur, C is B without
+  the E1-E2 IP-50 link (likewise), D is C without W2 and S.  One physical
+  testbed covers all four.
 
 Hardware vocabulary
 -------------------
@@ -43,7 +47,7 @@ POS = {
     "HUB": (450, 0),
     "E1": (900, 300),
     "E2": (900, -300),
-    "S": (450, -780),
+    "S": (450, -860),
     "N": (450, 1010),
 }
 
@@ -82,6 +86,7 @@ CONFIGS = {
         mw=[("W1", "CORE"), ("CORE", "E1"), ("E1", "E2")],
         tg_units={"HUB": "DN", "W1": "DN", "W2": "DN", "E1": "DN", "E2": "DN", "S": "CN"},
         tg_links=_TG_STAR,
+        tg_fixed=[("W1", "W2")],
         flows=[("F1", "W1", "E1"), ("F2", "W2", "E2")],
         service=[("W1", "S")],
         destroyed=["CORE", "HUB"],
@@ -94,7 +99,8 @@ CONFIGS = {
         mw=[("W1", "CORE"), ("CORE", "E1")],
         tg_units={"HUB": "DN", "W1": "DN", "W2": "DN", "E1": "DN", "E2": "DN", "S": "CN"},
         tg_links=_TG_STAR,
-        flows=[("F1", "W1", "E1"), ("F2", "W1", "E2"), ("F3", "W2", "E1")],
+        tg_fixed=[("W1", "W2"), ("E1", "E2")],
+        flows=[("F1", "W1", "E1"), ("F2", "W2", "E2")],
         service=[("W1", "S")],
         destroyed=["CORE", "HUB"],
     ),
@@ -106,6 +112,7 @@ CONFIGS = {
         mw=[("W1", "CORE"), ("CORE", "E1")],
         tg_units={"HUB": "DN", "W1": "DN", "E1": "DN", "E2": "DN"},
         tg_links=[("HUB", "W1"), ("HUB", "E1"), ("HUB", "E2")],
+        tg_fixed=[("E1", "E2")],
         flows=[("F1", "W1", "E1"), ("F2", "W1", "E2")],
         service=[],
         destroyed=["CORE", "HUB"],
