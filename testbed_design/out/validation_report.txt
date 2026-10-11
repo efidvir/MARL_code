@@ -1,0 +1,320 @@
+=== A - 8 IP-50 + 8 TG ===
+  PASS  IP-50 units = 8 (budget 8, 2 per microwave link)
+  PASS  TG units = 8 (budget 8)
+  PASS  TG link CORE-W2 has a TG unit at both ends
+  PASS  TG link CORE-W2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link W2-R2 has a TG unit at both ends
+  PASS  TG link W2-R2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link R2-E2 has a TG unit at both ends
+  PASS  TG link R2-E2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link R2-S has a TG unit at both ends
+  PASS  TG link R2-S has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link E2-E1 has a TG unit at both ends
+  PASS  TG link E2-E1 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link R1-N has a TG unit at both ends
+  PASS  TG link R1-N has a DN end (Terragraph: no CN-CN links)
+  PASS  TG unit at CORE carries a pre-event link
+  PASS  TG unit at W2 carries a pre-event link
+  PASS  TG unit at R1 carries a pre-event link
+  PASS  TG unit at R2 carries a pre-event link
+  PASS  TG unit at E1 carries a pre-event link
+  PASS  CN at E1 holds a single link
+  PASS  TG unit at E2 carries a pre-event link
+  PASS  TG unit at S carries a pre-event link
+  PASS  CN at S holds a single link
+  PASS  TG unit at N carries a pre-event link
+  PASS  CN at N holds a single link
+  PASS  TG link CORE-W2 (600 m) closes at 23 dBm
+  PASS  TG link W2-R2 (520 m) closes at 23 dBm
+  PASS  TG link R2-E2 (520 m) closes at 23 dBm
+  PASS  TG link R2-S (450 m) closes at 23 dBm
+  PASS  TG link E2-E1 (600 m) closes at 23 dBm
+  PASS  TG link R1-N (450 m) closes at 23 dBm
+  PASS  pre-event network is connected
+  PASS  F1 CORE->E1 has >= 2 DPIR candidate paths (2)
+  PASS  F2 W2->E2 has >= 2 DPIR candidate paths (3)
+  PASS  F3 CORE->S has >= 2 DPIR candidate paths (2)
+  PASS  F4 CORE->N has >= 2 DPIR candidate paths (2)
+  PASS  every pre-event link lies on a DPIR candidate path
+  PASS  F1 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  F2 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  F3 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  F4 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  destroyed sites ['R1', 'R2'] are exactly the sites in the zone ['R1', 'R2']
+  PASS  event leaves 4 islands
+  PASS  F1 CORE->E1 is cut by the event
+  PASS  F2 W2->E2 is cut by the event
+  PASS  F3 CORE->S is cut by the event
+  PASS  F4 CORE->N is cut by the event
+  PASS  F1 candidate CORE-R1-E1 is broken by the event
+  PASS  F1 candidate CORE-W2-R2-E2-E1 is broken by the event
+  PASS  F2 candidate W2-R1-E2 is broken by the event
+  PASS  F2 candidate W2-R2-E2 is broken by the event
+  PASS  F2 candidate W2-CORE-R1-E1-E2 is broken by the event
+  PASS  F3 candidate CORE-W2-R2-S is broken by the event
+  PASS  F3 candidate CORE-R1-E2-R2-S is broken by the event
+  PASS  F4 candidate CORE-R1-N is broken by the event
+  PASS  F4 candidate CORE-W2-R1-N is broken by the event
+  PASS  8 feasible bridge candidates
+  PASS  bridge W2->E2 is a feasible candidate
+  PASS  head W2 forms at most one bridge (paper Sec. IV-D)
+  PASS  bridge W2-E2 did not exist before the event
+  PASS  bridge W2-E2 joins two different components
+  PASS  bridge W2-E2 has a DN end reachable from the controller at CORE
+  PASS  bridge S->W2 is a feasible candidate
+  PASS  head S forms at most one bridge (paper Sec. IV-D)
+  PASS  bridge S-W2 did not exist before the event
+  PASS  bridge S-W2 joins two different components
+  PASS  bridge S-W2 has a DN end reachable from the controller at CORE
+  PASS  bridge N->CORE is a feasible candidate
+  PASS  head N forms at most one bridge (paper Sec. IV-D)
+  PASS  bridge N-CORE did not exist before the event
+  PASS  bridge N-CORE joins two different components
+  PASS  bridge N-CORE has a DN end reachable from the controller at CORE
+  PASS  after the chosen bridges every surviving site is in one network
+  PASS  3 bridges for 4 islands (no redundant bridge)
+  PASS  F1 restored after recovery: CORE-W2-E2-E1
+  PASS  F2 restored after recovery: W2-E2
+  PASS  F3 restored after recovery: CORE-W2-S
+  PASS  F4 restored after recovery: CORE-N
+  islands: [['CORE', 'W2'], ['E1', 'E2'], ['N'], ['S']]
+  F1: CORE-R1-E1  ['MW', 'MW']
+  F1: CORE-W2-R2-E2-E1  ['TG', 'TG', 'TG', 'TG']
+  F2: W2-R1-E2  ['MW', 'MW']
+  F2: W2-R2-E2  ['TG', 'TG']
+  F2: W2-CORE-R1-E1-E2  ['TG', 'MW', 'MW', 'TG']
+  F3: CORE-W2-R2-S  ['TG', 'TG', 'TG']
+  F3: CORE-R1-E2-R2-S  ['MW', 'MW', 'TG', 'TG']
+  F4: CORE-R1-N  ['MW', 'TG']
+  F4: CORE-W2-R1-N  ['TG', 'MW', 'TG']
+  cand CORE-E1 900 m  23dBm QPSK 1/2  33dBm 16QAM  X E1: outside the terminal's +/-45 deg scan
+  cand CORE-E2 1082 m  23dBm None  33dBm 16QAM  OK
+  cand CORE-S 1385 m  23dBm None  33dBm QPSK 1/2  OK
+  cand CORE-N 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
+  cand W2-E1 1082 m  23dBm None  33dBm 16QAM  X E1: outside the terminal's +/-45 deg scan
+  cand W2-E2 900 m  23dBm QPSK 1/2  33dBm 16QAM  OK
+  cand W2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
+  cand W2-N 1385 m  23dBm None  33dBm QPSK 1/2  OK
+  cand E1-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; E1: would drop E2-E1, the sole path between them
+  cand E1-N 841 m  23dBm QPSK 1/2  33dBm 64QAM  X CN-CN not allowed; E1: outside the terminal's +/-45 deg scan
+  cand E2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
+  cand E2-N 1385 m  23dBm None  33dBm QPSK 1/2  OK
+  cand S-N 2020 m  23dBm None  33dBm None  X CN-CN not allowed; out of range even at 33 dBm
+  steer W2 (head): R2->E2  delta 30 deg
+  steer E2 (peer): R2->W2  delta 30 deg
+  steer S (head): R2->W2  delta 32 deg
+  steer W2 (peer): R2->S  delta 28 deg
+  steer N (head): R1->CORE  delta 32 deg
+  steer CORE (peer): None->N  new sector
+=== B - 6 IP-50 + 6 TG ===
+  PASS  IP-50 units = 6 (budget 6, 2 per microwave link)
+  PASS  TG units = 6 (budget 6)
+  PASS  TG link CORE-W2 has a TG unit at both ends
+  PASS  TG link CORE-W2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link W2-R2 has a TG unit at both ends
+  PASS  TG link W2-R2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link R2-E2 has a TG unit at both ends
+  PASS  TG link R2-E2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link R2-S has a TG unit at both ends
+  PASS  TG link R2-S has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link E2-E1 has a TG unit at both ends
+  PASS  TG link E2-E1 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG unit at CORE carries a pre-event link
+  PASS  CN at CORE holds a single link
+  PASS  TG unit at W2 carries a pre-event link
+  PASS  TG unit at R2 carries a pre-event link
+  PASS  TG unit at E1 carries a pre-event link
+  PASS  CN at E1 holds a single link
+  PASS  TG unit at E2 carries a pre-event link
+  PASS  TG unit at S carries a pre-event link
+  PASS  CN at S holds a single link
+  PASS  TG link CORE-W2 (600 m) closes at 23 dBm
+  PASS  TG link W2-R2 (520 m) closes at 23 dBm
+  PASS  TG link R2-E2 (520 m) closes at 23 dBm
+  PASS  TG link R2-S (450 m) closes at 23 dBm
+  PASS  TG link E2-E1 (600 m) closes at 23 dBm
+  PASS  pre-event network is connected
+  PASS  F1 CORE->E1 has >= 2 DPIR candidate paths (2)
+  PASS  F2 W2->E2 has >= 2 DPIR candidate paths (2)
+  PASS  F3 CORE->S has >= 2 DPIR candidate paths (2)
+  PASS  every pre-event link lies on a DPIR candidate path
+  PASS  F1 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  F2 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  F3 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  destroyed sites ['R1', 'R2'] are exactly the sites in the zone ['R1', 'R2']
+  PASS  event leaves 3 islands
+  PASS  F1 CORE->E1 is cut by the event
+  PASS  F2 W2->E2 is cut by the event
+  PASS  F3 CORE->S is cut by the event
+  PASS  F1 candidate CORE-R1-E1 is broken by the event
+  PASS  F1 candidate CORE-W2-R2-E2-E1 is broken by the event
+  PASS  F2 candidate W2-R2-E2 is broken by the event
+  PASS  F2 candidate W2-CORE-R1-E2 is broken by the event
+  PASS  F3 candidate CORE-W2-R2-S is broken by the event
+  PASS  F3 candidate CORE-R1-E2-R2-S is broken by the event
+  PASS  3 feasible bridge candidates
+  PASS  bridge W2->E2 is a feasible candidate
+  PASS  head W2 forms at most one bridge (paper Sec. IV-D)
+  PASS  bridge W2-E2 did not exist before the event
+  PASS  bridge W2-E2 joins two different components
+  PASS  bridge W2-E2 has a DN end reachable from the controller at CORE
+  PASS  bridge S->W2 is a feasible candidate
+  PASS  head S forms at most one bridge (paper Sec. IV-D)
+  PASS  bridge S-W2 did not exist before the event
+  PASS  bridge S-W2 joins two different components
+  PASS  bridge S-W2 has a DN end reachable from the controller at CORE
+  PASS  after the chosen bridges every surviving site is in one network
+  PASS  2 bridges for 3 islands (no redundant bridge)
+  PASS  F1 restored after recovery: CORE-W2-E2-E1
+  PASS  F2 restored after recovery: W2-E2
+  PASS  F3 restored after recovery: CORE-W2-S
+  islands: [['CORE', 'W2'], ['E1', 'E2'], ['S']]
+  F1: CORE-R1-E1  ['MW', 'MW']
+  F1: CORE-W2-R2-E2-E1  ['TG', 'TG', 'TG', 'TG']
+  F2: W2-R2-E2  ['TG', 'TG']
+  F2: W2-CORE-R1-E2  ['TG', 'MW', 'MW']
+  F3: CORE-W2-R2-S  ['TG', 'TG', 'TG']
+  F3: CORE-R1-E2-R2-S  ['MW', 'MW', 'TG', 'TG']
+  cand CORE-E1 900 m  23dBm QPSK 1/2  33dBm 16QAM  X CN-CN not allowed; CORE: outside the terminal's +/-45 deg scan; E1: outside the terminal's +/-45 deg scan
+  cand CORE-E2 1082 m  23dBm None  33dBm 16QAM  X CORE: outside the terminal's +/-45 deg scan
+  cand CORE-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; CORE: would drop CORE-W2, the sole path between them
+  cand W2-E1 1082 m  23dBm None  33dBm 16QAM  X E1: outside the terminal's +/-45 deg scan
+  cand W2-E2 900 m  23dBm QPSK 1/2  33dBm 16QAM  OK
+  cand W2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
+  cand E1-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; E1: would drop E2-E1, the sole path between them
+  cand E2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
+  steer W2 (head): R2->E2  delta 30 deg
+  steer E2 (peer): R2->W2  delta 30 deg
+  steer S (head): R2->W2  delta 32 deg
+  steer W2 (peer): R2->S  delta 28 deg
+=== C - 4 IP-50 + 6 TG ===
+  PASS  IP-50 units = 4 (budget 4, 2 per microwave link)
+  PASS  TG units = 6 (budget 6)
+  PASS  TG link CORE-W2 has a TG unit at both ends
+  PASS  TG link CORE-W2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link W2-R2 has a TG unit at both ends
+  PASS  TG link W2-R2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link R2-E2 has a TG unit at both ends
+  PASS  TG link R2-E2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link R2-S has a TG unit at both ends
+  PASS  TG link R2-S has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link E2-E1 has a TG unit at both ends
+  PASS  TG link E2-E1 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG unit at CORE carries a pre-event link
+  PASS  CN at CORE holds a single link
+  PASS  TG unit at W2 carries a pre-event link
+  PASS  TG unit at R2 carries a pre-event link
+  PASS  TG unit at E1 carries a pre-event link
+  PASS  CN at E1 holds a single link
+  PASS  TG unit at E2 carries a pre-event link
+  PASS  TG unit at S carries a pre-event link
+  PASS  CN at S holds a single link
+  PASS  TG link CORE-W2 (600 m) closes at 23 dBm
+  PASS  TG link W2-R2 (520 m) closes at 23 dBm
+  PASS  TG link R2-E2 (520 m) closes at 23 dBm
+  PASS  TG link R2-S (450 m) closes at 23 dBm
+  PASS  TG link E2-E1 (600 m) closes at 23 dBm
+  PASS  pre-event network is connected
+  PASS  F1 CORE->E1 has >= 2 DPIR candidate paths (2)
+  PASS  F2 W2->E2 has >= 2 DPIR candidate paths (2)
+  PASS  F3 CORE->S has >= 2 DPIR candidate paths (2)
+  PASS  every pre-event link lies on a DPIR candidate path
+  PASS  F1 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  F2 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  F3 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  destroyed sites ['R1', 'R2'] are exactly the sites in the zone ['R1', 'R2']
+  PASS  event leaves 3 islands
+  PASS  F1 CORE->E1 is cut by the event
+  PASS  F2 W2->E2 is cut by the event
+  PASS  F3 CORE->S is cut by the event
+  PASS  F1 candidate CORE-R1-E1 is broken by the event
+  PASS  F1 candidate CORE-W2-R2-E2-E1 is broken by the event
+  PASS  F2 candidate W2-R2-E2 is broken by the event
+  PASS  F2 candidate W2-CORE-R1-E1-E2 is broken by the event
+  PASS  F3 candidate CORE-W2-R2-S is broken by the event
+  PASS  F3 candidate CORE-R1-E1-E2-R2-S is broken by the event
+  PASS  3 feasible bridge candidates
+  PASS  bridge W2->E2 is a feasible candidate
+  PASS  head W2 forms at most one bridge (paper Sec. IV-D)
+  PASS  bridge W2-E2 did not exist before the event
+  PASS  bridge W2-E2 joins two different components
+  PASS  bridge W2-E2 has a DN end reachable from the controller at CORE
+  PASS  bridge S->W2 is a feasible candidate
+  PASS  head S forms at most one bridge (paper Sec. IV-D)
+  PASS  bridge S-W2 did not exist before the event
+  PASS  bridge S-W2 joins two different components
+  PASS  bridge S-W2 has a DN end reachable from the controller at CORE
+  PASS  after the chosen bridges every surviving site is in one network
+  PASS  2 bridges for 3 islands (no redundant bridge)
+  PASS  F1 restored after recovery: CORE-W2-E2-E1
+  PASS  F2 restored after recovery: W2-E2
+  PASS  F3 restored after recovery: CORE-W2-S
+  islands: [['CORE', 'W2'], ['E1', 'E2'], ['S']]
+  F1: CORE-R1-E1  ['MW', 'MW']
+  F1: CORE-W2-R2-E2-E1  ['TG', 'TG', 'TG', 'TG']
+  F2: W2-R2-E2  ['TG', 'TG']
+  F2: W2-CORE-R1-E1-E2  ['TG', 'MW', 'MW', 'TG']
+  F3: CORE-W2-R2-S  ['TG', 'TG', 'TG']
+  F3: CORE-R1-E1-E2-R2-S  ['MW', 'MW', 'TG', 'TG', 'TG']
+  cand CORE-E1 900 m  23dBm QPSK 1/2  33dBm 16QAM  X CN-CN not allowed; CORE: outside the terminal's +/-45 deg scan; E1: outside the terminal's +/-45 deg scan
+  cand CORE-E2 1082 m  23dBm None  33dBm 16QAM  X CORE: outside the terminal's +/-45 deg scan
+  cand CORE-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; CORE: would drop CORE-W2, the sole path between them
+  cand W2-E1 1082 m  23dBm None  33dBm 16QAM  X E1: outside the terminal's +/-45 deg scan
+  cand W2-E2 900 m  23dBm QPSK 1/2  33dBm 16QAM  OK
+  cand W2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
+  cand E1-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; E1: would drop E2-E1, the sole path between them
+  cand E2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
+  steer W2 (head): R2->E2  delta 30 deg
+  steer E2 (peer): R2->W2  delta 30 deg
+  steer S (head): R2->W2  delta 32 deg
+  steer W2 (peer): R2->S  delta 28 deg
+=== D - 4 IP-50 + 4 TG ===
+  PASS  IP-50 units = 4 (budget 4, 2 per microwave link)
+  PASS  TG units = 4 (budget 4)
+  PASS  TG link CORE-R2 has a TG unit at both ends
+  PASS  TG link CORE-R2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link R2-E2 has a TG unit at both ends
+  PASS  TG link R2-E2 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG link E2-E1 has a TG unit at both ends
+  PASS  TG link E2-E1 has a DN end (Terragraph: no CN-CN links)
+  PASS  TG unit at CORE carries a pre-event link
+  PASS  TG unit at R2 carries a pre-event link
+  PASS  TG unit at E1 carries a pre-event link
+  PASS  TG unit at E2 carries a pre-event link
+  PASS  TG link CORE-R2 (718 m) closes at 23 dBm
+  PASS  TG link R2-E2 (520 m) closes at 23 dBm
+  PASS  TG link E2-E1 (600 m) closes at 23 dBm
+  PASS  pre-event network is connected
+  PASS  F1 CORE->E1 has >= 2 DPIR candidate paths (2)
+  PASS  F2 CORE->E2 has >= 2 DPIR candidate paths (2)
+  PASS  every pre-event link lies on a DPIR candidate path
+  PASS  F1 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  F2 shares at least one candidate link with another flow (multi-flow coupling)
+  PASS  destroyed sites ['R1', 'R2'] are exactly the sites in the zone ['R1', 'R2']
+  PASS  event leaves 2 islands
+  PASS  F1 CORE->E1 is cut by the event
+  PASS  F2 CORE->E2 is cut by the event
+  PASS  F1 candidate CORE-R1-E1 is broken by the event
+  PASS  F1 candidate CORE-R2-E2-E1 is broken by the event
+  PASS  F2 candidate CORE-R2-E2 is broken by the event
+  PASS  F2 candidate CORE-R1-E1-E2 is broken by the event
+  PASS  2 feasible bridge candidates
+  PASS  bridge CORE->E2 is a feasible candidate
+  PASS  head CORE forms at most one bridge (paper Sec. IV-D)
+  PASS  bridge CORE-E2 did not exist before the event
+  PASS  bridge CORE-E2 joins two different components
+  PASS  bridge CORE-E2 has a DN end reachable from the controller at CORE
+  PASS  after the chosen bridges every surviving site is in one network
+  PASS  1 bridges for 2 islands (no redundant bridge)
+  PASS  F1 restored after recovery: CORE-E2-E1
+  PASS  F2 restored after recovery: CORE-E2
+  islands: [['CORE'], ['E1', 'E2']]
+  F1: CORE-R1-E1  ['MW', 'MW']
+  F1: CORE-R2-E2-E1  ['TG', 'TG', 'TG']
+  F2: CORE-R2-E2  ['TG', 'TG']
+  F2: CORE-R1-E1-E2  ['MW', 'MW', 'TG']
+  cand CORE-E1 949 m  23dBm QPSK 1/3  33dBm 16QAM  OK
+  cand CORE-E2 949 m  23dBm QPSK 1/3  33dBm 16QAM  OK
+  steer CORE (head): R2->E2  delta 33 deg
+  steer E2 (peer): R2->CORE  delta 48 deg
+FAILURES: 0
