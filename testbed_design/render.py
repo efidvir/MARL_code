@@ -17,8 +17,8 @@ from matplotlib.patches import (FancyArrowPatch, Polygon, Rectangle,  # noqa: E4
 
 import networkx as nx  # noqa: E402
 
-from topologies import CONFIGS, ROLE, ZONE_X  # noqa: E402
-from validate import ZONE_Y, analyze, bearing, P_PLAN, P_BOOST  # noqa: E402
+from topologies import CONFIGS, ROLE, ZONE_X, ZONE_Y  # noqa: E402
+from validate import analyze, bearing, P_PLAN  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 
@@ -39,11 +39,12 @@ BRIDGE = "#12945a"
 LOST = "#d0342c"
 CAND = "#8a94a6"
 ZONE = "#e5484d"
-ISLAND = ["#2563eb", "#9333ea", "#c2410c", "#be185d"]
+ISLAND = ["#2563eb", "#9333ea", "#c2410c", "#be185d", "#475569"]
 FLOW = {"F1": "#7c3aed", "F2": "#0891b2", "F3": "#db2777", "F4": "#b45309"}
+SVC = "#64748b"
 
 # label placement per site: (dx, dy, ha, va)
-LABEL = {"CORE": "left", "W2": "left", "R1": "above", "R2": "below",
+LABEL = {"W1": "left", "W2": "left", "CORE": "upper-right", "HUB": "right",
          "E1": "right", "E2": "right", "S": "right", "N": "right"}
 
 
@@ -165,10 +166,6 @@ def frame(ax, r, pad=230):
 def zone(ax, r, mode):
     ys = [p[1] for p in r["pos"].values()]
     y0, y1 = max(ZONE_Y[0], min(ys) - 60), min(ZONE_Y[1], max(ys) + 60)
-    if "S" in r["pos"]:
-        y0 = ZONE_Y[0]
-    if "N" in r["pos"]:
-        y1 = ZONE_Y[1]
     w = ZONE_X[1] - ZONE_X[0]
     if mode == "planned":
         ax.add_patch(Rectangle((ZONE_X[0], y0), w, y1 - y0, fc="none", ec=ZONE, lw=1.2,
@@ -198,10 +195,8 @@ def labels(ax, r, dead=(), small=False):
         side = LABEL[s]
         col = MUTED if s in dead else INK
         role = ROLE[s]
-        if s == "R1":
-            role = "MW hub" if r["ip_units"][s] >= 3 else "MW relay"
-            if s in r["cfg"]["tg_units"]:
-                role += " + TG"
+        if s == "CORE" and s in r["cfg"]["tg_units"]:
+            role = "Core + MW hub + TG\nsevered by the event"
         role = role if not small else role.split("\n")[0]
         sub = role if small else f"{role}\n{inventory(r, s)}"
         if s in dead:
@@ -218,6 +213,11 @@ def labels(ax, r, dead=(), small=False):
                         fontweight="bold", color=col, **kw)
             ax.annotate(sub, xy, xytext=(sg * 22, -1), ha=ha, va="top", fontsize=fs_s,
                         color=MUTED, linespacing=1.15, **kw)
+        elif side == "upper-right":
+            ax.annotate(sub, xy, xytext=(20, 6), ha="left", va="bottom", fontsize=fs_s,
+                        color=MUTED, linespacing=1.15, **kw)
+            ax.annotate(s, xy, xytext=(20, 7 + nl * lh), ha="left", va="bottom", fontsize=fs_n,
+                        fontweight="bold", color=col, **kw)
         elif side == "above":
             ax.annotate(sub, xy, xytext=(0, 21), ha="center", va="bottom", fontsize=fs_s,
                         color=MUTED, linespacing=1.15, **kw)
@@ -264,6 +264,9 @@ def panel_before(ax, r):
     for fid, s, t in cfg["flows"]:
         tags.setdefault(s, []).append((fid, "src"))
         tags.setdefault(t, []).append((fid, "dst"))
+    for s, t in cfg.get("service", []):
+        tags.setdefault(s, []).append(("svc", "src"))
+        tags.setdefault(t, []).append(("svc", "dst"))
     for s, lst in tags.items():
         xy = pos[s]
         n = len(lst)
@@ -272,17 +275,27 @@ def panel_before(ax, r):
                         xytext=((1 if LABEL[s] != "right" else -1) * (8 + 36 * i), -21),
                         textcoords="offset points",
                         ha="center", va="center", fontsize=7.2, color="white", fontweight="bold",
-                        bbox=dict(boxstyle="round,pad=0.22", fc=FLOW[fid], ec="none"), zorder=21)
+                        bbox=dict(boxstyle="round,pad=0.22", fc=FLOW.get(fid, SVC), ec="none"), zorder=21)
+    # TG sectors whose airtime two links share: where DPIR's flows contend
+    for (site, sec), lst in r["shared"].items():
+        c = sec * 90
+        ax.add_patch(Wedge(pos[site], 330, c - 45, c + 45, fc=TG, alpha=0.08, ec=TG, lw=1.0,
+                           ls=(0, (3, 2)), zorder=1.2))
+        peers = " + ".join(y for _, y in lst)
+        ang = math.radians(c + (25 if sec in (0, 2) else 0))
+        ax.text(pos[site][0] + 360 * math.cos(ang), pos[site][1] + 360 * math.sin(ang),
+                f"shared sector\n{peers}", ha="center", va="center", fontsize=6.8, color="#b45309",
+                zorder=19, path_effects=[pe.withStroke(linewidth=2.5, foreground="white")])
 
 
 def island_name(isl):
-    if "CORE" in isl:
-        return "core side"
     if isl == ["S"]:
         return "shelter"
     if isl == ["N"]:
         return "hospital"
-    return "incident district"
+    if any(s.startswith("W") for s in isl):
+        return "west"
+    return "incident"
 
 
 def panel_event(ax, r):
@@ -364,10 +377,15 @@ def panel_recovery(ax, r):
     for a, b in cfg["mw"] + cfg["tg_links"]:
         if a in dead or b in dead:
             link_line(ax, pos[a], pos[b], LOST, 1.0, ls=(0, (2, 4)), alpha=0.35)
-    chosen = {frozenset(b) for b in cfg["bridges"]}
-    for c in r["cands"]:
-        if c["feasible"] and not c["needs_boost"] and frozenset((c["a"], c["b"])) not in chosen:
-            link_line(ax, pos[c["a"]], pos[c["b"]], CAND, 1.4, ls=(0, (1.5, 3)), alpha=0.9, z=1.5)
+    # for each bridge, the best alternative MARL could have used between the same two islands
+    comp = r["comp"]
+    for h, p in cfg["bridges"]:
+        pair = {comp[h], comp[p]}
+        alts = [c for c in r["cands"] if c["feasible"] and {comp[c["a"]], comp[c["b"]]} == pair
+                and {c["a"], c["b"]} != {h, p}]
+        if alts:
+            c = max(alts, key=lambda c: c["budget"]["snr"])
+            link_line(ax, pos[c["a"]], pos[c["b"]], CAND, 1.5, ls=(0, (1.5, 3)), alpha=0.95, z=1.5)
     # surviving links
     g = r["g_post"]
     for a, b, d in g.edges(data=True):
@@ -384,9 +402,8 @@ def panel_recovery(ax, r):
         c = [c for c in r["cands"] if {c["a"], c["b"]} == {h, p}][0]
         bud = c["budget"]
         m = bridge_label_point(pos[h], pos[p])
-        txt = (f"bridge {i}: {h}→{p}\n{c['d']:.0f} m · "
-               + (f"{bud[P_PLAN]['mcs']} @{P_PLAN} dBm" if bud[P_PLAN]["mcs"] else f"needs {P_BOOST} dBm")
-               + f"\n{bud[P_BOOST]['mcs']} @{P_BOOST} dBm")
+        txt = (f"bridge {i}: {h}→{p}\n{c['d']:.0f} m · {bud['mcs']}\n"
+               f"{bud['margin']:.0f} dB margin @{P_PLAN} dBm")
         ax.text(m[0], m[1], txt, ha="center", va="center", fontsize=7.4, color=BRIDGE, zorder=23,
                 linespacing=1.15, fontweight="bold",
                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=BRIDGE, lw=1.0, alpha=0.95))
@@ -395,7 +412,7 @@ def panel_recovery(ax, r):
         x = pos[st["unit"]]
         tgt = pos[st["new"]]
         beam(ax, x, tgt, color=BRIDGE, alpha=0.45, length=250, half=7, z=4)
-        if st["kind"] == "re-steer":
+        if st["old"] is not None and st["role"] == "head":
             old = pos[st["old"]]
             beam(ax, x, old, color="#9ca3af", fill=False, ls=(0, (3, 2)), length=200, z=4)
             a0, a1 = st["b_old"], st["b_new"]
@@ -443,12 +460,11 @@ def panel_flow(ax, r, fid, paths, graph_edges, title, bridges=(), post=False):
         ax.add_patch(Circle(pos[s], 80, fc="none", ec=col, lw=2.6, zorder=7))
         ax.add_patch(Circle(pos[t], 80, fc="none", ec=col, lw=2.6, ls=(0, (2, 1.5)), zorder=7))
     else:
-        for i, (f, ps) in enumerate(paths.items()):
-            if not ps:
-                continue
-            pts = offset_poly([pos[n] for n in ps[0]], (i - (len(paths) - 1) / 2) * 26)
-            ax.plot([q[0] for q in pts], [q[1] for q in pts], color=FLOW[f], lw=3.0, zorder=4,
-                    solid_capstyle="round", alpha=0.95)
+        for i, (f, p) in enumerate(paths.items()):
+            pts = offset_poly([pos[n] for n in p], (i - (len(paths) - 1) / 2) * 26)
+            ax.plot([q[0] for q in pts], [q[1] for q in pts], color=FLOW.get(f, SVC), lw=3.0,
+                    zorder=4, solid_capstyle="round", alpha=0.95,
+                    ls="-" if f in FLOW else (0, (2, 1.5)))
     ax.set_title(title, fontsize=10, fontweight="bold", color=INK, loc="left", pad=2)
 
 
@@ -500,7 +516,7 @@ def legend(ax):
     row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=BRIDGE, lw=4.2),
         "MARL bridge (new TG link after re-steer)")
     row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=CAND, lw=1.4, ls=(0, (1.5, 3))),
-        "other feasible bridge (not chosen)")
+        "best alternative bridge (not chosen)")
     row(lambda yy: ax.add_patch(Rectangle((0.1, yy - 0.25), 1.0, 0.5, fc=ZONE, alpha=0.15, ec=ZONE,
                                           hatch="////", lw=0.5)), "disaster zone (sites destroyed)")
     _ = sc
@@ -534,11 +550,12 @@ def config_figure(key):
     panel_recovery(a3, r)
     n_feas = sum(c["feasible"] for c in r["cands"])
     for ax, n, t1, t2 in (
-        (a1, "1", "Before the event", "DPIR routes the flows over MW + TG; every link is on a DPIR path"),
-        (a2, "2", f"Event: {lost} destroyed → {n_isl} islands",
-         "microwave dishes are fixed; surviving TG beams lose their peer; no route crosses"),
+        (a1, "1", "Before the event",
+         "DPIR: each flow can go through the core (IP-50) or the TG hub; every link is on a DPIR path"),
+        (a2, "2", f"Event: core severed, {lost} destroyed → {n_isl} islands",
+         "IP-50 dishes are fixed; TG beams that pointed at the hub lose their peer; no route crosses"),
         (a3, "3", f"MARL recovery: {len(cfg['bridges'])} bridge{'s' if len(cfg['bridges']) > 1 else ''}",
-         f"surviving TG beams re-steer; green outline = one network again; dotted = other bridges at {P_PLAN} dBm"),
+         "surviving TG beams re-steer; green outline = one network again; dotted = best alternative bridge"),
     ):
         ax.text(0.0, 1.075, n, transform=ax.transAxes, fontsize=13, fontweight="bold", color="white",
                 ha="left", va="center", bbox=dict(boxstyle="circle,pad=0.3", fc=INK, ec="none"))
@@ -554,17 +571,21 @@ def config_figure(key):
         lines = []
         for j, p in enumerate(ps):
             lines.append(f"{'abc'[j]}  {'–'.join(p)}  ({tech_str(r['path_tech'](p))})")
+        secs = sorted({r["end_sector"](x, y) for p in ps for a, b in zip(p, p[1:])
+                       if r["g0"].edges[a, b]["tech"] == "TG"
+                       for x, y in ((a, b), (b, a)) if r["end_sector"](x, y) in r["shared"]})
+        if secs:
+            lines.append("contends at " + ", ".join(
+                f"{site} {['east', 'north', 'west', 'south'][sec]} sector" for site, sec in secs))
         ax.text(0.0, -0.01, "\n".join(lines), transform=ax.transAxes, fontsize=7.6, color=FLOW[fid],
                 va="top", linespacing=1.35)
     axp = fig.add_subplot(bot[0, nfl])
     g = r["g_post"]
     edges_post = [(a, b, d["tech"]) for a, b, d in g.edges(data=True)]
-    panel_flow(axp, r, None, r["post"], edges_post, "DPIR after recovery", post=True)
-    lines = [f"{f}  {'–'.join(ps[0])}" for f, ps in r["post"].items()]
-    axp.text(0.0, -0.01, "\n".join(lines), transform=axp.transAxes, fontsize=7.6, color=INK,
-             va="top", linespacing=1.35)
-    for j, (f, _) in enumerate(r["post"].items()):
-        axp.text(0.0, -0.01 - 0.0, "", transform=axp.transAxes)
+    panel_flow(axp, r, None, r["post"], edges_post, "Routes after recovery (a tree: one route per flow)", post=True)
+    lines = [f"{f if f in FLOW else 'svc'}  {'–'.join(p)}" for f, p in r["post"].items()]
+    axp.text(0.0, -0.01, "\n".join(lines), transform=axp.transAxes,
+             fontsize=7.6, color=INK, va="top", linespacing=1.35)
     axl = fig.add_subplot(bot[0, nfl + 1])
     legend(axl)
 

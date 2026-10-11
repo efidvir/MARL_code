@@ -1,320 +1,343 @@
 === A - 8 IP-50 + 8 TG ===
   PASS  IP-50 units = 8 (budget 8, 2 per microwave link)
   PASS  TG units = 8 (budget 8)
-  PASS  TG link CORE-W2 has a TG unit at both ends
-  PASS  TG link CORE-W2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link W2-R2 has a TG unit at both ends
-  PASS  TG link W2-R2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link R2-E2 has a TG unit at both ends
-  PASS  TG link R2-E2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link R2-S has a TG unit at both ends
-  PASS  TG link R2-S has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link E2-E1 has a TG unit at both ends
-  PASS  TG link E2-E1 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link R1-N has a TG unit at both ends
-  PASS  TG link R1-N has a DN end (Terragraph: no CN-CN links)
-  PASS  TG unit at CORE carries a pre-event link
-  PASS  TG unit at W2 carries a pre-event link
-  PASS  TG unit at R1 carries a pre-event link
-  PASS  TG unit at R2 carries a pre-event link
-  PASS  TG unit at E1 carries a pre-event link
-  PASS  CN at E1 holds a single link
-  PASS  TG unit at E2 carries a pre-event link
-  PASS  TG unit at S carries a pre-event link
-  PASS  CN at S holds a single link
-  PASS  TG unit at N carries a pre-event link
-  PASS  CN at N holds a single link
-  PASS  TG link CORE-W2 (600 m) closes at 23 dBm
-  PASS  TG link W2-R2 (520 m) closes at 23 dBm
-  PASS  TG link R2-E2 (520 m) closes at 23 dBm
-  PASS  TG link R2-S (450 m) closes at 23 dBm
-  PASS  TG link E2-E1 (600 m) closes at 23 dBm
-  PASS  TG link R1-N (450 m) closes at 23 dBm
+  PASS  TG link HUB-W1 has a TG unit at both ends
+  PASS  TG link HUB-W1 has a node-class end (no CN-CN)
+  PASS  TG link HUB-W1 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-W2 has a TG unit at both ends
+  PASS  TG link HUB-W2 has a node-class end (no CN-CN)
+  PASS  TG link HUB-W2 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-E1 has a TG unit at both ends
+  PASS  TG link HUB-E1 has a node-class end (no CN-CN)
+  PASS  TG link HUB-E1 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-E2 has a TG unit at both ends
+  PASS  TG link HUB-E2 has a node-class end (no CN-CN)
+  PASS  TG link HUB-E2 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-S has a TG unit at both ends
+  PASS  TG link HUB-S has a node-class end (no CN-CN)
+  PASS  TG link HUB-S (468 m): 64QAM, 16 dB above outage at 23 dBm
+  PASS  TG link CORE-N has a TG unit at both ends
+  PASS  TG link CORE-N has a node-class end (no CN-CN)
+  PASS  TG link CORE-N (270 m): 256QAM, 24 dB above outage at 23 dBm
+  PASS  terminal-class unit at S holds a single link
+  PASS  terminal-class unit at N holds a single link
   PASS  pre-event network is connected
-  PASS  F1 CORE->E1 has >= 2 DPIR candidate paths (2)
-  PASS  F2 W2->E2 has >= 2 DPIR candidate paths (3)
-  PASS  F3 CORE->S has >= 2 DPIR candidate paths (2)
-  PASS  F4 CORE->N has >= 2 DPIR candidate paths (2)
-  PASS  every pre-event link lies on a DPIR candidate path
-  PASS  F1 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  F2 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  F3 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  F4 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  destroyed sites ['R1', 'R2'] are exactly the sites in the zone ['R1', 'R2']
+  PASS  DPIR F1 W1->E1 has 2 diverse candidate paths
+  PASS  DPIR F2 W2->E2 has 2 diverse candidate paths
+  PASS  every link is on a DPIR candidate or a pocket's service path
+  PASS  DPIR F1 contends with another flow (shared link or shared TG sector airtime)
+  PASS  DPIR F2 contends with another flow (shared link or shared TG sector airtime)
+  PASS  destroyed sites ['CORE', 'HUB'] are exactly the sites in the zone
+  PASS  the core is severed by the event
   PASS  event leaves 4 islands
-  PASS  F1 CORE->E1 is cut by the event
-  PASS  F2 W2->E2 is cut by the event
-  PASS  F3 CORE->S is cut by the event
-  PASS  F4 CORE->N is cut by the event
-  PASS  F1 candidate CORE-R1-E1 is broken by the event
-  PASS  F1 candidate CORE-W2-R2-E2-E1 is broken by the event
-  PASS  F2 candidate W2-R1-E2 is broken by the event
-  PASS  F2 candidate W2-R2-E2 is broken by the event
-  PASS  F2 candidate W2-CORE-R1-E1-E2 is broken by the event
-  PASS  F3 candidate CORE-W2-R2-S is broken by the event
-  PASS  F3 candidate CORE-R1-E2-R2-S is broken by the event
-  PASS  F4 candidate CORE-R1-N is broken by the event
-  PASS  F4 candidate CORE-W2-R1-N is broken by the event
-  PASS  8 feasible bridge candidates
-  PASS  bridge W2->E2 is a feasible candidate
-  PASS  head W2 forms at most one bridge (paper Sec. IV-D)
-  PASS  bridge W2-E2 did not exist before the event
-  PASS  bridge W2-E2 joins two different components
-  PASS  bridge W2-E2 has a DN end reachable from the controller at CORE
-  PASS  bridge S->W2 is a feasible candidate
-  PASS  head S forms at most one bridge (paper Sec. IV-D)
-  PASS  bridge S-W2 did not exist before the event
-  PASS  bridge S-W2 joins two different components
-  PASS  bridge S-W2 has a DN end reachable from the controller at CORE
-  PASS  bridge N->CORE is a feasible candidate
-  PASS  head N forms at most one bridge (paper Sec. IV-D)
-  PASS  bridge N-CORE did not exist before the event
-  PASS  bridge N-CORE joins two different components
-  PASS  bridge N-CORE has a DN end reachable from the controller at CORE
-  PASS  after the chosen bridges every surviving site is in one network
-  PASS  3 bridges for 4 islands (no redundant bridge)
-  PASS  F1 restored after recovery: CORE-W2-E2-E1
-  PASS  F2 restored after recovery: W2-E2
-  PASS  F3 restored after recovery: CORE-W2-S
-  PASS  F4 restored after recovery: CORE-N
-  islands: [['CORE', 'W2'], ['E1', 'E2'], ['N'], ['S']]
-  F1: CORE-R1-E1  ['MW', 'MW']
-  F1: CORE-W2-R2-E2-E1  ['TG', 'TG', 'TG', 'TG']
-  F2: W2-R1-E2  ['MW', 'MW']
-  F2: W2-R2-E2  ['TG', 'TG']
-  F2: W2-CORE-R1-E1-E2  ['TG', 'MW', 'MW', 'TG']
-  F3: CORE-W2-R2-S  ['TG', 'TG', 'TG']
-  F3: CORE-R1-E2-R2-S  ['MW', 'MW', 'TG', 'TG']
-  F4: CORE-R1-N  ['MW', 'TG']
-  F4: CORE-W2-R1-N  ['TG', 'MW', 'TG']
-  cand CORE-E1 900 m  23dBm QPSK 1/2  33dBm 16QAM  X E1: outside the terminal's +/-45 deg scan
-  cand CORE-E2 1082 m  23dBm None  33dBm 16QAM  OK
-  cand CORE-S 1385 m  23dBm None  33dBm QPSK 1/2  OK
-  cand CORE-N 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
-  cand W2-E1 1082 m  23dBm None  33dBm 16QAM  X E1: outside the terminal's +/-45 deg scan
-  cand W2-E2 900 m  23dBm QPSK 1/2  33dBm 16QAM  OK
-  cand W2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
-  cand W2-N 1385 m  23dBm None  33dBm QPSK 1/2  OK
-  cand E1-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; E1: would drop E2-E1, the sole path between them
-  cand E1-N 841 m  23dBm QPSK 1/2  33dBm 64QAM  X CN-CN not allowed; E1: outside the terminal's +/-45 deg scan
-  cand E2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
-  cand E2-N 1385 m  23dBm None  33dBm QPSK 1/2  OK
-  cand S-N 2020 m  23dBm None  33dBm None  X CN-CN not allowed; out of range even at 33 dBm
-  steer W2 (head): R2->E2  delta 30 deg
-  steer E2 (peer): R2->W2  delta 30 deg
-  steer S (head): R2->W2  delta 32 deg
-  steer W2 (peer): R2->S  delta 28 deg
-  steer N (head): R1->CORE  delta 32 deg
-  steer CORE (peer): None->N  new sector
+  PASS  DPIR F1 W1->E1 is cut
+  PASS  F1 candidate W1-CORE-E1 is broken
+  PASS  F1 candidate W1-HUB-E1 is broken
+  PASS  DPIR F2 W2->E2 is cut
+  PASS  F2 candidate W2-HUB-E2 is broken
+  PASS  F2 candidate W2-W1-CORE-E1-E2 is broken
+  PASS  12 feasible bridge candidates
+  PASS  island 1 (W1, W2) has a TG unit
+  PASS  island 2 (E1, E2) has a TG unit
+  PASS  island 3 (N) has a TG unit
+  PASS  island 4 (S) has a TG unit
+  PASS  TG at HUB (lost) serves only sites that re-steer once it is gone: W1, W2, E1, E2, S
+  PASS  TG at CORE (lost) serves only sites that re-steer once it is gone: N
+  PASS  TG at W1 can steer to a bridge peer
+  PASS  TG at W2 can steer to a bridge peer
+  PASS  TG at E1 can steer to a bridge peer
+  PASS  TG at E2 can steer to a bridge peer
+  PASS  TG at S can steer to a bridge peer
+  PASS  TG at N can steer to a bridge peer
+  PASS  a bridge exists for every remaining island
+  PASS  a bridge exists for every remaining island
+  PASS  a bridge exists for every remaining island
+  PASS  head S forms one bridge (paper Sec. IV-D)
+  PASS  bridge S-W2 is a new link
+  PASS  bridge S-W2 joins two islands
+  PASS  head N forms one bridge (paper Sec. IV-D)
+  PASS  bridge N-W1 is a new link
+  PASS  bridge N-W1 joins two islands
+  PASS  head E1 forms one bridge (paper Sec. IV-D)
+  PASS  bridge E1-W1 is a new link
+  PASS  bridge E1-W1 joins two islands
+  PASS  terminal-class unit at S is in at most one bridge
+  PASS  terminal-class unit at N is in at most one bridge
+  PASS  after the bridges every surviving site is in one network
+  PASS  3 bridges for 4 islands
+  PASS  a per-sector odd/even polarity plan supports every pre-event link and every bridge
+  islands: [['W1', 'W2'], ['E1', 'E2'], ['N'], ['S']]
+  bridges (head -> peer): [('S', 'W2'), ('N', 'W1'), ('E1', 'W1')]
+  F1: W1-CORE-E1  ['MW', 'MW']
+  F1: W1-HUB-E1  ['TG', 'TG']
+  F2: W2-HUB-E2  ['TG', 'TG']
+  F2: W2-W1-CORE-E1-E2  ['MW', 'MW', 'MW', 'MW']
+  shared sector HUB.s2: [('HUB', 'W1'), ('HUB', 'W2')]
+  shared sector HUB.s0: [('HUB', 'E1'), ('HUB', 'E2')]
+  cand W1-E1 540 m  16QAM  margin 13.9 dB  OK
+  cand W1-E2 649 m  16QAM  margin 10.7 dB  OK
+  cand W1-S 702 m  16QAM  margin 9.2 dB  OK
+  cand W1-N 504 m  64QAM  margin 15.0 dB  OK
+  cand W2-E1 649 m  16QAM  margin 10.7 dB  OK
+  cand W2-E2 540 m  16QAM  margin 13.9 dB  OK
+  cand W2-S 395 m  64QAM  margin 18.8 dB  OK
+  cand W2-N 831 m  QPSK 1/2  margin 5.8 dB  OK
+  cand E1-S 702 m  16QAM  margin 9.2 dB  OK
+  cand E1-N 504 m  64QAM  margin 15.0 dB  OK
+  cand E2-S 395 m  64QAM  margin 18.8 dB  OK
+  cand E2-N 831 m  QPSK 1/2  margin 5.8 dB  OK
+  cand S-N 1074 m  None  margin -0.1 dB  X CN-CN not allowed; out of range at 23 dBm
+  beam S (head): HUB -> W2  43 deg
+  beam W2 (peer): HUB -> S  81 deg
+  beam N (head): CORE -> W1  32 deg
+  beam W1 (peer): HUB -> N  91 deg
+  beam E1 (head): HUB -> W1  34 deg
+  beam W1 (peer): HUB -> E1  34 deg
+  polarity: {'CORE.s1': 'odd', 'E1.s2': 'odd', 'E2.s2': 'odd', 'HUB.s0': 'even', 'HUB.s2': 'odd', 'HUB.s3': 'odd', 'N.s0': 'even', 'S.s0': 'even', 'W1.s0': 'even', 'W1.s1': 'odd', 'W2.s0': 'even', 'W2.s3': 'odd'}
 === B - 6 IP-50 + 6 TG ===
   PASS  IP-50 units = 6 (budget 6, 2 per microwave link)
   PASS  TG units = 6 (budget 6)
-  PASS  TG link CORE-W2 has a TG unit at both ends
-  PASS  TG link CORE-W2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link W2-R2 has a TG unit at both ends
-  PASS  TG link W2-R2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link R2-E2 has a TG unit at both ends
-  PASS  TG link R2-E2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link R2-S has a TG unit at both ends
-  PASS  TG link R2-S has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link E2-E1 has a TG unit at both ends
-  PASS  TG link E2-E1 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG unit at CORE carries a pre-event link
-  PASS  CN at CORE holds a single link
-  PASS  TG unit at W2 carries a pre-event link
-  PASS  TG unit at R2 carries a pre-event link
-  PASS  TG unit at E1 carries a pre-event link
-  PASS  CN at E1 holds a single link
-  PASS  TG unit at E2 carries a pre-event link
-  PASS  TG unit at S carries a pre-event link
-  PASS  CN at S holds a single link
-  PASS  TG link CORE-W2 (600 m) closes at 23 dBm
-  PASS  TG link W2-R2 (520 m) closes at 23 dBm
-  PASS  TG link R2-E2 (520 m) closes at 23 dBm
-  PASS  TG link R2-S (450 m) closes at 23 dBm
-  PASS  TG link E2-E1 (600 m) closes at 23 dBm
+  PASS  TG link HUB-W1 has a TG unit at both ends
+  PASS  TG link HUB-W1 has a node-class end (no CN-CN)
+  PASS  TG link HUB-W1 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-W2 has a TG unit at both ends
+  PASS  TG link HUB-W2 has a node-class end (no CN-CN)
+  PASS  TG link HUB-W2 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-E1 has a TG unit at both ends
+  PASS  TG link HUB-E1 has a node-class end (no CN-CN)
+  PASS  TG link HUB-E1 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-E2 has a TG unit at both ends
+  PASS  TG link HUB-E2 has a node-class end (no CN-CN)
+  PASS  TG link HUB-E2 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-S has a TG unit at both ends
+  PASS  TG link HUB-S has a node-class end (no CN-CN)
+  PASS  TG link HUB-S (468 m): 64QAM, 16 dB above outage at 23 dBm
+  PASS  terminal-class unit at S holds a single link
   PASS  pre-event network is connected
-  PASS  F1 CORE->E1 has >= 2 DPIR candidate paths (2)
-  PASS  F2 W2->E2 has >= 2 DPIR candidate paths (2)
-  PASS  F3 CORE->S has >= 2 DPIR candidate paths (2)
-  PASS  every pre-event link lies on a DPIR candidate path
-  PASS  F1 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  F2 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  F3 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  destroyed sites ['R1', 'R2'] are exactly the sites in the zone ['R1', 'R2']
-  PASS  event leaves 3 islands
-  PASS  F1 CORE->E1 is cut by the event
-  PASS  F2 W2->E2 is cut by the event
-  PASS  F3 CORE->S is cut by the event
-  PASS  F1 candidate CORE-R1-E1 is broken by the event
-  PASS  F1 candidate CORE-W2-R2-E2-E1 is broken by the event
-  PASS  F2 candidate W2-R2-E2 is broken by the event
-  PASS  F2 candidate W2-CORE-R1-E2 is broken by the event
-  PASS  F3 candidate CORE-W2-R2-S is broken by the event
-  PASS  F3 candidate CORE-R1-E2-R2-S is broken by the event
-  PASS  3 feasible bridge candidates
-  PASS  bridge W2->E2 is a feasible candidate
-  PASS  head W2 forms at most one bridge (paper Sec. IV-D)
-  PASS  bridge W2-E2 did not exist before the event
-  PASS  bridge W2-E2 joins two different components
-  PASS  bridge W2-E2 has a DN end reachable from the controller at CORE
-  PASS  bridge S->W2 is a feasible candidate
-  PASS  head S forms at most one bridge (paper Sec. IV-D)
-  PASS  bridge S-W2 did not exist before the event
-  PASS  bridge S-W2 joins two different components
-  PASS  bridge S-W2 has a DN end reachable from the controller at CORE
-  PASS  after the chosen bridges every surviving site is in one network
-  PASS  2 bridges for 3 islands (no redundant bridge)
-  PASS  F1 restored after recovery: CORE-W2-E2-E1
-  PASS  F2 restored after recovery: W2-E2
-  PASS  F3 restored after recovery: CORE-W2-S
-  islands: [['CORE', 'W2'], ['E1', 'E2'], ['S']]
-  F1: CORE-R1-E1  ['MW', 'MW']
-  F1: CORE-W2-R2-E2-E1  ['TG', 'TG', 'TG', 'TG']
-  F2: W2-R2-E2  ['TG', 'TG']
-  F2: W2-CORE-R1-E2  ['TG', 'MW', 'MW']
-  F3: CORE-W2-R2-S  ['TG', 'TG', 'TG']
-  F3: CORE-R1-E2-R2-S  ['MW', 'MW', 'TG', 'TG']
-  cand CORE-E1 900 m  23dBm QPSK 1/2  33dBm 16QAM  X CN-CN not allowed; CORE: outside the terminal's +/-45 deg scan; E1: outside the terminal's +/-45 deg scan
-  cand CORE-E2 1082 m  23dBm None  33dBm 16QAM  X CORE: outside the terminal's +/-45 deg scan
-  cand CORE-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; CORE: would drop CORE-W2, the sole path between them
-  cand W2-E1 1082 m  23dBm None  33dBm 16QAM  X E1: outside the terminal's +/-45 deg scan
-  cand W2-E2 900 m  23dBm QPSK 1/2  33dBm 16QAM  OK
-  cand W2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
-  cand E1-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; E1: would drop E2-E1, the sole path between them
-  cand E2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
-  steer W2 (head): R2->E2  delta 30 deg
-  steer E2 (peer): R2->W2  delta 30 deg
-  steer S (head): R2->W2  delta 32 deg
-  steer W2 (peer): R2->S  delta 28 deg
+  PASS  DPIR F1 W1->E1 has 2 diverse candidate paths
+  PASS  DPIR F2 W2->E2 has 2 diverse candidate paths
+  PASS  every link is on a DPIR candidate or a pocket's service path
+  PASS  DPIR F1 contends with another flow (shared link or shared TG sector airtime)
+  PASS  DPIR F2 contends with another flow (shared link or shared TG sector airtime)
+  PASS  destroyed sites ['CORE', 'HUB'] are exactly the sites in the zone
+  PASS  the core is severed by the event
+  PASS  event leaves 4 islands
+  PASS  DPIR F1 W1->E1 is cut
+  PASS  F1 candidate W1-CORE-E1 is broken
+  PASS  F1 candidate W1-HUB-E1 is broken
+  PASS  DPIR F2 W2->E2 is cut
+  PASS  F2 candidate W2-HUB-E2 is broken
+  PASS  F2 candidate W2-HUB-E1-E2 is broken
+  PASS  9 feasible bridge candidates
+  PASS  island 1 (W1) has a TG unit
+  PASS  island 2 (E1, E2) has a TG unit
+  PASS  island 3 (W2) has a TG unit
+  PASS  island 4 (S) has a TG unit
+  PASS  TG at HUB (lost) serves only sites that re-steer once it is gone: W1, W2, E1, E2, S
+  PASS  TG at W1 can steer to a bridge peer
+  PASS  TG at W2 can steer to a bridge peer
+  PASS  TG at E1 can steer to a bridge peer
+  PASS  TG at E2 can steer to a bridge peer
+  PASS  TG at S can steer to a bridge peer
+  PASS  a bridge exists for every remaining island
+  PASS  a bridge exists for every remaining island
+  PASS  a bridge exists for every remaining island
+  PASS  head W2 forms one bridge (paper Sec. IV-D)
+  PASS  bridge W2-W1 is a new link
+  PASS  bridge W2-W1 joins two islands
+  PASS  head E1 forms one bridge (paper Sec. IV-D)
+  PASS  bridge E1-W1 is a new link
+  PASS  bridge E1-W1 joins two islands
+  PASS  head S forms one bridge (paper Sec. IV-D)
+  PASS  bridge S-W2 is a new link
+  PASS  bridge S-W2 joins two islands
+  PASS  terminal-class unit at S is in at most one bridge
+  PASS  after the bridges every surviving site is in one network
+  PASS  3 bridges for 4 islands
+  PASS  a per-sector odd/even polarity plan supports every pre-event link and every bridge
+  islands: [['W1'], ['E1', 'E2'], ['W2'], ['S']]
+  bridges (head -> peer): [('W2', 'W1'), ('E1', 'W1'), ('S', 'W2')]
+  F1: W1-CORE-E1  ['MW', 'MW']
+  F1: W1-HUB-E1  ['TG', 'TG']
+  F2: W2-HUB-E2  ['TG', 'TG']
+  F2: W2-HUB-E1-E2  ['TG', 'TG', 'MW']
+  shared sector HUB.s2: [('HUB', 'W1'), ('HUB', 'W2')]
+  shared sector HUB.s0: [('HUB', 'E1'), ('HUB', 'E2')]
+  cand W1-W2 360 m  64QAM  margin 20.1 dB  OK
+  cand W1-E1 540 m  16QAM  margin 13.9 dB  OK
+  cand W1-E2 649 m  16QAM  margin 10.7 dB  OK
+  cand W1-S 702 m  16QAM  margin 9.2 dB  OK
+  cand W2-E1 649 m  16QAM  margin 10.7 dB  OK
+  cand W2-E2 540 m  16QAM  margin 13.9 dB  OK
+  cand W2-S 395 m  64QAM  margin 18.8 dB  OK
+  cand E1-S 702 m  16QAM  margin 9.2 dB  OK
+  cand E2-S 395 m  64QAM  margin 18.8 dB  OK
+  beam W2 (head): HUB -> W1  56 deg
+  beam W1 (peer): HUB -> W2  56 deg
+  beam E1 (head): HUB -> W1  34 deg
+  beam W1 (peer): HUB -> E1  34 deg
+  beam S (head): HUB -> W2  43 deg
+  beam W2 (peer): HUB -> S  81 deg
+  polarity: {'E1.s2': 'odd', 'E2.s2': 'odd', 'HUB.s0': 'even', 'HUB.s2': 'odd', 'HUB.s3': 'odd', 'S.s0': 'even', 'W1.s0': 'even', 'W1.s3': 'odd', 'W2.s0': 'even', 'W2.s1': 'even', 'W2.s3': 'odd'}
 === C - 4 IP-50 + 6 TG ===
   PASS  IP-50 units = 4 (budget 4, 2 per microwave link)
   PASS  TG units = 6 (budget 6)
-  PASS  TG link CORE-W2 has a TG unit at both ends
-  PASS  TG link CORE-W2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link W2-R2 has a TG unit at both ends
-  PASS  TG link W2-R2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link R2-E2 has a TG unit at both ends
-  PASS  TG link R2-E2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link R2-S has a TG unit at both ends
-  PASS  TG link R2-S has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link E2-E1 has a TG unit at both ends
-  PASS  TG link E2-E1 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG unit at CORE carries a pre-event link
-  PASS  CN at CORE holds a single link
-  PASS  TG unit at W2 carries a pre-event link
-  PASS  TG unit at R2 carries a pre-event link
-  PASS  TG unit at E1 carries a pre-event link
-  PASS  CN at E1 holds a single link
-  PASS  TG unit at E2 carries a pre-event link
-  PASS  TG unit at S carries a pre-event link
-  PASS  CN at S holds a single link
-  PASS  TG link CORE-W2 (600 m) closes at 23 dBm
-  PASS  TG link W2-R2 (520 m) closes at 23 dBm
-  PASS  TG link R2-E2 (520 m) closes at 23 dBm
-  PASS  TG link R2-S (450 m) closes at 23 dBm
-  PASS  TG link E2-E1 (600 m) closes at 23 dBm
+  PASS  TG link HUB-W1 has a TG unit at both ends
+  PASS  TG link HUB-W1 has a node-class end (no CN-CN)
+  PASS  TG link HUB-W1 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-W2 has a TG unit at both ends
+  PASS  TG link HUB-W2 has a node-class end (no CN-CN)
+  PASS  TG link HUB-W2 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-E1 has a TG unit at both ends
+  PASS  TG link HUB-E1 has a node-class end (no CN-CN)
+  PASS  TG link HUB-E1 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-E2 has a TG unit at both ends
+  PASS  TG link HUB-E2 has a node-class end (no CN-CN)
+  PASS  TG link HUB-E2 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-S has a TG unit at both ends
+  PASS  TG link HUB-S has a node-class end (no CN-CN)
+  PASS  TG link HUB-S (468 m): 64QAM, 16 dB above outage at 23 dBm
+  PASS  terminal-class unit at S holds a single link
   PASS  pre-event network is connected
-  PASS  F1 CORE->E1 has >= 2 DPIR candidate paths (2)
-  PASS  F2 W2->E2 has >= 2 DPIR candidate paths (2)
-  PASS  F3 CORE->S has >= 2 DPIR candidate paths (2)
-  PASS  every pre-event link lies on a DPIR candidate path
-  PASS  F1 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  F2 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  F3 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  destroyed sites ['R1', 'R2'] are exactly the sites in the zone ['R1', 'R2']
-  PASS  event leaves 3 islands
-  PASS  F1 CORE->E1 is cut by the event
-  PASS  F2 W2->E2 is cut by the event
-  PASS  F3 CORE->S is cut by the event
-  PASS  F1 candidate CORE-R1-E1 is broken by the event
-  PASS  F1 candidate CORE-W2-R2-E2-E1 is broken by the event
-  PASS  F2 candidate W2-R2-E2 is broken by the event
-  PASS  F2 candidate W2-CORE-R1-E1-E2 is broken by the event
-  PASS  F3 candidate CORE-W2-R2-S is broken by the event
-  PASS  F3 candidate CORE-R1-E1-E2-R2-S is broken by the event
-  PASS  3 feasible bridge candidates
-  PASS  bridge W2->E2 is a feasible candidate
-  PASS  head W2 forms at most one bridge (paper Sec. IV-D)
-  PASS  bridge W2-E2 did not exist before the event
-  PASS  bridge W2-E2 joins two different components
-  PASS  bridge W2-E2 has a DN end reachable from the controller at CORE
-  PASS  bridge S->W2 is a feasible candidate
-  PASS  head S forms at most one bridge (paper Sec. IV-D)
-  PASS  bridge S-W2 did not exist before the event
-  PASS  bridge S-W2 joins two different components
-  PASS  bridge S-W2 has a DN end reachable from the controller at CORE
-  PASS  after the chosen bridges every surviving site is in one network
-  PASS  2 bridges for 3 islands (no redundant bridge)
-  PASS  F1 restored after recovery: CORE-W2-E2-E1
-  PASS  F2 restored after recovery: W2-E2
-  PASS  F3 restored after recovery: CORE-W2-S
-  islands: [['CORE', 'W2'], ['E1', 'E2'], ['S']]
-  F1: CORE-R1-E1  ['MW', 'MW']
-  F1: CORE-W2-R2-E2-E1  ['TG', 'TG', 'TG', 'TG']
-  F2: W2-R2-E2  ['TG', 'TG']
-  F2: W2-CORE-R1-E1-E2  ['TG', 'MW', 'MW', 'TG']
-  F3: CORE-W2-R2-S  ['TG', 'TG', 'TG']
-  F3: CORE-R1-E1-E2-R2-S  ['MW', 'MW', 'TG', 'TG', 'TG']
-  cand CORE-E1 900 m  23dBm QPSK 1/2  33dBm 16QAM  X CN-CN not allowed; CORE: outside the terminal's +/-45 deg scan; E1: outside the terminal's +/-45 deg scan
-  cand CORE-E2 1082 m  23dBm None  33dBm 16QAM  X CORE: outside the terminal's +/-45 deg scan
-  cand CORE-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; CORE: would drop CORE-W2, the sole path between them
-  cand W2-E1 1082 m  23dBm None  33dBm 16QAM  X E1: outside the terminal's +/-45 deg scan
-  cand W2-E2 900 m  23dBm QPSK 1/2  33dBm 16QAM  OK
-  cand W2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
-  cand E1-S 1385 m  23dBm None  33dBm QPSK 1/2  X CN-CN not allowed; E1: would drop E2-E1, the sole path between them
-  cand E2-S 841 m  23dBm QPSK 1/2  33dBm 64QAM  OK
-  steer W2 (head): R2->E2  delta 30 deg
-  steer E2 (peer): R2->W2  delta 30 deg
-  steer S (head): R2->W2  delta 32 deg
-  steer W2 (peer): R2->S  delta 28 deg
+  PASS  DPIR F1 W1->E1 has 2 diverse candidate paths
+  PASS  DPIR F2 W1->E2 has 2 diverse candidate paths
+  PASS  DPIR F3 W2->E1 has 2 diverse candidate paths
+  PASS  every link is on a DPIR candidate or a pocket's service path
+  PASS  DPIR F1 contends with another flow (shared link or shared TG sector airtime)
+  PASS  DPIR F2 contends with another flow (shared link or shared TG sector airtime)
+  PASS  DPIR F3 contends with another flow (shared link or shared TG sector airtime)
+  PASS  destroyed sites ['CORE', 'HUB'] are exactly the sites in the zone
+  PASS  the core is severed by the event
+  PASS  event leaves 5 islands
+  PASS  DPIR F1 W1->E1 is cut
+  PASS  F1 candidate W1-CORE-E1 is broken
+  PASS  F1 candidate W1-HUB-E1 is broken
+  PASS  DPIR F2 W1->E2 is cut
+  PASS  F2 candidate W1-HUB-E2 is broken
+  PASS  F2 candidate W1-CORE-E1-HUB-E2 is broken
+  PASS  DPIR F3 W2->E1 is cut
+  PASS  F3 candidate W2-HUB-E1 is broken
+  PASS  F3 candidate W2-HUB-W1-CORE-E1 is broken
+  PASS  10 feasible bridge candidates
+  PASS  island 1 (W1) has a TG unit
+  PASS  island 2 (E1) has a TG unit
+  PASS  island 3 (W2) has a TG unit
+  PASS  island 4 (E2) has a TG unit
+  PASS  island 5 (S) has a TG unit
+  PASS  TG at HUB (lost) serves only sites that re-steer once it is gone: W1, W2, E1, E2, S
+  PASS  TG at W1 can steer to a bridge peer
+  PASS  TG at W2 can steer to a bridge peer
+  PASS  TG at E1 can steer to a bridge peer
+  PASS  TG at E2 can steer to a bridge peer
+  PASS  TG at S can steer to a bridge peer
+  PASS  a bridge exists for every remaining island
+  PASS  a bridge exists for every remaining island
+  PASS  a bridge exists for every remaining island
+  PASS  a bridge exists for every remaining island
+  PASS  head W2 forms one bridge (paper Sec. IV-D)
+  PASS  bridge W2-W1 is a new link
+  PASS  bridge W2-W1 joins two islands
+  PASS  head E1 forms one bridge (paper Sec. IV-D)
+  PASS  bridge E1-W1 is a new link
+  PASS  bridge E1-W1 joins two islands
+  PASS  head S forms one bridge (paper Sec. IV-D)
+  PASS  bridge S-W2 is a new link
+  PASS  bridge S-W2 joins two islands
+  PASS  head E2 forms one bridge (paper Sec. IV-D)
+  PASS  bridge E2-E1 is a new link
+  PASS  bridge E2-E1 joins two islands
+  PASS  terminal-class unit at S is in at most one bridge
+  PASS  after the bridges every surviving site is in one network
+  PASS  4 bridges for 5 islands
+  PASS  a per-sector odd/even polarity plan supports every pre-event link and every bridge
+  islands: [['W1'], ['E1'], ['W2'], ['E2'], ['S']]
+  bridges (head -> peer): [('W2', 'W1'), ('E1', 'W1'), ('S', 'W2'), ('E2', 'E1')]
+  F1: W1-CORE-E1  ['MW', 'MW']
+  F1: W1-HUB-E1  ['TG', 'TG']
+  F2: W1-HUB-E2  ['TG', 'TG']
+  F2: W1-CORE-E1-HUB-E2  ['MW', 'MW', 'TG', 'TG']
+  F3: W2-HUB-E1  ['TG', 'TG']
+  F3: W2-HUB-W1-CORE-E1  ['TG', 'TG', 'MW', 'MW']
+  shared sector HUB.s2: [('HUB', 'W1'), ('HUB', 'W2')]
+  shared sector HUB.s0: [('HUB', 'E1'), ('HUB', 'E2')]
+  cand W1-W2 360 m  64QAM  margin 20.1 dB  OK
+  cand W1-E1 540 m  16QAM  margin 13.9 dB  OK
+  cand W1-E2 649 m  16QAM  margin 10.7 dB  OK
+  cand W1-S 702 m  16QAM  margin 9.2 dB  OK
+  cand W2-E1 649 m  16QAM  margin 10.7 dB  OK
+  cand W2-E2 540 m  16QAM  margin 13.9 dB  OK
+  cand W2-S 395 m  64QAM  margin 18.8 dB  OK
+  cand E1-E2 360 m  64QAM  margin 20.1 dB  OK
+  cand E1-S 702 m  16QAM  margin 9.2 dB  OK
+  cand E2-S 395 m  64QAM  margin 18.8 dB  OK
+  beam W2 (head): HUB -> W1  56 deg
+  beam W1 (peer): HUB -> W2  56 deg
+  beam E1 (head): HUB -> W1  34 deg
+  beam W1 (peer): HUB -> E1  34 deg
+  beam S (head): HUB -> W2  43 deg
+  beam W2 (peer): HUB -> S  81 deg
+  beam E2 (head): HUB -> E1  56 deg
+  beam E1 (peer): HUB -> E2  56 deg
+  polarity: {'E1.s2': 'odd', 'E1.s3': 'odd', 'E2.s1': 'even', 'E2.s2': 'odd', 'HUB.s0': 'even', 'HUB.s2': 'odd', 'HUB.s3': 'odd', 'S.s0': 'even', 'W1.s0': 'even', 'W1.s3': 'odd', 'W2.s0': 'even', 'W2.s1': 'even', 'W2.s3': 'odd'}
 === D - 4 IP-50 + 4 TG ===
   PASS  IP-50 units = 4 (budget 4, 2 per microwave link)
   PASS  TG units = 4 (budget 4)
-  PASS  TG link CORE-R2 has a TG unit at both ends
-  PASS  TG link CORE-R2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link R2-E2 has a TG unit at both ends
-  PASS  TG link R2-E2 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG link E2-E1 has a TG unit at both ends
-  PASS  TG link E2-E1 has a DN end (Terragraph: no CN-CN links)
-  PASS  TG unit at CORE carries a pre-event link
-  PASS  TG unit at R2 carries a pre-event link
-  PASS  TG unit at E1 carries a pre-event link
-  PASS  TG unit at E2 carries a pre-event link
-  PASS  TG link CORE-R2 (718 m) closes at 23 dBm
-  PASS  TG link R2-E2 (520 m) closes at 23 dBm
-  PASS  TG link E2-E1 (600 m) closes at 23 dBm
+  PASS  TG link HUB-W1 has a TG unit at both ends
+  PASS  TG link HUB-W1 has a node-class end (no CN-CN)
+  PASS  TG link HUB-W1 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-E1 has a TG unit at both ends
+  PASS  TG link HUB-E1 has a node-class end (no CN-CN)
+  PASS  TG link HUB-E1 (324 m): 64QAM, 22 dB above outage at 23 dBm
+  PASS  TG link HUB-E2 has a TG unit at both ends
+  PASS  TG link HUB-E2 has a node-class end (no CN-CN)
+  PASS  TG link HUB-E2 (324 m): 64QAM, 22 dB above outage at 23 dBm
   PASS  pre-event network is connected
-  PASS  F1 CORE->E1 has >= 2 DPIR candidate paths (2)
-  PASS  F2 CORE->E2 has >= 2 DPIR candidate paths (2)
-  PASS  every pre-event link lies on a DPIR candidate path
-  PASS  F1 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  F2 shares at least one candidate link with another flow (multi-flow coupling)
-  PASS  destroyed sites ['R1', 'R2'] are exactly the sites in the zone ['R1', 'R2']
-  PASS  event leaves 2 islands
-  PASS  F1 CORE->E1 is cut by the event
-  PASS  F2 CORE->E2 is cut by the event
-  PASS  F1 candidate CORE-R1-E1 is broken by the event
-  PASS  F1 candidate CORE-R2-E2-E1 is broken by the event
-  PASS  F2 candidate CORE-R2-E2 is broken by the event
-  PASS  F2 candidate CORE-R1-E1-E2 is broken by the event
-  PASS  2 feasible bridge candidates
-  PASS  bridge CORE->E2 is a feasible candidate
-  PASS  head CORE forms at most one bridge (paper Sec. IV-D)
-  PASS  bridge CORE-E2 did not exist before the event
-  PASS  bridge CORE-E2 joins two different components
-  PASS  bridge CORE-E2 has a DN end reachable from the controller at CORE
-  PASS  after the chosen bridges every surviving site is in one network
-  PASS  1 bridges for 2 islands (no redundant bridge)
-  PASS  F1 restored after recovery: CORE-E2-E1
-  PASS  F2 restored after recovery: CORE-E2
-  islands: [['CORE'], ['E1', 'E2']]
-  F1: CORE-R1-E1  ['MW', 'MW']
-  F1: CORE-R2-E2-E1  ['TG', 'TG', 'TG']
-  F2: CORE-R2-E2  ['TG', 'TG']
-  F2: CORE-R1-E1-E2  ['MW', 'MW', 'TG']
-  cand CORE-E1 949 m  23dBm QPSK 1/3  33dBm 16QAM  OK
-  cand CORE-E2 949 m  23dBm QPSK 1/3  33dBm 16QAM  OK
-  steer CORE (head): R2->E2  delta 33 deg
-  steer E2 (peer): R2->CORE  delta 48 deg
+  PASS  DPIR F1 W1->E1 has 2 diverse candidate paths
+  PASS  DPIR F2 W1->E2 has 2 diverse candidate paths
+  PASS  every link is on a DPIR candidate or a pocket's service path
+  PASS  DPIR F1 contends with another flow (shared link or shared TG sector airtime)
+  PASS  DPIR F2 contends with another flow (shared link or shared TG sector airtime)
+  PASS  destroyed sites ['CORE', 'HUB'] are exactly the sites in the zone
+  PASS  the core is severed by the event
+  PASS  event leaves 3 islands
+  PASS  DPIR F1 W1->E1 is cut
+  PASS  F1 candidate W1-CORE-E1 is broken
+  PASS  F1 candidate W1-HUB-E1 is broken
+  PASS  DPIR F2 W1->E2 is cut
+  PASS  F2 candidate W1-HUB-E2 is broken
+  PASS  F2 candidate W1-CORE-E1-HUB-E2 is broken
+  PASS  3 feasible bridge candidates
+  PASS  island 1 (W1) has a TG unit
+  PASS  island 2 (E1) has a TG unit
+  PASS  island 3 (E2) has a TG unit
+  PASS  TG at HUB (lost) serves only sites that re-steer once it is gone: W1, E1, E2
+  PASS  TG at W1 can steer to a bridge peer
+  PASS  TG at E1 can steer to a bridge peer
+  PASS  TG at E2 can steer to a bridge peer
+  PASS  a bridge exists for every remaining island
+  PASS  a bridge exists for every remaining island
+  PASS  head E1 forms one bridge (paper Sec. IV-D)
+  PASS  bridge E1-W1 is a new link
+  PASS  bridge E1-W1 joins two islands
+  PASS  head E2 forms one bridge (paper Sec. IV-D)
+  PASS  bridge E2-E1 is a new link
+  PASS  bridge E2-E1 joins two islands
+  PASS  after the bridges every surviving site is in one network
+  PASS  2 bridges for 3 islands
+  PASS  a per-sector odd/even polarity plan supports every pre-event link and every bridge
+  islands: [['W1'], ['E1'], ['E2']]
+  bridges (head -> peer): [('E1', 'W1'), ('E2', 'E1')]
+  F1: W1-CORE-E1  ['MW', 'MW']
+  F1: W1-HUB-E1  ['TG', 'TG']
+  F2: W1-HUB-E2  ['TG', 'TG']
+  F2: W1-CORE-E1-HUB-E2  ['MW', 'MW', 'TG', 'TG']
+  shared sector HUB.s0: [('HUB', 'E1'), ('HUB', 'E2')]
+  cand W1-E1 540 m  16QAM  margin 13.9 dB  OK
+  cand W1-E2 649 m  16QAM  margin 10.7 dB  OK
+  cand E1-E2 360 m  64QAM  margin 20.1 dB  OK
+  beam E1 (head): HUB -> W1  34 deg
+  beam W1 (peer): HUB -> E1  34 deg
+  beam E2 (head): HUB -> E1  56 deg
+  beam E1 (peer): HUB -> E2  56 deg
+  polarity: {'E1.s2': 'odd', 'E1.s3': 'odd', 'E2.s1': 'even', 'E2.s2': 'odd', 'HUB.s0': 'even', 'HUB.s2': 'odd', 'W1.s0': 'even'}
 FAILURES: 0
