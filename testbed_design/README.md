@@ -12,6 +12,10 @@ repository's manuscript) after it.
 | C | 4 | 6 | 7 | 2 (+1) | 3 | 2 |
 | D | 4 | 4 | 5 | 2 | 2 | 1 |
 
+**Selected: option A.** Its bench plan (site carts, the attenuator setting of
+every V-band path before, at and after the event, the microwave chains) is in
+`out/option_A_plan.md`, from `option_a_plan.py`.
+
 The configurations are nested on one site plan. B is A without the W1–W2
 IP-50 link (a spare sector of the W1/W2 TG nodes carries it instead) and
 without the field-hospital spur. C is B without the E1–E2 IP-50 link
@@ -121,5 +125,6 @@ row); editable `.svg` next to each. Numbers: `out/tables.md`; every check:
 | `hwdraw.py` | Isometric line-art drawings of the devices (carts, IP-50, TG units, attenuators, racks, cables) |
 | `iso_render.py` | Writes `out/iso_*.png`, the exploded isometric bench per option |
 | `animate.py` | Writes `out/anim_*.gif`: normal → broken → reconnected, with the TG beams turning slowly to their new peers |
+| `option_a_plan.py` | Writes `out/option_A_plan.md`: the option A bench plan (carts, sector ports, V-band attenuator settings per state, microwave chains) |
 
 Requires `matplotlib` and `networkx`.
