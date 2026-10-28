@@ -12,13 +12,13 @@ the validator's bridge candidates.
 | 5 | Microwave | Low-loss coax jumper, IP-50 band | 8 | 6 | 4 | 4 |  |
 | 6 | 60 GHz | Siklu TG node, 4 x 90 deg (N366/N367 class), RF-port build | 6 | 5 | 5 | 4 | hub, core spur and every steerable west/east site |
 | 7 | 60 GHz | Siklu TG terminal (T265 class), RF-port build | 2 | 1 | 1 | 0 | shelter / field-hospital pockets |
-| 8 | 60 GHz | V-band programmable attenuator (one per possible TG link) | 18 | 14 | 15 | 6 | hub links, spare-sector links and every feasible bridge |
+| 8 | 60 GHz | V-band programmable attenuator (one per cabled TG link) | 18 | 14 | 15 | 6 | hub links, spare-sector links and every feasible bridge; takes links down at the event |
 | 9 | 60 GHz | V-band splitter / combiner | 8 | 8 | 9 | 4 | one per sector port that reaches more than one peer |
 | 10 | 60 GHz | V-band fixed pad (one per used sector port) | 18 | 13 | 14 | 7 |  |
-| 11 | 60 GHz | V-band waveguide / mm-wave cable jumpers | 54 | 41 | 44 | 19 | two per path + one per port |
+| 11 | 60 GHz | V-band waveguide / mm-wave cable jumpers | 44 | 36 | 39 | 16 | two per path + one per splitter |
 | 12 | Power | PoE injector for TG unit (rating per datasheet) | 8 | 6 | 6 | 4 |  |
 | 13 | Power | Switched, metered PDU (per-outlet, network-controlled) | 8 | 7 | 7 | 5 | switches CORE and HUB off at t0; energy per site |
-| 14 | Network | Site router / L3 switch, per-flow policy routing, SFP+ | 8 | 7 | 7 | 5 | pins DPIR paths (VLAN or SR steering) |
+| 14 | Network | Site router / L3 switch, per-flow policy routing, SFP+ | 7 | 6 | 6 | 4 | every site with wired kit (not the TG-only hub); pins DPIR paths |
 | 15 | Compute | Edge agent PC per surviving TG site | 6 | 5 | 5 | 3 | frozen MARL actor, local TG control, mesh-attenuator control, logs |
 | 16 | Compute | Traffic generator / sink host (iperf3, TRex) | 6 | 5 | 5 | 3 | at every flow and service endpoint |
 | 17 | Compute | Servers: DPIR controller + predictor (GPU); TG E2E controller + NMS | 2 | 2 | 2 | 2 | the TG controller sits at CORE and is lost with it |
@@ -26,7 +26,7 @@ the validator's bridge candidates.
 | 19 | Network | PTP / GNSS time server | 1 | 1 | 1 | 1 |  |
 | 20 | Power | -48 VDC supply + distribution for IP-50 | 1 | 1 | 1 | 1 | lab bench supply |
 | 21 | Cabling | SFP+ 10G modules / LC fibre patch cords | 16 / 8 | 12 / 6 | 12 / 6 | 8 / 4 | TG data uplinks |
-| 22 | Cabling | Cat6A cables (PoE + data), approx. | 42 | 34 | 32 | 22 |  |
+| 22 | Cabling | Cat6A cables (PoE + data), approx. | 41 | 33 | 31 | 21 |  |
 | 23 | Test | Microwave + V-band power meters (calibration) | 1 | 1 | 1 | 1 | one set |
 
 ## V-band RF mesh per option

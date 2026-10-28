@@ -61,7 +61,7 @@ Service flow W2→N (single-homed pocket, MARL only): W2–W1–CORE–N
 - W1 (initiator): south sector (idle sector) points at S
 - S (responder): its sector beam that served HUB turns 21° to W1
 
-**TG polarity plan** (set before the event; hybrid per sector): CORE north = odd, E1 north = odd, E1 west = odd, E2 west = odd, HUB east = even, HUB west = odd, HUB south = odd, N sector = even, S sector = even, W1 east = even, W1 south = odd, W2 east = even
+**TG polarity plan** (set before the event; hybrid per sector): CORE north = even, E1 north = even, E1 west = even, E2 west = even, HUB east = odd, HUB west = even, HUB south = odd, N sector = odd, S sector = even, W1 east = odd, W1 south = odd, W2 east = odd
 
 ## Configuration B - 6 IP-50 + 6 TG
 
@@ -114,7 +114,7 @@ Fixed links on a spare sector of installed TG nodes (no extra radio): W1–W2
 - E2 (initiator): south sector (idle sector) points at S
 - S (responder): its sector beam that served HUB turns 39° to E2
 
-**TG polarity plan** (set before the event; hybrid per sector): E1 west = odd, E2 west = odd, E2 south = odd, HUB east = even, HUB west = odd, HUB south = odd, S sector = even, W1 east = even, W1 south = odd, W2 east = even, W2 north = even
+**TG polarity plan** (set before the event; hybrid per sector): E1 west = even, E2 west = even, E2 south = even, HUB east = odd, HUB west = even, HUB south = even, S sector = odd, W1 east = odd, W1 south = even, W2 east = odd, W2 north = odd
 
 ## Configuration C - 4 IP-50 + 6 TG
 
@@ -167,7 +167,7 @@ Fixed links on a spare sector of installed TG nodes (no extra radio): W1–W2, E
 - E2 (initiator): south sector (idle sector) points at S
 - S (responder): its sector beam that served HUB turns 39° to E2
 
-**TG polarity plan** (set before the event; hybrid per sector): E1 west = odd, E1 south = odd, E2 north = even, E2 west = odd, E2 south = odd, HUB east = even, HUB west = odd, HUB south = odd, S sector = even, W1 east = even, W1 south = odd, W2 east = even, W2 north = even
+**TG polarity plan** (set before the event; hybrid per sector): E1 west = even, E1 south = even, E2 north = odd, E2 west = even, E2 south = even, HUB east = odd, HUB west = even, HUB south = even, S sector = odd, W1 east = odd, W1 south = even, W2 east = odd, W2 north = odd
 
 ## Configuration D - 4 IP-50 + 4 TG
 
@@ -208,5 +208,5 @@ Fixed links on a spare sector of installed TG nodes (no extra radio): E1–E2
 - E1 (initiator): west sector beam that served HUB turns 34° to W1
 - W1 (responder): east sector beam that served HUB turns 34° to E1
 
-**TG polarity plan** (set before the event; hybrid per sector): E1 west = odd, E1 south = odd, E2 north = even, E2 west = odd, HUB east = even, HUB west = odd, W1 east = even
+**TG polarity plan** (set before the event; hybrid per sector): E1 west = even, E1 south = even, E2 north = odd, E2 west = even, HUB east = odd, HUB west = even, W1 east = odd
 

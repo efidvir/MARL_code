@@ -14,7 +14,13 @@ repository's manuscript) after it.
 
 **Selected: option A.** Its bench plan (site carts, the attenuator setting of
 every V-band path before, at and after the event, the microwave chains) is in
-`out/option_A_plan.md`, from `option_a_plan.py`.
+`out/option_A_plan.md`, from `option_a_plan.py`. Because the TG radios point
+their own beams, the bench need not emulate steering towards every bridge
+candidate: `option_a_sectors.py` cables only the final plan (nine V-band
+paths) and writes `out/option_A_sectors.md`: the sectors each node uses before
+and after the event (DN/CN, polarity), the 13 programmable attenuators that
+take links down (with their settings), and the Ethernet port map of each site
+switch. `out/iso_A_final.png` draws that bench.
 
 The configurations are nested on one site plan. B is A without the W1–W2
 IP-50 link (a spare sector of the W1/W2 TG nodes carries it instead) and
@@ -86,10 +92,15 @@ row); editable `.svg` next to each. Numbers: `out/tables.md`; every check:
   node-class units only (no CN–CN links in Terragraph).
 - **Polarity.** Every TG link must join an odd and an even sector, and with
   the core gone nothing can re-plan polarity after the event. The checked
-  plan in `out/tables.md` sets it beforehand per sector (hybrid polarity),
-  with the hub's west and east sectors on opposite polarities so that the
-  W↔E bridges close. Confirm that the N366/N367 supports per-sector
-  polarity.
+  plan in `out/tables.md` sets it beforehand. A W↔E bridge closes an odd
+  loop through the hub, so some site must mix polarities across its sectors
+  (a Terragraph "hardware hybrid"); Terragraph's planning guide wants one
+  polarity per pole and mixing only between sectors more than 90° apart.
+  `validate.py` therefore picks the plan with the fewest mixed sites and
+  warns if a surviving site mixes adjacent sectors. In option A the only
+  mixed site is the hub, which is destroyed at t0, so nothing changes at
+  recovery. Terragraph also caps a DN sector at two DN-to-DN links (15 links
+  in all); option A's busiest sectors carry exactly two.
 - **Ignition without the core.** The E2E controller is lost with the core,
   so each steering site needs a local controller or agent that can ignite a
   pre-declared backup link (declared in the topology, auto-ignition off)
@@ -123,8 +134,9 @@ row); editable `.svg` next to each. Numbers: `out/tables.md`; every check:
 | `make_tables.py` | Writes `out/tables.md` |
 | `bom.py` | Writes `out/hardware.md`, the bill of materials per option (conducted bench, V-band RF mesh sizing) |
 | `hwdraw.py` | Isometric line-art drawings of the devices (carts, IP-50, TG units, attenuators, racks, cables) |
-| `iso_render.py` | Writes `out/iso_*.png`, the exploded isometric bench per option |
+| `iso_render.py` | Writes `out/iso_*.png`, the exploded isometric bench per option, and `out/iso_A_final.png` (final plan only) |
 | `animate.py` | Writes `out/anim_*.gif`: normal → broken → reconnected, with the TG beams turning slowly to their new peers |
 | `option_a_plan.py` | Writes `out/option_A_plan.md`: the option A bench plan (carts, sector ports, V-band attenuator settings per state, microwave chains) |
+| `option_a_sectors.py` | Writes `out/option_A_sectors.md`: option A with only the final plan cabled (sectors per node, attenuators that take links down, site-switch port map) |
 
 Requires `matplotlib` and `networkx`.

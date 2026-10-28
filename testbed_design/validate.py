@@ -114,10 +114,15 @@ def path_tech(g, p):
 def analyze(key):
     cfg = dict(CONFIGS[key])
     pos = {s: POS[s] for s in cfg["sites"]}
-    checks = []
+    checks, warnings = [], []
 
     def check(ok, msg):
         checks.append((bool(ok), msg))
+
+    def warn(ok, msg):
+        """Planning guidance rather than a hard limit: reported, not counted as a failure."""
+        if not ok:
+            warnings.append(msg)
 
     # ---- equipment --------------------------------------------------------
     ip_units = {s: 0 for s in cfg["sites"]}
@@ -331,20 +336,45 @@ def analyze(key):
     # ---- Terragraph polarity --------------------------------------------------
     # Every TG link must join an odd and an even sector.  The core (and the
     # controller) is gone after the event, so the polarity plan has to be set
-    # beforehand and must already suit the bridges.  Multi-sector units may
-    # mix polarities across sectors (hybrid polarity).
+    # beforehand and must already suit the bridges.  A site may mix polarities
+    # across sectors (Terragraph "hardware hybrid"), but its planning guide
+    # wants one polarity per pole and allows mixing only between sectors more
+    # than 90 deg apart; P2MP nodes cannot be software hybrids.  Each connected
+    # component of the sector graph can be flipped as a whole, so pick the
+    # flips that leave the fewest mixed sites, preferring adjacent-sector
+    # mixes only at sites destroyed by the event.
     pg = nx.Graph()
     for a, b in tg_all + bridges:
         pg.add_edge(end_sector(a, b), end_sector(b, a))
     bip = nx.is_bipartite(pg)
     check(bip, "a per-sector odd/even polarity plan supports every pre-event link and every bridge")
-    polarity = {}
+    polarity, hybrid = {}, {}
     if bip:
-        for cc in nx.connected_components(pg):
-            col = nx.bipartite.color(pg.subgraph(cc))
-            flip = col[sorted(cc)[0]]
-            for v, c in col.items():
-                polarity[v] = "odd" if c == flip else "even"
+        comps = [nx.bipartite.color(pg.subgraph(cc)) for cc in
+                 sorted(nx.connected_components(pg), key=lambda c: sorted(c)[0])]
+
+        def mixes(pol):
+            per = {}
+            for (s, k), v in pol.items():
+                per.setdefault(s, {})[k] = v
+            adj = {s for s, m in per.items()
+                   if any(m[i] != m[j] for i in m for j in m if (i - j) % 4 in (1, 3))}
+            mixed = {s for s, m in per.items() if len(set(m.values())) > 1}
+            return adj, mixed
+
+        gone = set(cfg["destroyed"])
+        best = None
+        for bits in itertools.product((0, 1), repeat=len(comps)):
+            pol = {v: "odd" if c ^ f else "even" for col, f in zip(comps, bits) for v, c in col.items()}
+            adj, mixed = mixes(pol)
+            score = (len(adj - gone), len(mixed - gone), len(adj), len(mixed), sorted(pol.items()))
+            if best is None or score < best[0]:
+                best = (score, pol, adj, mixed)
+        _, polarity, adj, mixed = best
+        hybrid = {s: ("adjacent sectors" if s in adj else "opposite sectors") for s in sorted(mixed)}
+        warn(not (adj - gone), "a surviving site mixes polarities on adjacent sectors, against Terragraph "
+             "planning guidance (needs a polarity change at recovery over the air)"
+              + (f" ({sorted(adj - gone)})" if adj - gone else ""))
 
     post = {}
     for fid, s, t in cfg["flows"]:
@@ -352,10 +382,10 @@ def analyze(key):
     for (s, t) in service:
         post[(s, t)] = nx.shortest_path(g2, s, t)
 
-    return dict(key=key, cfg=cfg, pos=pos, ip_units=ip_units, checks=checks, dpir=dpir,
+    return dict(key=key, cfg=cfg, pos=pos, ip_units=ip_units, checks=checks, warnings=warnings, dpir=dpir,
                 service=service, g0=g0, islands=islands, comp=comp, lost_ip=lost_ip,
                 lost_tg=lost_tg, cands=cands, steer=steer, g_post=g2, post=post,
-                shared=shared, polarity=polarity, cn_mount=cn_mount, end_sector=end_sector,
+                shared=shared, polarity=polarity, hybrid=hybrid, cn_mount=cn_mount, end_sector=end_sector,
                 n_plans=len(plans), tg_all=tg_all,
                 path_tech=lambda p, g=g0: path_tech(g, p))
 
@@ -368,6 +398,8 @@ def main():
         for ok, msg in r["checks"]:
             print(("  PASS  " if ok else "  FAIL  ") + msg)
             bad += not ok
+        for msg in r["warnings"]:
+            print("  WARN  " + msg)
         print("  islands:", r["islands"])
         print("  bridges (initiator -> responder):", r["cfg"]["bridges"], f"[{r['n_plans']} valid plans]")
         for fid, ps in r["dpir"].items():
@@ -383,6 +415,7 @@ def main():
             d = f"{s['delta']:.0f} deg" if s["delta"] is not None else ""
             print(f"  beam {s['unit']} ({s['role']}, sector {s['sector']}): {s['change']} -> {s['new']} {d}")
         print("  polarity:", {f"{k[0]}.s{k[1]}": v for k, v in sorted(r["polarity"].items())})
+        print("  hardware-hybrid sites:", r["hybrid"] or "none")
     print("FAILURES:", bad)
     sys.exit(1 if bad else 0)
 

@@ -24,10 +24,17 @@ from validate import analyze
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 
 
-def rf_mesh(r):
-    """Every TG path the mesh must carry, the sector ports it uses and their fan-out."""
+def rf_mesh(r, final_only=False):
+    """Every TG path the mesh must carry, the sector ports it uses and their fan-out.
+
+    final_only: cable only the final plan (pre-event links + the chosen bridges) instead of
+    every feasible bridge candidate; the radios point their own beams, so the bench need
+    not emulate steering towards the other candidates."""
     links = {frozenset(e) for e in r["tg_all"]}
-    links |= {frozenset((c["a"], c["b"])) for c in r["cands"] if c["feasible"]}
+    if final_only:
+        links |= {frozenset(b) for b in r["cfg"]["bridges"]}
+    else:
+        links |= {frozenset((c["a"], c["b"])) for c in r["cands"] if c["feasible"]}
     fan = Counter()
     for e in links:
         a, b = tuple(e)
@@ -37,7 +44,7 @@ def rf_mesh(r):
                 splitters=sum(1 for v in fan.values() if v >= 2))
 
 
-def counts(cfg, r=None):
+def counts(cfg, r=None, final_only=False):
     r = r or analyze([k for k, v in CONFIGS.items() if v is cfg or v["name"] == cfg["name"]][0])
     n_sites = len(cfg["sites"])
     n_mw = len(cfg["mw"])
@@ -48,11 +55,16 @@ def counts(cfg, r=None):
     agents = sum(1 for s in cfg["tg_units"] if s not in cfg["destroyed"])
     endpoints = len({x for _, a, b in cfg["flows"] for x in (a, b)}
                     | {x for a, b in cfg.get("service", []) for x in (a, b)})
-    m = rf_mesh(r)
+    ends = {x for _, a, b in cfg["flows"] for x in (a, b)} | {x for a, b in cfg.get("service", []) for x in (a, b)}
+    # a site needs a switch when it has wired kit: IP-50s, an agent PC or a traffic host
+    # (a TG-only site such as HUB carries its links on its RF ports and takes PoE power only)
+    switches = sum(1 for s in cfg["sites"] if r["ip_units"][s] or s in ends
+                   or (s in cfg["tg_units"] and s not in cfg["destroyed"]))
+    m = rf_mesh(r, final_only)
     return dict(n_sites=n_sites, n_mw=n_mw, n_ip=n_ip, n_dn=n_dn, n_cn=n_cn, n_tg=n_tg,
-                agents=agents, endpoints=endpoints, tg_paths=len(m["links"]),
+                agents=agents, endpoints=endpoints, switches=switches, tg_paths=len(m["links"]),
                 tg_ports=len(m["ports"]), splitters=m["splitters"],
-                tg_jumpers=2 * len(m["links"]) + len(m["ports"]))
+                tg_jumpers=2 * len(m["links"]) + m["splitters"])
 
 
 # (number, group, item, quantity rule, note)
@@ -70,18 +82,18 @@ ITEMS = [
      "hub, core spur and every steerable west/east site"),
     (7, "60 GHz", "Siklu TG terminal (T265 class), RF-port build", lambda c: c["n_cn"],
      "shelter / field-hospital pockets"),
-    (8, "60 GHz", "V-band programmable attenuator (one per possible TG link)", lambda c: c["tg_paths"],
-     "hub links, spare-sector links and every feasible bridge"),
+    (8, "60 GHz", "V-band programmable attenuator (one per cabled TG link)", lambda c: c["tg_paths"],
+     "hub links, spare-sector links and every feasible bridge; takes links down at the event"),
     (9, "60 GHz", "V-band splitter / combiner", lambda c: c["splitters"],
      "one per sector port that reaches more than one peer"),
     (10, "60 GHz", "V-band fixed pad (one per used sector port)", lambda c: c["tg_ports"], ""),
     (11, "60 GHz", "V-band waveguide / mm-wave cable jumpers", lambda c: c["tg_jumpers"],
-     "two per path + one per port"),
+     "two per path + one per splitter"),
     (12, "Power", "PoE injector for TG unit (rating per datasheet)", lambda c: c["n_tg"], ""),
     (13, "Power", "Switched, metered PDU (per-outlet, network-controlled)", lambda c: c["n_sites"],
      "switches CORE and HUB off at t0; energy per site"),
-    (14, "Network", "Site router / L3 switch, per-flow policy routing, SFP+", lambda c: c["n_sites"],
-     "pins DPIR paths (VLAN or SR steering)"),
+    (14, "Network", "Site router / L3 switch, per-flow policy routing, SFP+", lambda c: c["switches"],
+     "every site with wired kit (not the TG-only hub); pins DPIR paths"),
     (15, "Compute", "Edge agent PC per surviving TG site", lambda c: c["agents"],
      "frozen MARL actor, local TG control, mesh-attenuator control, logs"),
     (16, "Compute", "Traffic generator / sink host (iperf3, TRex)", lambda c: c["endpoints"],
@@ -94,7 +106,7 @@ ITEMS = [
     (21, "Cabling", "SFP+ 10G modules / LC fibre patch cords", lambda c: f"{2 * c['n_tg']} / {c['n_tg']}",
      "TG data uplinks"),
     (22, "Cabling", "Cat6A cables (PoE + data), approx.",
-     lambda c: c["n_ip"] + c["n_tg"] + 2 * c["agents"] + c["endpoints"] + c["n_sites"], ""),
+     lambda c: c["n_ip"] + c["n_tg"] + 2 * c["agents"] + c["endpoints"] + c["switches"], ""),
     (23, "Test", "Microwave + V-band power meters (calibration)", lambda c: 1, "one set"),
 ]
 

@@ -7,7 +7,7 @@ Devices are line-art drawings (hwdraw.py).  Every item drawn and counted
 comes from the topology spec, the validator and bom.py, so the drawing
 matches the bill of materials.
 
-Run:  python3 iso_render.py    -> out/iso_{A,B,C,D}.png
+Run:  python3 iso_render.py    -> out/iso_{A,B,C,D}.png, out/iso_A_final.png (final plan only)
 """
 import math
 import os
@@ -80,8 +80,9 @@ def station(sc, cx, cy, kit, explode=0.34):
     # tier 1: router + PDU
     w1 = 0.95 + 0.08 + 0.14
     px = cx - w1 / 2
-    sc.anchor(14, hw.router(sc, px, cy - 0.275, z))
-    assembly(sc, px + 0.47, cy, z, top)
+    if kit["switch"]:
+        sc.anchor(14, hw.router(sc, px, cy - 0.275, z))
+        assembly(sc, px + 0.47, cy, z, top)
     sc.anchor(13, hw.pdu(sc, px + 1.03, cy - 0.425, z))
     assembly(sc, px + 1.1, cy, z, top)
     z += 0.09 + explode * 0.8
@@ -131,15 +132,16 @@ def site_kit(r, s, ports):
     cfg = r["cfg"]
     endpoints = {x for _, a, b in cfg["flows"] for x in (a, b)} | \
         {x for a, b in cfg.get("service", []) for x in (a, b)}
-    return dict(agent=s in cfg["tg_units"] and s not in cfg["destroyed"], traffic=s in endpoints,
-                tg=cfg["tg_units"].get(s), ip50=r["ip_units"][s], ports=ports)
+    agent = s in cfg["tg_units"] and s not in cfg["destroyed"]
+    return dict(agent=agent, traffic=s in endpoints, tg=cfg["tg_units"].get(s), ip50=r["ip_units"][s],
+                ports=ports, switch=bool(r["ip_units"][s] or agent or s in endpoints))
 
 
-def render(key):
+def render(key, final_only=False):
     r = analyze(key)
     cfg = r["cfg"]
-    c = counts(cfg, r)
-    mesh = rf_mesh(r)
+    c = counts(cfg, r, final_only)
+    mesh = rf_mesh(r, final_only)
     ports_per_site = {}
     for (site, _sec) in mesh["ports"]:
         ports_per_site[site] = ports_per_site.get(site, 0) + 1
@@ -297,7 +299,7 @@ def render(key):
     ins.add_patch(Rectangle((0, 0), 1, 1, transform=ins.transAxes, fc="#ffffff", ec="#d6d2c8", lw=1.0,
                             zorder=0))
     s2 = Scene(ins)
-    x0, y0 = station(s2, 0, 0, dict(agent=True, traffic=True, tg="DN", ip50=2, ports=3), explode=0.42)
+    x0, y0 = station(s2, 0, 0, dict(agent=True, traffic=True, tg="DN", ip50=2, ports=3, switch=True), explode=0.42)
     s2.anchor(3, hw.fixed_pad(s2, x0 + 1.45, y0 + 0.15, 0.06, axis="x"))
     s2.cable([(x0 + CART["w"], y0 + 0.15, 0.68), (x0 + 1.4, y0 + 0.15, 0.3), (x0 + 1.45, y0 + 0.15, 0.06)],
              COAX, lw=1.4)
@@ -381,7 +383,7 @@ def render(key):
             fontsize=8.5, color=MUTED, va="bottom")
 
     os.makedirs(OUT, exist_ok=True)
-    path = os.path.join(OUT, f"iso_{key}.png")
+    path = os.path.join(OUT, f"iso_{key}{'_final' if final_only else ''}.png")
     fig.savefig(path, dpi=200, facecolor=fig.get_facecolor())
     plt.close(fig)
     return path
@@ -390,3 +392,4 @@ def render(key):
 if __name__ == "__main__":
     for k in CONFIGS:
         print(render(k))
+    print(render("A", final_only=True))  # selected option, final plan cabled only
