@@ -124,7 +124,10 @@ def main():
     ons = [x["on"] for x in rows]
     offs = [x["off"] for x in rows]
     L += ["", f"Attenuator range used: {min(ons):.1f} dB (on-beam, shortest) to {max(offs):.1f} dB (off-beam, "
-          f"longest), plus {ATT_MAX:.0f} dB to cut. A 0–95 dB part covers it.", "",
+          f"longest), plus {ATT_MAX:.0f} dB to cut. Programmable attenuators that cover 57–66 GHz reach "
+          "about 63 dB (1.85 mm solid-state) or 70 dB (WR-15 rotary vane), so on the bench 'cut' is the "
+          "attenuator maximum and off-beam settings above it are capped there; option_a_sectors.py "
+          "works this out for the final-plan bench.", "",
           "## Microwave chains", "",
           "| Hop | Fixed pads | Programmable attenuator at rest | At t0 |", "|---|---|---|---|"]
     for m in mw:

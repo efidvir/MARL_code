@@ -37,8 +37,9 @@ TG      Siklu MultiHaul TG 60 GHz (Terragraph) radio with beam steering.
 # Schematic positions in drawing units; SCALE converts them to metres.  The
 # distances only matter for the 60 GHz link budget (MARL paper Table III
 # model at the 23 dBm planning power): with SCALE = 0.6 every pre-event TG hop
-# and every bridge keeps >= 13 dB of clear-air margin above the QPSK-1/3
-# threshold.  Replace with the measured site distances and the Siklu budget.
+# keeps >= 13 dB of clear-air margin above the QPSK-1/3 threshold and every
+# chosen bridge >= 7.5 dB (option A's longest, W1-S, has 8 dB).  Replace with
+# the measured site distances and the Siklu budget.
 SCALE = 0.6
 POS = {
     "W1": (0, 300),

@@ -19,19 +19,21 @@ Sectors in use: 10 on the 6 nodes (of 24 available) and 2 on the 2 terminals: 12
 
 ## V-band paths and programmable attenuators (dB)
 
-| # | Path | Sector ports | Distance | Job | Before | At t0 | After |
-|---|---|---|---|---|---|---|---|
-| 1 | HUB–W1 | HUB-W ↔ W1-E | 324 m | taken down at t0 (island) | 27.6 | 95.0 | 95.0 |
-| 2 | HUB–W2 | HUB-W ↔ W2-E | 324 m | taken down at t0 (island) | 23.1 | 95.0 | 95.0 |
-| 3 | HUB–E1 | HUB-E ↔ E1-W | 324 m | taken down at t0 (island) | 27.6 | 95.0 | 95.0 |
-| 4 | HUB–E2 | HUB-E ↔ E2-W | 324 m | taken down at t0 (island) | 23.1 | 95.0 | 95.0 |
-| 5 | HUB–S | HUB-S ↔ S-single | 516 m | taken down at t0 (island) | 34.5 | 95.0 | 95.0 |
-| 6 | CORE–N | CORE-N ↔ N-single | 270 m | taken down at t0 (island) | 25.2 | 95.0 | 95.0 |
-| 7 | E2–W2 | E2-W ↔ W2-E | 540 m | bridge: off-beam until engaged | 60.7 | 60.7 | 30.7 |
-| 8 | E1–N | E1-N ↔ N-single | 504 m | bridge: off-beam until engaged | 64.1 | 64.1 | 34.1 |
-| 9 | W1–S | W1-S ↔ S-single | 747 m | bridge: off-beam until engaged | 71.2 | 71.2 | 41.2 |
+| # | Path | Sector ports | Distance | Job | Before | At t0 | After | Margin up / at max |
+|---|---|---|---|---|---|---|---|---|
+| 1 | HUB–W1 | HUB-W ↔ W1-E | 324 m | taken down at t0 (island) | 27.6 | 63.0 | 63.0 | 21.6 / -13.9 |
+| 2 | HUB–W2 | HUB-W ↔ W2-E | 324 m | taken down at t0 (island) | 23.1 | 63.0 | 63.0 | 21.6 / -18.4 |
+| 3 | HUB–E1 | HUB-E ↔ E1-W | 324 m | taken down at t0 (island) | 27.6 | 63.0 | 63.0 | 21.6 / -13.9 |
+| 4 | HUB–E2 | HUB-E ↔ E2-W | 324 m | taken down at t0 (island) | 23.1 | 63.0 | 63.0 | 21.6 / -18.4 |
+| 5 | HUB–S | HUB-S ↔ S-single | 516 m | taken down at t0 (island) | 34.5 | 63.0 | 63.0 | 14.6 / -13.9 |
+| 6 | CORE–N | CORE-N ↔ N-single | 270 m | taken down at t0 (island) | 25.2 | 63.0 | 63.0 | 24.0 / -13.9 |
+| 7 | E2–W2 | E2-W ↔ W2-E | 540 m | bridge: off-beam until engaged | 60.7 | 60.7 | 30.7 | 13.9 / -18.4 |
+| 8 | E1–N | E1-N ↔ N-single | 504 m | bridge: off-beam until engaged | 63.0 | 63.0 | 34.1 | 15.0 / -13.9 |
+| 9 | W1–S | W1-S ↔ S-single | 747 m | bridge: off-beam until engaged | 63.0 | 63.0 | 41.2 | 8.0 / -13.9 |
 
-Chain per path: 20 dB pad on each sector port, a 2-way splitter where a port reaches two peers, 3 dB of jumpers (assumed), one programmable attenuator. Cut = 95 dB.
+Chain per path: 20 dB pad on each sector port, a 2-way splitter where a port reaches two peers, 3 dB of jumpers (assumed), one programmable attenuator (0–63 dB). Down = attenuator at maximum: every path then sits at least 13.9 dB below the lowest MCS threshold (last column, clear-air margin in dB). Bridges capped at the maximum while waiting: E1–N, W1–S.
+
+Before the event the attenuator's own insertion loss (up to ~17 dB at 0 dB for a 67 GHz solid-state unit) and the jumpers (~6 dB/m at 60 GHz for 1.85 mm cable) add to the chain: measure each path and subtract the excess from its setting. The lowest link-up setting (23.1 dB) leaves that much room. 1.85 mm parts are rated to 67 GHz, which covers Siklu's 57–66 GHz band (Terragraph channels 1–4).
 
 Sector ports reaching two peers (2-way splitter each): E2-W, HUB-E, HUB-W, N-single, S-single, W2-E.
 
@@ -41,8 +43,8 @@ V-band parts: 9 programmable attenuators, 6 splitters, 12 pads (one per used sec
 
 | Hop | Chain | At rest | At t0 |
 |---|---|---|---|
-| W1–CORE | transition → 30 dB pad → programmable attenuator → 30 dB pad → transition | 10 dB (+ fades) | 95 dB: taken down |
-| CORE–E1 | transition → 30 dB pad → programmable attenuator → 30 dB pad → transition | 10 dB (+ fades) | 95 dB: taken down |
+| W1–CORE | transition → 30 dB pad → programmable attenuator → 30 dB pad → transition | 10 dB (+ fades) | maximum: taken down |
+| CORE–E1 | transition → 30 dB pad → programmable attenuator → 30 dB pad → transition | 10 dB (+ fades) | maximum: taken down |
 | W1–W2 | transition → 30 dB pad → programmable attenuator → 30 dB pad → transition | 10 dB (+ fades) | unchanged (can be taken down for other islands) |
 | E1–E2 | transition → 30 dB pad → programmable attenuator → 30 dB pad → transition | 10 dB (+ fades) | unchanged (can be taken down for other islands) |
 

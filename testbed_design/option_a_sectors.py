@@ -17,14 +17,20 @@ Run:  python3 option_a_sectors.py     -> out/option_A_sectors.md
 import os
 from collections import Counter
 
-from option_a_plan import (ATT_MAX, JUMPER_DB, MW_ATT_NOMINAL, MW_PAD_DB, SIDELOBE_PER_END,
+from option_a_plan import (JUMPER_DB, MW_ATT_NOMINAL, MW_PAD_DB, SIDELOBE_PER_END,
                            VPAD_DB, air_equivalent_loss, splitter_loss)
 from topologies import ROLE
-from validate import analyze, bearing, dist
+from validate import analyze, bearing, dist, tg_budget
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 SEC = ["E", "N", "W", "S"]
 SECTORS_PER_NODE = 4
+# Programmable attenuators that cover 57-66 GHz (Siklu's band) top out at about
+# 63 dB (e.g. a 0-63 dB, 0.5 dB-step solid-state unit with 1.85 mm connectors,
+# rated to 67 GHz); WR-15 rotary-vane units reach 70 dB.  "Down" is therefore
+# the attenuator at its maximum, not a nominal 95 dB, and a bridge waiting for
+# its sites sits at the lower of off-beam (+30 dB) and that maximum.
+VBAND_ATT_MAX = 63.0
 
 
 def sec_name(r, s, k):
@@ -71,11 +77,13 @@ def plan():
         fixed = 2 * VPAD_DB + splitter_loss(fan[pa]) + splitter_loss(fan[pb]) + JUMPER_DB
         on = target - fixed
         bridge = (a, b) in bridges
-        before = on + 2 * SIDELOBE_PER_END if bridge else on
-        at_t0 = ATT_MAX if {a, b} & dead else before
+        before = min(on + 2 * SIDELOBE_PER_END, VBAND_ATT_MAX) if bridge else on
+        at_t0 = VBAND_ATT_MAX if {a, b} & dead else before
         after = on if bridge else at_t0
+        # clear-air margin left when the attenuator is at maximum (negative = link down)
+        down = tg_budget(d)["margin"] - (VBAND_ATT_MAX - on)
         paths.append(dict(a=a, b=b, pa=pa, pb=pb, d=d, target=target, on=on, before=before,
-                          at_t0=at_t0, after=after,
+                          at_t0=at_t0, after=after, margin=tg_budget(d)["margin"], down=down,
                           job="bridge: off-beam until engaged" if bridge else
                           "taken down at t0 (island)" if {a, b} & dead else "steady"))
     junctions = sorted(p for p, k in fan.items() if k > 1)
@@ -150,15 +158,24 @@ def main():
           f"{SECTORS_PER_NODE * n_dn - used_dn} node sectors stay unused (disable them; terminate their "
           "ports if they are RF-port builds).", "",
           "## V-band paths and programmable attenuators (dB)", "",
-          "| # | Path | Sector ports | Distance | Job | Before | At t0 | After |",
-          "|---|---|---|---|---|---|---|---|"]
+          "| # | Path | Sector ports | Distance | Job | Before | At t0 | After | Margin up / at max |",
+          "|---|---|---|---|---|---|---|---|---|"]
     for i, p in enumerate(paths, 1):
         L.append(f"| {i} | {p['a']}–{p['b']} | {p['a']}-{sec_name(r, *p['pa'])} ↔ "
                  f"{p['b']}-{sec_name(r, *p['pb'])} | {p['d']:.0f} m | {p['job']} | {p['before']:.1f} | "
-                 f"{p['at_t0']:.1f} | {p['after']:.1f} |")
+                 f"{p['at_t0']:.1f} | {p['after']:.1f} | {p['margin']:.1f} / {p['down']:.1f} |")
+    capped = [f"{p['a']}–{p['b']}" for p in paths if p["before"] < p["on"] + 2 * SIDELOBE_PER_END
+              and p["job"].startswith("bridge")]
     L += ["", f"Chain per path: {VPAD_DB:.0f} dB pad on each sector port, a 2-way splitter where a port "
-          f"reaches two peers, {JUMPER_DB:.0f} dB of jumpers (assumed), one programmable attenuator. "
-          f"Cut = {ATT_MAX:.0f} dB.", "",
+          f"reaches two peers, {JUMPER_DB:.0f} dB of jumpers (assumed), one programmable attenuator "
+          f"(0–{VBAND_ATT_MAX:.0f} dB). Down = attenuator at maximum: every path then sits at least "
+          f"{-max(p['down'] for p in paths):.1f} dB below the lowest MCS threshold (last column, clear-air "
+          f"margin in dB). Bridges capped at the maximum while waiting: {', '.join(capped) or 'none'}.", "",
+          "Before the event the attenuator's own insertion loss (up to ~17 dB at 0 dB for a 67 GHz "
+          "solid-state unit) and the jumpers (~6 dB/m at 60 GHz for 1.85 mm cable) add to the chain: "
+          "measure each path and subtract the excess from its setting. The lowest link-up setting "
+          f"({min(p['on'] for p in paths):.1f} dB) leaves that much room. 1.85 mm parts are rated to "
+          "67 GHz, which covers Siklu's 57–66 GHz band (Terragraph channels 1–4).", "",
           f"Sector ports reaching two peers (2-way splitter each): "
           + ", ".join(f"{s}-{sec_name(r, s, k)}" for s, k in junctions) + ".", "",
           f"V-band parts: {len(paths)} programmable attenuators, {len(junctions)} splitters, "
@@ -169,7 +186,7 @@ def main():
     for m in mw:
         L.append(f"| {m['a']}–{m['b']} | transition → {MW_PAD_DB:.0f} dB pad → programmable attenuator → "
                  f"{MW_PAD_DB:.0f} dB pad → transition | {MW_ATT_NOMINAL:.0f} dB (+ fades) | "
-                 f"{'95 dB: taken down' if m['cut'] else 'unchanged (can be taken down for other islands)'} |")
+                 f"{'maximum: taken down' if m['cut'] else 'unchanged (can be taken down for other islands)'} |")
     n_ports = {s: len(p) for s, p in sw.items()}
     wired = [s for s in cfg["sites"] if s != "HUB"]
     L += ["", "## Ethernet: site switches and what each port carries", ""]

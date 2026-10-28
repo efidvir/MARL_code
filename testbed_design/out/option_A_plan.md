@@ -38,7 +38,7 @@
 | N–W2 | bridge candidate | 831 m | 90.9 | 8.5 + 0.0 | 39.4 | 69.4 | 69.4 | 69.4 |
 | S–W2 | bridge candidate | 431 m | 79.2 | 8.5 + 0.0 | 27.7 | 57.7 | 57.7 | 57.7 |
 
-Attenuator range used: 21.2 dB (on-beam, shortest) to 69.4 dB (off-beam, longest), plus 95 dB to cut. A 0–95 dB part covers it.
+Attenuator range used: 21.2 dB (on-beam, shortest) to 69.4 dB (off-beam, longest), plus 95 dB to cut. Programmable attenuators that cover 57–66 GHz reach about 63 dB (1.85 mm solid-state) or 70 dB (WR-15 rotary vane), so on the bench 'cut' is the attenuator maximum and off-beam settings above it are capped there; option_a_sectors.py works this out for the final-plan bench.
 
 ## Microwave chains
 
