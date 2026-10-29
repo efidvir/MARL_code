@@ -1,0 +1,5 @@
+TIMELINE CROSS-CHECK i_populations                PASS {"populations": 18, "expected_populations": 18, "instances": 720, "expected_instances": 720, "problems": [], "pass": true}
+TIMELINE CROSS-CHECK ii_last_window_vs_all_arms   PASS {"values_compared": 36, "expected": 36, "last_bins": 50, "max_abs_diff": 7.105427357601002e-15, "pass": true}
+TIMELINE CROSS-CHECK iii_teardowns_vs_m7          PASS {"bin_sum_checks": 1440, "instance_m7_checks": 720, "arm_m7_mean_checks": 18, "expected": [1440, 720, 18], "max_abs_diff_instance": 0.0, "max_abs_diff_arm_mean": 0.0, "pass": true}
+routing coincidence (max |mean - ospf mean| over bins): {'A conn': 30.974638112712263, 'A fragments': 0.0, 'B conn': 4.334265031742113, 'B fragments': 0.0}
+TIMELINES OK -> out/timelines_r3.json

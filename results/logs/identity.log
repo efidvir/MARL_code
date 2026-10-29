@@ -1,0 +1,30 @@
+{
+ "verdict": "IDENTICAL",
+ "failures": [],
+ "keys_compared": 69,
+ "steady": {
+  "achievability_ref": 57.86138828324794,
+  "achievability_dump": 57.86138828324794,
+  "components_ref": 1.0,
+  "components_dump": 1.0
+ },
+ "snapshots": {
+  "cut": {
+   "tick": 260,
+   "components": 1,
+   "components_raw": 4,
+   "distinct_bridges": 3,
+   "relay_links": 18
+  },
+  "end": {
+   "tick": 3400,
+   "components": 1,
+   "components_raw": 4,
+   "distinct_bridges": 3,
+   "relay_links": 18
+  }
+ }
+}
+conn: 3600/3600 ticks bit-identical
+fragments: 3600/3600 ticks bit-identical
+fragments_raw: 3600/3600 ticks bit-identical

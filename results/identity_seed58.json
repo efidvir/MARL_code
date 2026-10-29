@@ -1,0 +1,105 @@
+{
+ "arm": "marl_static",
+ "decision_digest_ticks": 3600,
+ "extra_keys_new": [
+  "r4_diag"
+ ],
+ "failures": [],
+ "keys_compared": 69,
+ "keys_differing": [],
+ "new": {
+  "checkpoint": "<server-home>/MARL_r3lite/output/r3lite/ck_s1234/policy_final.pt",
+  "checkpoint_sha256": "54eaa5623148cfd44faf7e69bfe7825c396541b33d9357a07d782d559de5c4bc",
+  "created_utc": "2026-10-20T13:47:14Z",
+  "dump_json": "<server-data>/r4/v11direct/out/endstate_ck1234_seed58.json",
+  "dump_md5": "493ac74d00a6ec253c726cc1c3b30002",
+  "marl_env": {
+   "MARL_EVAL_CHECKPOINT": "<server-home>/MARL_r3lite/output/r3lite/ck_s1234/policy_final.pt",
+   "MARL_POSTCARD_ALWAYS": "1",
+   "MARL_RELAY_ENTROPY_FLOOR": "0.01",
+   "MARL_RELAY_REPOINT": "fragment_aware",
+   "MARL_RELAY_STATE": "reconcile",
+   "MARL_REWARD_PROFILE": "mission",
+   "MARL_STEER_MODEL": "actionable",
+   "MARL_TRANSPORT_POWER": "planning"
+  },
+  "probe_tick": 3400,
+  "pythonhashseed": "0",
+  "run_pickle": "<server-data>/r4/v11direct/out/run_ck1234_seed58.pkl",
+  "tree_head": "25d8d2c",
+  "tree_root": "<server-home>/r4_work/tree",
+  "tree_sha256": "e2abf1061c4377fa70148cc97b1d1b7a15158c4878b610e827cec1d5c91fb0a2"
+ },
+ "pinned_checkpoint_sha256": "54eaa5623148cfd44faf7e69bfe7825c396541b33d9357a07d782d559de5c4bc",
+ "ref": {
+  "checkpoint": "<server-home>/MARL_r3/r3out/phase0/ck/ck_s1234/policy_final.pt",
+  "checkpoint_sha256": [
+   "54eaa5623148cfd44faf7e69bfe7825c396541b33d9357a07d782d559de5c4bc"
+  ],
+  "created_utc": "2026-10-07T15:10:48Z",
+  "marl_env": {
+   "MARL_CHAIN_INV": "r3p0_dev_ck1234_b",
+   "MARL_EVAL_CHECKPOINT": "<server-home>/MARL_r3/r3out/phase0/ck/ck_s1234/policy_final.pt",
+   "MARL_POOL_WORKERS": "4",
+   "MARL_POSTCARD_ALWAYS": "1",
+   "MARL_RELAY_ENTROPY_FLOOR": "0.01",
+   "MARL_RELAY_REPOINT": "fragment_aware",
+   "MARL_RELAY_STATE": "reconcile",
+   "MARL_REWARD_PROFILE": "mission",
+   "MARL_STEER_MODEL": "actionable",
+   "MARL_TRANSPORT_POWER": "planning"
+  },
+  "md5": "67037eaf485e63aee7717b414e5dfdc9",
+  "pickle": "<server-home>/MARL_r3/r3out/phase0/out/dev_ck1234_b.pkl",
+  "tree_head": "6b53f3f",
+  "tree_sha256": "9e8657b3dd2e6bab4ed4c27008dc5e3b3bb0c0998c9c8c40daf641cf1fa6a6c6"
+ },
+ "scenario": "A (recovery)",
+ "seed": 58,
+ "series": {
+  "conn": {
+   "first_difference": null,
+   "identical": true,
+   "ticks_bit_identical": 3600,
+   "ticks_new": 3600,
+   "ticks_ref": 3600
+  },
+  "fragments": {
+   "first_difference": null,
+   "identical": true,
+   "ticks_bit_identical": 3600,
+   "ticks_new": 3600,
+   "ticks_ref": 3600
+  },
+  "fragments_raw": {
+   "first_difference": null,
+   "identical": true,
+   "ticks_bit_identical": 3600,
+   "ticks_new": 3600,
+   "ticks_ref": 3600
+  }
+ },
+ "snapshots": {
+  "cut": {
+   "components": 1,
+   "components_raw": 4,
+   "distinct_bridges": 3,
+   "relay_links": 18,
+   "tick": 260
+  },
+  "end": {
+   "components": 1,
+   "components_raw": 4,
+   "distinct_bridges": 3,
+   "relay_links": 18,
+   "tick": 3400
+  }
+ },
+ "steady": {
+  "achievability_dump": 57.86138828324794,
+  "achievability_ref": 57.86138828324794,
+  "components_dump": 1.0,
+  "components_ref": 1.0
+ },
+ "verdict": "IDENTICAL"
+}

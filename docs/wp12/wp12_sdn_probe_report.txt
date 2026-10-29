@@ -1,0 +1,23 @@
+WP12(b) instrumented SDN re-run: <server-home>/MARL_run_9b/output/wp12_sdn_probe.pkl
+tree 2ba4be7  digest 11475cc5ee20  hashseed 0  ticks 600  severance 100
+
+seed 87 recovery  : delivered post-event 0, first delivery None, discovery from t=115, operational from t=None, final phase discovery, programmed flows 0, phases {'discovery': 485, 'election': 5, 'orphan': 10}
+    fid 0: 34 infra / 150 UE, leader O-RU_25, election done t=115, BIPARTITE, predicted rounds None (cumulative BFS would need 6), intra flows 222, frontier tail [160, 24, 160, 24, 160, 24, 160, 24]  <- oscillating
+        infra-only decomposition: components [15, 19], bipartite TT, ecc of their would-be leaders [4, 4], UEs anchored in >1 component 10, flows with an infrastructure path 122 / without 100 / unanchored 0
+    fid 1: 1 infra / 0 UE, leader None, election done t=None, BIPARTITE, no election, intra flows 0, frontier tail []
+        infra-only decomposition: components [1], bipartite T, ecc of their would-be leaders [None], UEs anchored in >1 component 0, flows with an infrastructure path 0 / without 0 / unanchored 0
+seed 98 recovery  : delivered post-event 0, first delivery None, discovery from t=115, operational from t=None, final phase discovery, programmed flows 0, phases {'discovery': 485, 'election': 5, 'orphan': 10}
+    fid 0: 34 infra / 150 UE, leader O-RU_29, election done t=115, BIPARTITE, predicted rounds None (cumulative BFS would need 9), intra flows 222, frontier tail [159, 25, 159, 25, 159, 25, 159, 25]  <- oscillating
+        infra-only decomposition: components [15, 18, 1], bipartite TTT, ecc of their would-be leaders [5, 3, None], UEs anchored in >1 component 35, flows with an infrastructure path 126 / without 96 / unanchored 0
+    fid 1: 1 infra / 0 UE, leader None, election done t=None, BIPARTITE, no election, intra flows 0, frontier tail []
+        infra-only decomposition: components [1], bipartite T, ecc of their would-be leaders [None], UEs anchored in >1 component 0, flows with an infrastructure path 0 / without 0 / unanchored 0
+seed 87 rescue_ops: delivered post-event 740509, first delivery 0, discovery from t=None, operational from t=15, final phase operational, programmed flows 310, phases {'election': 6, 'operational': 555, 'orphan': 9, 'programming': 30}
+    fid 0: 35 infra / 170 UE, leader O-RU_25, election done t=16, odd cycle, predicted rounds 6 (cumulative BFS would need 5), intra flows 310, frontier tail [-1, -1, -1, -1, -1, -1, -1, -1]
+        infra-only decomposition: components [35], bipartite F, ecc of their would-be leaders [4], UEs anchored in >1 component 0, flows with an infrastructure path 310 / without 0 / unanchored 0
+    fid 1: 1 infra / 0 UE, leader None, election done t=None, BIPARTITE, no election, intra flows 0, frontier tail []
+        infra-only decomposition: components [1], bipartite T, ecc of their would-be leaders [None], UEs anchored in >1 component 0, flows with an infrastructure path 0 / without 0 / unanchored 0
+seed 98 rescue_ops: delivered post-event 579968, first delivery 0, discovery from t=None, operational from t=15, final phase operational, programmed flows 292, phases {'election': 6, 'operational': 561, 'orphan': 9, 'programming': 24}
+    fid 0: 35 infra / 170 UE, leader O-RU_26, election done t=16, odd cycle, predicted rounds 6 (cumulative BFS would need 5), intra flows 292, frontier tail [-1, -1, -1, -1, -1, -1, -1, -1]
+        infra-only decomposition: components [35], bipartite F, ecc of their would-be leaders [5], UEs anchored in >1 component 0, flows with an infrastructure path 292 / without 0 / unanchored 0
+    fid 1: 1 infra / 0 UE, leader None, election done t=None, BIPARTITE, no election, intra flows 0, frontier tail []
+        infra-only decomposition: components [1], bipartite T, ecc of their would-be leaders [None], UEs anchored in >1 component 0, flows with an infrastructure path 0 / without 0 / unanchored 0

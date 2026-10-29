@@ -1,0 +1,30 @@
+# Per-root file-count floors for tools/run_seed_audit.sh (--min-root NAME=N).
+#
+# "A run that scanned less than the record may not be used as evidence."  The
+# aggregate --min-files floor cannot enforce that per tree: the recorded run
+# has ~1000 files of slack over it, more than the whole of ~/MARL_run_9c or
+# ~/MARL_watch, so one root could lose all its content and the run still pass.
+#
+# Values are the counts of the recorded run of 2026-09-23 08:31 UTC
+# (docs/SEED_AUDIT_200_219.md §1), with ONE named exception:
+#
+#   MARL_run_9c  239 at 11:31 local -> 133 at 12:50 local.  The engine track
+#   owns that tree and is rewriting it; the floor is set to 100 for the
+#   pre-freeze runs and MUST be re-set from the frozen count at freeze 1,
+#   when no track writes while the audit runs (docs/TRACKB_HANDOFF.md §6).
+#
+# A refusal here means a root shrank: find out why before raising a floor.
+MARL_run_2=1090
+MARL_run_3=1052
+MARL_run_4=120
+MARL_run_5=827
+MARL_run_6=158
+MARL_run_7=114
+MARL_run_8=118
+MARL_run_9=613
+MARL_run_9b=290
+MARL_run_9c=100
+MARL_code=282
+MARL_code_remote=690
+MARL_perf=1438
+MARL_watch=12

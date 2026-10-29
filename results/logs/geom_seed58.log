@@ -1,0 +1,4 @@
+[MAPS] builders imported from run_timeline_comparison (0.0s)
+GEOM OK seed=58 tree=<server-home>/r4_work/tree head=25d8d2c fragments=4 sizes=[17, 16, 1, 1] cut=20 core_links=23 flows=107/222 steer=22 infra=35 opt=1
+[MAPS] builders imported from run_timeline_comparison (0.0s)
+GEOM OK seed=58 tree=<server-home>/MARL_run_9 head=6b53f3f fragments=4 sizes=[17, 16, 1, 1] cut=20 core_links=23 flows=107/222 steer=22 infra=35 opt=1

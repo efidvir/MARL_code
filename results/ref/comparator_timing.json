@@ -1,0 +1,681 @@
+{
+ "A": {
+  "aodv": {
+   "conn_at_event_tick_pp": 0.0,
+   "first_bridge_s": null,
+   "first_delivery_after_event_s": {
+    "max": 47.0,
+    "mean": 10.72,
+    "min": 8.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": null,
+   "first_spare_carrier_s": null,
+   "pre_event_pp": 45.16,
+   "steady_bridges": 0.0,
+   "steady_fragments": 3.35,
+   "steady_relay_links": 0.0,
+   "steady_relay_mode_nodes": 0.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 0.0,
+   "steady_spare_carrier_sites": 0.0,
+   "steady_state_pp": 31.0,
+   "steady_uu_links_boosted": 0.0,
+   "t90_s": {
+    "max": 150.0,
+    "mean": 124.42,
+    "min": 87.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "batman": {
+   "conn_at_event_tick_pp": 0.0,
+   "first_bridge_s": null,
+   "first_delivery_after_event_s": {
+    "max": 18.0,
+    "mean": 18.0,
+    "min": 18.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": null,
+   "first_spare_carrier_s": null,
+   "pre_event_pp": 45.16,
+   "steady_bridges": 0.0,
+   "steady_fragments": 3.35,
+   "steady_relay_links": 0.0,
+   "steady_relay_mode_nodes": 0.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 0.0,
+   "steady_spare_carrier_sites": 0.0,
+   "steady_state_pp": 31.01,
+   "steady_uu_links_boosted": 0.0,
+   "t90_s": {
+    "max": 20.0,
+    "mean": 20.0,
+    "min": 20.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "marl_static": {
+   "conn_at_event_tick_pp": 28.99,
+   "first_bridge_s": {
+    "max": 19.0,
+    "mean": 17.52,
+    "min": 16.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": {
+    "max": 15.0,
+    "mean": 14.53,
+    "min": 13.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_spare_carrier_s": {
+    "max": 15.0,
+    "mean": 14.38,
+    "min": 13.0,
+    "n": 40,
+    "of": 40
+   },
+   "pre_event_pp": 45.16,
+   "steady_bridges": 1.82,
+   "steady_fragments": 1.52,
+   "steady_relay_links": 18.05,
+   "steady_relay_mode_nodes": 21.48,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 640.0,
+   "steady_spare_carrier_sites": 8.0,
+   "steady_state_pp": 53.21,
+   "steady_uu_links_boosted": 199.1,
+   "t90_s": {
+    "max": 35.0,
+    "mean": 24.12,
+    "min": 15.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "olsr": {
+   "conn_at_event_tick_pp": 0.0,
+   "first_bridge_s": null,
+   "first_delivery_after_event_s": {
+    "max": 29.0,
+    "mean": 25.12,
+    "min": 14.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": null,
+   "first_spare_carrier_s": null,
+   "pre_event_pp": 45.16,
+   "steady_bridges": 0.0,
+   "steady_fragments": 3.35,
+   "steady_relay_links": 0.0,
+   "steady_relay_mode_nodes": 22.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 0.0,
+   "steady_spare_carrier_sites": 0.0,
+   "steady_state_pp": 31.01,
+   "steady_uu_links_boosted": 0.0,
+   "t90_s": {
+    "max": 43.0,
+    "mean": 36.5,
+    "min": 30.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "ospf": {
+   "conn_at_event_tick_pp": 0.0,
+   "first_bridge_s": null,
+   "first_delivery_after_event_s": {
+    "max": 49.0,
+    "mean": 46.7,
+    "min": 38.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": null,
+   "first_spare_carrier_s": null,
+   "pre_event_pp": 45.16,
+   "steady_bridges": 0.0,
+   "steady_fragments": 3.35,
+   "steady_relay_links": 0.0,
+   "steady_relay_mode_nodes": 22.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 0.0,
+   "steady_spare_carrier_sites": 0.0,
+   "steady_state_pp": 31.01,
+   "steady_uu_links_boosted": 0.0,
+   "t90_s": {
+    "max": 50.0,
+    "mean": 49.23,
+    "min": 48.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "random": {
+   "conn_at_event_tick_pp": 28.99,
+   "first_bridge_s": {
+    "max": 35.0,
+    "mean": 18.1,
+    "min": 16.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": {
+    "max": 15.0,
+    "mean": 14.45,
+    "min": 13.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_spare_carrier_s": {
+    "max": 15.0,
+    "mean": 14.38,
+    "min": 13.0,
+    "n": 40,
+    "of": 40
+   },
+   "pre_event_pp": 45.16,
+   "steady_bridges": 1.61,
+   "steady_fragments": 1.74,
+   "steady_relay_links": 12.17,
+   "steady_relay_mode_nodes": 15.2,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 640.0,
+   "steady_spare_carrier_sites": 8.0,
+   "steady_state_pp": 20.7,
+   "steady_uu_links_boosted": 199.1,
+   "t90_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "sdn": {
+   "conn_at_event_tick_pp": 0.0,
+   "first_bridge_s": {
+    "max": 78.0,
+    "mean": 67.72,
+    "min": 52.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_delivery_after_event_s": {
+    "max": 20.0,
+    "mean": 18.4,
+    "min": 17.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": {
+    "max": 75.0,
+    "mean": 64.72,
+    "min": 49.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_spare_carrier_s": {
+    "max": 75.0,
+    "mean": 64.72,
+    "min": 49.0,
+    "n": 40,
+    "of": 40
+   },
+   "pre_event_pp": 45.16,
+   "steady_bridges": 2.0,
+   "steady_fragments": 1.35,
+   "steady_relay_links": 21.88,
+   "steady_relay_mode_nodes": 22.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 640.0,
+   "steady_spare_carrier_sites": 8.0,
+   "steady_state_pp": 43.59,
+   "steady_uu_links_boosted": 199.8,
+   "t90_s": {
+    "max": 89.0,
+    "mean": 75.25,
+    "min": 57.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "xldet": {
+   "conn_at_event_tick_pp": 28.99,
+   "first_bridge_s": {
+    "max": 18.0,
+    "mean": 17.35,
+    "min": 16.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": {
+    "max": 15.0,
+    "mean": 14.5,
+    "min": 13.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_spare_carrier_s": {
+    "max": 15.0,
+    "mean": 14.38,
+    "min": 13.0,
+    "n": 40,
+    "of": 40
+   },
+   "pre_event_pp": 45.16,
+   "steady_bridges": 2.0,
+   "steady_fragments": 1.35,
+   "steady_relay_links": 17.5,
+   "steady_relay_mode_nodes": 21.43,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 640.0,
+   "steady_spare_carrier_sites": 8.0,
+   "steady_state_pp": 47.84,
+   "steady_uu_links_boosted": 199.1,
+   "t90_s": {
+    "max": 50.0,
+    "mean": 27.07,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  }
+ },
+ "B": {
+  "aodv": {
+   "conn_at_event_tick_pp": null,
+   "first_bridge_s": null,
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": null,
+   "first_spare_carrier_s": null,
+   "pre_event_pp": 44.18,
+   "steady_bridges": 0.0,
+   "steady_fragments": 1.57,
+   "steady_relay_links": 0.0,
+   "steady_relay_mode_nodes": 0.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 0.0,
+   "steady_spare_carrier_sites": 0.0,
+   "steady_state_pp": 36.68,
+   "steady_uu_links_boosted": 0.0,
+   "t90_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "batman": {
+   "conn_at_event_tick_pp": null,
+   "first_bridge_s": null,
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": null,
+   "first_spare_carrier_s": null,
+   "pre_event_pp": 44.18,
+   "steady_bridges": 0.0,
+   "steady_fragments": 1.57,
+   "steady_relay_links": 0.0,
+   "steady_relay_mode_nodes": 0.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 0.0,
+   "steady_spare_carrier_sites": 0.0,
+   "steady_state_pp": 36.68,
+   "steady_uu_links_boosted": 0.0,
+   "t90_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "marl_static": {
+   "conn_at_event_tick_pp": null,
+   "first_bridge_s": {
+    "max": 6.0,
+    "mean": 4.15,
+    "min": 4.0,
+    "n": 13,
+    "of": 40
+   },
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": {
+    "max": 1.0,
+    "mean": 1.0,
+    "min": 1.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_spare_carrier_s": {
+    "max": 1.0,
+    "mean": 1.0,
+    "min": 1.0,
+    "n": 40,
+    "of": 40
+   },
+   "pre_event_pp": 64.15,
+   "steady_bridges": 0.33,
+   "steady_fragments": 1.25,
+   "steady_relay_links": 17.85,
+   "steady_relay_mode_nodes": 22.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 696.0,
+   "steady_spare_carrier_sites": 8.7,
+   "steady_state_pp": 52.64,
+   "steady_uu_links_boosted": 226.7,
+   "t90_s": {
+    "max": 3.0,
+    "mean": 1.3,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "olsr": {
+   "conn_at_event_tick_pp": null,
+   "first_bridge_s": null,
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": null,
+   "first_spare_carrier_s": null,
+   "pre_event_pp": 44.18,
+   "steady_bridges": 0.0,
+   "steady_fragments": 1.57,
+   "steady_relay_links": 0.0,
+   "steady_relay_mode_nodes": 22.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 0.0,
+   "steady_spare_carrier_sites": 0.0,
+   "steady_state_pp": 36.68,
+   "steady_uu_links_boosted": 0.0,
+   "t90_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "ospf": {
+   "conn_at_event_tick_pp": null,
+   "first_bridge_s": null,
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": null,
+   "first_spare_carrier_s": null,
+   "pre_event_pp": 44.18,
+   "steady_bridges": 0.0,
+   "steady_fragments": 1.57,
+   "steady_relay_links": 0.0,
+   "steady_relay_mode_nodes": 22.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 0.0,
+   "steady_spare_carrier_sites": 0.0,
+   "steady_state_pp": 36.68,
+   "steady_uu_links_boosted": 0.0,
+   "t90_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "random": {
+   "conn_at_event_tick_pp": null,
+   "first_bridge_s": {
+    "max": 22.0,
+    "mean": 7.77,
+    "min": 4.0,
+    "n": 13,
+    "of": 40
+   },
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": {
+    "max": 1.0,
+    "mean": 1.0,
+    "min": 1.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_spare_carrier_s": {
+    "max": 1.0,
+    "mean": 1.0,
+    "min": 1.0,
+    "n": 40,
+    "of": 40
+   },
+   "pre_event_pp": 23.96,
+   "steady_bridges": 0.27,
+   "steady_fragments": 1.31,
+   "steady_relay_links": 11.77,
+   "steady_relay_mode_nodes": 14.78,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 696.0,
+   "steady_spare_carrier_sites": 8.7,
+   "steady_state_pp": 20.19,
+   "steady_uu_links_boosted": 226.7,
+   "t90_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "sdn": {
+   "conn_at_event_tick_pp": null,
+   "first_bridge_s": {
+    "max": 19.0,
+    "mean": 19.0,
+    "min": 19.0,
+    "n": 13,
+    "of": 40
+   },
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": {
+    "max": 17.0,
+    "mean": 16.5,
+    "min": 16.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_spare_carrier_s": {
+    "max": 17.0,
+    "mean": 16.5,
+    "min": 16.0,
+    "n": 40,
+    "of": 40
+   },
+   "pre_event_pp": 45.5,
+   "steady_bridges": 0.33,
+   "steady_fragments": 1.25,
+   "steady_relay_links": 22.0,
+   "steady_relay_mode_nodes": 22.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 696.0,
+   "steady_spare_carrier_sites": 8.7,
+   "steady_state_pp": 38.15,
+   "steady_uu_links_boosted": 227.4,
+   "t90_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  },
+  "xldet": {
+   "conn_at_event_tick_pp": null,
+   "first_bridge_s": {
+    "max": 4.0,
+    "mean": 4.0,
+    "min": 4.0,
+    "n": 13,
+    "of": 40
+   },
+   "first_delivery_after_event_s": {
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_relay_link_s": {
+    "max": 1.0,
+    "mean": 1.0,
+    "min": 1.0,
+    "n": 40,
+    "of": 40
+   },
+   "first_spare_carrier_s": {
+    "max": 1.0,
+    "mean": 1.0,
+    "min": 1.0,
+    "n": 40,
+    "of": 40
+   },
+   "pre_event_pp": 48.88,
+   "steady_bridges": 0.33,
+   "steady_fragments": 1.25,
+   "steady_relay_links": 17.3,
+   "steady_relay_mode_nodes": 22.0,
+   "steady_spare_carrier_extra_mbps_at_qam256_ref": 696.0,
+   "steady_spare_carrier_sites": 8.7,
+   "steady_state_pp": 41.25,
+   "steady_uu_links_boosted": 226.7,
+   "t90_s": {
+    "max": 38.0,
+    "mean": 2.05,
+    "min": 0.0,
+    "n": 40,
+    "of": 40
+   }
+  }
+ },
+ "B_surge": {
+  "aodv": {
+   "max": 50.0,
+   "mean": 33.72,
+   "min": 15.0,
+   "n": 25,
+   "of": 40
+  },
+  "batman": {
+   "max": 100.0,
+   "mean": 94.68,
+   "min": 83.0,
+   "n": 25,
+   "of": 40
+  },
+  "marl_static": {
+   "max": 2.0,
+   "mean": 0.48,
+   "min": 0.0,
+   "n": 23,
+   "of": 40
+  },
+  "olsr": {
+   "max": 35.0,
+   "mean": 32.68,
+   "min": 30.0,
+   "n": 25,
+   "of": 40
+  },
+  "ospf": {
+   "max": 20.0,
+   "mean": 19.64,
+   "min": 19.0,
+   "n": 25,
+   "of": 40
+  },
+  "random": {
+   "max": 23.0,
+   "mean": 2.96,
+   "min": 0.0,
+   "n": 26,
+   "of": 40
+  },
+  "sdn": {
+   "max": 18.0,
+   "mean": 9.8,
+   "min": 5.0,
+   "n": 25,
+   "of": 40
+  },
+  "xldet": {
+   "max": 2.0,
+   "mean": 0.15,
+   "min": 0.0,
+   "n": 26,
+   "of": 40
+  }
+ },
+ "definitions": {
+  "B_surge_start": "first tick t >= 1400 at which delivered volume >= its mean over [1300,1400) + 0.5 x (plateau - that mean), plateau = mean over [1700,1800); only runs whose plateau exceeds the pre-surge mean by >= 10 percent",
+  "first_bridge": "first tick >= event with relay_bridges > 0 (distinct bridging relay links)",
+  "first_delivery_after_event": "first tick t >= event with conn(t) > 0.5 pp, minus event tick (A: event = 200, cut; B: event = 0)",
+  "first_relay_link": "first tick >= event with relay_count > 0 (active transport relay links in the topology)",
+  "source": "~/MARL_r3lite/output/r3lite/s6_cf_b0..9.pkl (640 runs, seeds 300-339, 3600 ticks, 1 tick = 1 s), per-tick series conn/delivered/offered/relay_count/relay_mode_nodes/relay_bridges/fragments/uu_cc_activated/uu_extra_mbps/uu_boost_links",
+  "steady_state": "mean of the last 500 ticks (3100..3599)",
+  "t90": "first tick t >= event with conn(t) >= 0.9 x own steady state (mean of last 500 ticks), minus event tick; not a sustained-settling time"
+ }
+}

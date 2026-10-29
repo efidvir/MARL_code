@@ -1,0 +1,9 @@
+{
+ "what": "identity of the training run of the MARL controller: the final policy of the run whose log is learning_kpis_s1234.json is the checkpoint evaluated on the test topologies",
+ "training_run_final_policy": "<server-home>/MARL_run_9/output/final/ck_s1234/policy_final.pt",
+ "training_run_final_policy_sha256": "54eaa5623148cfd44faf7e69bfe7825c396541b33d9357a07d782d559de5c4bc",
+ "evaluated_checkpoint": "<server-home>/MARL_r3lite/output/r3lite/ck_s1234/policy_final.pt",
+ "evaluated_checkpoint_sha256": "54eaa5623148cfd44faf7e69bfe7825c396541b33d9357a07d782d559de5c4bc",
+ "training_log": "<server-home>/MARL_run_9/output/final/out_s1234/learning_kpis_comparison.json",
+ "training_log_md5": "96088687f03ab5cd1300b57ac1981bc9"
+}

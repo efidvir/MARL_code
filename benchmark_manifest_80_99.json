@@ -1,0 +1,408 @@
+{
+  "created": "2026-09-16 16:07:36",
+  "instances": [
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 80
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 3,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 80
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 3,
+      "fully_reunifiable": false,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 81
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 81
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 82
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 1,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 82
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 83
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 83
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 2,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 84
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 1,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 84
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 3,
+      "fully_reunifiable": false,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 85
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 85
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 2,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 86
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 1,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 86
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 3,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 87
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 87
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 88
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 3,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 88
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 3,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 89
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 89
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 2,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 90
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 1,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 90
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 91
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 91
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 3,
+      "fully_reunifiable": false,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 92
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 92
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 93
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 93
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 2,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 94
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 1,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 94
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 95
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 95
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 3,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 96
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 96
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 3,
+      "fully_reunifiable": false,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 97
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 97
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 4,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 98
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 1,
+      "fully_reunifiable": true,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 98
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 3,
+      "scenario_kind": "recovery",
+      "severance_tick": 200,
+      "solver_candidate_sites": 22,
+      "topology_seed": 99
+    },
+    {
+      "actionable_steerable_sites": 22,
+      "attainable_optimum": 2,
+      "fully_reunifiable": false,
+      "raw_components": 2,
+      "scenario_kind": "rescue_ops",
+      "severance_tick": 0,
+      "solver_candidate_sites": 22,
+      "topology_seed": 99
+    }
+  ],
+  "manifest_sha256": "615498e9e10d087d4ed1f6a783a86c53",
+  "note": "Frozen under the unified actionable-bridge definition (sixg_sim.simulation.site_can_steer). Any change to that predicate invalidates this manifest. attainable_optimum is the reference every reunification claim must be made against; the literal 1 is correct only where fully_reunifiable is true.",
+  "steer_model": "actionable"
+}

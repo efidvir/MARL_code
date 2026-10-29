@@ -1,0 +1,25 @@
+output/r3lite/ck_s1234/policy_final.pt
+# selected replicate: torch seed 1234
+# sha256 54eaa5623148cfd44faf7e69bfe7825c396541b33d9357a07d782d559de5c4bc
+# PRE-WRITTEN AND TRACKED (R3-lite): this file is part of the frozen tree. Chain stage S3b
+# verifies it against confirmatory/chain_plan.py and the checkpoint on disk; it selects nothing.
+# source: replicate ck_s1234 of the R2 training run (~/MARL_run_9/output/final/ck_s1234/policy_final.pt,
+#         tree 6b53f3f), imported byte-identical by chain stage S0; no retraining
+# rule: paired achievability against XL-DET, criterion maximin (min over Scenarios A and B of the
+#       mean paired difference), on development + validation data (27 instances per scenario);
+#       R3 Phase 0, select_replicate.py; decided 2026-10-11 (docs/DECISIONS.md D-R3.1; the
+#       second family and the forty instances: D-R3.3; docs/PREREGISTRATION_R3.md section 3)
+# candidates ranked: 5, the four replicates and their ensemble, as in PREREGISTRATION_R3 section 3.2
+#   (mean paired difference in percentage points: A, B, min; results/select_replicate_S1_min.json)
+#   s1234     +8.888 +13.463  +8.888   <- selected
+#   ensemble  +5.631  +9.727  +5.631   (not a replicate; registered as confirmatory family E,
+#                                       PREREGISTRATION_R3 sections 3.1b and 8, D-R3.3)
+#   s3456     -0.011  +3.388  -0.011
+#   s4567     -0.751  +0.428  -0.751   (R2's pick, by R2's rule)
+#   s2345    -13.183  -7.153 -13.183
+# the same order under the mean criterion and on development alone and validation alone (six rule runs)
+# DISCLOSED: the rule was chosen after the development and validation results of all five
+#            candidates had been seen; the confirmatory block of R3-lite is fresh for that reason
+# DISCLOSED: R3 Phase 0 recommended this rule WITH a relay-churn guard (M7 at most g times XL-DET's);
+#            with g = 2 the guarded rule selects the ensemble, and replicate 1234 passes only with
+#            g >= 9. The rule registered here has no guard (PREREGISTRATION_R3 section 3.3 item 7)

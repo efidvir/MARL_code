@@ -1,0 +1,50 @@
+WP12(b) static SDN-discovery prediction (post-severance topology, no simulator)
+fragment model: ue-stitched (SDNController._compute_fragments as it is: BFS over UEs too, a dual-anchored UE stitches two infra components); iteration: fixed-point (frontier <- N(frontier), stop at N(S) == S; never = no fixed point in 1000 rounds)
+columns: infra-only components = components of the infrastructure graph after the cuts [sizes], bipartite per component (T/F), UEs anchored in >1 component (the stitches), flows without an infrastructure path (never forwarded by any arm: the _can_route_ue_to_ue gate) / all flows; fragments = the controller's fragments under the chosen model: infra/UE members, bipartite over the walk, rounds of the fixed-point test ('never' = none), ecc = cumulative-BFS rounds, flows with both endpoints in the fragment, status
+
+seed scenario   cuts | predicted | infra-only components                | eligible fragments (fid: infra/UE bipartite rounds ecc flows status)
+----------------------------------------------------------------------------------------------------------------------------------------------
+  50 recovery     27 | ok        | [15, 20] bip TF ue>1 26 cross 71/222 | 0: 35/150 odd 10 5 222 done
+  50 rescue_ops    0 | ok        | [35] bip F ue>1 0 cross 0/222        | 0: 35/150 odd 6 5 222 done
+  51 recovery     22 | ok        | [11, 22, 1, 1] bip FFTT ue>1 29 cross 123/222 | 0: 34/150 odd 10 7 222 done
+  51 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  52 recovery     36 | NEVER     | [17, 13, 4, 1] bip TTTT ue>1 43 cross 84/222 | 0: 34/150 BIP never 7 222 never
+  52 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  53 recovery     32 | ok        | [15, 18, 1, 1] bip TFTT ue>1 17 cross 87/222 | 0: 34/150 odd 12 7 222 done
+  53 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  54 recovery     25 | ok        | [23, 10, 1, 1] bip FTTT ue>1 33 cross 105/222 | 0: 35/150 odd 13 5 222 done
+  54 rescue_ops    0 | ok        | [35] bip F ue>1 0 cross 0/222        | 0: 35/150 odd 6 5 222 done
+  55 recovery     26 | ok        | [19, 16] bip FT ue>1 26 cross 73/222 | 0: 35/150 odd 10 5 222 done
+  55 rescue_ops    0 | ok        | [35] bip F ue>1 0 cross 0/222        | 0: 35/150 odd 6 5 222 done
+  56 recovery     24 | ok        | [22, 12, 1] bip FTT ue>1 19 cross 74/222 | 0: 34/150 odd 10 5 222 done
+  56 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  57 recovery     30 | ok        | [18, 17] bip FT ue>1 21 cross 77/222 | 0: 35/150 odd 10 5 222 done
+  57 rescue_ops    0 | ok        | [35] bip F ue>1 0 cross 0/222        | 0: 35/150 odd 6 5 222 done
+  58 recovery     20 | ok        | [16, 17, 1, 1] bip FTTT ue>1 10 cross 107/222 | 0: 33/150 odd 12 6 222 done
+  58 rescue_ops    0 | ok        | [33, 1, 1] bip FTT ue>1 0 cross 0/222 | 0: 33/150 odd 6 5 222 done
+  59 recovery     27 | ok        | [22, 12, 1] bip FTT ue>1 10 cross 86/222 | 0: 34/150 odd 10 5 222 done
+  59 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  70 recovery     28 | ok        | [19, 14, 1, 1] bip FFTT ue>1 19 cross 91/222 | 0: 33/150 odd 8 6 222 done
+  70 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  71 recovery     27 | ok        | [20, 14, 1] bip TFT ue>1 34 cross 92/222 | 0: 35/150 odd 12 7 222 done
+  71 rescue_ops    0 | ok        | [35] bip F ue>1 0 cross 0/222        | 0: 35/150 odd 6 3 222 done
+  72 recovery     21 | ok        | [23, 11, 1] bip FTT ue>1 14 cross 100/222 | 0: 34/150 odd 12 5 222 done
+  72 rescue_ops    0 | ok        | [35] bip F ue>1 0 cross 0/222        | 0: 35/150 odd 6 5 222 done
+  73 recovery     28 | ok        | [12, 22, 1] bip FTT ue>1 24 cross 71/222 | 0: 34/150 odd 16 5 222 done
+  73 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  74 recovery     28 | ok        | [19, 15, 1] bip TFT ue>1 35 cross 79/222 | 0: 35/150 odd 13 5 222 done
+  74 rescue_ops    0 | ok        | [35] bip F ue>1 0 cross 0/222        | 0: 35/150 odd 6 3 222 done
+  75 recovery     16 | ok        | [24, 10, 1] bip FTT ue>1 26 cross 77/222 | 0: 34/150 odd 12 6 222 done
+  75 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  76 recovery     27 | ok        | [20, 14, 1] bip TFT ue>1 18 cross 83/222 | 0: 34/150 odd 12 5 222 done
+  76 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  77 recovery     17 | ok        | [26, 7, 1, 1] bip FTTT ue>1 22 cross 114/222 | 0: 34/150 odd 10 7 222 done
+  77 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+  78 recovery     22 | ok        | [21, 12, 1, 1] bip FTTT ue>1 17 cross 79/222 | 0: 33/150 odd 10 5 222 done
+  78 rescue_ops    0 | ok        | [33, 1, 1] bip FTT ue>1 0 cross 0/222 | 0: 33/150 odd 6 5 222 done
+  79 recovery     34 | ok        | [16, 18, 1] bip TFT ue>1 29 cross 69/222 | 0: 34/150 odd 10 6 222 done
+  79 rescue_ops    0 | ok        | [34, 1] bip FT ue>1 0 cross 0/222    | 0: 34/150 odd 6 5 222 done
+
+predicted never-recovering: [(52, 'recovery')]
+predicted partially blocked (later fragments starved): []
+cases with >1 infra-only component: 33 of 40; with a UE anchored in >1 component (stitched): 20 of 40

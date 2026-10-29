@@ -1,0 +1,7 @@
+output/r3lite_rehearsal/ck_s1234/policy_final.pt
+# selected replicate: torch seed 1234
+# sha256 54eaa5623148cfd44faf7e69bfe7825c396541b33d9357a07d782d559de5c4bc
+# PRE-WRITTEN AND TRACKED (R3-lite REHEARSAL): the pipeline test's own copy of the selection
+# record. It names the same R2 replicate under output/r3lite_rehearsal/, so that nothing the
+# rehearsal reads or writes is an r3lite path. Its results are throwaway.
+# rule and ranking: see confirmatory/SELECTED_r3lite.txt
