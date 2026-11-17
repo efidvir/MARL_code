@@ -22,6 +22,25 @@ and after the event (DN/CN, polarity), the 13 programmable attenuators that
 take links down (with their settings), and the Ethernet port map of each site
 switch. `out/iso_A_final.png` draws that bench.
 
+**On the delivered kit: A7.** The lab has one 4-sector and six 2-sector
+Terragraph nodes, all node-class (DN), in four 1U Siklu "Spider" conducted
+test boxes: GTS003 (two nodes with two sectors each, twice), GTST002B (one
+node with four sectors) and GTST003 (taken to be two 2-sector nodes). A7
+(`topologies.py`) keeps option A's sites, IP-50 hops, flows, event, islands
+and bridges; the core keeps only its microwave hub, the field hospital is fed
+from the hub's otherwise idle fourth sector, and the shelter and hospital are
+nodes instead of terminals. `validate.py` checks each unit's sector budget,
+`out/option_A7_sectors.md` gives the bench plan, `kit_change.py` draws what
+changed from A and `hub_ports.py` how the hub serves six links from four
+ports. Each sector is a FATJ0498 module with four SMA ports, so on the bench a
+sector has no physical direction: A7 puts each node's hub link on one module
+and its bridge on the other, using all 16 modules. With at most two
+node-to-node links per sector, a 2-sector node holds at most four links, so 9
+of the 12 bridge candidates can be offered and MARL keeps 4 of its 8 recovery
+plans. SMA ports cannot carry 60 GHz, so the attenuators and splitters must
+suit the ports' actual frequency (still to be confirmed with the lab), not
+the V-band parts sized in `option_a_sectors.py`.
+
 The configurations are nested on one site plan. B is A without the W1–W2
 IP-50 link (a spare sector of the W1/W2 TG nodes carries it instead) and
 without the field-hospital spur. C is B without the E1–E2 IP-50 link
