@@ -409,16 +409,33 @@ def analyze(key):
 
     # sectors each unit carries: all four on a 4-sector node; on a smaller unit
     # the side-by-side window that covers the sectors it uses (pre-event + bridges)
+    # A smaller unit is mounted for the drawn plan, which fixes the sectors it
+    # can ever use; its spare sector is chosen so that as many of the valid
+    # recovery plans as possible stay reachable (MARL's choice of peer).
     final_used = used_sectors(tg_all + bridges)
-    installed = {}
+    installed, options = {}, {}
     for x, k in cfg["tg_units"].items():
         if k != "DN" or budget[x] >= 4:
             installed[x] = list(range(4)) if k == "DN" else [0]
             continue
         need = final_used[x]
         wins = [[(s0 + i) % 4 for i in range(budget[x])] for s0 in range(4)]
-        ok = [w for w in wins if need <= set(w)]
-        installed[x] = (min(ok, key=lambda w: (w[0] not in need, w[0])) if ok else sorted(need))
+        options[x] = [w for w in wins if need <= set(w)] or [sorted(need)]
+
+    def reachable(plan, inst):
+        return all(cfg["tg_units"][x] != "DN" or end_sector(x, y)[1] in inst[x]
+                   for c in plan for x, y in ((c["a"], c["b"]), (c["b"], c["a"])))
+    best = None
+    for combo in itertools.product(*options.values()):
+        inst = dict(installed, **dict(zip(options, combo)))
+        n = sum(reachable(p, inst) for p in plans)
+        key = (-n, [tuple(w) for w in combo])
+        if best is None or key < best[0]:
+            best = (key, inst)
+    if best:
+        installed = best[1]
+    mount_plans = [p for p in plans if reachable(p, installed)]
+    mount_reach = [c for c in feas if reachable([c], installed)]
 
     post = {}
     for fid, s, t in cfg["flows"]:
@@ -429,7 +446,8 @@ def analyze(key):
     return dict(key=key, cfg=cfg, pos=pos, ip_units=ip_units, checks=checks, warnings=warnings, dpir=dpir,
                 service=service, g0=g0, islands=islands, comp=comp, lost_ip=lost_ip,
                 lost_tg=lost_tg, cands=cands, steer=steer, g_post=g2, post=post,
-                shared=shared, polarity=polarity, hybrid=hybrid, budget=budget, installed=installed, cn_mount=cn_mount, end_sector=end_sector,
+                shared=shared, polarity=polarity, hybrid=hybrid, budget=budget, installed=installed, mount_plans=mount_plans,
+                mount_reach=mount_reach, cn_mount=cn_mount, end_sector=end_sector,
                 n_plans=len(plans), tg_all=tg_all,
                 path_tech=lambda p, g=g0: path_tech(g, p))
 

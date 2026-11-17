@@ -160,8 +160,13 @@ def main(key="A"):
     avail = sum(r["budget"][n["site"]] for n in nodes if n["kind"] == "DN")
     L += ["", f"Sectors in use: {used_dn} on the {n_dn} nodes (of {avail} available)"
           + (f" and {used_cn} on the {n_cn} terminals: {used_dn + used_cn} in all. " if n_cn else ". ") +
-          f"{avail - used_dn} node sectors stay unused (disable them; terminate their "
-          "ports if they are RF-port builds).", "",
+          f"{avail - used_dn} node sectors carry no link in the drawn plan; on the smaller units they are "
+          "the spares that keep alternative bridges reachable (terminate their ports if they are RF-port "
+          "builds).", "",
+          f"Mounted this way, the units can reach {len(r['mount_reach'])} of the "
+          f"{sum(1 for c in r['cands'] if c['feasible'])} feasible bridge candidates and "
+          f"{len(r['mount_plans'])} of the {r['n_plans']} valid recovery plans (MARL's choice of peer); "
+          "each smaller unit's spare sector is chosen to keep as many as possible.", "",
           "## V-band paths and programmable attenuators (dB)", "",
           "| # | Path | Sector ports | Distance | Job | Before | At t0 | After | Margin up / at max |",
           "|---|---|---|---|---|---|---|---|---|"]

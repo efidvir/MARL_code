@@ -17,7 +17,9 @@ No steering emulation: the TG radios point their own beams, so only the final pl
 | S | CN | terminal | 1 (single) | single → HUB | single → W1 | single even |
 | N | CN | terminal | 1 (single) | single → CORE | single → E1 | single odd |
 
-Sectors in use: 10 on the 6 nodes (of 24 available) and 2 on the 2 terminals: 12 in all. 14 node sectors stay unused (disable them; terminate their ports if they are RF-port builds).
+Sectors in use: 10 on the 6 nodes (of 24 available) and 2 on the 2 terminals: 12 in all. 14 node sectors carry no link in the drawn plan; on the smaller units they are the spares that keep alternative bridges reachable (terminate their ports if they are RF-port builds).
+
+Mounted this way, the units can reach 12 of the 12 feasible bridge candidates and 8 of the 8 valid recovery plans (MARL's choice of peer); each smaller unit's spare sector is chosen to keep as many as possible.
 
 ## V-band paths and programmable attenuators (dB)
 

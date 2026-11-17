@@ -10,13 +10,15 @@ No steering emulation: the TG radios point their own beams, so only the final pl
 |---|---|---|---|---|---|---|
 | HUB | DN | 4-sector (E, N, W, S) | 4 (E, N, W, S) | E → E1, E2; N → N; W → W1, W2; S → S | off (destroyed) | E odd, N even, W even, S odd |
 | W1 | DN | 2-sector (S, E) | 2 (E, S) | E → HUB | S → S | E odd, S odd |
-| W2 | DN | 2-sector (E, N) | 1 (E) | E → HUB | E → E2 | E odd |
+| W2 | DN | 2-sector (S, E) | 1 (E) | E → HUB | E → E2 | E odd |
 | E1 | DN | 2-sector (N, W) | 2 (N, W) | W → HUB | N → N | N even, W even |
-| E2 | DN | 2-sector (W, S) | 1 (W) | W → HUB | W → W2 | W even |
-| S | DN | 2-sector (N, W) | 1 (N) | N → HUB | N → W1 | N even |
-| N | DN | 2-sector (S, E) | 1 (S) | S → HUB | S → E1 | S odd |
+| E2 | DN | 2-sector (N, W) | 1 (W) | W → HUB | W → W2 | W even |
+| S | DN | 2-sector (E, N) | 1 (N) | N → HUB | N → W1 | N even |
+| N | DN | 2-sector (W, S) | 1 (S) | S → HUB | S → E1 | S odd |
 
-Sectors in use: 12 on the 7 nodes (of 16 available). 4 node sectors stay unused (disable them; terminate their ports if they are RF-port builds).
+Sectors in use: 12 on the 7 nodes (of 16 available). 4 node sectors carry no link in the drawn plan; on the smaller units they are the spares that keep alternative bridges reachable (terminate their ports if they are RF-port builds).
+
+Mounted this way, the units can reach 8 of the 12 feasible bridge candidates and 4 of the 8 valid recovery plans (MARL's choice of peer); each smaller unit's spare sector is chosen to keep as many as possible.
 
 ## V-band paths and programmable attenuators (dB)
 
