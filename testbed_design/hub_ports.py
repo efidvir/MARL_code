@@ -41,9 +41,8 @@ def main(key="A7"):
     fig = plt.figure(figsize=(19.2, 10.8), facecolor="white")
     fig.text(0.03, 0.95, "Four RF ports, six links: how the hub’s sectors are shared", fontsize=26,
              fontweight="bold", color=INK, va="top")
-    fig.text(0.03, 0.895, "A7 hub: one 4-sector N367. Each sector is one RF port and can serve more than one node. "
-             f"Whole A7 bench: {len(ports)} sector ports, {len(junctions)} splitters, {len(paths)} cabled paths.",
-             fontsize=14, color=MUTED, va="top")
+    fig.text(0.03, 0.895, "A7 hub: the one 4-sector node (Spider box GTST002B). Each sector is one module and can serve "
+             "more than one node.", fontsize=14, color=MUTED, va="top")
     ax = fig.add_axes([0.02, 0.06, 0.6, 0.8])
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 54)
@@ -52,7 +51,7 @@ def main(key="A7"):
     # the hub unit and its four ports
     box(ax, 2, 2, 20, 50, "#FDF1E4", TG, lw=2.2, r=1.6)
     ax.text(8, 28.5, "HUB", ha="center", va="bottom", fontsize=20, fontweight="bold", color=INK, zorder=5)
-    ax.text(8, 27.5, "N367\n4 sectors", ha="center", va="top", fontsize=12.5, color=MUTED, zorder=5,
+    ax.text(8, 27.5, "GTST002B\n4 sectors", ha="center", va="top", fontsize=12.5, color=MUTED, zorder=5,
             linespacing=1.3)
     for k, y in PORT_Y.items():
         box(ax, 14.5, y - 1.8, 9, 3.6, TG, TG, r=0.6, z=4)
@@ -83,8 +82,7 @@ def main(key="A7"):
             ax.plot([62, 72], [yy, yy], color=TG, lw=3.2, zorder=2, solid_capstyle="round")
             box(ax, 72, yy - 1.9, 26, 3.8, "#FFFFFF", "#C9CED8", r=0.6, z=4)
             ax.text(74, yy, peer, ha="left", va="center", fontsize=15, fontweight="bold", color=INK, zorder=5)
-            ax.text(80.5, yy, f"its {SEC[peer_sec]} sector", ha="left", va="center", fontsize=12, color=MUTED,
-                    zorder=5)
+            ax.text(80.5, yy, "module 1", ha="left", va="center", fontsize=12, color=MUTED, zorder=5)
     ax.text(56, 52.5, "programmable attenuator (dB before the event)", ha="center", va="bottom", fontsize=11,
             color=MUTED)
 
@@ -98,13 +96,14 @@ def main(key="A7"):
         ("Over the air they share airtime",
          "The sector’s beam visits each node in its own time slots, so W1 and W2 split the W sector’s "
          "capacity. That shared airtime is the coupling DPIR plans around."),
-        ("On the bench a splitter does it",
-         "A 2-way splitter divides the port into two paths, each with its own attenuator. Its loss "
-         "(about 4.5 dB) is already in the settings."),
+        ("On the bench: two ports or a splitter",
+         "If a module’s four SMA ports are taps of one sector, two of them reach W1 and W2 directly; "
+         "otherwise a 2-way splitter divides the port. Each path keeps its own attenuator."),
         ("Two per sector is the limit",
          "Terragraph allows at most 2 node-to-node links per sector: the W and E ports are full."),
-        ("Same trick at W2, E2, S and N",
-         "Their one port reaches the hub before the event and the bridge peer after it, through a splitter."),
+        ("Elsewhere, a second module does it",
+         "W2, E2, S and N put their bridge on their second module, so only the hub’s W and E modules "
+         "serve two nodes."),
     ]
     y = 0.99
     for head, body in pts:
