@@ -79,11 +79,11 @@ ITEMS = [
      "one per link: fades for DPIR, cut at the event"),
     (5, "Microwave", "Low-loss coax jumper, IP-50 band", lambda c: 2 * c["n_mw"], ""),
     (6, "60 GHz", "Siklu TG node (N366/N367 class; A7: 1 x 4-sector + 6 x 2-sector), RF-port build", lambda c: c["n_dn"],
-     "hub, core spur and every steerable west/east site"),
+     "the hub and every site that steers (A also the core spur)"),
     (7, "60 GHz", "Siklu TG terminal (T265 class), RF-port build", lambda c: c["n_cn"],
      "shelter / field-hospital pockets"),
     (8, "60 GHz", "V-band programmable attenuator (one per cabled TG link)", lambda c: c["tg_paths"],
-     "hub links, spare-sector links and every feasible bridge; takes links down at the event"),
+     "hub links and the chosen bridges (A, A7) or every feasible bridge (B-D); takes links down at the event"),
     (9, "60 GHz", "V-band splitter / combiner", lambda c: c["splitters"],
      "one per sector port that reaches more than one peer"),
     (10, "60 GHz", "V-band fixed pad (one per used sector port)", lambda c: c["tg_ports"], ""),
@@ -113,7 +113,9 @@ ITEMS = [
 
 def table():
     keys = list(CONFIGS)
-    cs = {k: counts(CONFIGS[k], analyze(k)) for k in keys}
+    # the selected options cable only their final plan (the radios point their own beams);
+    # the others are sized for every feasible bridge candidate
+    cs = {k: counts(CONFIGS[k], analyze(k), CONFIGS[k].get("bench_final_only", False)) for k in keys}
     rows = [(n, group, item, [rule(cs[k]) for k in keys], note) for n, group, item, rule, note in ITEMS]
     return keys, cs, rows
 
@@ -129,10 +131,15 @@ def main():
         lines.append(f"| {n} | {group} | {item} | " + " | ".join(str(x) for x in q) + f" | {note} |")
     lines += ["", "## V-band RF mesh per option", ""]
     for k in keys:
-        m = rf_mesh(analyze(k))
-        lines.append(f"- **{k}**: {len(m['links'])} paths ({', '.join('–'.join(e) for e in m['links'])}); "
+        fo = CONFIGS[k].get("bench_final_only", False)
+        m = rf_mesh(analyze(k), fo)
+        lines.append(f"- **{k}**{' (final plan only)' if fo else ''}: {len(m['links'])} paths "
+                     f"({', '.join('–'.join(e) for e in m['links'])}); "
                      f"{len(m['ports'])} sector ports, {m['splitters']} with a splitter.")
-    lines += ["", "How the bench emulates the radio layer: each programmable attenuator holds its path at the",
+    lines += ["", "A and A7 (the selected option and its version on the delivered N367 kit) cable only their",
+              "final plan: the pre-event TG links plus the chosen bridges. B, C and D are sized for every",
+              "feasible bridge candidate.",
+              "", "How the bench emulates the radio layer: each programmable attenuator holds its path at the",
               "loss the geometry gives (the figures' link budget); at t0 the PDUs switch CORE and HUB off and",
               "every path to them goes to maximum attenuation; a MARL bridge is a cabled candidate path that",
               "the engaged site brings up. Confirm with Siklu that the TG units are available with RF test",

@@ -37,9 +37,10 @@ TG      Siklu MultiHaul TG 60 GHz (Terragraph) radio with beam steering.
 # Schematic positions in drawing units; SCALE converts them to metres.  The
 # distances only matter for the 60 GHz link budget (MARL paper Table III
 # model at the 23 dBm planning power): with SCALE = 0.6 every pre-event TG hop
-# keeps >= 13 dB of clear-air margin above the QPSK-1/3 threshold and every
-# chosen bridge >= 7.5 dB (option A's longest, W1-S, has 8 dB).  Replace with
-# the measured site distances and the Siklu budget.
+# keeps >= 13 dB of clear-air margin above the QPSK-1/3 threshold (except
+# A7's 606 m hub-hospital hop, 11.9 dB) and every chosen bridge >= 7.5 dB
+# (the longest, W1-S, has 8 dB).  These are the paper's radio model; the
+# N367's own link budget is lower, so calibrate the bench on the radios.
 SCALE = 0.6
 POS = {
     "W1": (0, 300),
@@ -68,6 +69,7 @@ _TG_STAR = [("HUB", "W1"), ("HUB", "W2"), ("HUB", "E1"), ("HUB", "E2"), ("HUB", 
 CONFIGS = {
     "A": dict(
         name="A - 8 IP-50 + 8 TG",
+        bench_final_only=True,
         ip50=8,
         tg=8,
         sites=["W1", "W2", "CORE", "HUB", "E1", "E2", "S", "N"],
@@ -87,6 +89,7 @@ CONFIGS = {
     "A7": dict(
         name="A7 - option A on 1 x 4-sector + 6 x 2-sector N367",
         variant_of="A",
+        bench_final_only=True,
         ip50=8,
         tg=7,
         sites=["W1", "W2", "CORE", "HUB", "E1", "E2", "S", "N"],

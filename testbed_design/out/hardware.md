@@ -10,12 +10,12 @@ the validator's bridge candidates.
 | 3 | Microwave | Fixed attenuator pad, ~30 dB, IP-50 band | 8 | 8 | 6 | 4 | 4 | two per link: receiver protection, nominal hop loss |
 | 4 | Microwave | Programmable attenuator, 0-95 dB, IP-50 band | 4 | 4 | 3 | 2 | 2 | one per link: fades for DPIR, cut at the event |
 | 5 | Microwave | Low-loss coax jumper, IP-50 band | 8 | 8 | 6 | 4 | 4 |  |
-| 6 | 60 GHz | Siklu TG node (N366/N367 class; A7: 1 x 4-sector + 6 x 2-sector), RF-port build | 6 | 7 | 5 | 5 | 4 | hub, core spur and every steerable west/east site |
+| 6 | 60 GHz | Siklu TG node (N366/N367 class; A7: 1 x 4-sector + 6 x 2-sector), RF-port build | 6 | 7 | 5 | 5 | 4 | the hub and every site that steers (A also the core spur) |
 | 7 | 60 GHz | Siklu TG terminal (T265 class), RF-port build | 2 | 0 | 1 | 1 | 0 | shelter / field-hospital pockets |
-| 8 | 60 GHz | V-band programmable attenuator (one per cabled TG link) | 18 | 18 | 14 | 15 | 6 | hub links, spare-sector links and every feasible bridge; takes links down at the event |
-| 9 | 60 GHz | V-band splitter / combiner | 8 | 8 | 8 | 9 | 4 | one per sector port that reaches more than one peer |
-| 10 | 60 GHz | V-band fixed pad (one per used sector port) | 18 | 18 | 13 | 14 | 7 |  |
-| 11 | 60 GHz | V-band waveguide / mm-wave cable jumpers | 44 | 44 | 36 | 39 | 16 | two per path + one per splitter |
+| 8 | 60 GHz | V-band programmable attenuator (one per cabled TG link) | 9 | 9 | 14 | 15 | 6 | hub links and the chosen bridges (A, A7) or every feasible bridge (B-D); takes links down at the event |
+| 9 | 60 GHz | V-band splitter / combiner | 6 | 6 | 8 | 9 | 4 | one per sector port that reaches more than one peer |
+| 10 | 60 GHz | V-band fixed pad (one per used sector port) | 12 | 12 | 13 | 14 | 7 |  |
+| 11 | 60 GHz | V-band waveguide / mm-wave cable jumpers | 24 | 24 | 36 | 39 | 16 | two per path + one per splitter |
 | 12 | Power | PoE injector for TG unit (rating per datasheet) | 8 | 7 | 6 | 6 | 4 |  |
 | 13 | Power | Switched, metered PDU (per-outlet, network-controlled) | 8 | 8 | 7 | 7 | 5 | switches CORE and HUB off at t0; energy per site |
 | 14 | Network | Site router / L3 switch, per-flow policy routing, SFP+ | 7 | 7 | 6 | 6 | 4 | every site with wired kit (not the TG-only hub); pins DPIR paths |
@@ -31,11 +31,15 @@ the validator's bridge candidates.
 
 ## V-band RF mesh per option
 
-- **A**: 18 paths (CORE–N, E1–HUB, E1–N, E1–S, E1–W1, E1–W2, E2–HUB, E2–N, E2–S, E2–W1, E2–W2, HUB–S, HUB–W1, HUB–W2, N–W1, N–W2, S–W1, S–W2); 18 sector ports, 8 with a splitter.
-- **A7**: 18 paths (E1–HUB, E1–N, E1–S, E1–W1, E1–W2, E2–HUB, E2–N, E2–S, E2–W1, E2–W2, HUB–N, HUB–S, HUB–W1, HUB–W2, N–W1, N–W2, S–W1, S–W2); 18 sector ports, 8 with a splitter.
+- **A** (final plan only): 9 paths (CORE–N, E1–HUB, E1–N, E2–HUB, E2–W2, HUB–S, HUB–W1, HUB–W2, S–W1); 12 sector ports, 6 with a splitter.
+- **A7** (final plan only): 9 paths (E1–HUB, E1–N, E2–HUB, E2–W2, HUB–N, HUB–S, HUB–W1, HUB–W2, S–W1); 12 sector ports, 6 with a splitter.
 - **B**: 14 paths (E1–HUB, E1–S, E1–W1, E1–W2, E2–HUB, E2–S, E2–W1, E2–W2, HUB–S, HUB–W1, HUB–W2, S–W1, S–W2, W1–W2); 13 sector ports, 8 with a splitter.
 - **C**: 15 paths (E1–E2, E1–HUB, E1–S, E1–W1, E1–W2, E2–HUB, E2–S, E2–W1, E2–W2, HUB–S, HUB–W1, HUB–W2, S–W1, S–W2, W1–W2); 14 sector ports, 9 with a splitter.
 - **D**: 6 paths (E1–E2, E1–HUB, E1–W1, E2–HUB, E2–W1, HUB–W1); 7 sector ports, 4 with a splitter.
+
+A and A7 (the selected option and its version on the delivered N367 kit) cable only their
+final plan: the pre-event TG links plus the chosen bridges. B, C and D are sized for every
+feasible bridge candidate.
 
 How the bench emulates the radio layer: each programmable attenuator holds its path at the
 loss the geometry gives (the figures' link budget); at t0 the PDUs switch CORE and HUB off and

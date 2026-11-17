@@ -37,6 +37,8 @@ Chain per path: 20 dB pad on each sector port, a 2-way splitter where a port rea
 
 Before the event the attenuator's own insertion loss (up to ~17 dB at 0 dB for a 67 GHz solid-state unit) and the jumpers (~6 dB/m at 60 GHz for 1.85 mm cable) add to the chain: measure each path and subtract the excess from its setting. The lowest link-up setting (23.1 dB) leaves that much room. 1.85 mm parts are rated to 67 GHz, which covers Siklu's 57–66 GHz band (Terragraph channels 1–4).
 
+These settings follow the MARL paper's radio model (about 145 dB of system gain at the lowest MCS). The N367 datasheet gives about 116 dB, so on the real radios calibrate each path in margin terms instead: find the attenuator value at which the link just drops, then back off by the margin in the last column (link up) and go at least 14 dB past it to take the link down.
+
 Sector ports reaching two peers (2-way splitter each): E2-W, HUB-E, HUB-W, N-single, S-single, W2-E.
 
 V-band parts: 9 programmable attenuators, 6 splitters, 12 pads (one per used sector port), 24 cables (two per path, one per splitter).

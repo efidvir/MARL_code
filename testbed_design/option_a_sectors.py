@@ -181,6 +181,10 @@ def main(key="A"):
           "measure each path and subtract the excess from its setting. The lowest link-up setting "
           f"({min(p['on'] for p in paths):.1f} dB) leaves that much room. 1.85 mm parts are rated to "
           "67 GHz, which covers Siklu's 57–66 GHz band (Terragraph channels 1–4).", "",
+          "These settings follow the MARL paper's radio model (about 145 dB of system gain at the lowest "
+          "MCS). The N367 datasheet gives about 116 dB, so on the real radios calibrate each path in margin "
+          "terms instead: find the attenuator value at which the link just drops, then back off by the "
+          "margin in the last column (link up) and go at least 14 dB past it to take the link down.", "",
           f"Sector ports reaching two peers (2-way splitter each): "
           + ", ".join(f"{s}-{sec_name(r, s, k)}" for s, k in junctions) + ".", "",
           f"V-band parts: {len(paths)} programmable attenuators, {len(junctions)} splitters, "
