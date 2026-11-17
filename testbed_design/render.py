@@ -76,10 +76,10 @@ def beam(ax, xy, toward, color=TG, length=230, half=8, alpha=0.30, ls="-", fill=
     ax.add_patch(w)
 
 
-def tg_icon(ax, xy, kind, color=TG, alpha=1.0, z=7):
+def tg_icon(ax, xy, kind, color=TG, alpha=1.0, z=7, sectors=range(4)):
     if kind == "DN":
         ax.add_patch(Circle(xy, 25, fc=color, ec="white", lw=1.2, alpha=alpha, zorder=z))
-        for k in range(4):  # four 90-degree sector panels (east, north, west, south)
+        for k in sectors:  # 90-degree sector panels (0 east, 1 north, 2 west, 3 south)
             a = math.radians(90 * k)
             c = (xy[0] + 27 * math.cos(a), xy[1] + 27 * math.sin(a))
             w, h = (10, 26) if k % 2 == 0 else (26, 10)
@@ -237,7 +237,8 @@ def draw_sites(ax, r, dead=(), devices=True, tg_alpha=1.0):
         d = s in dead
         site_base(ax, xy, dead=d, has_tg=s in cfg["tg_units"])
         if s in cfg["tg_units"]:
-            tg_icon(ax, xy, cfg["tg_units"][s], color=TG if not d else "#c4c8cf", alpha=tg_alpha)
+            tg_icon(ax, xy, cfg["tg_units"][s], color=TG if not d else "#c4c8cf", alpha=tg_alpha,
+                    sectors=r.get("installed", {}).get(s, range(4)))
         if devices:
             for a, b in cfg["mw"]:
                 if s in (a, b):
@@ -501,7 +502,7 @@ def tech_str(t):
     return " + ".join(out)
 
 
-def legend(ax):
+def legend(ax, r=None):
     ax.axis("off")
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 10)
@@ -529,9 +530,22 @@ def legend(ax):
             cx, cy = 0.6 + 0.24 * math.cos(a), yy + 0.24 * math.sin(a)
             w, h = (0.09, 0.22) if k % 2 == 0 else (0.22, 0.09)
             ax.add_patch(Rectangle((cx - w / 2, cy - h / 2), w, h, fc=TG, ec="white", lw=0.5))
-    row(dn_l, "TG node-class unit (DN, 4×90° sectors = 360°)")
-    row(lambda yy: ax.add_patch(Rectangle((0.38, yy - 0.17), 0.34, 0.34, fc=TG, ec="white")),
-        "TG terminal-class unit (CN, steers ±45°)")
+    small = sorted({n for n in (r or {}).get("budget", {}).values() if n < 4})
+    if small:
+        def dn2_l(yy):
+            ax.add_patch(Circle((0.6, yy), 0.2, fc=TG, ec="white"))
+            for k in (0, 3):
+                a = math.radians(90 * k)
+                cx, cy = 0.6 + 0.24 * math.cos(a), yy + 0.24 * math.sin(a)
+                w, h = (0.09, 0.22) if k % 2 == 0 else (0.22, 0.09)
+                ax.add_patch(Rectangle((cx - w / 2, cy - h / 2), w, h, fc=TG, ec="white", lw=0.5))
+        row(dn_l, "TG node, 4 × 90° sectors (N367, 4-sector)")
+        row(dn2_l, "TG node, 2 × 90° sectors side by side (N367, 2-sector)")
+    else:
+        row(dn_l, "TG node-class unit (DN, 4×90° sectors = 360°)")
+    if r is None or "CN" in r["cfg"]["tg_units"].values():
+        row(lambda yy: ax.add_patch(Rectangle((0.38, yy - 0.17), 0.34, 0.34, fc=TG, ec="white")),
+            "TG terminal-class unit (CN, steers ±45°)")
     row(lambda yy: ax.add_patch(Wedge((0.1, yy), 1.0, -9, 9, fc=TG, alpha=0.35, ec=TG, lw=0.8)),
         "60 GHz beam (directivity)")
     row(lambda yy: ax.plot([0.1, 1.1], [yy, yy], color=MW, lw=3.2), "IP-50 microwave link (2 units)")
@@ -622,7 +636,7 @@ def config_figure(key):
     axp.text(0.0, -0.01, "\n".join(lines), transform=axp.transAxes,
              fontsize=7.6, color=INK, va="top", linespacing=1.35)
     axl = fig.add_subplot(bot[0, nfl + 1])
-    legend(axl)
+    legend(axl, r)
 
     os.makedirs(OUT, exist_ok=True)
     for ext in ("png", "svg"):
@@ -633,7 +647,7 @@ def config_figure(key):
 
 
 def overview():
-    keys = list(CONFIGS)
+    keys = [k for k in CONFIGS if not CONFIGS[k].get("variant_of")]  # the four equipment levels
     H = 6.0 * len(keys) + 1.2 + 3.4
     fig = plt.figure(figsize=(19, H), facecolor="white")
     gs = fig.add_gridspec(len(keys), 3, wspace=0.02, hspace=0.12, left=0.11, right=0.995,

@@ -7,7 +7,7 @@ Devices are line-art drawings (hwdraw.py).  Every item drawn and counted
 comes from the topology spec, the validator and bom.py, so the drawing
 matches the bill of materials.
 
-Run:  python3 iso_render.py    -> out/iso_{A,B,C,D}.png, out/iso_A_final.png (final plan only)
+Run:  python3 iso_render.py    -> out/iso_{A,A7,B,C,D}.png, out/iso_{A,A7}_final.png (final plan only)
 """
 import math
 import os
@@ -393,3 +393,4 @@ if __name__ == "__main__":
     for k in CONFIGS:
         print(render(k))
     print(render("A", final_only=True))  # selected option, final plan cabled only
+    print(render("A7", final_only=True))  # option A on the delivered N367 kit

@@ -79,6 +79,25 @@ CONFIGS = {
         service=[("W1", "S"), ("W2", "N")],
         destroyed=["CORE", "HUB"],
     ),
+    # Option A on the TG kit actually delivered: one 4-sector N367 and six
+    # 2-sector N367s, all node-class (DN).  Seven units for A's eight TG sites,
+    # so the core keeps only its microwave hub and the field hospital is fed
+    # from the hub's otherwise idle north sector; the pockets S and N become
+    # single-sector DNs.  Same sites, IP-50 hops, flows, event and islands.
+    "A7": dict(
+        name="A7 - option A on 1 x 4-sector + 6 x 2-sector N367",
+        variant_of="A",
+        ip50=8,
+        tg=7,
+        sites=["W1", "W2", "CORE", "HUB", "E1", "E2", "S", "N"],
+        mw=[("W1", "CORE"), ("CORE", "E1"), ("W1", "W2"), ("E1", "E2")],
+        tg_units={"HUB": "DN", "W1": "DN", "W2": "DN", "E1": "DN", "E2": "DN", "S": "DN", "N": "DN"},
+        sector_budget={"HUB": 4, "W1": 2, "W2": 2, "E1": 2, "E2": 2, "S": 2, "N": 2},
+        tg_links=_TG_STAR + [("HUB", "N")],
+        flows=[("F1", "W1", "E1"), ("F2", "W2", "E2")],
+        service=[("W1", "S"), ("W2", "N")],
+        destroyed=["CORE", "HUB"],
+    ),
     "B": dict(
         name="B - 6 IP-50 + 6 TG",
         ip50=6,

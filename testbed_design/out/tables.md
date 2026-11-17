@@ -63,6 +63,67 @@ Service flow W2→N (single-homed pocket, MARL only): W2–W1–CORE–N
 
 **TG polarity plan** (set before the event; hybrid per sector): CORE north = even, E1 north = even, E1 west = even, E2 west = even, HUB east = odd, HUB west = even, HUB south = odd, N sector = odd, S sector = even, W1 east = odd, W1 south = odd, W2 east = odd
 
+## Configuration A7 - option A on 1 x 4-sector + 6 x 2-sector N367
+
+| Site | Role | IP-50 units | TG unit | After the event |
+|---|---|---|---|---|
+| W1 | West site | 2 | node-class (DN) | island 1 |
+| W2 | West site | 1 | node-class (DN) | island 1 |
+| CORE | Core + MW hub | 2 | - | destroyed |
+| HUB | TG PtMP hub | - | node-class (DN) | destroyed |
+| E1 | Incident site | 2 | node-class (DN) | island 2 |
+| E2 | Incident site | 1 | node-class (DN) | island 2 |
+| S | Shelter (responders) | - | node-class (DN) | island 4 |
+| N | Field hospital | - | node-class (DN) | island 3 |
+
+Totals: 8 IP-50 (4 fixed PtP links), 7 TG. Lost in the event: 2 IP-50, 1 TG.
+
+**DPIR flows and candidate paths (before the event)**
+
+| Flow | Candidate | Path | Links |
+|---|---|---|---|
+| F1 W1→E1 | a | W1–CORE–E1 | MW + MW |
+| F1 W1→E1 | b | W1–HUB–E1 | TG + TG |
+| F2 W2→E2 | a | W2–HUB–E2 | TG + TG |
+| F2 W2→E2 | b | W2–W1–CORE–E1–E2 | MW + MW + MW + MW |
+
+Shared TG sectors (the flows' TG candidates contend for this airtime): HUB west sector serves W1, W2; HUB east sector serves E1, E2
+
+Service flow W1→S (single-homed pocket, MARL only): W1–HUB–S
+
+Service flow W2→N (single-homed pocket, MARL only): W2–HUB–N
+
+**Islands after the event**: 1: W1, W2; 2: E1, E2; 3: N; 4: S
+
+**Bridge candidates**
+
+| Pair | Distance | MCS | Margin | Feasible | Chosen |
+|---|---|---|---|---|---|
+| W1–E1 | 540 m | 16QAM | 13.9 dB | yes |  |
+| W1–E2 | 649 m | 16QAM | 10.7 dB | yes |  |
+| W1–S | 747 m | QPSK 1/2 | 8.0 dB | yes | bridge 3 (W1 ignites) |
+| W1–N | 504 m | 64QAM | 15.0 dB | yes |  |
+| W2–E1 | 649 m | 16QAM | 10.7 dB | yes |  |
+| W2–E2 | 540 m | 16QAM | 13.9 dB | yes | bridge 1 (E2 ignites) |
+| W2–S | 431 m | 64QAM | 17.5 dB | yes |  |
+| W2–N | 831 m | QPSK 1/2 | 5.8 dB | yes |  |
+| E1–S | 747 m | QPSK 1/2 | 8.0 dB | yes |  |
+| E1–N | 504 m | 64QAM | 15.0 dB | yes | bridge 2 (E1 ignites) |
+| E2–S | 431 m | 64QAM | 17.5 dB | yes |  |
+| E2–N | 831 m | QPSK 1/2 | 5.8 dB | yes |  |
+| S–N | 1122 m | no link | -1.2 dB | no: out of range at 23 dBm |  |
+
+**Beam changes** (the node-class end ignites the bridge)
+
+- E2 (initiator): west sector beam that served HUB turns 34° to W2
+- W2 (responder): east sector beam that served HUB turns 34° to E2
+- E1 (initiator): north sector (idle sector) points at N
+- N (responder): south sector beam that served HUB turns 32° to E1
+- W1 (initiator): south sector (idle sector) points at S
+- S (responder): north sector beam that served HUB turns 21° to W1
+
+**TG polarity plan** (set before the event; hybrid per sector): E1 north = even, E1 west = even, E2 west = even, HUB east = odd, HUB north = even, HUB west = even, HUB south = odd, N south = odd, S north = even, W1 east = odd, W1 south = odd, W2 east = odd
+
 ## Configuration B - 6 IP-50 + 6 TG
 
 | Site | Role | IP-50 units | TG unit | After the event |

@@ -67,6 +67,18 @@ def sector(kind, b):
     return 0 if kind == "CN" else int(((b + 45) % 360) // 90)
 
 
+def fits_budget(secs, n):
+    """Can a unit with n sectors cover the 90-degree sectors in secs?  A 4-sector
+    node covers all four; a unit with fewer sectors has them side by side
+    (a 2-sector node covers 180 degrees), mounted to face the sectors needed."""
+    secs = set(secs)
+    if len(secs) > n:
+        return False
+    if n >= 4 or len(secs) <= 1:
+        return True
+    return any(secs <= {(s0 + i) % 4 for i in range(n)} for s0 in range(4))
+
+
 def build_graph(cfg):
     g = nx.Graph()
     g.add_nodes_from(cfg["sites"])
@@ -157,6 +169,22 @@ def analyze(key):
         for x, y in ((a, b), (b, a)):
             shared.setdefault(end_sector(x, y), []).append((x, y))
     shared = {k: v for k, v in shared.items() if len(v) >= 2 and cfg["tg_units"][k[0]] == "DN"}
+
+    # hardware: sectors each unit has (default: 4 on a node, 1 on a terminal)
+    budget = {s: cfg.get("sector_budget", {}).get(s, 4 if k == "DN" else 1)
+              for s, k in cfg["tg_units"].items()}
+
+    def used_sectors(links):
+        u = {s: set() for s in cfg["tg_units"]}
+        for a, b in links:
+            for x, y in ((a, b), (b, a)):
+                u[x].add(end_sector(x, y)[1])
+        return u
+    pre_used = used_sectors(tg_all)
+    for s, secs in pre_used.items():
+        if cfg["tg_units"][s] == "DN":
+            check(fits_budget(secs, budget[s]),
+                  f"{s}: pre-event links use sectors {sorted(secs)}, within its {budget[s]}-sector unit")
 
     # ---- before the event: DPIR ------------------------------------------
     g0 = build_graph(cfg)
@@ -264,9 +292,12 @@ def analyze(key):
         h = nx.Graph()
         h.add_nodes_from(range(len(islands)))
         h.add_edges_from((comp[c["a"]], comp[c["b"]]) for c in combo)
-        if nx.is_connected(h):
+        u = used_sectors(tg_all + [(c["a"], c["b"]) for c in combo])
+        if nx.is_connected(h) and all(fits_budget(u[x], budget[x]) for x in ends
+                                      if cfg["tg_units"][x] == "DN"):
             plans.append(combo)
-    check(plans, f"{len(plans)} valid recovery plans (every island joined, one new link per site)")
+    check(plans, f"{len(plans)} valid recovery plans (every island joined, one new link per site, "
+          "within each unit's sectors)")
 
     def turn(x, y):
         """Turn of x's beam toward y if the same sector served a destroyed peer."""
@@ -376,6 +407,19 @@ def analyze(key):
              "planning guidance (needs a polarity change at recovery over the air)"
               + (f" ({sorted(adj - gone)})" if adj - gone else ""))
 
+    # sectors each unit carries: all four on a 4-sector node; on a smaller unit
+    # the side-by-side window that covers the sectors it uses (pre-event + bridges)
+    final_used = used_sectors(tg_all + bridges)
+    installed = {}
+    for x, k in cfg["tg_units"].items():
+        if k != "DN" or budget[x] >= 4:
+            installed[x] = list(range(4)) if k == "DN" else [0]
+            continue
+        need = final_used[x]
+        wins = [[(s0 + i) % 4 for i in range(budget[x])] for s0 in range(4)]
+        ok = [w for w in wins if need <= set(w)]
+        installed[x] = (min(ok, key=lambda w: (w[0] not in need, w[0])) if ok else sorted(need))
+
     post = {}
     for fid, s, t in cfg["flows"]:
         post[fid] = nx.shortest_path(g2, s, t)
@@ -385,7 +429,7 @@ def analyze(key):
     return dict(key=key, cfg=cfg, pos=pos, ip_units=ip_units, checks=checks, warnings=warnings, dpir=dpir,
                 service=service, g0=g0, islands=islands, comp=comp, lost_ip=lost_ip,
                 lost_tg=lost_tg, cands=cands, steer=steer, g_post=g2, post=post,
-                shared=shared, polarity=polarity, hybrid=hybrid, cn_mount=cn_mount, end_sector=end_sector,
+                shared=shared, polarity=polarity, hybrid=hybrid, budget=budget, installed=installed, cn_mount=cn_mount, end_sector=end_sector,
                 n_plans=len(plans), tg_all=tg_all,
                 path_tech=lambda p, g=g0: path_tech(g, p))
 

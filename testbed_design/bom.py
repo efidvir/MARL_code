@@ -78,7 +78,7 @@ ITEMS = [
     (4, "Microwave", "Programmable attenuator, 0-95 dB, IP-50 band", lambda c: c["n_mw"],
      "one per link: fades for DPIR, cut at the event"),
     (5, "Microwave", "Low-loss coax jumper, IP-50 band", lambda c: 2 * c["n_mw"], ""),
-    (6, "60 GHz", "Siklu TG node, 4 x 90 deg (N366/N367 class), RF-port build", lambda c: c["n_dn"],
+    (6, "60 GHz", "Siklu TG node (N366/N367 class; A7: 1 x 4-sector + 6 x 2-sector), RF-port build", lambda c: c["n_dn"],
      "hub, core spur and every steerable west/east site"),
     (7, "60 GHz", "Siklu TG terminal (T265 class), RF-port build", lambda c: c["n_cn"],
      "shelter / field-hospital pockets"),
