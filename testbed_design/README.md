@@ -138,6 +138,7 @@ row); editable `.svg` next to each. Numbers: `out/tables.md`; every check:
 | `animate.py` | Writes `out/anim_*.gif`: normal → broken → reconnected, with the TG beams turning slowly to their new peers |
 | `option_a_plan.py` | Writes `out/option_A_plan.md`: the option A bench plan (carts, sector ports, V-band attenuator settings per state, microwave chains) |
 | `kit_change.py` | Writes `out/kit_change.png`: option A beside A7 (the delivered N367 kit), each node with its sectors, and the bridges kept, still possible or out of reach |
+| `hub_ports.py` | Writes `out/hub_ports.png`: how the A7 hub serves six links from four RF ports (point-to-multipoint sectors, splitters on the bench) |
 | `option_a_sectors.py` | Writes `out/option_A_sectors.md`: option A with only the final plan cabled (sectors per node, attenuators that take links down, site-switch port map) |
 
 Requires `matplotlib` and `networkx`.
