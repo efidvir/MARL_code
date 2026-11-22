@@ -108,7 +108,8 @@ def poc1_design():
         hosts=OrderedDict([("W1", ["W1"]), ("W2", ["W2"]), ("E1", ["E1"]), ("E2", ["E2"]), ("S", ["S"]),
                            ("N", ["N"])]),
         agents=["W1", "W2", "E1", "E2", "S", "N"],
-        servers=[("SRV-E2E", "TG E2E controller + NMS", "CORE"), ("SRV-DPIR", "DPIR planner + predictor", "CORE")],
+        servers=[("SRV-E2E", "TG E2E controller + NMS", "CORE"), ("SRV-DPIR", "DPIR planner + predictor", "CORE"),
+                 ("BENCH-CTL", "bench controller: event script, ATT / PDU commands, logging (always on)", None)],
         no_data=["HUB"], att_set=att_set,
         mw_set=OrderedDict([("W1-CORE", ("10 + fades", "CORE radio off")), ("CORE-E1", ("10 + fades", "CORE radio off")),
                             ("W1-W2", ("10 + fades", "unchanged")), ("E1-E2", ("10 + fades", "unchanged"))]),
@@ -155,7 +156,8 @@ def bowtie_design():
         sites=["A1", "A2", "A3", "H", "B1", "B2", "B3"],
         hosts=OrderedDict([("1", ["A1", "A2"]), ("2", ["B1", "B2"]), ("3", ["A3", "H"]), ("4", ["B3"])]),
         agents=[], servers=[("SRV-DPIR", "DPIR controller + predictor (GPU)", None),
-                            ("SRV-E2E", "TG E2E controller + NMS (POP at H)", "H")],
+                            ("SRV-E2E", "TG E2E controller + NMS (POP at H)", "H"),
+                            ("BENCH-CTL", "bench controller: run script, ATT / PDU commands, logging (always on)", None)],
         no_data=[], event=None, att_reuse=9,
     )
 
@@ -601,8 +603,8 @@ def parts(b):
     if d.get("agents"):
         add("Compute", "-", "MARL agent PC (mini PC, 2 x 1G NICs)", "lab PC", "-", len(d["agents"]), "", "on hand")
     add("Compute", "-", "Traffic host (10G SFP+ NIC, iperf3/TRex)", "lab PC", "-", len(d["hosts"]), "", "on hand")
-    add("Compute", "-", "Servers: " + "; ".join(s[1] for s in d["servers"]), "lab servers", "-", len(d["servers"]), "",
-        "on hand")
+    add("Compute", "-", "Servers and controller PCs: " + "; ".join(s[0] for s in d["servers"]), "lab servers / PC", "-",
+        len(d["servers"]), "BENCH-CTL stays powered through the event", "on hand; to confirm")
     add("Rack", "4", f"19-inch 4-post rack ({b.total}U used of {b.size}U)",
         "StarTech 4POSTRACK25U" if b.size == 25 else "StarTech 4POSTRACK42", "StarTech", 1,
         "rail type (square hole?) to confirm", "confirmed")

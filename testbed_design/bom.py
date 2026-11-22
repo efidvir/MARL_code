@@ -140,8 +140,8 @@ def main():
               "final plan: the pre-event TG links plus the chosen bridges. B, C and D are sized for every",
               "feasible bridge candidate.",
               "", "How the bench emulates the radio layer: each programmable attenuator holds its path at the",
-              "loss the geometry gives (the figures' link budget); at t0 the PDUs switch CORE and HUB off and",
-              "every path to them goes to maximum attenuation; a MARL bridge is a cabled candidate path that",
+              "loss the geometry gives (the figures' link budget); at t0 the PDUs switch CORE and HUB off, which",
+              "takes every path to them down (attenuators drop only links between survivors); a MARL bridge is a cabled candidate path that",
               "the engaged site brings up. Confirm with Siklu that the TG units are available with RF test",
               "ports, and the port type (waveguide or connector) the V-band parts must match."]
     os.makedirs(OUT, exist_ok=True)

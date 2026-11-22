@@ -1060,8 +1060,9 @@ def sheet_table(b, pdf, n, N, prefix):
         s.tag(160, bot2 + 2.4, ac["id"], CLS["AC"][0], va="top", fs=3.8)
         s.tag(p0[0], p0[1] + 0.6, ac["id"], CLS["AC"][0], va="bottom", fs=3.8)
     yb = strip_y - 18
+    pitch = min(26.0, 222.0 / max(1, len(items) - 1))
     for i, (nm, sub, kind) in enumerate(items):
-        x = 16 + i * 26
+        x = 16 + i * pitch
         if kind == "server":
             s.rect(x + 2, yb - 22, 13, 22, fc=FACE, lw=0.6, z=4, r=0.8)
             for k2 in range(5):
@@ -1113,7 +1114,8 @@ def sheet_table(b, pdf, n, N, prefix):
         "IP-50 band, flange (WR-62 / WR-42 / WR-28) and Tx power TBC; >= 110 dB in the chain takes a hop down.",
         "30 dB 10 W pads screw onto both transitions; a 1 m SMA cable joins each pad to its MWATT port.",
         "MWATT is commanded over its LAN from SW-OOB; set each channel before the radios are powered.",
-    ] + (["Event: CORE's hops go to maximum attenuation at t0; W1-W2 and E1-E2 stay."] if d.get("event") else []),
+    ] + (["Event: CORE's two radios lose power at t0 (switched supplies), which takes W1-CORE and CORE-E1 down; "
+          "W1-W2 and E1-E2 stay."] if d.get("event") else []),
         fs=4.6, step=3.1, width=66)
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))
 
@@ -1244,7 +1246,25 @@ def sheet_ladder(b, pdf, n, N, prefix):
         nts += ["Settings: to come from poc2.py (the final PoC 2 design)."]
     nts += ["Single-tile operation, if the links allow it, divides the IF cabling and attenuator channels by four."]
     nts += ([f"Event: {d['event']}"] if d.get("event") else [])
-    s.notes(252, yt - 5, nts, fs=4.6, step=3.1, width=66)
+    yn = s.notes(252, yt - 5, nts, fs=4.6, step=3.1, width=66)
+    rules = [
+        "A device that dies loses power at its switched PDU outlet (sheet 3); its links go down with it. "
+        "Attenuators drop only links whose two ends survive.",
+        "Attenuator drop: all four tile channels together, read back. Hold = calibrated drop-out value + at least 14 dB, "
+        "inside 0-63 dB (the ZTDAT adds ~8 dB insertion loss at 12-18 GHz); if it does not fit, add fixed pads.",
+        "Before holding a link down, turn its auto-ignition off on the E2E controller (tg ignition link -n <link> "
+        "--disable), or the controller keeps sweeping into it.",
+        "Fixed TX power (TPC off) on every node, or the radios raise power against the attenuator.",
+        "Raise the no-link watchdog (noLinkTimeout, 15 min by default): bridge modules have no link until MARL "
+        "engages them.",
+        "A surviving IP-50 may keep its Ethernet up when its peer dies; Open/R then needs its 10 s hold time. Set the "
+        "radio to drop Ethernet on radio loss if detection must be faster.",
+        "BENCH-CTL (always powered) switches the PDU outlets and steps the attenuators; ZTDATs on unswitched outlets, "
+        "start-up = last value.",
+    ] + (["Coupling arms tap a sector before its link attenuator: a PoC 2 link that must stop emitting is taken "
+          "down in Terragraph (link down + ignition off), not only attenuated."] if b.coupled else [])
+    s.notes(252, yn - 3, rules, title="HOW LINKS ARE DROPPED (Terragraph defaults per Meta's open source; confirm on "
+            "Siklu firmware)", fs=4.4, step=3.0, width=70)
     # detail: one path, tile by tile
     detail(s, b, min(ladder_bottom - 6, 150))
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))

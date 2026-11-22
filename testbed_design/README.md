@@ -106,9 +106,10 @@ another pad. The TG radios are RF-port builds, cabled into a V-band RF mesh.
 Every possible TG path has its own programmable attenuator, set to the loss
 the geometry gives: the hub links, the spare-sector links and every feasible
 MARL bridge. Splitters are fitted where one sector port reaches more than one
-peer. At t0 the switched PDUs cut CORE and HUB and the paths to them go to
-maximum attenuation. A MARL bridge is a cabled candidate path that the
-engaged site brings up, so nothing is re-cabled during a run.
+peer. At t0 the switched PDUs cut CORE and HUB, which takes the paths to them
+down; attenuators drop only links whose two ends survive (a bridge is held
+off-beam until its sites engage). A MARL bridge is a cabled candidate path
+that the engaged site brings up, so nothing is re-cabled during a run.
 
 Figures: `out/overview.png` (all four), `out/config_{A,B,C,D}.png` (before the
 event / event and islands / MARL recovery, DPIR candidates in the bottom

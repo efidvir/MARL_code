@@ -14,21 +14,21 @@ line,group,team list item,item,part number,manufacturer,qty,use,status
 13,Power,5,GMT fuse for the -48 V panel,GMT 3 A (rating to confirm),Bussmann / Littelfuse,8,6 + 2 spare,to confirm
 14,Power,-,"Isolated 48 V AC/DC supply >= 100 W, wired -48 V (positive grounded)",part TBC,-,2,"one per IP-50 radio switched off at t0, on a switched PDU outlet",to confirm
 15,Power,7,"Rack PDU 32 A, 16 x C13, switched per outlet",AP7922B,APC,2,"IEC 60309 32 A inlet; PDU-B O5, PDU-B O6, PDU-B O7, PDU-B O8, PDU-B O9 switched off at t0",confirmed
-16,Power,-,"Bench-table mains strip, C13 outlets",lab-supplied (part TBC),-,1,8 table loads,to confirm
+16,Power,-,"Bench-table mains strip, C13 outlets",lab-supplied (part TBC),-,1,9 table loads,to confirm
 17,Power,8,'Micky' lead C14 -> C5,P014-006,Eaton Tripp Lite,13,"agent-PC bricks, traffic hosts, PoE injector (inlet TBC)",confirmed
-18,Power,9,'Exten' lead C14 -> C13 1.8 m,P004-006,Eaton Tripp Lite,16,PDU and table strip to devices,meaning to confirm
+18,Power,9,'Exten' lead C14 -> C13 1.8 m,P004-006,Eaton Tripp Lite,17,PDU and table strip to devices,meaning to confirm
 19,Power,9,'Exten' lead C14 -> C13 3.05 m,P004-010,Eaton Tripp Lite,4,switched PDU outlet to a bench-table device,confirmed
 20,Power,10,DC cable 2 x 18 AWG (bulk) + ferrules,Belden 8461 + Phoenix 3200519,Belden / Phoenix,26 m + 56 ferrules,14 runs; 100 ft spool = 30.5 m,confirmed
 21,Power,10,DC bus link 2 x 10 AWG with ring lugs,part TBC,-,2,rectifier to distribution,to confirm
 22,Network,6,"Data switch, 24 x SFP+ + 4 x SFP28, L3",M4350-24F4V (XSM4328FV),Netgear,1,28 of 28 ports; 1G only on P1-16,confirmed
-23,Network,6,"Management switch, 24 x 1G PoE+ + 2 x 1G + 4 x SFP+",M4250-26G4XF-PoE+ (GSM4230PX),Netgear,1,27 ports: 26 of 26 RJ-45 + 1 SFP+ cage,confirmed
-24,Network,-,1000BASE-T copper SFP,AGM734-10000S,Netgear,15,"14 on SW-DATA P1-16, 1 on SW-OOB",confirmed; switch compatibility to confirm
+23,Network,6,"Management switch, 24 x 1G PoE+ + 2 x 1G + 4 x SFP+",M4250-26G4XF-PoE+ (GSM4230PX),Netgear,1,28 ports: 26 of 26 RJ-45 + 2 SFP+ cage,confirmed
+24,Network,-,1000BASE-T copper SFP,AGM734-10000S,Netgear,16,"14 on SW-DATA P1-16, 2 on SW-OOB",confirmed; switch compatibility to confirm
 25,Network,-,"SFP+ SR, node side / switch side",AX-SFP+10G-MM / AXM761-10000S,Siklu / Netgear,6 + 6,node SFP+ to SW-DATA,likely / confirmed
 26,Network,-,OM4 LC-LC duplex 2 m,FZ2ERLNLNSNM002,Panduit,6,,confirmed
 27,Network,-,SFP+ DAC 3 m,AXC763-10000S,Netgear,8,traffic hosts and servers,confirmed
 28,Network,-,Cat6A S/FTP patch 1 m,STP6X1MBU,Panduit,7,,confirmed
 29,Network,-,Cat6A S/FTP patch 2 m,STP6X2MBU,Panduit,23,,confirmed
-30,Network,-,Cat6A S/FTP patch 3 m,STP6X3MBU,Panduit,18,,confirmed
+30,Network,-,Cat6A S/FTP patch 3 m,STP6X3MBU,Panduit,19,,confirmed
 31,RF/IF,-,"4-ch programmable attenuator 0-63 dB, 0.1-18 GHz",ZTDAT-4-18G63S,Mini-Circuits,9,not on the kit list,to buy: 9
 32,RF/IF,-,2-way splitter 2-18 GHz,ZN2PD-02183-S+,Mini-Circuits,8,one per tile of each shared hub module,confirmed
 33,RF/IF,3,SMA test cable 18 GHz 0.30 m,CBL-1FT-SMSM+,Mini-Circuits,8,"IF chain, length from the rack span",confirmed
@@ -45,7 +45,7 @@ line,group,team list item,item,part number,manufacturer,qty,use,status
 44,Timing,-,GNSS coax: antenna lead + surge arrestor / splitter jumpers,LMR-400 + arrestor / RG-316 SMA 1 m,part TBC,1 / 4,only if the boxes take GNSS,to confirm
 45,Compute,-,"MARL agent PC (mini PC, 2 x 1G NICs)",lab PC,-,6,,on hand
 46,Compute,-,"Traffic host (10G SFP+ NIC, iperf3/TRex)",lab PC,-,6,,on hand
-47,Compute,-,Servers: TG E2E controller + NMS; DPIR planner + predictor,lab servers,-,2,,on hand
+47,Compute,-,Servers and controller PCs: SRV-E2E; SRV-DPIR; BENCH-CTL,lab servers / PC,-,3,BENCH-CTL stays powered through the event,on hand; to confirm
 48,Rack,4,19-inch 4-post rack (29U used of 42U),StarTech 4POSTRACK42,StarTech,1,rail type (square hole?) to confirm,confirmed
 49,Rack,4,1U vented shelf,CABSHELFV1U,StarTech,3,"adaptors, tray, agent PCs",likely
 50,Rack,-,Cable manager / blanking panels (pack of 10) / labels,NCMHF1 / AR8136BLK / Brady M21-750-427,various,1 / 2 / 3,13 empty U,confirmed; rail type to confirm
