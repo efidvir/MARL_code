@@ -14,7 +14,7 @@ Team = item number on the lab's kit list (1 = '6*4 sector nodes - GTSTU022\23', 
 | 8 | 5 | Power | DC drawer: rectifier shelf 1U + 2 x 1 kW 48 V modules | RCP-1UI + 2 x RCP-1000-48 | Mean Well | 1 | 48 V bus, 336 W for 7 nodes | likely (shelf) / confirmed (modules) |
 | 9 | 5 | Power | DC drawer: distribution, 10 breakers | DCD1M (suffix TBC) | Eaton | 1 | one breaker per adaptor; CB8-10 spare, OFF | likely |
 | 10 | 5 | Power | -48 V rectifier for the IP-50 radios | RCP-1UI + RCP-1000-48 wired -48 V | Mean Well | 1 | 4 radios x ~58 W (IP-50E figure; recheck for the model) | likely |
-| 11 | 5 | Power | -48 V fuse panel 1U, 2 buses x 5 GMT positions | N250110-N-0803 | Westell | 1 | one fused output per IP-50 radio | to confirm |
+| 11 | 5 | Power | -48 V fuse panel 1U, 2 buses x 5 GMT positions | N250110-N-0803 | Westell | 1 | one fused output per surviving IP-50 radio | to confirm |
 | 12 | 5 | Power | GMT fuse for the -48 V panel | GMT 3 A (rating to confirm) | Bussmann / Littelfuse | 6 | 4 + 2 spare | to confirm |
 | 13 | 7 | Power | Rack PDU 32 A, 16 x C13, switched per outlet | AP7922B | APC | 1 | IEC 60309 32 A inlet | confirmed |
 | 14 | - | Power | Bench-table mains strip, C13 outlets | lab-supplied (part TBC) | - | 1 | 8 table loads | to confirm |

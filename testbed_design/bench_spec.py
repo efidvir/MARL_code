@@ -18,7 +18,9 @@ A design is a plain dict:
   att_order  [link or arm]                        attenuator order (optional)
   att_set    {link: (job, before, t0, after, margin)}   attenuator settings in dB (optional)
   att_reuse  int                                  attenuators carried over from PoC 1 (optional)
-  event      text; event_off [load]; event_breaker [site]   (PoC 1)
+  event      text; event_off [device]   (PoC 1) devices that go down at t0 lose power: servers, TG nodes and
+             IP-50 radios in event_off sit on switched PDU outlets (nodes through an AC PoE injector, radios
+             through their own 48 V supply); links between surviving devices are dropped with attenuators
 
 Management is in-band: the E2E controller reaches every node through the radio network from its data
 NIC, so no node ETH2 (and no IP-50 management port, until it is shown not to bridge to the data port) is
@@ -86,11 +88,12 @@ def poc1_design():
         ("HUB-S", (("HUB", "S"), ("S", "N"))), ("HUB-N", (("HUB", "N"), ("N", "S"))),
         ("E2-W2", (("E2", "N"), ("W2", "S"))), ("E1-N", (("E1", "N"), ("N", "W"))), ("W1-S", (("W1", "S"), ("S", "E")))])
     # out/option_A7_sectors.md, 'V-band paths and programmable attenuators': job, before, at t0, after, margin
-    down = "down at t0"
+    # the hub's paths go down with the hub (power cut at t0): their attenuators only set the link quality before
+    down = "hub off at t0"
     att_set = OrderedDict([
-        ("HUB-W1", (down, 27.6, 63.0, 63.0, "21.6 / -13.9")), ("HUB-W2", (down, 23.1, 63.0, 63.0, "21.6 / -18.4")),
-        ("HUB-E1", (down, 27.6, 63.0, 63.0, "21.6 / -13.9")), ("HUB-E2", (down, 23.1, 63.0, 63.0, "21.6 / -18.4")),
-        ("HUB-S", (down, 34.5, 63.0, 63.0, "14.6 / -13.9")), ("HUB-N", (down, 37.2, 63.0, 63.0, "11.9 / -13.9")),
+        ("HUB-W1", (down, 27.6, "hold", "hold", "21.6 / -13.9")), ("HUB-W2", (down, 23.1, "hold", "hold", "21.6 / -18.4")),
+        ("HUB-E1", (down, 27.6, "hold", "hold", "21.6 / -13.9")), ("HUB-E2", (down, 23.1, "hold", "hold", "21.6 / -18.4")),
+        ("HUB-S", (down, 34.5, "hold", "hold", "14.6 / -13.9")), ("HUB-N", (down, 37.2, "hold", "hold", "11.9 / -13.9")),
         ("E2-W2", ("bridge", 60.7, 60.7, 30.7, "13.9 / -18.4")), ("E1-N", ("bridge", 63.0, 63.0, 34.1, "15.0 / -13.9")),
         ("W1-S", ("bridge", 63.0, 63.0, 41.2, "8.0 / -13.9"))])
     return dict(
@@ -107,12 +110,13 @@ def poc1_design():
         agents=["W1", "W2", "E1", "E2", "S", "N"],
         servers=[("SRV-E2E", "TG E2E controller + NMS", "CORE"), ("SRV-DPIR", "DPIR planner + predictor", "CORE")],
         no_data=["HUB"], att_set=att_set,
-        mw_set=OrderedDict([("W1-CORE", ("10 + fades", "max")), ("CORE-E1", ("10 + fades", "max")),
+        mw_set=OrderedDict([("W1-CORE", ("10 + fades", "CORE radio off")), ("CORE-E1", ("10 + fades", "CORE radio off")),
                             ("W1-W2", ("10 + fades", "unchanged")), ("E1-E2", ("10 + fades", "unchanged"))]),
-        event="t0: ATT-01..06 (every path to the hub) to 63 dB and MWATT ch1-2 (W1-CORE, CORE-E1) to maximum; "
-              "then SRV-E2E and SRV-DPIR off at their switched PDU outlets and the hub dark (CB3 opened). "
-              "W1-W2 and E1-E2 unchanged. Bridges ATT-07..09 step down when MARL engages their sites.",
-        event_off=["SRV-E2E", "SRV-DPIR"], event_breaker=["HUB"],
+        event="t0: the devices that die lose power at their switched PDU outlets: the hub (its AC PoE injector), "
+              "CORE's two IP-50 radios, SRV-E2E and SRV-DPIR. The hub's six paths and the W1-CORE and CORE-E1 hops go "
+              "down with them; no attenuator moves at t0. W1-W2 and E1-E2 unchanged. Bridges ATT-07..09 (links "
+              "between surviving nodes) step down from their off-beam setting when MARL engages their sites.",
+        event_off=["SRV-E2E", "SRV-DPIR", "HUB", "IP50-W1-CORE@CORE", "IP50-CORE-E1@CORE"],
     )
 
 
@@ -206,19 +210,25 @@ class Bench:
         for name in order:
             self.atts[f"ATT-{len(self.atts) + 1:02d}"] = ("link" if name in d["link_ends"] else "arm", name)
         self.att_of = {v[1]: k for k, v in self.atts.items()}
-        self.adaptor = {n: f"PA-{i + 1:02d}" for i, n in enumerate(nodes)}
-        self.n_adaptors = max(10, len(nodes))
         self.ip50 = OrderedDict()
         for k, (a, b) in d.get("mw_links", {}).items():
             self.ip50[f"IP50-{k}@{a}"] = (k, a)
             self.ip50[f"IP50-{k}@{b}"] = (k, b)
         off = d.get("event_off", [])
+        # devices that go down at t0 are switched at the PDU: nodes through an AC PoE injector, radios through
+        # their own supply; every other node keeps its passive DC/PoE adaptor on the 48 V drawer
+        self.inj = OrderedDict((n, f"INJ-{n}") for n in nodes if n in off)
+        self.psu = OrderedDict((k, f"PSU-{k.replace('IP50-', '')}") for k in self.ip50 if k in off)
+        self.dc_nodes = [n for n in nodes if n not in off]
+        self.adaptor = {n: f"PA-{i + 1:02d}" for i, n in enumerate(self.dc_nodes)}
+        self.n_adaptors = max(10, len(self.dc_nodes))
+        self.switched = [s[0] for s in d["servers"] if s[0] in off] + list(self.inj.values()) + list(self.psu.values())
         # AC -----------------------------------------------------------------------------------
         rack_loads = ["DC-RECT", "SW-DATA", "SW-OOB", "GNSS-SPL"] + list(self.atts)
         if self.ip50:
             rack_loads.insert(1, "DC-RECT2")
         rack_loads += [f"AGENT-{s}" for s in d.get("agents", [])]
-        rack_loads += off                                   # event loads go on switched rack-PDU outlets
+        rack_loads += self.switched                         # event loads go on switched rack-PDU outlets
         self.pdus = [f"PDU-{'AB'[i]}" for i in range(math.ceil(len(rack_loads) / 16))]
         for p in self.pdus:
             self.add("AC", "Lab wall socket IEC 60309 32 A", f"{p}.inlet", "PDU cord (IEC 60309 32 A plug)", "fixed",
@@ -230,7 +240,10 @@ class Bench:
             if ld.startswith("AGENT"):
                 self.add("AC", f"{pdu}.O{o}", f"{ld}.ac", "Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead", "1.8 m",
                          "agent PC power brick", pn="P014-006")
-            elif ld in off:
+            elif ld in self.inj.values():
+                self.add("AC", f"{pdu}.O{o}", f"{ld}.ac", "Eaton Tripp Lite P014-006 C14-C5 lead (injector inlet TBC)",
+                         "1.8 m", "switched off at t0 (outlet switching): the node loses power", pn="P014-006")
+            elif ld in self.switched:
                 self.add("AC", f"{pdu}.O{o}", f"{ld}.ac", "Eaton Tripp Lite P004-010 C14-C13 lead", "3.05 m",
                          "switched off at t0 (outlet switching); runs to the bench table", pn="P004-010")
             else:
@@ -248,21 +261,30 @@ class Bench:
         # DC -----------------------------------------------------------------------------------
         self.add("DC", "DC-RECT.bus", "DC-DIST.bus", "DC bus link 2 x 10 AWG with ring lugs", "0.3 m", "48 V bus",
                  pn="bus link")
-        brk = d.get("event_breaker", [])
-        for i, nd in enumerate(nodes):
+        for i, nd in enumerate(self.dc_nodes):
             self.add("DC", f"DC-DIST.CB{i + 1}", f"PA-{i + 1:02d}.dc", "Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules",
-                     "1 m", f"feeds node {nd}" + ("; CB opened after t0 (node dark)" if nd in brk else ""),
-                     pn="Belden 8461", metres=1.0)
-        self.spare_breakers = list(range(len(nodes) + 1, 11))
+                     "1 m", f"feeds node {nd}", pn="Belden 8461", metres=1.0)
+        self.spare_breakers = list(range(len(self.dc_nodes) + 1, 11))
+        self.fuse = OrderedDict()
         if self.ip50:
             self.add("DC", "DC-RECT2.out", "DC-DIST2.bus", "DC bus link 2 x 10 AWG with ring lugs (A and B buses)",
                      "0.3 m", "-48 V bus, positive grounded", pn="bus link")
-            for i, k in enumerate(self.ip50):
-                self.add("DC", f"DC-DIST2.F{i + 1}", f"{k}.dc", "Belden 8461 2 x 18 AWG (IP-50 connector TBC)", "3 m",
-                         "-48 V through a GMT fuse", pn="Belden 8461", metres=3.0)
+            for k in self.ip50:
+                if k in self.psu:
+                    self.add("DC", f"{self.psu[k]}.out", f"{k}.dc", "Belden 8461 2 x 18 AWG (IP-50 connector TBC)", "1 m",
+                             "-48 V (positive grounded) from its own supply, switched off at t0", pn="Belden 8461",
+                             metres=1.0)
+                else:
+                    self.fuse[k] = len(self.fuse) + 1
+                    self.add("DC", f"DC-DIST2.F{self.fuse[k]}", f"{k}.dc", "Belden 8461 2 x 18 AWG (IP-50 connector TBC)",
+                             "3 m", "-48 V through a GMT fuse", pn="Belden 8461", metres=3.0)
         for n in nodes:
-            self.add("POE", f"{self.adaptor[n]}.rj45", f"{d['nodes'][n]['box']}.{n}.ETH1",
-                     "Panduit STP6X1MBU Cat6A S/FTP 1 m", "1 m", "power only (passive adaptor)", pn="STP6X1MBU")
+            if n in self.inj:
+                self.add("POE", f"{self.inj[n]}.poe", f"{d['nodes'][n]['box']}.{n}.ETH1", "Panduit STP6X1MBU Cat6A S/FTP 1 m",
+                         "1 m", "PoE from the AC injector (power only); switched off at t0", pn="STP6X1MBU")
+            else:
+                self.add("POE", f"{self.adaptor[n]}.rj45", f"{d['nodes'][n]['box']}.{n}.ETH1",
+                         "Panduit STP6X1MBU Cat6A S/FTP 1 m", "1 m", "power only (passive adaptor)", pn="STP6X1MBU")
         # data: SW-DATA, 1G endpoints on P1-16 (the only 1G-capable cages), then 10G, site by site ---------
         eps = []
         for site in d["sites"]:
@@ -434,7 +456,8 @@ def rack_layout(b):
         units.append(("CPL-TRAY", 1, "Coupler tray (shelf)", f"{len(b.coupled) * b.tiles} couplers, DC blocks, pads"))
     for a, v in b.atts.items():
         units.append((a, 1, f"{a}  ·  {v[0]} {v[1]}", "Mini-Circuits ZTDAT-4-18G63S"))
-    units += [("PA-SHELF", 1, f"DC/PoE adaptors PA-01..PA-{b.n_adaptors:02d}", "Siklu EH-PoE-DC-Adaptor-10 on a shelf"),
+    units += [("PA-SHELF", 1, f"DC/PoE adaptors PA-01..PA-{b.n_adaptors:02d}" + "".join(f" + {v}" for v in b.inj.values()),
+               "Siklu EH-PoE-DC-Adaptor-10" + (" + AC PoE injector" if b.inj else "") + " on a shelf"),
               ("DC-DIST", 1, "DC distribution 48 V, 10 breakers", "Eaton DCD1M"),
               ("DC-RECT", 1, "DC rectifier shelf 48 V", "Mean Well RCP-1UI + 2 x RCP-1000-48")]
     if b.ip50:
@@ -458,6 +481,7 @@ def parts(b):
     d = b.d
     nb = {k: sum(1 for x in d["boxes"] if x["kind"] == k) for k in BOX_KIND}
     nn = len(d["nodes"])
+    ndc = len(b.dc_nodes)
     hops = len(d.get("mw_links", {}))
     P = []
 
@@ -479,32 +503,41 @@ def parts(b):
         add("Radios", "-", "IP-50 radio", "Ceragon IP-50 (model and band TBC)", "Ceragon", 2 * hops,
             f"{hops} conducted hops, -48 V", "on hand (8); model to confirm")
     add("Power", "2", "DC/PoE adaptor, passive, bag of 10 ('DC\\POE for falcon')", "EH-PoE-DC-Adaptor-10", "Siklu",
-        f"1 bag ({nn} wired, {b.n_adaptors - nn} spare unwired)", "36-57 V DC in, RJ-45 to node ETH1 (power only)",
+        f"1 bag ({ndc} wired, {b.n_adaptors - ndc} spare unwired)", "36-57 V DC in, RJ-45 to node ETH1 (power only)",
         "likely")
     add("Power", "5", "DC drawer: rectifier shelf 1U + 2 x 1 kW 48 V modules", "RCP-1UI + 2 x RCP-1000-48", "Mean Well", 1,
-        f"48 V bus, {48 * nn} W for {nn} nodes", "likely (shelf) / confirmed (modules)")
+        f"48 V bus, {48 * ndc} W for {ndc} nodes", "likely (shelf) / confirmed (modules)")
     add("Power", "5", "DC drawer: distribution, 10 breakers", "DCD1M (suffix TBC)", "Eaton", 1,
         f"one breaker per adaptor; CB{b.spare_breakers[0]}-{b.spare_breakers[-1]} spare, OFF" if b.spare_breakers else
         "one breaker per adaptor", "likely")
+    if b.inj:
+        add("Power", "-", "AC PoE injector 60 W, 10G (powers a node that is switched off at t0)",
+            "AX-IN-10G-60W-AC-PoE-xx (plug per region)", "Siklu", len(b.inj),
+            ", ".join(b.inj) + " on a switched PDU outlet; 52 W to the node, AC inlet TBC", "likely")
     if hops:
+        nf = len(b.fuse)
         add("Power", "5", "-48 V rectifier for the IP-50 radios", "RCP-1UI + RCP-1000-48 wired -48 V", "Mean Well", 1,
-            f"{2 * hops} radios x ~58 W (IP-50E figure; recheck for the model)", "likely")
+            f"{nf} radios x ~58 W (IP-50E figure; recheck for the model)", "likely")
         add("Power", "5", "-48 V fuse panel 1U, 2 buses x 5 GMT positions", "N250110-N-0803", "Westell", 1,
-            "one fused output per IP-50 radio", "to confirm")
+            "one fused output per surviving IP-50 radio", "to confirm")
         add("Power", "5", "GMT fuse for the -48 V panel", "GMT 3 A (rating to confirm)", "Bussmann / Littelfuse",
-            2 * hops + 2, f"{2 * hops} + 2 spare", "to confirm")
+            nf + 2, f"{nf} + 2 spare", "to confirm")
+        if b.psu:
+            add("Power", "-", "Isolated 48 V AC/DC supply >= 100 W, wired -48 V (positive grounded)", "part TBC", "-",
+                len(b.psu), "one per IP-50 radio switched off at t0, on a switched PDU outlet", "to confirm")
     add("Power", "7", "Rack PDU 32 A, 16 x C13, switched per outlet", "AP7922B", "APC", len(b.pdus),
-        "IEC 60309 32 A inlet" + (f"; {', '.join(f'{b.outlet[x][0]} O{b.outlet[x][1]}' for x in d.get('event_off', []))} "
-                                  "switched at t0" if d.get("event_off") else ""), "confirmed")
+        "IEC 60309 32 A inlet" + (f"; {', '.join(f'{b.outlet[x][0]} O{b.outlet[x][1]}' for x in b.switched)} "
+                                  "switched off at t0" if b.switched else ""), "confirmed")
     add("Power", "-", "Bench-table mains strip, C13 outlets", "lab-supplied (part TBC)", "-", 1,
         f"{len(b.table_loads)} table loads", "to confirm")
     mk = sorted({c["b"].split("-")[0].lower() for c in b.cables if c["pn"] == "P014-006"})
     add("Power", "8", "'Micky' lead C14 -> C5", "P014-006", "Eaton Tripp Lite", b.count_pn("P014-006"),
-        " and ".join({"host": "traffic hosts", "agent": "agent-PC bricks"}[m] for m in mk), "confirmed")
+        ", ".join({"host": "traffic hosts", "agent": "agent-PC bricks", "inj": "PoE injector (inlet TBC)"}[m] for m in mk),
+        "confirmed")
     add("Power", "9", "'Exten' lead C14 -> C13 1.8 m", "P004-006", "Eaton Tripp Lite", b.count_pn("P004-006"),
         "PDU and table strip to devices", "meaning to confirm")
     add("Power", "9", "'Exten' lead C14 -> C13 3.05 m", "P004-010", "Eaton Tripp Lite", b.count_pn("P004-010"),
-        "switched PDU outlet to the bench table", "confirmed")
+        "switched PDU outlet to a bench-table device", "confirmed")
     m = sum(c.get("metres", 0) for c in b.cables if c["pn"] == "Belden 8461")
     add("Power", "10", "DC cable 2 x 18 AWG (bulk) + ferrules", "Belden 8461 + Phoenix 3200519", "Belden / Phoenix",
         f"{m:.0f} m + {4 * b.count_pn('Belden 8461')} ferrules", f"{b.count_pn('Belden 8461')} runs; 100 ft spool = 30.5 m",

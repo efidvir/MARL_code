@@ -436,6 +436,15 @@ def adaptor(s, x, y, name, used=True):
     return {"rj45": (x, y + 4.2), "dc": (x, y - 4.6)}
 
 
+def injector(s, x, y, name):
+    """AC PoE injector (powers a node that is switched off at t0): AC in at the bottom, PoE out on top."""
+    s.rect(x - 6, y - 5, 12, 10, fc=PLATE, ec=OFF, lw=0.6, z=6, r=0.8)
+    s.text(x, y + 0.2, name, fs=3.4, ha="center", va="center")
+    rj45(s, x, y + 3.2, w=2.6, h=2.0)
+    s.text(x, y - 3.2, "AC PoE", fs=2.8, color=DIM, ha="center", va="center")
+    return {"poe": (x, y + 4.2), "ac": (x, y - 5)}
+
+
 def ip50_radio(s, x, y, name, face=+1):
     s.rect(x, y, 22, 14, fc=FACE, lw=0.7, z=5, r=1.6)
     for i in range(6):
@@ -510,6 +519,7 @@ def sheet_rack(b, pdf, n, N, prefix):
     off = [[sv[0], sv[1], f"site {sv[2]} VLAN" if sv[2] else "bench table, mgmt only"] for sv in b.d["servers"]]
     off += [[f"HOST-{h}", "traffic host (iperf3 / TRex)", "sites " + ", ".join(v)] for h, v in b.d["hosts"].items()]
     off += [[k, f"IP-50 radio, hop {hop}", f"site {site}"] for k, (hop, site) in b.ip50.items()]
+    off += [[v, "48 V supply, switched (t0)", f"next to {k}"] for k, v in b.psu.items()]
     if b.ip50:
         off.append(["MWATT", "Keysight J7204B, 4 ch", "IP-50 hop attenuator"])
     off += [["TABLE-STRIP", "bench mains strip, C13", f"{len(b.table_loads)} loads"],
@@ -672,40 +682,53 @@ def sheet_power(b, pdf, n, N, prefix):
     sy = 200
     s.rect(16, sy, 390, 22, fc=FACE, lw=0.7, z=2)
     s.text(19.5, sy + 19.4, "PA-SHELF", fs=5.2, fontweight="bold", va="center")
-    s.text(42, sy + 19.4, "Siklu EH-PoE-DC-Adaptor-10 on a 1U shelf", fs=4.0, color=DIM, va="center")
+    s.text(42, sy + 19.4, "Siklu EH-PoE-DC-Adaptor-10" + (" + AC PoE injector (red: switched off at t0)" if b.inj else "")
+           + " on a 1U shelf", fs=4.0, color=DIM, va="center")
     nodes = list(d["nodes"])
+    dcn = b.dc_nodes
     ad = {}
-    for nd in nodes:
+    for nd in dcn:
         a = b.adaptor[nd]
         ad[a] = adaptor(s, rear[(d["nodes"][nd]["box"], nd, "ETH1")][0], sy + 8, a)
-    nsp = b.n_adaptors - len(nodes)
-    for j in range(nsp):
-        a = f"PA-{len(nodes) + j + 1:02d}"
-        ad[a] = adaptor(s, 399 - (nsp - 1 - j) * 9.5, sy + 8, a, used=False)
+    for nd, inj in b.inj.items():
+        ad[inj] = injector(s, rear[(d["nodes"][nd]["box"], nd, "ETH1")][0], sy + 8, inj)
+        ad[inj]["rj45"] = ad[inj]["poe"]
+    nsp = b.n_adaptors - len(dcn)
+    taken = [v["rj45"][0] for v in ad.values()]
+    xs, x = [], 399.0
+    while len(xs) < nsp:                                  # spares from the right end, clear of the wired ones
+        if all(abs(x - t) > 10 for t in taken):
+            xs.append(x)
+        x -= 9.5
+    for j, x in enumerate(sorted(xs)):
+        a = f"PA-{len(dcn) + j + 1:02d}"
+        ad[a] = adaptor(s, x, sy + 8, a, used=False)
     if nsp:
-        s.text(399 - (nsp - 1) * 9.5 - 4, sy + 15.6, "spare, unwired", fs=3.6, color=DIM, va="center")
+        s.text(min(xs) - 4, sy + 15.6, "spare, unwired", fs=3.6, color=DIM, va="center")
     # PoE cables, tagged at both ends
     for nd in nodes:
-        a = b.adaptor[nd]
+        a = b.inj.get(nd) or b.adaptor[nd]
         p0 = ad[a]["rj45"]
         p1 = rear[(d["nodes"][nd]["box"], nd, "ETH1")]
-        cab = b.cable(cls="POE", a=f"{a}.rj45")
+        cab = b.cable(cls="POE", a=f"{a}.poe" if nd in b.inj else f"{a}.rj45")
         s.line([p0, (p1[0], p1[1] - 1.2)], color=CLS["POE"][0], lw=1.0, z=9, ls=CLS["POE"][2])
         s.tag(p0[0], sy + 23.2, cab["id"], CLS["POE"][0], va="bottom")
         s.tag(p1[0], 242.5, cab["id"], CLS["POE"][0], va="top")
     # DC drawers, left column
-    used = [i + 1 for i in range(len(nodes))]
+    used = [i + 1 for i in range(len(dcn))]
     dist = dist_face(s, 16, 166, "DC-DIST", "Eaton DCD1M · 48 V · 10 breakers", used=used)
     rect = rect_face(s, "DC-RECT", "Mean Well RCP-1UI + 2 x RCP-1000-48 · 48 V", 16, 145)
-    for i, nd in enumerate(nodes):
+    for i, nd in enumerate(dcn):
         a = b.adaptor[nd]
         p0, p1 = dist[i + 1], ad[a]["dc"]
         cab = b.cable(cls="DC", b=f"{a}.dc")
         s.cable(p0, p1, CLS["DC"][0], lw=0.9, d0=(0, 1), d1=(0, -1))
         s.tag(p0[0], p0[1] + 0.8, cab["id"], CLS["DC"][0], va="bottom", fs=3.8)
         s.tag(p1[0], p1[1] - 0.8, cab["id"], CLS["DC"][0], va="top", fs=3.8)
-        if nd in d.get("event_breaker", []):
-            s.badge(p0[0], 163.5, f"CB{i + 1}: open after t0 ({nd})", fs=3.6)
+    for nd, inj in b.inj.items():
+        cab = b.cable(cls="AC", b=f"{inj}.ac")
+        p = ad[inj]["ac"]
+        s.badge(p[0], p[1] - 3.6, f"AC {cab['id']} from {cab['a'].replace('.', ' ')}\nswitched off at t0", fs=3.4)
     for i in b.spare_breakers:
         s.text(dist[i][0], dist[i][1] + 1.6, "OFF", fs=3.2, color=DIM, ha="center", va="bottom")
     bus = b.cable(cls="DC", a="DC-RECT.bus")
@@ -713,19 +736,20 @@ def sheet_power(b, pdf, n, N, prefix):
     s.tag(rect["out"][0] + 3.4, (rect["out"][1] + dist["bus"][1]) / 2, bus["id"], CLS["DC"][0], rot=0, fs=3.8)
     faces = {"DC-RECT": rect}
     if b.ip50:
-        fused = list(range(1, len(b.ip50) + 1))
+        fused = list(range(1, len(b.fuse) + 1))
         dist2 = dist_face(s, 16, 112, "DC-DIST2", "Westell N250110-N-0803 · -48 V · GMT fuses", kind="fuse", used=fused)
         rect2 = rect_face(s, "DC-RECT2", "RCP-1UI + RCP-1000-48 · -48 V (+ grounded)", 16, 91, n=1)
         faces["DC-RECT2"] = rect2
         bus2 = b.cable(cls="DC", a="DC-RECT2.out")
         s.line([rect2["out"], dist2["bus"]], color=CLS["DC"][0], lw=1.6, z=9)
         s.tag(rect2["out"][0] + 3.4, (rect2["out"][1] + dist2["bus"][1]) / 2, bus2["id"], CLS["DC"][0], rot=0, fs=3.8)
-        for i, k in enumerate(b.ip50):
-            p0 = dist2[i + 1]
-            cab = b.cable(cls="DC", a=f"DC-DIST2.F{i + 1}")
+        for k, i in b.fuse.items():
+            p0 = dist2[i]
+            cab = b.cable(cls="DC", a=f"DC-DIST2.F{i}")
             s.line([p0, (p0[0], p0[1] + 3.5)], color=CLS["DC"][0], lw=0.9, z=9)
             s.tag(p0[0], p0[1] + 3.8, f"{cab['id']} {k.replace('IP50-', '')}", CLS["DC"][0], va="bottom", fs=3.3)
-        s.text(16, 108.5, "-> IP-50 radios on the bench table (sheet 5)", fs=4.0, color=CLS["DC"][0])
+        s.text(16, 108.5, "-> IP-50 radios on the bench table (sheet 5)" +
+               (f"; {', '.join(b.psu)} have their own switched supplies" if b.psu else ""), fs=4.0, color=CLS["DC"][0])
     # PDUs side by side, loads straight under their outlets
     pdu_ports = {}
     for j, p in enumerate(b.pdus):
@@ -740,8 +764,9 @@ def sheet_power(b, pdf, n, N, prefix):
             s.cable(p0, p1, CLS["AC"][0], lw=0.9, d0=(0, -1), d1=(1, 0))
             s.tag(p1[0] + 5.5, p1[1] + 0.6, cab["id"], CLS["AC"][0], rot=0, va="bottom", fs=3.8)
         else:
-            off = ld in d.get("event_off", [])
-            sub = "3 m to table" if off else ("C5 brick" if "C5" in cab["part"] else "C14")
+            off = ld in b.switched
+            sub = ("on PA-SHELF" if ld in b.inj.values() else "3 m to table") if off else \
+                ("C5 brick" if "C5" in cab["part"] else "C14")
             vtile(s, p0[0], vy, 4.8, vh, ld, sub, ec=OFF if off else INK)
             s.line([p0, (p0[0], vy + vh)], color=CLS["AC"][0], lw=0.9, z=9)
             if off:
@@ -755,14 +780,18 @@ def sheet_power(b, pdf, n, N, prefix):
     s.legend(300, 96, [CLS[k] for k in ("AC", "DC", "POE")])
     s.notes(16, 84, [
         "N367 power is ETH1 only: 36-57 V DC through the passive adaptor; ETH1 then carries no data.",
-        f"{len(nodes)} nodes x 48 W (PoE-Out off) = {48 * len(nodes)} W; breakers 3-5 A. "
-        + (f"PA-{len(nodes) + 1:02d}..PA-{b.n_adaptors:02d} spare and unwired; CB{b.spare_breakers[0]}-{b.spare_breakers[-1]} OFF."
+        f"{len(dcn)} nodes x 48 W (PoE-Out off) = {48 * len(dcn)} W on the 48 V drawer; breakers 3-5 A. "
+        + (f"PA-{len(dcn) + 1:02d}..PA-{b.n_adaptors:02d} spare and unwired; CB{b.spare_breakers[0]}-{b.spare_breakers[-1]} OFF."
            if b.spare_breakers else ""),
+    ] + ([f"Devices that die at t0 lose power at switched PDU outlets (red): {', '.join(b.switched)}. "
+          + (f"{', '.join(b.inj)} is powered by an AC PoE injector instead of a DC adaptor so its outlet can cut it. "
+             if b.inj else "")
+          + "Links between surviving devices are dropped with attenuators instead."] if b.switched else []) + [
         "Check adaptor terminal polarity with a DMM before power-up; keep node PoE-Out (ETH2) disabled.",
     ] + (["IP-50 radios: -48 V (positive grounded) from DC-RECT2 through one GMT fuse each on DC-DIST2."] if b.ip50 else [])
       + ["Spider rear layout (ETH1/ETH2/SFP+ access, GNSS input, any box inlet) is assumed: confirm on the units.",
          "Servers, hosts, the analyser and MWATT take mains from the bench-table strip (sheet 5)"
-         + (", except the event loads on switched outlets (red)." if d.get("event_off") else ".")]
+         + (", except the switched event loads." if b.switched else ".")]
       + ([f"Event: {d['event']}"] if d.get("event") else []), width=118, fs=4.8, step=3.3)
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))
 
@@ -987,13 +1016,17 @@ def sheet_table(b, pdf, n, N, prefix):
             s.text(66, yy + 14.4, f"hop {k}:  {a}  <->  {bb}", fs=4.8, fontweight="bold")
             if d.get("mw_set", {}).get(k):
                 rest, t0 = d["mw_set"][k]
-                s.text(173, yy - 1.4, f"rest {rest} dB · t0 {t0}", fs=3.6, color=OFF if t0 == "max" else DIM,
-                       ha="center", va="center")
+                s.text(173, yy - 1.4, f"rest {rest} dB · t0: {t0}", fs=3.6,
+                       color=OFF if ("max" in t0 or "off" in t0) else DIM, ha="center", va="center")
             for r, nm, x0 in ((ra, f"IP50-{k}@{a}", 16), (rb, f"IP50-{k}@{bb}", 310)):
                 dc = b.cable(cls="DC", b=f"{nm}.dc")
                 da = b.cable(cls="FIB", a=f"{nm}.data")
                 s.text(x0, yy - 3.6, f"DC {dc['id']} from {dc['a']} · data {da['id']} to {da['b']} (VLAN {da['vlan']})",
                        fs=3.6, color=DIM)
+                if nm in b.psu:
+                    ac_ = b.cable(cls="AC", b=f"{b.psu[nm]}.ac")
+                    s.badge(x0, yy + 21.2, f"OFF at t0: {b.psu[nm]} on {ac_['a'].replace('.', ' ')} ({ac_['id']})",
+                            fs=3.4, ha="left")
         ac = b.cable(cls="AC", b="MWATT.ac")
         lan = b.cable(cls="ETH", a="MWATT.lan")
         bot2 = bot - 14

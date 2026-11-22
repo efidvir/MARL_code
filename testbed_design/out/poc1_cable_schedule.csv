@@ -23,38 +23,40 @@ A021,AC,PDU-B.O3,AGENT-S.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m
 A022,AC,PDU-B.O4,AGENT-N.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,agent PC power brick
 A023,AC,PDU-B.O5,SRV-E2E.ac,Eaton Tripp Lite P004-010 C14-C13 lead,3.05 m,,switched off at t0 (outlet switching); runs to the bench table
 A024,AC,PDU-B.O6,SRV-DPIR.ac,Eaton Tripp Lite P004-010 C14-C13 lead,3.05 m,,switched off at t0 (outlet switching); runs to the bench table
-A025,AC,TABLE-STRIP,SPECAN.ac,Eaton Tripp Lite P004-006 C14-C13 lead,1.8 m,,
-A026,AC,TABLE-STRIP,MWATT.ac,Eaton Tripp Lite P004-006 C14-C13 lead,1.8 m,,inlet type TBC
-A027,AC,TABLE-STRIP,HOST-W1.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
-A028,AC,TABLE-STRIP,HOST-W2.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
-A029,AC,TABLE-STRIP,HOST-E1.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
-A030,AC,TABLE-STRIP,HOST-E2.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
-A031,AC,TABLE-STRIP,HOST-S.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
-A032,AC,TABLE-STRIP,HOST-N.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
+A025,AC,PDU-B.O7,INJ-HUB.ac,Eaton Tripp Lite P014-006 C14-C5 lead (injector inlet TBC),1.8 m,,switched off at t0 (outlet switching): the node loses power
+A026,AC,PDU-B.O8,PSU-W1-CORE@CORE.ac,Eaton Tripp Lite P004-010 C14-C13 lead,3.05 m,,switched off at t0 (outlet switching); runs to the bench table
+A027,AC,PDU-B.O9,PSU-CORE-E1@CORE.ac,Eaton Tripp Lite P004-010 C14-C13 lead,3.05 m,,switched off at t0 (outlet switching); runs to the bench table
+A028,AC,TABLE-STRIP,SPECAN.ac,Eaton Tripp Lite P004-006 C14-C13 lead,1.8 m,,
+A029,AC,TABLE-STRIP,MWATT.ac,Eaton Tripp Lite P004-006 C14-C13 lead,1.8 m,,inlet type TBC
+A030,AC,TABLE-STRIP,HOST-W1.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
+A031,AC,TABLE-STRIP,HOST-W2.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
+A032,AC,TABLE-STRIP,HOST-E1.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
+A033,AC,TABLE-STRIP,HOST-E2.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
+A034,AC,TABLE-STRIP,HOST-S.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
+A035,AC,TABLE-STRIP,HOST-N.ac,Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead,1.8 m,,
 D001,DC,DC-RECT.bus,DC-DIST.bus,DC bus link 2 x 10 AWG with ring lugs,0.3 m,,48 V bus
 D002,DC,DC-DIST.CB1,PA-01.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node W1
 D003,DC,DC-DIST.CB2,PA-02.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node W2
-D004,DC,DC-DIST.CB3,PA-03.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node HUB; CB opened after t0 (node dark)
-D005,DC,DC-DIST.CB4,PA-04.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node S
-D006,DC,DC-DIST.CB5,PA-05.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node N
-D007,DC,DC-DIST.CB6,PA-06.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node E1
-D008,DC,DC-DIST.CB7,PA-07.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node E2
-D009,DC,DC-RECT2.out,DC-DIST2.bus,DC bus link 2 x 10 AWG with ring lugs (A and B buses),0.3 m,,"-48 V bus, positive grounded"
-D010,DC,DC-DIST2.F1,IP50-W1-CORE@W1.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
-D011,DC,DC-DIST2.F2,IP50-W1-CORE@CORE.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
-D012,DC,DC-DIST2.F3,IP50-CORE-E1@CORE.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
-D013,DC,DC-DIST2.F4,IP50-CORE-E1@E1.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
-D014,DC,DC-DIST2.F5,IP50-W1-W2@W1.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
-D015,DC,DC-DIST2.F6,IP50-W1-W2@W2.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
-D016,DC,DC-DIST2.F7,IP50-E1-E2@E1.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
-D017,DC,DC-DIST2.F8,IP50-E1-E2@E2.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
+D004,DC,DC-DIST.CB3,PA-03.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node S
+D005,DC,DC-DIST.CB4,PA-04.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node N
+D006,DC,DC-DIST.CB5,PA-05.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node E1
+D007,DC,DC-DIST.CB6,PA-06.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m,,feeds node E2
+D008,DC,DC-RECT2.out,DC-DIST2.bus,DC bus link 2 x 10 AWG with ring lugs (A and B buses),0.3 m,,"-48 V bus, positive grounded"
+D009,DC,DC-DIST2.F1,IP50-W1-CORE@W1.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
+D010,DC,PSU-W1-CORE@CORE.out,IP50-W1-CORE@CORE.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),1 m,,"-48 V (positive grounded) from its own supply, switched off at t0"
+D011,DC,PSU-CORE-E1@CORE.out,IP50-CORE-E1@CORE.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),1 m,,"-48 V (positive grounded) from its own supply, switched off at t0"
+D012,DC,DC-DIST2.F2,IP50-CORE-E1@E1.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
+D013,DC,DC-DIST2.F3,IP50-W1-W2@W1.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
+D014,DC,DC-DIST2.F4,IP50-W1-W2@W2.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
+D015,DC,DC-DIST2.F5,IP50-E1-E2@E1.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
+D016,DC,DC-DIST2.F6,IP50-E1-E2@E2.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3 m,,-48 V through a GMT fuse
 P001,POE,PA-01.rj45,SB1.W1.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
 P002,POE,PA-02.rj45,SB1.W2.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P003,POE,PA-03.rj45,SB2.HUB.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P004,POE,PA-04.rj45,SB3.S.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P005,POE,PA-05.rj45,SB3.N.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P006,POE,PA-06.rj45,SB4.E1.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P007,POE,PA-07.rj45,SB4.E2.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
+P003,POE,INJ-HUB.poe,SB2.HUB.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,PoE from the AC injector (power only); switched off at t0
+P004,POE,PA-03.rj45,SB3.S.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
+P005,POE,PA-04.rj45,SB3.N.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
+P006,POE,PA-05.rj45,SB4.E1.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
+P007,POE,PA-06.rj45,SB4.E2.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
 F001,FIB,IP50-W1-CORE@W1.data,SW-DATA.P1,Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch,3 m,101,hop W1-CORE (IP-50 data port type TBC)
 F002,FIB,IP50-W1-W2@W1.data,SW-DATA.P2,Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch,3 m,101,hop W1-W2 (IP-50 data port type TBC)
 F003,FIB,AGENT-W1.data,SW-DATA.P3,Panduit STP6X2MBU Cat6A 2 m + Netgear AGM734 1000BASE-T SFP at the switch,2 m,101,MARL agent + site routing
