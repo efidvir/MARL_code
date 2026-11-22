@@ -51,6 +51,53 @@ The hardware each option needs is in `out/hardware.md` (from `bom.py`), and
 illustration with a numbered parts list (from `iso_render.py` and the
 device drawings in `hwdraw.py`).
 
+## PoC 2: DPIR on a fixed point-to-point ring (no MARL)
+
+PoC 1 is A7 above: DPIR before the event, MARL recovery after it, 15 radio
+units. PoC 2 drops MARL and the event and keeps only what DPIR needs:
+
+- **4 radio units, 2 Spider boxes.** The four 2-sector N367 nodes of the two
+  GTS003 boxes form a ring W1–E1–E2–W2 of four fixed DN-DN point-to-point
+  links, one peer per sector. No hub, no PtMP, no IP-50. The ring is even, so
+  each node takes one polarity with no hybrid; each box holds two nodes of
+  the same polarity (W1 + E2 even, E1 + W2 odd), so leakage inside a box is
+  harmless.
+- **Why DPIR has something to do.** With point-to-point links there is no
+  shared sector airtime left, so PoC 2 cables in co-channel interference:
+  a 10 dB coupler on each end of the two spans, and two coupling arms
+  (KW between W1.E and W2.E, KE between E1.W and E2.W) through their own
+  attenuators. In TDD an idle Terragraph link should send no data (to be
+  measured), so a span interferes only while it carries traffic. F1 (W1→E1, 1600 Mb/s) and F2
+  (E2→W2, 900 Mb/s) both transmit in the even subframe: on their direct
+  spans each hits the other. DPIR sends F2 the long way round
+  (E2–E1–W1–W2), leaving the south span idle and both couplings silent.
+- **Candidates.** The repo's `diverse_paths` gives each flow its direct span
+  and the 3-hop way round; on a 4-ring these are every simple path, so DPIR's
+  choice is the optimum over all routings.
+- **Result (model).** At the nominal coupling (INR 18 dB): hop-count
+  970 Mb/s, Terragraph's own MCS-based Open/R routing 1420 Mb/s on average
+  (it swings between the spans and the detours), DPIR 2500 Mb/s. DPIR leaves
+  the direct spans alone up to INR 10 dB and moves F2 from 12 dB. In a bursty
+  run, predictive DPIR delivers 100 % of the offered traffic, Open/R 78 %,
+  hop-count 55 %.
+- **The risk.** If idle sectors fill their slots with QoS-Null frames, the
+  coupling stops depending on load and routing alone gains nothing; DPIR must
+  then also take the unused span down (link activation), which brings the
+  worst case back from 36 % to 89 %. An idle-versus-loaded emission
+  measurement on a coupled port is the bench's first go/no-go test.
+
+`poc2.py` holds the design and checks it (sectors, polarity, couplings,
+candidates, the capacity model, baselines, sweeps, the QoS-Null case, the
+dynamic runs) and writes `out/poc2_plan.md` (bench plan, run sequence, open
+questions) and `out/poc2_hardware.md` (hardware against PoC 1).
+`poc2_render.py` draws `out/poc2_topology.png`, `out/poc2_sweep.png` and
+`out/poc2_dynamic.png`; `figures/bench_poc2.mjs` draws the bench
+(`out/bench_poc2.png`). The capacity model uses Terragraph's open-source
+defaults (QTI 10.11 link-adaptation thresholds, CTF rates, the Open/R MCS
+metric map); Siklu's values may differ, so the bench calibrates before any
+gain is quoted. The coupling is emulated: in this layout the coupled sectors
+do not face each other, and its strength is whatever the attenuators set.
+
 ## The bench is fully conducted (galvanic)
 
 No radio radiates. Each microwave hop runs cart to cart through a
@@ -158,6 +205,9 @@ row); editable `.svg` next to each. Numbers: `out/tables.md`; every check:
 | `option_a_plan.py` | Writes `out/option_A_plan.md`: the option A bench plan (carts, sector ports, V-band attenuator settings per state, microwave chains) |
 | `kit_change.py` | Writes `out/kit_change.png`: option A beside A7 (the delivered N367 kit), each node with its sectors, and the bridges kept, still possible or out of reach |
 | `figures/bench_a7.mjs` | Writes `out/bench_a7.html` (and `.svg`; `out/bench_a7.png` is its capture): the A7 bench as one isometric figure drawn with the Anatomy kit, a 19-inch rack with the switch, agent PCs, the four Spider boxes, the hub splitters, nine IF attenuators, DC drawer and PDU, front cables per link, and the IP-50 bench. `node figures/bench_a7.mjs`; the kit and its capture and line-check scripts are vendored in `vendor/anatomy/` (MIT) |
+| `poc2.py` | PoC 2 (DPIR only, fixed point-to-point ring on the two GTS003 boxes): design, checks, capacity model, baselines, sweeps, QoS-Null case, dynamic runs; writes `out/poc2_results.json`, `out/poc2_plan.md`, `out/poc2_hardware.md` (`python3 poc2.py`, non-zero exit on failure) |
+| `poc2_render.py` | Writes `out/poc2_topology.png|svg` (hop-count against DPIR on the ring), `out/poc2_sweep.png` (delivered against coupling strength) and `out/poc2_dynamic.png` (bursty runs) |
+| `figures/bench_poc2.mjs` | Writes `out/bench_poc2.html` (and `.svg`; `out/bench_poc2.png` is its capture): the PoC 2 rack (two Spider boxes, coupler tray, six IF attenuators, coupling arms lit) and the table with controllers, time server and spectrum analyser |
 | `hub_ports.py` | Writes `out/hub_ports.png`: how the A7 hub serves six links from four RF ports (point-to-multipoint sectors, splitters on the bench) |
 | `option_a_sectors.py` | Writes `out/option_A_sectors.md`: option A with only the final plan cabled (sectors per node, attenuators that take links down, site-switch port map) |
 
