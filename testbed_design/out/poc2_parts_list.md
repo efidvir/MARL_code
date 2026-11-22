@@ -4,41 +4,53 @@ Team = item number on the lab's kit list (1 = '6*4 sector nodes - GTSTU022\23', 
 
 | # | Team | Group | Item | Part number | Manufacturer | Qty | Use | Status |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 11 | Radios | 1U Spider box, 2 x N367 node x 2 sectors | GTS003 (lab label) | Siklu | 2 | 4 sector modules FATJ0498, 16 SMA tile ports | on hand |
-| 2 | 11 | Radios | 1U Spider box, 1 x N367 node x 4 sectors (hub) | GTST002B (lab label) | Siklu | 1 | 16 SMA tile ports | on hand |
+| 1 | 11 | Radios | 1U Spider box, 2 x N367 node x 2 sectors | GTS003 (lab label) | Siklu | 2 | 4 sector modules FATJ0498, 16 SMA tile ports | on hand; to confirm |
+| 2 | 11 | Radios | 1U Spider box, 1 x N367 node x 4 sectors (hub) | GTST002B (lab label) | Siklu | 1 | 16 SMA tile ports | on hand; to confirm |
 | 3 | 11 | Radios | 1U Spider box, 2 x N367 node x 2 sectors (assumed) | GTST003 (lab label) | Siklu | 1 | 16 SMA tile ports | on hand; to confirm |
 | 4 | 1 | Radios | '6*4 sector nodes - GTSTU022\23' | GTSTU022 / GTSTU023 | Siklu | ? | not identified (TU boxes?); not used here | to confirm with the lab |
-| 5 | - | Radios | N367 node (inside the Spider boxes) | MultiHaul TG N367 (MH-N367-CCP-PoE-MWB class) | Siklu | 7 | ETH1 power in, ETH2 1G, SFP+ 10G; 48 W with PoE-Out off | datasheet |
-| 6 | - | Radios | IP-50 radio | IP-50C class (band, licence TBC) | Ceragon | 4 | 2 conducted hops, -48 V | on hand (8) |
-| 7 | 2 | Power | DC/PoE adaptor, passive, bag of 10 ('DC\POE for falcon') | EH-PoE-DC-Adaptor-10 | Siklu | 1 bag (7 used) | 36-57 V DC in, RJ-45 to node ETH1 (power only) | likely |
-| 8 | 5 | Power | DC drawer: rectifier shelf 1U + 2 x 1 kW 48 V modules | RCP-1UI + 2 x RCP-1000-48 | Mean Well | 1 | 48 V bus, 336 W for 7 nodes | confirmed |
-| 9 | 5 | Power | DC drawer: distribution, 10 breakers | DCD1M (suffix TBC) | Eaton | 1 | one breaker per adaptor | to confirm |
-| 10 | 5 | Power | -48 V supply for the IP-50 radios | RCP-1UI + RCP-1000-48 wired -48 V | Mean Well | 1 | 4 radios x ~58 W | to confirm |
-| 11 | 7 | Power | Rack PDU 32 A, 16 x C13 | AP7922B (alt. Raritan PX3-5260R 16 A) | APC | 1 | IEC 60309 inlet | confirmed |
-| 12 | 8 | Power | 'Micky' lead C14 -> C5 | P014-006 | Eaton Tripp Lite | 4 | hosts and agent-PC bricks | confirmed |
-| 13 | 9 | Power | 'Exten' lead C14 -> C13 | P004-006 / PXT1001M | Eaton / StarTech | 18 | PDU and table strip to devices | meaning to confirm |
-| 14 | 10 | Power | DC cable 2 x 18 AWG + ferrules | Belden 8461 + Phoenix 3200519 | Belden / Phoenix | 14 | breaker -> adaptor; -48 V -> IP-50 | confirmed |
-| 15 | 6 | Network | Data switch, 24 x SFP+ + 4 x SFP28, L3 | M4350-24F4V | Netgear | 1 | 15 ports used, VLAN per site | confirmed |
-| 16 | 6 | Network | Management switch, 48 x 1G | M4250-40G8XF-PoE+ (GSM4248PX) | Netgear | 1 | 29 ports used | to confirm |
-| 17 | - | Network | SFP+ SR, node side / switch side | AX-SFP+10G-MM / AXM761-10000S | Siklu / Netgear | 7 + 7 |  | likely / confirmed |
-| 18 | - | Network | OM4 LC-LC duplex 2 m | FZ2ERLNLNSNM002 | Panduit | 7 |  | confirmed |
-| 19 | - | Network | SFP+ DAC 3 m | AXC763-10000S | Netgear | 4 | hosts and servers | confirmed |
-| 20 | - | Network | Cat6A S/FTP patch 1-2 m | STP6X1MBU / STP6X2MBU | Panduit | 40 |  | confirmed |
-| 21 | - | RF/IF | 4-ch programmable attenuator 0-63 dB, 0.1-18 GHz | ZTDAT-4-18G63S | Mini-Circuits | 10 | 9 on hand from PoC 1 | confirmed |
-| 22 | - | RF/IF | 10 dB directional coupler 1-18 GHz | KRYTAR 1821 (alt. ZUDC10-183+) | KRYTAR | 16 | IN at the module | confirmed |
-| 23 | - | RF/IF | DC block 18 GHz | BLK-18-S+ | Mini-Circuits | 8 | arms | confirmed |
-| 24 | - | RF/IF | Fixed pad DC-18 GHz 2 W | BW-S<n>W2+ | Mini-Circuits | 8 | arms | confirmed |
-| 25 | 3 | RF/IF | SMA test cable 18 GHz 0.6 m ('RF cable': 10 on hand) | CBL-2FT-SMSM+ | Mini-Circuits | 80 |  | confirmed |
-| 26 | 3 | RF/IF | SMA jumper 4 in | 086-4SM+ | Mini-Circuits | 16 |  | confirmed |
-| 27 | - | RF/IF | 50-ohm SMA load | ANNE-50+ | Mini-Circuits | as needed | unused tile and coupler ports | confirmed |
-| 28 | - | RF/IF | SMA torque wrench 8 in-lb | ST-SMA3 | Fairview | 2 |  | confirmed |
-| 29 | - | IP-50 chain | Waveguide-to-coax transition (band TBC) | PEWCA1003 / PEWCA1018 | Pasternack | 4 |  | likely |
-| 30 | - | IP-50 chain | 30 dB 10 W pad | SA18S10W-30 | Fairview | 4 |  | confirmed |
-| 31 | - | IP-50 chain | Programmable attenuator, 4 ch (<=18 GHz bands) | J7204B opt 002 | Keysight | 1 | 2 channels used | confirmed |
-| 32 | - | Timing | GNSS antenna + 1x8 splitter | 101898-00 + RMALDCBS1X8 | Protempis / GPS Networking | 1 + 1 | only if the boxes take GNSS | to confirm |
-| 33 | - | Compute | Traffic host (10G NIC, iperf3/TRex) | lab PC | - | 4 |  | on hand |
-| 34 | - | Compute | Servers: DPIR controller + predictor (GPU); TG E2E controller + NMS | lab servers | - | 2 |  | on hand |
-| 35 | 4 | Rack | 19-inch 4-post rack (25U used) | StarTech 4POSTRACK25U | StarTech | 1 |  | confirmed |
-| 36 | 4 | Rack | 1U vented shelf | CABSHELFV1U | StarTech | 2 | adaptors, trays | likely |
-| 37 | - | Rack | Cable manager, blanking panels, labels | NCMHF1 / AR8136BLK / Brady M21-750-427 | various | 1 / 1 pack / 3 |  | confirmed |
-| 38 | - | Test | 18 GHz power sensor (gate) / spectrum analyser | NRP18S / FPL1026 | R&S | 1 / 1 | port checks, calibration | confirmed |
+| 5 | - | Radios | N367 node (inside the Spider boxes) | MultiHaul TG N367 (MH-N367-CCP-PoE-MWB class) | Siklu | 7 | ETH1 power in, SFP+ 10G data; managed in-band; 48 W with PoE-Out off | datasheet |
+| 6 | - | Radios | IP-50 radio | Ceragon IP-50 (model and band TBC) | Ceragon | 4 | 2 conducted hops, -48 V | on hand (8); model to confirm |
+| 7 | 2 | Power | DC/PoE adaptor, passive, bag of 10 ('DC\POE for falcon') | EH-PoE-DC-Adaptor-10 | Siklu | 1 bag (7 wired, 3 spare unwired) | 36-57 V DC in, RJ-45 to node ETH1 (power only) | likely |
+| 8 | 5 | Power | DC drawer: rectifier shelf 1U + 2 x 1 kW 48 V modules | RCP-1UI + 2 x RCP-1000-48 | Mean Well | 1 | 48 V bus, 336 W for 7 nodes | likely (shelf) / confirmed (modules) |
+| 9 | 5 | Power | DC drawer: distribution, 10 breakers | DCD1M (suffix TBC) | Eaton | 1 | one breaker per adaptor; CB8-10 spare, OFF | likely |
+| 10 | 5 | Power | -48 V rectifier for the IP-50 radios | RCP-1UI + RCP-1000-48 wired -48 V | Mean Well | 1 | 4 radios x ~58 W (IP-50E figure; recheck for the model) | likely |
+| 11 | 5 | Power | -48 V fuse panel 1U, 2 buses x 5 GMT positions | N250110-N-0803 | Westell | 1 | one fused output per IP-50 radio | to confirm |
+| 12 | 5 | Power | GMT fuse for the -48 V panel | GMT 3 A (rating to confirm) | Bussmann / Littelfuse | 6 | 4 + 2 spare | to confirm |
+| 13 | 7 | Power | Rack PDU 32 A, 16 x C13, switched per outlet | AP7922B | APC | 1 | IEC 60309 32 A inlet | confirmed |
+| 14 | - | Power | Bench-table mains strip, C13 outlets | lab-supplied (part TBC) | - | 1 | 8 table loads | to confirm |
+| 15 | 8 | Power | 'Micky' lead C14 -> C5 | P014-006 | Eaton Tripp Lite | 4 | traffic hosts | confirmed |
+| 16 | 9 | Power | 'Exten' lead C14 -> C13 1.8 m | P004-006 | Eaton Tripp Lite | 19 | PDU and table strip to devices | meaning to confirm |
+| 17 | 10 | Power | DC cable 2 x 18 AWG (bulk) + ferrules | Belden 8461 + Phoenix 3200519 | Belden / Phoenix | 19 m + 44 ferrules | 11 runs; 100 ft spool = 30.5 m | confirmed |
+| 18 | 10 | Power | DC bus link 2 x 10 AWG with ring lugs | part TBC | - | 2 | rectifier to distribution | to confirm |
+| 19 | 6 | Network | Data switch, 24 x SFP+ + 4 x SFP28, L3 | M4350-24F4V (XSM4328FV) | Netgear | 1 | 16 of 28 ports; 1G only on P1-16 | confirmed |
+| 20 | 6 | Network | Management switch, 24 x 1G PoE+ + 2 x 1G + 4 x SFP+ | M4250-26G4XF-PoE+ (GSM4230PX) | Netgear | 1 | 19 ports: 19 of 26 RJ-45 | confirmed |
+| 21 | - | Network | 1000BASE-T copper SFP | AGM734-10000S | Netgear | 4 | 4 on SW-DATA P1-16 | confirmed; switch compatibility to confirm |
+| 22 | - | Network | SFP+ SR, node side / switch side | AX-SFP+10G-MM / AXM761-10000S | Siklu / Netgear | 7 + 7 | node SFP+ to SW-DATA | likely / confirmed |
+| 23 | - | Network | OM4 LC-LC duplex 2 m | FZ2ERLNLNSNM002 | Panduit | 7 |  | confirmed |
+| 24 | - | Network | SFP+ DAC 3 m | AXC763-10000S | Netgear | 5 | traffic hosts and servers | confirmed |
+| 25 | - | Network | Cat6A S/FTP patch 1 m | STP6X1MBU | Panduit | 7 |  | confirmed |
+| 26 | - | Network | Cat6A S/FTP patch 2 m | STP6X2MBU | Panduit | 11 |  | confirmed |
+| 27 | - | Network | Cat6A S/FTP patch 3 m | STP6X3MBU | Panduit | 12 |  | confirmed |
+| 28 | - | RF/IF | 4-ch programmable attenuator 0-63 dB, 0.1-18 GHz | ZTDAT-4-18G63S | Mini-Circuits | 10 | not on the kit list | reuse 9 from PoC 1, buy 1 |
+| 29 | - | RF/IF | 10 dB directional coupler 1-18 GHz | KRYTAR 1821 (alt. ZUDC10-183+) | KRYTAR | 16 | IN at the module | confirmed |
+| 30 | - | RF/IF | DC block 18 GHz | BLK-18-S+ | Mini-Circuits | 8 | arm input side, at the coupler | confirmed |
+| 31 | - | RF/IF | Fixed pad DC-18 GHz 2 W (value TBC, e.g. BW-S10W2+) | BW-S<n>W2+ | Mini-Circuits | 8 | arm input side, at the coupler | value to confirm |
+| 32 | 3 | RF/IF | SMA test cable 18 GHz 0.30 m | CBL-1FT-SMSM+ | Mini-Circuits | 20 | IF chain, length from the rack span | confirmed |
+| 33 | 3 | RF/IF | SMA test cable 18 GHz 0.61 m ('RF cable': 10 on hand, type TBC) | CBL-2FT-SMSM+ | Mini-Circuits | 40 | IF chain, length from the rack span | confirmed |
+| 34 | 3 | RF/IF | SMA test cable 18 GHz 0.91 m | CBL-3FT-SMSM+ | Mini-Circuits | 36 | IF chain, length from the rack span | confirmed |
+| 35 | 3 | RF/IF | SMA test cable 18 GHz 1.00 m | CBL-1M-SMSM+ | Mini-Circuits | 4 | IF chain, length from the rack span; IP-50 chains | confirmed |
+| 36 | - | RF/IF | 50-ohm SMA load | ANNE-50+ | Mini-Circuits | as needed | unused tile and coupler ports | confirmed |
+| 37 | - | RF/IF | SMA torque wrench 8 in-lb | ST-SMA3 | Fairview | 2 |  | confirmed |
+| 38 | - | IP-50 chain | Waveguide-to-coax transition, WR-62 12.4-18 GHz (<=18 GHz set) | PEWCA1003 | Pasternack | 4 | band and flange mating TBC | likely |
+| 39 | - | IP-50 chain | 30 dB 10 W pad DC-18 GHz (<=18 GHz set) | SA18S10W-30 | Fairview | 4 | one at each radio port, on the transition | confirmed |
+| 40 | - | IP-50 chain | Programmable attenuator 4 ch DC-18 GHz (<=18 GHz set) | J7204B opt 002 | Keysight | 1 | 2 channels used; LAN to SW-OOB | confirmed |
+| 41 | - | IP-50 chain | Alternative set if the band is 18-26.5 GHz (replaces the 3 lines above) | PEWCA1018 + FMAT4009-30 + 84906K/84904K/11713C | Pasternack / Fairview / Keysight | replaces the set | 2.92 mm pads and cables | alternative |
+| 42 | - | Timing | GNSS antenna + 1x8 splitter | 101898-00 + RMALDCBS1X8 | Protempis / GPS Networking | 1 + 1 | only if the boxes take GNSS (N367 GPS is internal) | to confirm |
+| 43 | - | Timing | GNSS coax: antenna lead + surge arrestor / splitter jumpers | LMR-400 + arrestor / RG-316 SMA 1 m | part TBC | 1 / 4 | only if the boxes take GNSS | to confirm |
+| 44 | - | Compute | Traffic host (10G SFP+ NIC, iperf3/TRex) | lab PC | - | 4 |  | on hand |
+| 45 | - | Compute | Servers: DPIR controller + predictor (GPU); TG E2E controller + NMS (POP at H) | lab servers | - | 2 |  | on hand |
+| 46 | 4 | Rack | 19-inch 4-post rack (26U used of 42U) | StarTech 4POSTRACK42 | StarTech | 1 | rail type (square hole?) to confirm | confirmed |
+| 47 | 4 | Rack | 1U vented shelf | CABSHELFV1U | StarTech | 2 | adaptors, tray | likely |
+| 48 | - | Rack | Cable manager / blanking panels (pack of 10) / labels | NCMHF1 / AR8136BLK / Brady M21-750-427 | various | 1 / 2 / 3 | 16 empty U | confirmed; rail type to confirm |
+| 49 | - | Test | 18 GHz power sensor / spectrum analyser | NRP18S / FPL1026 | R&S | 1 / 1 | port checks, calibration | confirmed |
+| 50 | - | Test | N-F to SMA-F adapter for the power sensor | NF-SF50+ | Mini-Circuits | 1 | NRP18S input is N-male | confirmed |

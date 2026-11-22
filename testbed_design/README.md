@@ -210,5 +210,7 @@ row); editable `.svg` next to each. Numbers: `out/tables.md`; every check:
 | `figures/bench_poc2.mjs` | Writes `out/bench_poc2.html` (and `.svg`; `out/bench_poc2.png` is its capture): the PoC 2 rack (two Spider boxes, coupler tray, six IF attenuators, coupling arms lit) and the table with controllers, time server and spectrum analyser |
 | `hub_ports.py` | Writes `out/hub_ports.png`: how the A7 hub serves six links from four RF ports (point-to-multipoint sectors, splitters on the bench) |
 | `option_a_sectors.py` | Writes `out/option_A_sectors.md`: option A with only the final plan cabled (sectors per node, attenuators that take links down, site-switch port map) |
+| `bench_spec.py` | The bench as data for PoC 1 (A7) and PoC 2: every cable with an ID, part, length (IF lengths from the rack span) and VLAN; the rack layout; the exploded parts list counted from the cables. Nodes are managed in-band, so no node ETH2 is cabled |
+| `blueprint.py` | Writes `out/poc1_blueprint.pdf` and `out/poc2_blueprint.pdf` (7 A3 sheets each, plus one PNG per sheet): rack elevation, front panels and IF cabling, power, data and management (site VLAN clusters), bench table, RF ladder with attenuator settings, parts list; and `out/poc{1,2}_cable_schedule.md|csv` (with switch port plans) and `out/poc{1,2}_parts_list.md|csv` (`python3 blueprint.py`) |
 
 Requires `matplotlib` and `networkx`.
