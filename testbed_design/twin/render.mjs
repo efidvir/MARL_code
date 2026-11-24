@@ -98,6 +98,7 @@ function pageApply(spec) {
   V.state.rackCallAlt = !!spec.rackAlt;
   V.state.rackCallAll = !!spec.rackCallAll;
   V.state.cableLabelMax = spec.cableLabelMax || 16;
+  V.state.partLabels = spec.partLabels !== false;
   app.setScenario('before');
   app.setLabels(true);
   app.setXray(false);
@@ -109,6 +110,7 @@ function pageApply(spec) {
   app.setClasses(null);
   app.setStep(null);
   app.clearSelection();
+  V.currentView = null; // set again only by a named view below
   // ---- apply
   const o = spec.opts || {};
   if (o.classes) app.setClasses(o.classes);
@@ -295,7 +297,8 @@ function pageApply(spec) {
       if (!dv) continue;
       const fz = a.face === 'rear' ? dv.pos[2] + dv.size[2] : a.face === 'front' ? dv.pos[2] : dv.pos[2] + dv.size[2] / 2;
       const fy = a.face === 'top' ? dv.pos[1] + dv.size[1] : dv.pos[1] + dv.size[1] / 2;
-      p = [dv.pos[0] + dv.size[0] / 2, fy, fz];
+      const fx = a.face === 'right' ? dv.pos[0] + dv.size[0] : a.face === 'left' ? dv.pos[0] : dv.pos[0] + dv.size[0] / 2;
+      p = [fx, fy, fz];
     } else if (a.kind === 'port') {
       const pp = app.model.ports.get(a.id);
       if (pp) p = pp.pos;
@@ -449,11 +452,22 @@ function buildSpecs(scene) {
     // elevation drawing: portrait, no cables, every item labelled, left / right alternating
     specs.push({
       name: `overview_${side}_rack`, title: `Rack ${side} elevation`, viewport: { width: 1150, height: 1700 },
-      opts: { classes: [] }, rackAlt: true, rackCallAll: true, hideDevices: ['WALL'],
+      opts: { classes: [], table: false }, rackAlt: true, rackCallAll: true, partLabels: false, hideDevices: ['WALL'],
       box: [[-240, R.u1_y - 90, 0], [W + 240, rackTopY + 70, rd]], dir: side === 'front' ? [0, 0.03, -1] : [0, 0.03, 1], fov: 12, margin: 1.02, insets: INS,
       clip: { box: 'rack', labels: true, pad: 10 },
       anchors: devAnchors(rackDevs, side),
     });
+  }
+  // the same elevations at twice the scale: upper and lower half of the rack
+  const half = R.u1_y + Math.ceil(R.units / 2) * U;
+  for (const side of ['front', 'rear']) {
+    for (const [part, y0, y1] of [['upper', half - 8, rackTopY + 45], ['lower', R.u1_y - 75, half + 8]]) {
+      specs.push({
+        name: `overview_${side}_rack_${part}`, title: `Rack ${side} elevation, ${part} half`,
+        ...band(y0, y1, side), opts: { classes: [], table: false }, partLabels: false, hideDevices: ['WALL'], fov: 12,
+        anchors: devAnchors(rackDevs, side),
+      });
+    }
   }
   specs.push({ name: 'overview_table', title: 'Bench table, from the operator side above', hideLabels: true, ...tableTop(), anchors: tableAnchors(tableDevs.filter((id) => devs.get(id).kind !== 'transition')) });
   specs.push({ name: 'overview_top', title: 'Plan view from above', view: 'top' });
@@ -483,7 +497,7 @@ function buildSpecs(scene) {
       if (toTable) {
         specs.push({
           name: `step_${pad2(st.n)}_bench`, ...base, title: `${base.title} (whole bench)`,
-          boxIds: st.cables.map((id) => ['cable', id]), boxClampX: RACK_X, dir: [0.55, 0.5, 1], margin: 1.05, anchors,
+          boxIds: st.cables.map((id) => ['cable', id]), boxClampX: RACK_X, dir: [0.35, 0.75, 1], margin: 1.04, anchors,
         });
       }
     } else if (st.view === 'table') {
@@ -614,16 +628,18 @@ function buildSpecs(scene) {
       const cols = [radios.filter((d) => d.pos[0] + d.size[0] / 2 < mw.pos[0]), radios.filter((d) => d.pos[0] + d.size[0] / 2 >= mw.pos[0])];
       cols.forEach((col, i) => {
         if (!col.length) return;
+        const sx = i ? -1 : 1; // column 1: transitions on its right (+x); column 2: on its left
         const ids = col.map((d) => d.id);
         const tr = scene.devices.filter((d) => d.kind === 'transition' && ids.includes(d.parent)).map((d) => d.id);
         const mine = new Set([...ids, ...tr]);
         const wgc = scene.cables.filter((c) => c.cls === 'WG' && [c.a, c.b].some((pid) => mine.has((ports.get(pid) || {}).device))).map((c) => c.id);
         specs.push({
-          name: `ip50_col_${i + 1}`, title: `IP-50 radio column ${i + 1} (${i ? 'right of' : 'left of'} the MWATT), from the front above`,
+          name: `ip50_col_${i + 1}`, title: `IP-50 radio column ${i + 1} (${i ? 'right of' : 'left of'} the MWATT), seen from the MWATT side`,
+          badge: [`SEEN FROM THE ${i ? 'LEFT' : 'RIGHT'}, ABOVE`, `operator side on the ${i ? 'right' : 'left'}, wall side on the ${i ? 'left' : 'right'}`],
           opts: { classes: ['WG'] }, hideLabels: true, hl: { devices: [...ids, ...tr], cables: wgc, ports: [] },
           boxIds: [...ids, ...tr].map((id) => ['device', id]), boxPad: [40, 10, 40],
-          dir: [0, 1.7, -1], fov: 20, margin: 1.04, insets: INS, clip: { box: 'frame', pad: 6 },
-          anchors: [...tableAnchors(ids), ...tr.map((id) => ({ kind: 'device', id, face: 'center' })),
+          dir: [sx, 1.15, 0], fov: 20, margin: 1.04, insets: INS, clip: { box: 'frame', pad: 6 },
+          anchors: [...ids.map((id) => ({ kind: 'device', id, face: covered(devs.get(id)) ? (i ? 'left' : 'right') : 'top' })), ...tr.map((id) => ({ kind: 'device', id, face: 'center' })),
             ...wgc.map((id) => ({ kind: 'cable', id, at: 0.5 })),
             ...tr.flatMap((id) => (devs.get(id).ports || []).map((pid) => ({ kind: 'port', id: pid })))],
           radios: ids, transitions: tr, cables: wgc,

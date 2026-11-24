@@ -41,6 +41,7 @@ export class Viewer {
       showDims: false,
       rackCallAlt: false,
       rackCallAll: false,
+      partLabels: true,
       cableLabelMax: 16,
       confTint: false,
       xray: false,

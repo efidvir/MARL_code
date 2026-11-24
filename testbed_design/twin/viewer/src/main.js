@@ -252,6 +252,8 @@ class App {
     const al = h('ul', { class: 'assume' });
     for (const a of s.assumptions) al.appendChild(h('li', {}, esc(a)));
     al.appendChild(h('li', {}, 'Viewer: rack devices drawn as a 482.6 mm faceplate plus a 440 mm wide body; overlapping cable runs are spread a few mm apart so each cable stays visible (ports and lengths unchanged).'));
+    al.appendChild(h('li', {}, 'Viewer: cable colours are a display palette (DC yellow, GNSS lime, WG pink, each banded) so that no two classes look alike on paper; the cable schedules keep the colours of the scene file. After t0, what the switched devices feed (node, radio) is shown dark too, worked out from the POE / DC cables.'));
+    al.appendChild(h('li', {}, 'Viewer: the lab wall is faded when the camera looks at the rack straight from the front or from behind the wall.'));
     adet.appendChild(al);
     secK.appendChild(det);
     side.appendChild(secK);
@@ -828,10 +830,12 @@ class App {
         out.push({ key: 'rr:' + id, cls: cur ? 'rackcall cur' : 'rackcall', html, anchor: right ? e.callRearR : e.callRear, yFrom: e.faceRear, align: 'auto', away: e.callCenter, pad: 0, pri: 30, normal: new THREE.Vector3(0, 0, -1), force: alt });
         continue;
       }
+      if (e.faded) continue;
       if (d.group === 'table' || d.group === 'room') {
         if (d.parent && pxPerMm(e.anchor) * Math.max(d.size[0], d.size[2]) < 26) continue;
         out.push({ key: 'd:' + id, cls: d.parent ? 'part' : '', html: esc(id), anchor: e.anchor, pri: d.parent ? 25 : 45, occlude: true, outsideRack: true, devId: id });
       } else if (d.parent) {
+        if (st.partLabels === false) continue;
         // parts big enough to carry their id on their own face need no overlay
         if (d.size[0] >= 60 && d.size[1] >= 30) continue;
         if (pxPerMm(e.anchor) * d.size[0] < 20) continue;
