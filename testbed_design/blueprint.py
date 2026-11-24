@@ -19,6 +19,7 @@ Data: bench_spec.py.  Run:  python3 blueprint.py
 """
 import math
 import os
+import sys
 import textwrap
 
 import matplotlib
@@ -30,6 +31,9 @@ from matplotlib.patches import Circle, FancyBboxPatch, PathPatch, Rectangle, Reg
 from matplotlib.path import Path  # noqa: E402
 
 import bench_spec as BS  # noqa: E402
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "twin"))
+import twin_model as TW  # noqa: E402
 
 OUT = BS.OUT
 PAPER = "#123a6b"
@@ -898,7 +902,8 @@ def sheet_data(b, pdf, n, N, prefix):
             p = int(c["b"].split(".P")[1])
             px, py = sw[p]
             colr = sc.get(c["site"], INK)
-            ls = MEDIUM[c["pn"]][0]
+            ls = MEDIUM.get(c["pn"], MEDIUM["STP6X2MBU"] if c["pn"].startswith("STP6X") else
+                            MEDIUM["AXC763-10000S"] if c["pn"].startswith("AXC") else MEDIUM["FZ2ERLNLNSNM002"])[0]
             if c["a"] in ep_top:
                 p0 = ep_top[c["a"]]
                 s.cable(p0, (px, py - 0.9), colr, lw=0.8, d0=(0, 1), d1=(0, -1), ls=ls)
@@ -1202,7 +1207,7 @@ def sheet_ladder(b, pdf, n, N, prefix):
         s.rect(xa, y - 3.6, 50, 7.2, fc=FACE, lw=0.7, z=4)
         s.text(xa + 25, y + 1.3, f"{att} · arm {name}", fs=4.9, fontweight="bold", ha="center", va="center")
         s.text(xa + 25, y - 1.9, "in ch1-4  ·  out ch1-4", fs=3.7, color=DIM, ha="center", va="center")
-        for x0, sec, extra in ((xm1, x, " + DC block + pad"), (xm2, z, "")):
+        for x0, sec, extra in ((xm1, x, " + DC block + pad"), (xm2, z, " + DC block" if d.get("arm_dc_blocks", 1) == 2 else "")):
             s.rect(x0, y - 3.2, MW, 6.4, fc=PAPER, lw=0.6, z=4, ls=(0, (2, 1)))
             s.text(x0 + 1.2, y + 1.2, f"{b.coupled[sec]} CPL{extra}", fs=3.9, fontweight="bold", va="center")
             s.text(x0 + 1.2, y - 1.6, f"{sec[0]}.{sec[1]}", fs=4.0, color=DIM, va="center")
@@ -1345,6 +1350,7 @@ def sheet_parts(b, P, pdf, n, N, prefix):
 
 def build(design, prefix):
     b = BS.Bench(design)
+    TW.build(design, prefix, b)                     # the twin routes every cable and sets non-IF lengths
     P = BS.parts(b)
     N = 7
     with PdfPages(os.path.join(OUT, f"{prefix}_blueprint.pdf")) as pdf:
@@ -1360,7 +1366,7 @@ def build(design, prefix):
 
 
 def main():
-    for design, prefix in ((BS.poc1_design(), "poc1"), (BS.bowtie_design(), "poc2")):
+    for design, prefix in ((BS.poc1_design(), "poc1"), (BS.robust_design(), "poc2")):
         b, P = build(design, prefix)
         print(f"{prefix}: {len(b.cables)} cables, {len(P)} part lines -> out/{prefix}_blueprint.pdf (+ 7 PNG)")
 

@@ -10,61 +10,61 @@ Nodes are managed in-band (E2E controller over the radio network); no node ETH2 
 |---|---|---|---|---|---|---|
 | A001 | Lab wall socket IEC 60309 32 A | PDU-A.inlet | PDU cord (IEC 60309 32 A plug) | fixed |  |  |
 | A002 | Lab wall socket IEC 60309 32 A | PDU-B.inlet | PDU cord (IEC 60309 32 A plug) | fixed |  |  |
-| A003 | PDU-A.O1 | DC-RECT.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  |  |
-| A004 | PDU-A.O2 | DC-RECT2.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  |  |
-| A005 | PDU-A.O3 | SW-DATA.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  |  |
-| A006 | PDU-A.O4 | SW-OOB.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  |  |
-| A007 | PDU-A.O5 | GNSS-SPL.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  |  |
-| A008 | PDU-A.O6 | ATT-01.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A009 | PDU-A.O7 | ATT-02.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A010 | PDU-A.O8 | ATT-03.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A011 | PDU-A.O9 | ATT-04.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A012 | PDU-A.O10 | ATT-05.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A013 | PDU-A.O11 | ATT-06.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A014 | PDU-A.O12 | ATT-07.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A015 | PDU-A.O13 | ATT-08.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A016 | PDU-A.O14 | ATT-09.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | ZTDAT inlet type TBC |
-| A017 | PDU-A.O15 | AGENT-W1.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  | agent PC power brick |
-| A018 | PDU-A.O16 | AGENT-W2.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  | agent PC power brick |
-| A019 | PDU-B.O1 | AGENT-E1.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  | agent PC power brick |
-| A020 | PDU-B.O2 | AGENT-E2.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  | agent PC power brick |
-| A021 | PDU-B.O3 | AGENT-S.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  | agent PC power brick |
-| A022 | PDU-B.O4 | AGENT-N.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  | agent PC power brick |
-| A023 | PDU-B.O5 | SRV-E2E.ac | Eaton Tripp Lite P004-010 C14-C13 lead | 3.05 m |  | switched off at t0 (outlet switching); runs to the bench table |
-| A024 | PDU-B.O6 | SRV-DPIR.ac | Eaton Tripp Lite P004-010 C14-C13 lead | 3.05 m |  | switched off at t0 (outlet switching); runs to the bench table |
-| A025 | PDU-B.O7 | INJ-HUB.ac | Eaton Tripp Lite P014-006 C14-C5 lead (injector inlet TBC) | 1.8 m |  | switched off at t0 (outlet switching): the node loses power |
-| A026 | PDU-B.O8 | PSU-W1-CORE@CORE.ac | Eaton Tripp Lite P004-010 C14-C13 lead | 3.05 m |  | switched off at t0 (outlet switching); runs to the bench table |
-| A027 | PDU-B.O9 | PSU-CORE-E1@CORE.ac | Eaton Tripp Lite P004-010 C14-C13 lead | 3.05 m |  | switched off at t0 (outlet switching); runs to the bench table |
-| A028 | TABLE-STRIP | BENCH-CTL.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  |  |
-| A029 | TABLE-STRIP | SPECAN.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  |  |
-| A030 | TABLE-STRIP | MWATT.ac | Eaton Tripp Lite P004-006 C14-C13 lead | 1.8 m |  | inlet type TBC |
-| A031 | TABLE-STRIP | HOST-W1.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  |  |
-| A032 | TABLE-STRIP | HOST-W2.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  |  |
-| A033 | TABLE-STRIP | HOST-E1.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  |  |
-| A034 | TABLE-STRIP | HOST-E2.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  |  |
-| A035 | TABLE-STRIP | HOST-S.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  |  |
-| A036 | TABLE-STRIP | HOST-N.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead | 1.8 m |  |  |
+| A003 | PDU-A.O1 | DC-RECT.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  |  |
+| A004 | PDU-A.O2 | DC-RECT2.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  |  |
+| A005 | PDU-A.O3 | SW-DATA.ac | Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m | 3.05 m |  | length from the twin route (2048 mm) |
+| A006 | PDU-A.O4 | SW-OOB.ac | Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m | 3.05 m |  | length from the twin route (1965 mm) |
+| A007 | PDU-A.O5 | GNSS-SPL.ac | Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m | 3.05 m |  | length from the twin route (2016 mm) |
+| A008 | PDU-A.O6 | ATT-01.ac | Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m | 3.05 m |  | ZTDAT inlet type TBC; length from the twin route (1714 mm) |
+| A009 | PDU-A.O7 | ATT-02.ac | Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m | 3.05 m |  | ZTDAT inlet type TBC; length from the twin route (1684 mm) |
+| A010 | PDU-A.O8 | ATT-03.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  | ZTDAT inlet type TBC |
+| A011 | PDU-A.O9 | ATT-04.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  | ZTDAT inlet type TBC |
+| A012 | PDU-A.O10 | ATT-05.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  | ZTDAT inlet type TBC |
+| A013 | PDU-A.O11 | ATT-06.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  | ZTDAT inlet type TBC |
+| A014 | PDU-A.O12 | ATT-07.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  | ZTDAT inlet type TBC |
+| A015 | PDU-A.O13 | ATT-08.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  | ZTDAT inlet type TBC |
+| A016 | PDU-A.O14 | ATT-09.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  | ZTDAT inlet type TBC |
+| A017 | PDU-A.O15 | AGENT-W1.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m | 1.83 m |  | agent PC power brick |
+| A018 | PDU-A.O16 | AGENT-W2.ac | Eaton Tripp Lite P014-010 C14-C5 lead 3.05 m | 3.05 m |  | agent PC power brick; length from the twin route (1754 mm) |
+| A019 | PDU-B.O1 | AGENT-E1.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m | 1.83 m |  | agent PC power brick |
+| A020 | PDU-B.O2 | AGENT-E2.ac | Eaton Tripp Lite P014-010 C14-C5 lead 3.05 m | 3.05 m |  | agent PC power brick; length from the twin route (1704 mm) |
+| A021 | PDU-B.O3 | AGENT-S.ac | Eaton Tripp Lite P014-010 C14-C5 lead 3.05 m | 3.05 m |  | agent PC power brick; length from the twin route (1841 mm) |
+| A022 | PDU-B.O4 | AGENT-N.ac | Eaton Tripp Lite P014-010 C14-C5 lead 3.05 m | 3.05 m |  | agent PC power brick; length from the twin route (1978 mm) |
+| A023 | PDU-B.O5 | SRV-E2E.ac | Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m | 3.05 m |  | switched off at t0 (outlet switching); runs to the bench table |
+| A024 | PDU-B.O6 | SRV-DPIR.ac | Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m | 3.05 m |  | switched off at t0 (outlet switching); runs to the bench table |
+| A025 | PDU-B.O7 | INJ-HUB.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m (injector inlet TBC) | 1.83 m |  | switched off at t0 (outlet switching): the node loses power |
+| A026 | PDU-B.O8 | PSU-W1-CORE@CORE.ac | Eaton Tripp Lite P004-015 C14-C13 lead 4.57 m | 4.57 m |  | switched off at t0 (outlet switching); runs to the bench table; length from the twin route (3162 mm) |
+| A027 | PDU-B.O9 | PSU-CORE-E1@CORE.ac | Eaton Tripp Lite P004-015 C14-C13 lead 4.57 m | 4.57 m |  | switched off at t0 (outlet switching); runs to the bench table; length from the twin route (3709 mm) |
+| A028 | TABLE-STRIP | BENCH-CTL.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  |  |
+| A029 | TABLE-STRIP | SPECAN.ac | Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m | 3.05 m |  | length from the twin route (2590 mm) |
+| A030 | TABLE-STRIP | MWATT.ac | Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m | 1.83 m |  | inlet type TBC |
+| A031 | TABLE-STRIP | HOST-W1.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m | 1.83 m |  |  |
+| A032 | TABLE-STRIP | HOST-W2.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m | 1.83 m |  |  |
+| A033 | TABLE-STRIP | HOST-E1.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m | 1.83 m |  |  |
+| A034 | TABLE-STRIP | HOST-E2.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m | 1.83 m |  |  |
+| A035 | TABLE-STRIP | HOST-S.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m | 1.83 m |  |  |
+| A036 | TABLE-STRIP | HOST-N.ac | Eaton Tripp Lite P014-006 C14-C5 'Mickey' lead 1.83 m | 1.83 m |  |  |
 
 ## DC power (16)
 
 | ID | From | To | Part | Length | VLAN | Note |
 |---|---|---|---|---|---|---|
 | D001 | DC-RECT.bus | DC-DIST.bus | DC bus link 2 x 10 AWG with ring lugs | 0.3 m |  | 48 V bus |
-| D002 | DC-DIST.CB1 | PA-01.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 1 m |  | feeds node W1 |
-| D003 | DC-DIST.CB2 | PA-02.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 1 m |  | feeds node W2 |
-| D004 | DC-DIST.CB3 | PA-03.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 1 m |  | feeds node S |
-| D005 | DC-DIST.CB4 | PA-04.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 1 m |  | feeds node N |
-| D006 | DC-DIST.CB5 | PA-05.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 1 m |  | feeds node E1 |
-| D007 | DC-DIST.CB6 | PA-06.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 1 m |  | feeds node E2 |
+| D002 | DC-DIST.CB1 | PA-01.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 0.5 m (cut) |  | feeds node W1 |
+| D003 | DC-DIST.CB2 | PA-02.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 0.75 m (cut) |  | feeds node W2 |
+| D004 | DC-DIST.CB3 | PA-03.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 0.5 m (cut) |  | feeds node S |
+| D005 | DC-DIST.CB4 | PA-04.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 0.5 m (cut) |  | feeds node N |
+| D006 | DC-DIST.CB5 | PA-05.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 0.5 m (cut) |  | feeds node E1 |
+| D007 | DC-DIST.CB6 | PA-06.dc | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 0.5 m (cut) |  | feeds node E2 |
 | D008 | DC-RECT2.out | DC-DIST2.bus | DC bus link 2 x 10 AWG with ring lugs (A and B buses) | 0.3 m |  | -48 V bus, positive grounded |
-| D009 | DC-DIST2.F1 | IP50-W1-CORE@W1.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3 m |  | -48 V through a GMT fuse |
-| D010 | PSU-W1-CORE@CORE.out | IP50-W1-CORE@CORE.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 1 m |  | -48 V (positive grounded) from its own supply, switched off at t0 |
-| D011 | PSU-CORE-E1@CORE.out | IP50-CORE-E1@CORE.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 1 m |  | -48 V (positive grounded) from its own supply, switched off at t0 |
-| D012 | DC-DIST2.F2 | IP50-CORE-E1@E1.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3 m |  | -48 V through a GMT fuse |
-| D013 | DC-DIST2.F3 | IP50-W1-W2@W1.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3 m |  | -48 V through a GMT fuse |
-| D014 | DC-DIST2.F4 | IP50-W1-W2@W2.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3 m |  | -48 V through a GMT fuse |
-| D015 | DC-DIST2.F5 | IP50-E1-E2@E1.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3 m |  | -48 V through a GMT fuse |
-| D016 | DC-DIST2.F6 | IP50-E1-E2@E2.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3 m |  | -48 V through a GMT fuse |
+| D009 | DC-DIST2.F1 | IP50-W1-CORE@W1.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3.75 m (cut) |  | -48 V through a GMT fuse |
+| D010 | PSU-W1-CORE@CORE.out | IP50-W1-CORE@CORE.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 1.75 m (cut) |  | -48 V (positive grounded) from its own supply, switched off at t0 |
+| D011 | PSU-CORE-E1@CORE.out | IP50-CORE-E1@CORE.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 1.25 m (cut) |  | -48 V (positive grounded) from its own supply, switched off at t0 |
+| D012 | DC-DIST2.F2 | IP50-CORE-E1@E1.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 4.75 m (cut) |  | -48 V through a GMT fuse |
+| D013 | DC-DIST2.F3 | IP50-W1-W2@W1.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3 m (cut) |  | -48 V through a GMT fuse |
+| D014 | DC-DIST2.F4 | IP50-W1-W2@W2.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 4.5 m (cut) |  | -48 V through a GMT fuse |
+| D015 | DC-DIST2.F5 | IP50-E1-E2@E1.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 3.75 m (cut) |  | -48 V through a GMT fuse |
+| D016 | DC-DIST2.F6 | IP50-E1-E2@E2.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 5 m (cut) |  | -48 V through a GMT fuse |
 
 ## Cat6A power to node ETH1 (7)
 
@@ -82,67 +82,67 @@ Nodes are managed in-band (E2E controller over the radio network); no node ETH2 
 
 | ID | From | To | Part | Length | VLAN | Note |
 |---|---|---|---|---|---|---|
-| F001 | IP50-W1-CORE@W1.data | SW-DATA.P1 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch | 3 m | 101 | hop W1-CORE (IP-50 data port type TBC) |
-| F002 | IP50-W1-W2@W1.data | SW-DATA.P2 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch | 3 m | 101 | hop W1-W2 (IP-50 data port type TBC) |
-| F003 | AGENT-W1.data | SW-DATA.P3 | Panduit STP6X2MBU Cat6A 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 101 | MARL agent + site routing |
-| F004 | IP50-W1-W2@W2.data | SW-DATA.P4 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch | 3 m | 102 | hop W1-W2 (IP-50 data port type TBC) |
-| F005 | AGENT-W2.data | SW-DATA.P5 | Panduit STP6X2MBU Cat6A 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 102 | MARL agent + site routing |
-| F006 | IP50-W1-CORE@CORE.data | SW-DATA.P6 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch | 3 m | 103 | hop W1-CORE (IP-50 data port type TBC) |
-| F007 | IP50-CORE-E1@CORE.data | SW-DATA.P7 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch | 3 m | 103 | hop CORE-E1 (IP-50 data port type TBC) |
-| F008 | IP50-CORE-E1@E1.data | SW-DATA.P8 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch | 3 m | 104 | hop CORE-E1 (IP-50 data port type TBC) |
-| F009 | IP50-E1-E2@E1.data | SW-DATA.P9 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch | 3 m | 104 | hop E1-E2 (IP-50 data port type TBC) |
-| F010 | AGENT-E1.data | SW-DATA.P10 | Panduit STP6X2MBU Cat6A 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 104 | MARL agent + site routing |
-| F011 | IP50-E1-E2@E2.data | SW-DATA.P11 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP at the switch | 3 m | 105 | hop E1-E2 (IP-50 data port type TBC) |
-| F012 | AGENT-E2.data | SW-DATA.P12 | Panduit STP6X2MBU Cat6A 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 105 | MARL agent + site routing |
-| F013 | AGENT-S.data | SW-DATA.P13 | Panduit STP6X2MBU Cat6A 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 106 | MARL agent + site routing |
-| F014 | AGENT-N.data | SW-DATA.P14 | Panduit STP6X2MBU Cat6A 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 107 | MARL agent + site routing |
-| F015 | SB1.W1.SFP+ | SW-DATA.P15 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m | 2 m | 101 | node W1 data, in-band management |
-| F016 | HOST-W1.nic10g | SW-DATA.P16 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 101 | traffic host |
+| F001 | IP50-W1-CORE@W1.data | SW-DATA.P1 | Panduit STP6X5MBU Cat6A S/FTP 5 m + Netgear AGM734 1000BASE-T SFP at the switch | 5 m | 101 | hop W1-CORE (IP-50 data port type TBC); length from the twin route (3625 mm) |
+| F002 | IP50-W1-W2@W1.data | SW-DATA.P2 | Panduit STP6X5MBU Cat6A S/FTP 5 m + Netgear AGM734 1000BASE-T SFP at the switch | 5 m | 101 | hop W1-W2 (IP-50 data port type TBC); length from the twin route (3127 mm) |
+| F003 | AGENT-W1.data | SW-DATA.P3 | Panduit STP6X1MBU Cat6A S/FTP 1 m + Netgear AGM734 1000BASE-T SFP at the switch | 1 m | 101 | MARL agent + site routing; length from the twin route (516 mm) |
+| F004 | IP50-W1-W2@W2.data | SW-DATA.P4 | Panduit STP6X5MBU Cat6A S/FTP 5 m + Netgear AGM734 1000BASE-T SFP at the switch | 5 m | 102 | hop W1-W2 (IP-50 data port type TBC); length from the twin route (4370 mm) |
+| F005 | AGENT-W2.data | SW-DATA.P5 | Panduit STP6X1MBU Cat6A S/FTP 1 m + Netgear AGM734 1000BASE-T SFP at the switch | 1 m | 102 | MARL agent + site routing; length from the twin route (510 mm) |
+| F006 | IP50-W1-CORE@CORE.data | SW-DATA.P6 | Panduit STP6X7MBU Cat6A S/FTP 7 m + Netgear AGM734 1000BASE-T SFP at the switch | 7 m | 103 | hop W1-CORE (IP-50 data port type TBC); length from the twin route (4787 mm) |
+| F007 | IP50-CORE-E1@CORE.data | SW-DATA.P7 | Panduit STP6X5MBU Cat6A S/FTP 5 m + Netgear AGM734 1000BASE-T SFP at the switch | 5 m | 103 | hop CORE-E1 (IP-50 data port type TBC); length from the twin route (3312 mm) |
+| F008 | IP50-CORE-E1@E1.data | SW-DATA.P8 | Panduit STP6X5MBU Cat6A S/FTP 5 m + Netgear AGM734 1000BASE-T SFP at the switch | 5 m | 104 | hop CORE-E1 (IP-50 data port type TBC); length from the twin route (4532 mm) |
+| F009 | IP50-E1-E2@E1.data | SW-DATA.P9 | Panduit STP6X5MBU Cat6A S/FTP 5 m + Netgear AGM734 1000BASE-T SFP at the switch | 5 m | 104 | hop E1-E2 (IP-50 data port type TBC); length from the twin route (3677 mm) |
+| F010 | AGENT-E1.data | SW-DATA.P10 | Panduit STP6X1MBU Cat6A S/FTP 1 m + Netgear AGM734 1000BASE-T SFP at the switch | 1 m | 104 | MARL agent + site routing; length from the twin route (571 mm) |
+| F011 | IP50-E1-E2@E2.data | SW-DATA.P11 | Panduit STP6X7MBU Cat6A S/FTP 7 m + Netgear AGM734 1000BASE-T SFP at the switch | 7 m | 105 | hop E1-E2 (IP-50 data port type TBC); length from the twin route (4884 mm) |
+| F012 | AGENT-E2.data | SW-DATA.P12 | Panduit STP6X2MBU Cat6A S/FTP 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 105 | MARL agent + site routing |
+| F013 | AGENT-S.data | SW-DATA.P13 | Panduit STP6X2MBU Cat6A S/FTP 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 106 | MARL agent + site routing |
+| F014 | AGENT-N.data | SW-DATA.P14 | Panduit STP6X2MBU Cat6A S/FTP 2 m + Netgear AGM734 1000BASE-T SFP at the switch | 2 m | 107 | MARL agent + site routing |
+| F015 | SB1.W1.SFP+ | SW-DATA.P15 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM001 OM4 LC-LC 1 m | 1 m | 101 | node W1 data, in-band management; length from the twin route (715 mm) |
+| F016 | HOST-W1.nic10g | SW-DATA.P16 | SFP+ SR at both ends (host NIC optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m | 5 m | 101 | traffic host; length from the twin route (2946 mm) |
 | F017 | SB1.W2.SFP+ | SW-DATA.P17 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m | 2 m | 102 | node W2 data, in-band management |
-| F018 | HOST-W2.nic10g | SW-DATA.P18 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 102 | traffic host |
+| F018 | HOST-W2.nic10g | SW-DATA.P18 | SFP+ SR at both ends (host NIC optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m | 5 m | 102 | traffic host; length from the twin route (2766 mm) |
 | F019 | SRV-E2E.data | SW-DATA.P19 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 103 | TG E2E controller + NMS |
 | F020 | SRV-DPIR.data | SW-DATA.P20 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 103 | DPIR planner + predictor |
 | F021 | SB4.E1.SFP+ | SW-DATA.P21 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m | 2 m | 104 | node E1 data, in-band management |
 | F022 | HOST-E1.nic10g | SW-DATA.P22 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 104 | traffic host |
 | F023 | SB4.E2.SFP+ | SW-DATA.P23 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m | 2 m | 105 | node E2 data, in-band management |
-| F024 | HOST-E2.nic10g | SW-DATA.P24 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 105 | traffic host |
+| F024 | HOST-E2.nic10g | SW-DATA.P24 | SFP+ SR at both ends (host NIC optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m | 5 m | 105 | traffic host; length from the twin route (3118 mm) |
 | F025 | SB3.S.SFP+ | SW-DATA.P25 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m | 2 m | 106 | node S data, in-band management |
-| F026 | HOST-S.nic10g | SW-DATA.P26 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 106 | traffic host |
-| F027 | SB3.N.SFP+ | SW-DATA.P27 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m | 2 m | 107 | node N data, in-band management |
+| F026 | HOST-S.nic10g | SW-DATA.P26 | SFP+ SR at both ends (host NIC optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m | 5 m | 106 | traffic host; length from the twin route (2824 mm) |
+| F027 | SB3.N.SFP+ | SW-DATA.P27 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM001 OM4 LC-LC 1 m | 1 m | 107 | node N data, in-band management; length from the twin route (802 mm) |
 | F028 | HOST-N.nic10g | SW-DATA.P28 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 107 | traffic host |
 
 ## 1G management to SW-OOB (VLAN 100) (28)
 
 | ID | From | To | Part | Length | VLAN | Note |
 |---|---|---|---|---|---|---|
-| E001 | AGENT-W1.mgmt | SW-OOB.P1 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | agent PC logging |
-| E002 | HOST-W1.mgmt | SW-OOB.P2 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | traffic host control |
-| E003 | AGENT-W2.mgmt | SW-OOB.P3 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | agent PC logging |
-| E004 | HOST-W2.mgmt | SW-OOB.P4 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | traffic host control |
-| E005 | AGENT-E1.mgmt | SW-OOB.P5 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | agent PC logging |
-| E006 | HOST-E1.mgmt | SW-OOB.P6 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | traffic host control |
-| E007 | AGENT-E2.mgmt | SW-OOB.P7 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | agent PC logging |
-| E008 | HOST-E2.mgmt | SW-OOB.P8 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | traffic host control |
-| E009 | AGENT-S.mgmt | SW-OOB.P9 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | agent PC logging |
-| E010 | HOST-S.mgmt | SW-OOB.P10 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | traffic host control |
-| E011 | AGENT-N.mgmt | SW-OOB.P11 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | agent PC logging |
-| E012 | HOST-N.mgmt | SW-OOB.P12 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | traffic host control |
-| E013 | SRV-E2E.mgmt | SW-OOB.P13 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | server management |
-| E014 | SRV-DPIR.mgmt | SW-OOB.P14 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | server management |
-| E015 | BENCH-CTL.mgmt | SW-OOB.P15 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | server management |
-| E016 | ATT-01.lan | SW-OOB.P16 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E017 | ATT-02.lan | SW-OOB.P17 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E018 | ATT-03.lan | SW-OOB.P18 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E019 | ATT-04.lan | SW-OOB.P19 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E020 | ATT-05.lan | SW-OOB.P20 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E021 | ATT-06.lan | SW-OOB.P21 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E022 | ATT-07.lan | SW-OOB.P22 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E023 | ATT-08.lan | SW-OOB.P23 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E024 | ATT-09.lan | SW-OOB.P24 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
-| E025 | MWATT.lan | SW-OOB.P25 | Panduit STP6X3MBU Cat6A 3 m | 3 m | 100 | J7204B control (LAN) |
-| E026 | PDU-A.net | SW-OOB.P26 | Panduit STP6X2MBU Cat6A 2 m | 2 m | 100 | PDU management, outlet switching |
-| E027 | PDU-B.net | SW-OOB.P27 | Panduit STP6X2MBU Cat6A 2 m + Netgear AGM734 1000BASE-T SFP (SFP+ cage) | 2 m | 100 | PDU management, outlet switching |
-| E028 | SPECAN.lan | SW-OOB.P28 | Panduit STP6X3MBU Cat6A 3 m + Netgear AGM734 1000BASE-T SFP (SFP+ cage) | 3 m | 100 | analyser |
+| E001 | AGENT-W1.mgmt | SW-OOB.P1 | Panduit STP6X1MBU Cat6A S/FTP 1 m | 1 m | 100 | agent PC logging; length from the twin route (428 mm) |
+| E002 | HOST-W1.mgmt | SW-OOB.P2 | Panduit STP6X5MBU Cat6A S/FTP 5 m | 5 m | 100 | traffic host control; length from the twin route (3162 mm) |
+| E003 | AGENT-W2.mgmt | SW-OOB.P3 | Panduit STP6X1MBU Cat6A S/FTP 1 m | 1 m | 100 | agent PC logging; length from the twin route (499 mm) |
+| E004 | HOST-W2.mgmt | SW-OOB.P4 | Panduit STP6X5MBU Cat6A S/FTP 5 m | 5 m | 100 | traffic host control; length from the twin route (2919 mm) |
+| E005 | AGENT-E1.mgmt | SW-OOB.P5 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | agent PC logging |
+| E006 | HOST-E1.mgmt | SW-OOB.P6 | Panduit STP6X3MBU Cat6A S/FTP 3 m | 3 m | 100 | traffic host control |
+| E007 | AGENT-E2.mgmt | SW-OOB.P7 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | agent PC logging |
+| E008 | HOST-E2.mgmt | SW-OOB.P8 | Panduit STP6X5MBU Cat6A S/FTP 5 m | 5 m | 100 | traffic host control; length from the twin route (3302 mm) |
+| E009 | AGENT-S.mgmt | SW-OOB.P9 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | agent PC logging |
+| E010 | HOST-S.mgmt | SW-OOB.P10 | Panduit STP6X5MBU Cat6A S/FTP 5 m | 5 m | 100 | traffic host control; length from the twin route (3123 mm) |
+| E011 | AGENT-N.mgmt | SW-OOB.P11 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | agent PC logging |
+| E012 | HOST-N.mgmt | SW-OOB.P12 | Panduit STP6X5MBU Cat6A S/FTP 5 m | 5 m | 100 | traffic host control; length from the twin route (2880 mm) |
+| E013 | SRV-E2E.mgmt | SW-OOB.P13 | Panduit STP6X3MBU Cat6A S/FTP 3 m | 3 m | 100 | server management |
+| E014 | SRV-DPIR.mgmt | SW-OOB.P14 | Panduit STP6X3MBU Cat6A S/FTP 3 m | 3 m | 100 | server management |
+| E015 | BENCH-CTL.mgmt | SW-OOB.P15 | Panduit STP6X5MBU Cat6A S/FTP 5 m | 5 m | 100 | server management; length from the twin route (2744 mm) |
+| E016 | ATT-01.lan | SW-OOB.P16 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E017 | ATT-02.lan | SW-OOB.P17 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E018 | ATT-03.lan | SW-OOB.P18 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E019 | ATT-04.lan | SW-OOB.P19 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E020 | ATT-05.lan | SW-OOB.P20 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E021 | ATT-06.lan | SW-OOB.P21 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E022 | ATT-07.lan | SW-OOB.P22 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E023 | ATT-08.lan | SW-OOB.P23 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E024 | ATT-09.lan | SW-OOB.P24 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | attenuator control, SCPI over TCP |
+| E025 | MWATT.lan | SW-OOB.P25 | Panduit STP6X5MBU Cat6A S/FTP 5 m | 5 m | 100 | J7204B control (LAN); length from the twin route (3520 mm) |
+| E026 | PDU-A.net | SW-OOB.P26 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m | 100 | PDU management, outlet switching |
+| E027 | PDU-B.net | SW-OOB.P27 | Panduit STP6X2MBU Cat6A S/FTP 2 m + Netgear AGM734 1000BASE-T SFP (SFP+ cage) | 2 m | 100 | PDU management, outlet switching |
+| E028 | SPECAN.lan | SW-OOB.P28 | Panduit STP6X7MBU Cat6A S/FTP 7 m + Netgear AGM734 1000BASE-T SFP (SFP+ cage) | 7 m | 100 | analyser; length from the twin route (5146 mm) |
 
 ## IF coax (SMA, 18 GHz) (80)
 
@@ -188,10 +188,10 @@ Nodes are managed in-band (E2E controller over the radio network); no node ETH2 
 | R038 | SB4.M3.T2 | ATT-04.ch2.out | Mini-Circuits CBL-2FT-SMSM+ | 0.61 m |  | HUB-E2 E2.W tile 2; span 5U, needs 0.40 m |
 | R039 | SB4.M3.T3 | ATT-04.ch3.out | Mini-Circuits CBL-2FT-SMSM+ | 0.61 m |  | HUB-E2 E2.W tile 3; span 5U, needs 0.40 m |
 | R040 | SB4.M3.T4 | ATT-04.ch4.out | Mini-Circuits CBL-2FT-SMSM+ | 0.61 m |  | HUB-E2 E2.W tile 4; span 5U, needs 0.40 m |
-| R041 | SB2.M3.T1 | ATT-05.ch1.in | Mini-Circuits CBL-2FT-SMSM+ | 0.61 m |  | HUB-S HUB.S tile 1; span 8U, needs 0.56 m |
-| R042 | SB2.M3.T2 | ATT-05.ch2.in | Mini-Circuits CBL-2FT-SMSM+ | 0.61 m |  | HUB-S HUB.S tile 2; span 8U, needs 0.56 m |
-| R043 | SB2.M3.T3 | ATT-05.ch3.in | Mini-Circuits CBL-2FT-SMSM+ | 0.61 m |  | HUB-S HUB.S tile 3; span 8U, needs 0.56 m |
-| R044 | SB2.M3.T4 | ATT-05.ch4.in | Mini-Circuits CBL-2FT-SMSM+ | 0.61 m |  | HUB-S HUB.S tile 4; span 8U, needs 0.56 m |
+| R041 | SB2.M3.T1 | ATT-05.ch1.in | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S HUB.S tile 1; span 8U, needs 0.56 m |
+| R042 | SB2.M3.T2 | ATT-05.ch2.in | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S HUB.S tile 2; span 8U, needs 0.56 m |
+| R043 | SB2.M3.T3 | ATT-05.ch3.in | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S HUB.S tile 3; span 8U, needs 0.56 m |
+| R044 | SB2.M3.T4 | ATT-05.ch4.in | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S HUB.S tile 4; span 8U, needs 0.56 m |
 | R045 | SB3.M1.T1 | ATT-05.ch1.out | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S S.N tile 1; span 7U, needs 0.68 m |
 | R046 | SB3.M1.T2 | ATT-05.ch2.out | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S S.N tile 2; span 7U, needs 0.68 m |
 | R047 | SB3.M1.T3 | ATT-05.ch3.out | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S S.N tile 3; span 7U, needs 0.68 m |
@@ -235,29 +235,29 @@ Nodes are managed in-band (E2E controller over the radio network); no node ETH2 
 |---|---|---|---|---|---|---|
 | G001 | GNSS-ANT | GNSS-SPL.in | LMR-400 coax + surge arrestor (part TBC) | site |  |  |
 | G002 | GNSS-SPL.out1 | SB1.GNSS | RG-316 SMA coax 1 m (part TBC) | 1 m |  | only if the box has a GNSS input (TBC) |
-| G003 | GNSS-SPL.out2 | SB2.GNSS | RG-316 SMA coax 1 m (part TBC) | 1 m |  | only if the box has a GNSS input (TBC) |
-| G004 | GNSS-SPL.out3 | SB3.GNSS | RG-316 SMA coax 1 m (part TBC) | 1 m |  | only if the box has a GNSS input (TBC) |
-| G005 | GNSS-SPL.out4 | SB4.GNSS | RG-316 SMA coax 1 m (part TBC) | 1 m |  | only if the box has a GNSS input (TBC) |
+| G003 | GNSS-SPL.out2 | SB2.GNSS | RG-316 SMA coax 2 m (part TBC) | 2 m |  | only if the box has a GNSS input (TBC) |
+| G004 | GNSS-SPL.out3 | SB3.GNSS | RG-316 SMA coax 2 m (part TBC) | 2 m |  | only if the box has a GNSS input (TBC) |
+| G005 | GNSS-SPL.out4 | SB4.GNSS | RG-316 SMA coax 2 m (part TBC) | 2 m |  | only if the box has a GNSS input (TBC) |
 
 ## IP-50 conducted chain (16)
 
 | ID | From | To | Part | Length | VLAN | Note |
 |---|---|---|---|---|---|---|
 | W001 | IP50-W1-CORE@W1.wg | WGT-W1-CORE-A.wg | waveguide-to-coax transition PEWCA1003 (band TBC) | flange |  | hop W1-CORE |
-| W002 | WGT-W1-CORE-A.coax | MWATT.ch1.in | SA18S10W-30 pad on the transition, then Mini-Circuits CBL-1M-SMSM+ | 1 m |  | hop W1-CORE |
-| W003 | MWATT.ch1.out | WGT-W1-CORE-B.coax | Mini-Circuits CBL-1M-SMSM+, then SA18S10W-30 pad on the transition | 1 m |  | hop W1-CORE |
+| W002 | WGT-W1-CORE-A.coax | MWATT.ch1.in | SA18S10W-30 pad on the transition, then Mini-Circuits CBL-2FT-SMSM+ | 0.61 m |  | hop W1-CORE |
+| W003 | MWATT.ch1.out | WGT-W1-CORE-B.coax | Mini-Circuits CBL-3FT-SMSM+, then SA18S10W-30 pad on the transition | 0.91 m |  | hop W1-CORE |
 | W004 | WGT-W1-CORE-B.wg | IP50-W1-CORE@CORE.wg | waveguide-to-coax transition PEWCA1003 (band TBC) | flange |  | hop W1-CORE |
 | W005 | IP50-CORE-E1@CORE.wg | WGT-CORE-E1-A.wg | waveguide-to-coax transition PEWCA1003 (band TBC) | flange |  | hop CORE-E1 |
-| W006 | WGT-CORE-E1-A.coax | MWATT.ch2.in | SA18S10W-30 pad on the transition, then Mini-Circuits CBL-1M-SMSM+ | 1 m |  | hop CORE-E1 |
+| W006 | WGT-CORE-E1-A.coax | MWATT.ch2.in | SA18S10W-30 pad on the transition, then Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | hop CORE-E1 |
 | W007 | MWATT.ch2.out | WGT-CORE-E1-B.coax | Mini-Circuits CBL-1M-SMSM+, then SA18S10W-30 pad on the transition | 1 m |  | hop CORE-E1 |
 | W008 | WGT-CORE-E1-B.wg | IP50-CORE-E1@E1.wg | waveguide-to-coax transition PEWCA1003 (band TBC) | flange |  | hop CORE-E1 |
 | W009 | IP50-W1-W2@W1.wg | WGT-W1-W2-A.wg | waveguide-to-coax transition PEWCA1003 (band TBC) | flange |  | hop W1-W2 |
-| W010 | WGT-W1-W2-A.coax | MWATT.ch3.in | SA18S10W-30 pad on the transition, then Mini-Circuits CBL-1M-SMSM+ | 1 m |  | hop W1-W2 |
-| W011 | MWATT.ch3.out | WGT-W1-W2-B.coax | Mini-Circuits CBL-1M-SMSM+, then SA18S10W-30 pad on the transition | 1 m |  | hop W1-W2 |
+| W010 | WGT-W1-W2-A.coax | MWATT.ch3.in | SA18S10W-30 pad on the transition, then Mini-Circuits CBL-2M-SMSM+ | 2.00 m |  | hop W1-W2 |
+| W011 | MWATT.ch3.out | WGT-W1-W2-B.coax | Mini-Circuits CBL-2M-SMSM+, then SA18S10W-30 pad on the transition | 2.00 m |  | hop W1-W2 |
 | W012 | WGT-W1-W2-B.wg | IP50-W1-W2@W2.wg | waveguide-to-coax transition PEWCA1003 (band TBC) | flange |  | hop W1-W2 |
 | W013 | IP50-E1-E2@E1.wg | WGT-E1-E2-A.wg | waveguide-to-coax transition PEWCA1003 (band TBC) | flange |  | hop E1-E2 |
-| W014 | WGT-E1-E2-A.coax | MWATT.ch4.in | SA18S10W-30 pad on the transition, then Mini-Circuits CBL-1M-SMSM+ | 1 m |  | hop E1-E2 |
-| W015 | MWATT.ch4.out | WGT-E1-E2-B.coax | Mini-Circuits CBL-1M-SMSM+, then SA18S10W-30 pad on the transition | 1 m |  | hop E1-E2 |
+| W014 | WGT-E1-E2-A.coax | MWATT.ch4.in | SA18S10W-30 pad on the transition, then Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | hop E1-E2 |
+| W015 | MWATT.ch4.out | WGT-E1-E2-B.coax | Mini-Circuits CBL-2FT-SMSM+, then SA18S10W-30 pad on the transition | 0.61 m |  | hop E1-E2 |
 | W016 | WGT-E1-E2-B.wg | IP50-E1-E2@E2.wg | waveguide-to-coax transition PEWCA1003 (band TBC) | flange |  | hop E1-E2 |
 
 ## SW-DATA port plan

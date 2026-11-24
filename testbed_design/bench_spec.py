@@ -34,6 +34,8 @@ from collections import OrderedDict
 
 from validate import bearing, sector
 
+LADDER = {}            # set by twin/twin_model.py (standard cable lengths); empty when the twin is not used
+
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 SEC = {0: "E", 1: "N", 2: "W", 3: "S"}
 BOX_KIND = {"GTS003": (2, 2), "GTST002B": (1, 4), "GTST003": (2, 2)}
@@ -159,6 +161,45 @@ def bowtie_design():
                             ("SRV-E2E", "TG E2E controller + NMS (POP at H)", "H"),
                             ("BENCH-CTL", "bench controller: run script, ATT / PDU commands, logging (always on)", None)],
         no_data=[], event=None, att_reuse=9,
+    )
+
+
+def robust_design():
+    """PoC 2, TENTATIVE: the 'robust' design picked by both reviewers of the more-paths redesign (7-node
+    Terragraph bowtie, 8 fixed point-to-point links, 3 IP-50 rungs, 2 heuristic-4 coupling arms, 13 radio units).
+    Box slots, module map, attenuator numbering and arms as in that design's bench notes."""
+    boxes = [dict(id="SB1", code="GTS003 #1", kind="GTS003", nodes=["B", "E"]),
+             dict(id="SB2", code="GTST002B", kind="GTST002B", nodes=["H"]),
+             dict(id="SB3", code="GTST003", kind="GTST003", nodes=["A", "D"]),
+             dict(id="SB4", code="GTS003 #2", kind="GTS003", nodes=["C", "F"])]
+    nodes = {"B": ("SB1", "a", 2, "even"), "E": ("SB1", "b", 2, "even"), "H": ("SB2", "a", 4, "even"),
+             "A": ("SB3", "a", 2, "odd"), "D": ("SB3", "b", 2, "odd"), "C": ("SB4", "a", 2, "odd"),
+             "F": ("SB4", "b", 2, "odd")}
+    module = {("B", "E"): ("SB1", "M1"), ("B", "S"): ("SB1", "M2"), ("E", "N"): ("SB1", "M3"), ("E", "W"): ("SB1", "M4"),
+              ("H", "N"): ("SB2", "M1"), ("H", "E"): ("SB2", "M2"), ("H", "S"): ("SB2", "M3"), ("H", "W"): ("SB2", "M4"),
+              ("A", "S"): ("SB3", "M1"), ("A", "W"): ("SB3", "M2"), ("D", "W"): ("SB3", "M3"), ("D", "S"): ("SB3", "M4"),
+              ("C", "N"): ("SB4", "M1"), ("C", "E"): ("SB4", "M2"), ("F", "E"): ("SB4", "M3"), ("F", "N"): ("SB4", "M4")}
+    link_ends = OrderedDict([
+        ("THA", (("H", "N"), ("A", "S"))), ("TAB", (("A", "W"), ("B", "E"))), ("TBC", (("B", "S"), ("C", "N"))),
+        ("TCH", (("C", "E"), ("H", "W"))), ("THD", (("H", "E"), ("D", "W"))), ("TDE", (("D", "S"), ("E", "N"))),
+        ("TEF", (("E", "W"), ("F", "E"))), ("TFH", (("F", "N"), ("H", "S")))])
+    snr = ("SNR 25 dB; fades", "cal.", "-", "-", "see poc2")
+    att_set = OrderedDict([(k, snr) for k in link_ends] +
+                          [("KBD", ("INR 13 dB", "cal.", "-", "-", "off = 63")), ("KAE", ("INR 13 dB", "cal.", "-", "-", "off = 63"))])
+    return dict(
+        name="PoC 2 (TENTATIVE 'robust'): 7-node TG bowtie, 3 IP-50 rungs, 2 coupling arms, DPIR only",
+        poc="PoC 2", drawing="UNITY6G-POC2-BP",
+        boxes=boxes, nodes={k: dict(box=v[0], slot=v[1], sectors=v[2], pol=v[3]) for k, v in nodes.items()},
+        module=module, link_ends=link_ends, splitters={},
+        couplings=OrderedDict([("KBD", (("B", "E"), ("D", "W"))), ("KAE", (("A", "S"), ("E", "N")))]),
+        mw_links=OrderedDict([("MAF", ("A", "F")), ("MBE", ("B", "E")), ("MCD", ("C", "D"))]),
+        sites=["H", "A", "B", "C", "D", "E", "F"],
+        hosts=OrderedDict([("H", ["H"]), ("A", ["A"]), ("B", ["B"]), ("D", ["D"]), ("E", ["E"])]),
+        agents=[], servers=[("SRV-DPIR", "DPIR controller + predictor (GPU)", None),
+                            ("SRV-E2E", "TG E2E controller + NMS (POP at H)", "H"),
+                            ("BENCH-CTL", "bench controller: run script, ATT / PDU commands, logging (always on)", None)],
+        no_data=[], event=None, att_reuse=9, att_set=att_set, arm_dc_blocks=2,
+        flows=[("F1", "H", "D", 1600), ("F2", "H", "A", 1600), ("F3", "B", "H", 1000), ("F4", "E", "H", 1000)],
     )
 
 
@@ -390,8 +431,10 @@ class Bench:
                          "BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then {pn}", "",
                          f"arm {name} tile {t}, phase-matched", geo=(tray, mod_x(d["module"][x][1], t), att, ch_x(t, "in")),
                          bundle=(name, "in"))
+            both = d.get("arm_dc_blocks", 1) == 2
             for t in T:
-                self.add("RF", f"{att}.ch{t}.out", f"{self.coupled[y]}.t{t}.CPL", "{pn}", "", f"arm {name} tile {t}",
+                self.add("RF", f"{att}.ch{t}.out", f"{self.coupled[y]}.t{t}.CPL",
+                         "{pn}, then BLK-18-S+ DC block on the coupler's CPL port" if both else "{pn}", "", f"arm {name} tile {t}",
                          geo=(att, ch_x(t, "out"), tray, mod_x(d["module"][y][1], t)), bundle=(name, "out"))
         # IP-50 chains ------------------------------------------------------------------------------
         for j, (k, (a, b)) in enumerate(d.get("mw_links", {}).items()):
@@ -532,14 +575,15 @@ def parts(b):
                                   "switched off at t0" if b.switched else ""), "confirmed")
     add("Power", "-", "Bench-table mains strip, C13 outlets", "lab-supplied (part TBC)", "-", 1,
         f"{len(b.table_loads)} table loads", "to confirm")
-    mk = sorted({c["b"].split("-")[0].lower() for c in b.cables if c["pn"] == "P014-006"})
-    add("Power", "8", "'Micky' lead C14 -> C5", "P014-006", "Eaton Tripp Lite", b.count_pn("P014-006"),
-        ", ".join({"host": "traffic hosts", "agent": "agent-PC bricks", "inj": "PoE injector (inlet TBC)"}[m] for m in mk),
-        "confirmed")
-    add("Power", "9", "'Exten' lead C14 -> C13 1.8 m", "P004-006", "Eaton Tripp Lite", b.count_pn("P004-006"),
-        "PDU and table strip to devices", "meaning to confirm")
-    add("Power", "9", "'Exten' lead C14 -> C13 3.05 m", "P004-010", "Eaton Tripp Lite", b.count_pn("P004-010"),
-        "switched PDU outlet to a bench-table device", "confirmed")
+    # leads and patch cords are counted per part number: the twin picks each length from its routed path
+    lad = {pn: (L, desc, conf) for k, v in LADDER.items() for pn, L, desc, conf in v}
+    use = {"host": "traffic hosts", "agent": "agent-PC bricks", "inj": "PoE injector (inlet TBC)", "srv": "servers",
+           "psu": "switched supplies"}
+    for pre, team, nm in (("P014", "8", "'Micky' lead C14 -> C5"), ("P004", "9", "'Exten' lead C14 -> C13")):
+        for pn in sorted({c["pn"] for c in b.cables if c["pn"].startswith(pre)}):
+            L, desc, conf = lad.get(pn, (0, pn, "confirmed"))
+            who = sorted({use.get(c["b"].split("-")[0].lower(), "rack and table devices") for c in b.cables if c["pn"] == pn})
+            add("Power", team, f"{nm} {L / 1000:g} m", pn, "Eaton Tripp Lite", b.count_pn(pn), ", ".join(who), conf)
     m = sum(c.get("metres", 0) for c in b.cables if c["pn"] == "Belden 8461")
     add("Power", "10", "DC cable 2 x 18 AWG (bulk) + ferrules", "Belden 8461 + Phoenix 3200519", "Belden / Phoenix",
         f"{m:.0f} m + {4 * b.count_pn('Belden 8461')} ferrules", f"{b.count_pn('Belden 8461')} runs; 100 ft spool = 30.5 m",
@@ -554,15 +598,15 @@ def parts(b):
     add("Network", "-", "1000BASE-T copper SFP", "AGM734-10000S", "Netgear", b.n_agm_data + b.n_agm_oob,
         f"{b.n_agm_data} on SW-DATA P1-16" + (f", {b.n_agm_oob} on SW-OOB" if b.n_agm_oob else ""),
         "confirmed; switch compatibility to confirm")
-    nd = b.count_pn("FZ2ERLNLNSNM002")
-    add("Network", "-", "SFP+ SR, node side / switch side", "AX-SFP+10G-MM / AXM761-10000S", "Siklu / Netgear",
-        f"{nd} + {nd}", "node SFP+ to SW-DATA", "likely / confirmed")
-    add("Network", "-", "OM4 LC-LC duplex 2 m", "FZ2ERLNLNSNM002", "Panduit", nd, "", "confirmed")
-    add("Network", "-", "SFP+ DAC 3 m", "AXC763-10000S", "Netgear", b.count_pn("AXC763-10000S"),
-        " and ".join(x for x in ("traffic hosts" if d["hosts"] else "", "servers" if any(s[2] for s in d["servers"]) else "")
-                     if x), "confirmed")
-    for pn, L in (("STP6X1MBU", "1 m"), ("STP6X2MBU", "2 m"), ("STP6X3MBU", "3 m")):
-        add("Network", "-", f"Cat6A S/FTP patch {L}", pn, "Panduit", b.count_pn(pn), "", "confirmed")
+    fib = [c for c in b.cables if c["pn"].startswith("FZ2ERLNLNSNM")]
+    nd = sum(1 for c in fib if c["a"].endswith(".SFP+"))
+    nh = len(fib) - nd
+    add("Network", "-", "SFP+ SR optics: node side / host side / switch side", "AX-SFP+10G-MM / host NIC optic / AXM761-10000S",
+        "Siklu / - / Netgear", f"{nd} / {nh} / {len(fib)}", "both ends of every OM4 run", "likely / to confirm / confirmed")
+    for pre, nm in (("FZ2ERLNLNSNM", "OM4 LC-LC duplex"), ("AXC76", "SFP+ DAC"), ("STP6X", "Cat6A S/FTP patch")):
+        for pn in sorted({c["pn"] for c in b.cables if c["pn"].startswith(pre)}, key=lambda x: lad.get(x, (0,))[0]):
+            L, desc, conf = lad.get(pn, (0, pn, "confirmed"))
+            add("Network", "-", f"{nm} {L / 1000:g} m", pn, desc.split()[0], b.count_pn(pn), "", conf)
     na = len(b.atts)
     reuse = d.get("att_reuse", 0)
     add("RF/IF", "-", "4-ch programmable attenuator 0-63 dB, 0.1-18 GHz", "ZTDAT-4-18G63S", "Mini-Circuits", na,
@@ -573,8 +617,8 @@ def parts(b):
     if b.coupled:
         add("RF/IF", "-", "10 dB directional coupler 1-18 GHz", "KRYTAR 1821 (alt. ZUDC10-183+)", "KRYTAR",
             len(b.coupled) * b.tiles, "IN at the module", "confirmed")
-        add("RF/IF", "-", "DC block 18 GHz", "BLK-18-S+", "Mini-Circuits", len(d["couplings"]) * b.tiles,
-            "arm input side, at the coupler", "confirmed")
+        add("RF/IF", "-", "DC block 18 GHz", "BLK-18-S+", "Mini-Circuits", d.get("arm_dc_blocks", 1) * len(d["couplings"]) * b.tiles,
+            "both ends of each arm" if d.get("arm_dc_blocks", 1) == 2 else "arm input side, at the coupler", "confirmed")
         add("RF/IF", "-", "Fixed pad DC-18 GHz 2 W (value TBC, e.g. BW-S10W2+)", "BW-S<n>W2+", "Mini-Circuits",
             len(d["couplings"]) * b.tiles, "arm input side, at the coupler", "value to confirm")
     for pn, L in RF_STOCK:
