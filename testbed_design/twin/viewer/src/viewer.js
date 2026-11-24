@@ -20,6 +20,7 @@ const LINK_PALETTE = [
 ];
 
 const EAR = 16;
+const _tmpV = new THREE.Vector3();
 const BODY_INSET = (482.6 - 440) / 2;
 
 export class Viewer {
@@ -232,6 +233,8 @@ export class Viewer {
     this.three.add(grp);
     this.rackFrame = grp;
     this.rackBox = { min: [fx0 - 15, 0, -95], max: [Math.max(fx1, 560) + 10, topY + 75, rd + 25] };
+    // solid zone used to hide labels of things behind the rack
+    this.rackSolid = new THREE.Box3(new THREE.Vector3(0, u1, -rd), new THREE.Vector3(482.6, topY, 0));
   }
 
   _table() {
@@ -932,6 +935,8 @@ export class Viewer {
         ray.far = dist - 6;
         const hits = ray.intersectObjects(occluders, false);
         if (hits.some((hh) => hh.object.userData.pick && hh.object.userData.pick.id !== it.devId)) continue;
+        // things outside the rack seen through the open shelves still count as hidden
+        if (it.outsideRack && this.rackSolid && ray.ray.intersectBox(this.rackSolid, _tmpV) && _tmpV.distanceTo(camPos) < dist - 6 && !this.state.xray) continue;
       }
       if (it.normal) {
         const to = camPos.clone().sub(it.anchor);

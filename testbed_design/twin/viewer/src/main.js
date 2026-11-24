@@ -760,7 +760,7 @@ class App {
       }
       if (d.group === 'table' || d.group === 'room') {
         if (d.parent && pxPerMm(e.anchor) * Math.max(d.size[0], d.size[2]) < 26) continue;
-        out.push({ key: 'd:' + id, cls: d.parent ? 'part' : '', html: esc(id), anchor: e.anchor, pri: d.parent ? 25 : 45, occlude: true, devId: id });
+        out.push({ key: 'd:' + id, cls: d.parent ? 'part' : '', html: esc(id), anchor: e.anchor, pri: d.parent ? 25 : 45, occlude: true, outsideRack: true, devId: id });
       } else if (d.parent) {
         // parts big enough to carry their id on their own face need no overlay
         if (d.size[0] >= 60 && d.size[1] >= 30) continue;
