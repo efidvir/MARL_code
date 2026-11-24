@@ -2,32 +2,37 @@ Subject: PoC 1 (splitter bench) - peripheral equipment list and open questions
 
 Hi all,
 
-Below is the peripheral equipment needed for PoC 1, the conducted bench in which the hub's W and E modules are shared through RF splitters. The list leaves out the devices themselves: the Siklu Spider boxes / N367 nodes, the eight Ceragon IP-50CX radios, and the servers, traffic hosts, agent PCs and bench PC with its monitor.
+Below is the peripheral equipment needed for PoC 1, the conducted bench where the hub's W and E sectors are shared through RF splitters. The list leaves out the devices themselves: the Siklu Spider boxes / N367 nodes, the eight Ceragon IP-50CX radios, and the servers, traffic hosts, agent PCs and the bench PC with its monitor.
 
-The quantities come from the bench's digital twin. Cable lengths are the routed paths plus about 10 % slack. The list is tentative, and the questions at the end change some lines. Please mark what we already have, and I will turn the rest into an order.
+Key point: the scenario only needs links to go down, and that happens because whole devices are switched off at t0 (switched PDU outlets cut the hub node, the two CORE radios and the two servers). No link has to be faded, so the bench needs NO programmable attenuators. Fixed SMA pads set the path loss on every link, and the three MARL bridges are held down in Terragraph and enabled when MARL engages them. This removes the 9 attenuator boxes and the Keysight J7204B, frees 10U of rack space, 10 power outlets and 10 switch ports, and cuts the SMA cables from 88 to about 48.
+
+The quantities come from the bench's digital twin. Cable lengths are the routed paths plus about 10 % slack. The SMA cable lengths are estimates until I regenerate the layout without attenuators. Please mark what we already have, and I will turn the rest into an order.
 
 Attached:
-1. Schematic: front panels and IF cabling (every Spider tile -> splitter -> attenuator path).
-2. Figure: 3D view of the whole bench (rack and bench table).
+1. Schematic: IF wiring with fixed pads. One row per link: Spider box / module at each end, the splitter, the pad value, and what happens to the link at t0.
+2. Figure: the scenario (before the event, the event, MARL's three bridges).
 
-1. RF / IF chain (splitters and attenuators)
-- 9 x programmable attenuator, 4 channels, 0-63 dB, to 18 GHz: Mini-Circuits ZTDAT-4-18G63S class (model to be chosen)
+1. RF / IF chain (splitters and fixed pads)
 - 8 x 2-way splitter, 2-18 GHz: Mini-Circuits ZN2PD-02183-S+
-- 88 x SMA cable, 18 GHz (Mini-Circuits CBL-xx-SMSM+): 1 x 0.61 m, 31 x 0.91 m, 8 x 1.0 m, 23 x 1.22 m, 25 x 1.52 m
-- 3 x 50-ohm SMA load: Mini-Circuits ANNE-50+ (1 used + 2 spare)
+- 68 x fixed SMA attenuator (pad), DC-18 GHz, 2 W: Mini-Circuits BW-SxW2+ or equal. Values: 20 x 30 dB, 16 x 20 dB, 4 x 10 dB, 8 x 8 dB, 4 x 7 dB, 4 x 5 dB, 4 x 4 dB, 8 x 3 dB (plus a few spare 30 / 20 / 10 dB)
+- 44 x SMA cable, 18 GHz (Mini-Circuits CBL-xx-SMSM+), estimated: 20 x 0.61 m, 12 x 0.91 m, 4 x 1.0 m, 8 x 1.22 m
+- 3 x 50-ohm SMA load: Mini-Circuits ANNE-50+ (1 used on the GNSS splitter + 2 spare)
+- Optional: 1 x 4-channel programmable attenuator, only to measure each link's drop-out point once during commissioning and confirm the pad values
 
-2. IP-50 conducted chain (on the bench table)
-- 1 x 4-channel programmable attenuator, DC-18 GHz: Keysight J7204B opt 002
+2. IP-50 conducted chain (on the bench table; one chain per hop)
+- Chain per hop: radio -> WR-62 transition -> 30 dB pad -> 10 dB pad -> SMA cable -> 30 dB pad -> WR-62 transition -> radio
 - 8 x waveguide-to-SMA transition, WR-62 (12.4-18 GHz): Pasternack PEWCA1003
 - 8 x 30 dB 10 W pad, DC-18 GHz: Fairview SA18S10W-30
-- 8 x aluminium spacer bar, 25 x 25 x 300 mm, and 1 roll of foam mounting tape (4 radios are stacked)
-- If the radios are 23 GHz, the three RF lines above are replaced by PEWCA1018 + FMAT4009-30 + Keysight 84906K / 84904K / 11713C
+- 4 x 10 dB pad, DC-18 GHz: Mini-Circuits BW-S10W2+ (replaces the Keysight J7204B)
+- 4 x SMA cable, 0.91 m (estimate)
+- 8 x aluminium spacer bar, 25 x 25 x 300 mm, and 1 roll of foam mounting tape, only if radios are stacked
+- If the radios are 23 GHz: PEWCA1018 transitions, FMAT4009-30 pads and a 2.92 mm 10 dB pad instead
 
 3. AC power
-- 3 x 1U switched PDU, 16 A, 12 x C13, switching per outlet: Raritan PX3-5260R class, each on an IEC 60309 16 A cord
+- 3 x 1U switched PDU, 16 A, 12 x C13, switching per outlet: Raritan PX3-5260R class, each on an IEC 60309 16 A cord (23 outlets used; the third PDU keeps headroom and the servers on their own circuit)
 - 1 x bench-table mains strip, 6 x C13, C20 inlet
 - 1 x IEC 60309 16 A -> C19 cord, 3 m, for the strip
-- C14 -> C13 leads (Eaton Tripp Lite P004-xxx): 7 x 1.83 m, 20 x 3.05 m, 2 x 4.57 m
+- C14 -> C13 leads (Eaton Tripp Lite P004-xxx): 5 x 1.83 m, 12 x 3.05 m, 2 x 4.57 m
 - C14 -> C5 leads (Eaton Tripp Lite P014-xxx): 1 x 1.83 m, 6 x 3.05 m
 - 1 x floor cable protector, about 1.5 m
 
@@ -49,12 +54,12 @@ Attached:
 
 6. Network
 - 1 x data switch: Netgear M4350-24F4V
-- 1 x management switch: Netgear GSM4230PX (M4250-26G4XF-PoE+)
+- 1 x management switch: Netgear GSM4230PX (M4250-26G4XF-PoE+), now 19 of its 30 ports used
 - SR optics: 6 x Siklu AX-SFP+10G-MM (node side), 8 x host-NIC optic, 14 x Netgear AXM761-10000S (switch side)
 - 9 x 1000BASE-T SFP: Netgear AGM734-10000S
 - OM4 LC-LC duplex (Panduit FZ2ERLNLNSNM00x): 1 x 2 m, 5 x 3 m, 6 x 5 m, 2 x 7 m
 - 8 x SFP+ DAC 3 m: Netgear AXC763-10000S
-- Cat6A S/FTP patch cords (Panduit STP6XxMBU): 18 x 2 m, 20 x 3 m, 3 x 5 m, 1 x 7 m
+- Cat6A S/FTP patch cords (Panduit STP6XxMBU): 18 x 2 m, 13 x 3 m, 1 x 7 m
 - 1 x DisplayPort / HDMI cable, 1.8 m (bench PC to monitor)
 
 7. GNSS timing (only if the nodes need an external antenna; see question 2)
@@ -65,17 +70,17 @@ Attached:
 - 7 x RG-316 SMA jumpers: 3 x 2 m, 4 x 2.5 m
 
 8. Rack and mechanical
-- 1 x 42U 4-post rack: StarTech 4POSTRACK42 (38U used)
-- 8 x 1U vented shelf: StarTech CABSHELFV1U (5 attenuator shelves, the splitter tray, the adaptor shelf, the agent PCs)
+- 1 x 42U 4-post rack: StarTech 4POSTRACK42 (about 28U used)
+- 3 x 1U vented shelf: StarTech CABSHELFV1U (the splitter tray, the adaptor shelf, the agent PCs)
 - 7 pairs of 1U adjustable rails: StarTech UNIRAILS1U
-- 3 packs of M6 cage nut / screw sets (50 per pack): StarTech CABSCREWM6
-- 1 x cable manager (Panduit NCMHF1) + 1 pack of blanking panels (APC AR8136BLK)
-- 5 x 19-inch lacing bars
+- 2 packs of M6 cage nut / screw sets (50 per pack): StarTech CABSCREWM6
+- 1 x cable manager (Panduit NCMHF1) + 2 packs of blanking panels (APC AR8136BLK)
+- 4 x 19-inch lacing bars
 - 1 x rack-to-table cable bridge (wire-basket tray, about 300 mm, with a divider)
 
 9. Consumables
-- 350 x hook-and-loop cable straps (no zip ties on coax or fibre)
-- 488 x cable ID labels (2 x Brady M21-750-427 cartridges)
+- About 270 x hook-and-loop cable straps (no zip ties on coax or fibre)
+- About 370 x cable ID labels (2 x Brady M21-750-427 cartridges)
 - 52 x red / blue heat-shrink conductor markers and 1 roll of PVC tape
 - 18 x "48 V PoE - NOT ETHERNET" flag labels
 - 1 x LC fibre end-face cleaner
@@ -93,13 +98,14 @@ Attached:
 - R&S FPL1026 spectrum analyser
 
 Open questions (the answers change the list)
-1. Spider box DC terminal block: what voltage and polarity does it take, and does it power the nodes or only the fans and the Raspberry Pi? If it powers the nodes, the DC/PoE adaptors, their PoE cords and 6 breaker feeds go away. A photo of each box's rear would settle this, and also show which RJ-45 is ETH1.
-2. GNSS: do the N367 nodes need an external antenna, or is their internal GPS enough? If it is enough, section 7 is dropped.
-3. Programmable attenuators (9 needed): which model do we buy? I assumed 4 channels, 0-63 dB, to 18 GHz, a small box with a dial. I also need its power input (brick or C14), its control interface (USB or LAN) and its size.
-4. IP-50CX band: if the radios are 23 GHz, the J7204B and the WR-62 parts do not work, and the 18-26.5 GHz set is needed. Does a DC connector ship with each radio, and what is the waveguide / antenna interface?
-5. The 10 "RF cables" on hand: what type and length are they? They could cover part of the 88 SMA cables.
-6. The Raspberry Pi inside each Spider box: does it need a LAN connection? That would add 4 ports, and the management switch already uses 29 of its 30, so we would need a larger one.
-7. Room layout: where does the bench table stand relative to the rack, and which wall sockets are there? I assumed 4 x IEC 60309 16 A sockets (3 PDUs + the table strip) and a lab earth bar near the rack.
-8. Switched PDUs: does the lab already have PDUs that can switch each outlet remotely? The t0 event cuts power at 5 outlets, so this is required.
+1. MARL bridges: is it acceptable to emulate MARL engaging a bridge by enabling that link in Terragraph (the link sits behind a fixed pad, held down until then)? If we want the change to happen at RF level instead, we need 3 programmable attenuators (one 4-channel box per bridge).
+2. IP-50 fades: the Keysight J7204B was only there to add slow fades to the IP-50 hops. Can we drop them? If DPIR has to see an IP-50 hop degrade before it fails, not just fail, we keep the J7204B.
+3. Spider box DC terminal block: what voltage and polarity does it take, and does it power the nodes or only the fans and the Raspberry Pi? If it powers the nodes, the DC/PoE adaptors, their PoE cords and 6 breaker feeds go away. A photo of each box's rear would settle this, and also show which RJ-45 is ETH1.
+4. GNSS: do the N367 nodes need an external antenna, or is their internal GPS enough? If it is enough, section 7 is dropped.
+5. IP-50CX band: if the radios are 23 GHz, the WR-62 transitions and the 18 GHz pads do not fit, and the 18-26.5 GHz parts are needed. Does a DC connector ship with each radio, and what is the waveguide / antenna interface?
+6. The 10 "RF cables" on hand: what type and length are they? They could cover part of the 48 SMA cables.
+7. The Raspberry Pi inside each Spider box: does it need a LAN connection? The management switch now has room for the 4 extra ports.
+8. Room layout: where does the bench table stand relative to the rack, and which wall sockets are there? I assumed 4 x IEC 60309 16 A sockets (3 PDUs + the table strip) and a lab earth bar near the rack.
+9. Switched PDUs: does the lab already have PDUs that can switch each outlet remotely? The t0 event cuts power at 5 outlets, so this is required.
 
 Thanks,
