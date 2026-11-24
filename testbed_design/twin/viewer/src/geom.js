@@ -309,6 +309,8 @@ export function portShapes() {
     DC: { geom: merged([boxZ(9, 9, 3.5), cylZ(1.8, 1.0, 10, 3.5)]), mats: [{ color: '#e8862a', metal: 0.1, rough: 0.6 }, silver], size: [9, 9] },
     WG: { geom: merged([boxZ(28, 28, 4), boxZ(15, 7.5, 0.5, 4)]), mats: [{ color: '#c9a64a', metal: 0.7, rough: 0.35 }, black], size: [28, 28] },
     IEC60309: { geom: merged([cylZ(21, 26, 28), cylZ(13, 0.6, 24, 26)]), mats: [{ color: '#2563c9', metal: 0.05, rough: 0.6 }, black], size: [42, 42] },
+    DP: { geom: merged([boxZ(17, 6.5, 2.2), boxZ(13, 3, 0.4, 2.2)]), mats: [black, silver], size: [17, 7] },
+    USB: { geom: merged([boxZ(12.5, 5, 2.2), boxZ(10, 2, 0.4, 2.2)]), mats: [silver, { color: '#1d4ed8', metal: 0.1, rough: 0.6 }], size: [13, 5] },
     N: { geom: merged([cylZ(7, 9, 16), cylZ(2.5, 9.6, 12)]), mats: [silver, pin], size: [14, 14] },
     default: { geom: merged([boxZ(8, 8, 3), boxZ(3, 3, 0.4, 3)]), mats: [dark, silver], size: [8, 8] },
   };
