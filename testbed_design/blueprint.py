@@ -52,6 +52,7 @@ CLS = {
     "RF": ("#d2b8ff", 0.7, "-", "IF coax SMA 18 GHz"),
     "GNSS": ("#9cf3b8", 0.9, (0, (1, 1.2)), "GNSS coax (if the boxes have an input)"),
     "WG": ("#ffc0e6", 1.3, "-", "IP-50 chain"),
+    "AUX": ("#c8d0dc", 0.8, (0, (3, 1.5)), "operator station (video, USB)"),
 }
 MEDIUM = {"FZ2ERLNLNSNM002": ("-", "OM4 fibre, SR optics"), "AXC763-10000S": ((0, (5, 1.6)), "SFP+ DAC 3 m"),
           "STP6X2MBU": ((0, (1.2, 1.1)), "Cat6A + AGM734"), "STP6X3MBU": ((0, (1.2, 1.1)), "Cat6A + AGM734")}
@@ -375,18 +376,19 @@ def switch_row(s, label, sub, x, y, w, kinds, h=20, first=None):
     return ports, step
 
 
-def pdu_face(s, label, sub, x, y, w=101, h=22):
+def pdu_face(s, label, sub, x, y, w=101, h=22, n=16):
     rack_face(s, x, y, w, h, label, sub, fs=5.0)
     ports = {}
-    for o in range(1, 17):
-        g, i = (o - 1) // 8, (o - 1) % 8
-        px = x + 7.5 + g * 44.5 + i * 5.3
+    pitch = min(5.3, (w - 30) / n) if w < 90 else 5.3
+    for o in range(1, n + 1):
+        g, i = ((o - 1) // 8, (o - 1) % 8) if w >= 90 else (0, o - 1)
+        px = x + 7.5 + g * 44.5 + i * pitch
         py = y + 6.4
         c13(s, px, py)
-        s.text(px, py + 3.2, f"{o}", fs=3.4, color=DIM, ha="center", va="center")
+        s.text(px, py + 3.2, f"{o}", fs=3.0, color=DIM, ha="center", va="center")
         ports[o] = (px, py - 1.5)
     s.rect(x + w - 15.5, y + 12.5, 11, 8.5, fc=PLATE, lw=0.4, z=6)
-    s.text(x + w - 10, y + 16.7, "IEC 60309\n32 A in", fs=3.0, ha="center", va="center", color=DIM)
+    s.text(x + w - 10, y + 16.7, "IEC 60309\n16 A in", fs=3.0, ha="center", va="center", color=DIM)
     ports["inlet"] = (x + w - 10, y + 21)
     rj45(s, x + w - 21, y + 16.5)
     s.text(x + w - 21, y + 13.5, "net", fs=3.0, color=DIM, ha="center", va="center")
@@ -520,8 +522,8 @@ def sheet_rack(b, pdf, n, N, prefix):
     trs = [[f"{r['top']}" + (f"-{r['top'] - r['n'] + 1}" if r["n"] > 1 else ""), r["label"], r["sub"]] for r in rows]
     s.text(128, 276, "RACK SCHEDULE", fs=6.5, fontweight="bold")
     yb = s.table(128, 272, cols, trs, [12, 82, 74], fs=4.4, rh=3.7)
-    off = [[sv[0], sv[1], f"site {sv[2]} VLAN" if sv[2] else "bench table, mgmt only"] for sv in b.d["servers"]]
-    off += [[f"HOST-{h}", "traffic host (iperf3 / TRex)", "sites " + ", ".join(v)] for h, v in b.d["hosts"].items()]
+    off = [[sv[0], sv[1][:30], "bench table (operator station)"] for sv in b.d["servers"] if sv[0] in BS.TABLE_SERVERS]
+    off += [["MONITOR", "monitor + keyboard/mouse", "bench table"]]
     off += [[k, f"IP-50 radio, hop {hop}", f"site {site}"] for k, (hop, site) in b.ip50.items()]
     off += [[v, "48 V supply, switched (t0)", f"next to {k}"] for k, v in b.psu.items()]
     if b.ip50:
@@ -756,8 +758,11 @@ def sheet_power(b, pdf, n, N, prefix):
                (f"; {', '.join(b.psu)} have their own switched supplies" if b.psu else ""), fs=4.0, color=CLS["DC"][0])
     # PDUs side by side, loads straight under their outlets
     pdu_ports = {}
+    npdu = len(b.pdus)
+    wp = min(101.0, (210.0 - 3 * (npdu - 1)) / npdu)
     for j, p in enumerate(b.pdus):
-        pdu_ports[p] = pdu_face(s, p, "APC AP7922B · 32 A · switched", 196 + j * 106, 150)
+        pdu_ports[p] = pdu_face(s, p, "1U · 16 A · switched" if wp < 90 else "1U · 16 A · 12 x C13 · switched",
+                                196 + j * (wp + 3), 150, w=wp, n=BS.PDU_OUT)
     vy, vh = 104, 30
     for ld, (pdu, o) in b.outlet.items():
         p0 = pdu_ports[pdu][o]
@@ -769,9 +774,9 @@ def sheet_power(b, pdf, n, N, prefix):
             s.tag(p1[0] + 5.5, p1[1] + 0.6, cab["id"], CLS["AC"][0], rot=0, va="bottom", fs=3.8)
         else:
             off = ld in b.switched
-            sub = ("on PA-SHELF" if ld in b.inj.values() else "3 m to table") if off else \
+            sub = ("on PA-SHELF" if ld in b.inj.values() else "to table" if ld in b.psu.values() else "rack") if off else \
                 ("C5 brick" if "C5" in cab["part"] else "C14")
-            vtile(s, p0[0], vy, 4.8, vh, ld, sub, ec=OFF if off else INK)
+            vtile(s, p0[0], vy, 4.0 if npdu > 2 else 4.8, vh, ld, sub, ec=OFF if off else INK)
             s.line([p0, (p0[0], vy + vh)], color=CLS["AC"][0], lw=0.9, z=9)
             if off:
                 s.badge(p0[0], vy - 2.6, "OFF t0", fs=3.2)
@@ -780,7 +785,7 @@ def sheet_power(b, pdf, n, N, prefix):
         cab = b.cable(cls="AC", b=f"{p}.inlet")
         pi = pdu_ports[p]["inlet"]
         s.line([pi, (pi[0], pi[1] + 5)], color=CLS["AC"][0], lw=1.6, z=9)
-        s.tag(pi[0], pi[1] + 5.3, cab["id"] + " to wall 32 A", CLS["AC"][0], rot=0, va="bottom", fs=3.8)
+        s.tag(pi[0], pi[1] + 5.3, cab["id"] + " to wall 16 A", CLS["AC"][0], rot=0, va="bottom", fs=3.8)
     s.legend(300, 96, [CLS[k] for k in ("AC", "DC", "POE")])
     s.notes(16, 84, [
         "N367 power is ETH1 only: 36-57 V DC through the passive adaptor; ETH1 then carries no data.",
@@ -794,8 +799,8 @@ def sheet_power(b, pdf, n, N, prefix):
         "Check adaptor terminal polarity with a DMM before power-up; keep node PoE-Out (ETH2) disabled.",
     ] + (["IP-50 radios: -48 V (positive grounded) from DC-RECT2 through one GMT fuse each on DC-DIST2."] if b.ip50 else [])
       + ["Spider rear layout (ETH1/ETH2/SFP+ access, GNSS input, any box inlet) is assumed: confirm on the units.",
-         "Servers, hosts, the analyser and MWATT take mains from the bench-table strip (sheet 5)"
-         + (", except the switched event loads." if b.switched else ".")]
+         "Servers, traffic hosts and agent PCs are rack loads; the bench controller, monitor, analyser and MWATT take "
+         "mains from the bench-table strip (sheet 5)."]
       + ([f"Event: {d['event']}"] if d.get("event") else []), width=118, fs=4.8, step=3.3)
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))
 
@@ -1045,10 +1050,11 @@ def sheet_table(b, pdf, n, N, prefix):
         y = bot2 - 8
     # compute, test and timing, with the bench mains strip
     y0 = min(y, 150)
-    s.text(16, y0, "COMPUTE AND TEST", fs=6.2, fontweight="bold")
-    items = [(sv[0], sv[1], "server") for sv in d["servers"]] + \
-            [(f"HOST-{h}", "traffic host · " + ",".join(v), "host") for h, v in d["hosts"].items()] + \
-            [("SPECAN", "analyser / NRP18S + NF-SF50+", "test")]
+    s.text(16, y0, "OPERATOR STATION AND TEST (servers and traffic hosts are in the rack: sheet 1)", fs=6.2,
+           fontweight="bold")
+    items = [(sv[0], sv[1], "host") for sv in d["servers"] if sv[0] in BS.TABLE_SERVERS] + \
+            [("MONITOR", "monitor, keyboard, mouse (" + ", ".join(c["id"] for c in b.cables if c["cls"] == "AUX") + ")",
+              "test"), ("SPECAN", "analyser / NRP18S + NF-SF50+", "test")]
     order = [nm for nm, _, _ in items if nm in b.table_loads] + [x for x in b.table_loads if x == "MWATT"]
     strip_y = y0 - 14
     s.rect(16, strip_y, 30 + 9 * len(order), 8, fc=FACE, lw=0.7, z=3, r=1)

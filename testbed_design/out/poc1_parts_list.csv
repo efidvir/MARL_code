@@ -4,7 +4,7 @@ line,group,team list item,item,part number,manufacturer,qty,use,status
 3,Radios,11,"1U Spider box, 2 x N367 node x 2 sectors (assumed)",GTST003 (lab label),Siklu,1,16 SMA tile ports,on hand; to confirm
 4,Radios,1,'6*4 sector nodes - GTSTU022\23',GTSTU022 / GTSTU023,Siklu,?,not identified (TU boxes?); not used here,to confirm with the lab
 5,Radios,-,N367 node (inside the Spider boxes),MultiHaul TG N367 (MH-N367-CCP-PoE-MWB class),Siklu,7,"ETH1 power in, SFP+ 10G data; managed in-band; 48 W with PoE-Out off",datasheet
-6,Radios,-,IP-50 radio,Ceragon IP-50 (model and band TBC),Ceragon,8,"4 conducted hops, -48 V",on hand (8); model to confirm
+6,Radios,-,IP-50CX compact dual-carrier radio (1/10/25GbE ports),Ceragon IP-50CX (band TBC),Ceragon,8,"4 conducted hops, -48 V; data on a 10GbE port",on hand (8); band to confirm
 7,Power,2,"DC/PoE adaptor, passive, bag of 10 ('DC\POE for falcon')",EH-PoE-DC-Adaptor-10,Siklu,"1 bag (6 wired, 4 spare unwired)","36-57 V DC in, RJ-45 to node ETH1 (power only)",likely
 8,Power,5,DC drawer: rectifier shelf 1U + 2 x 1 kW 48 V modules,RCP-1UI + 2 x RCP-1000-48,Mean Well,1,"48 V bus, 288 W for 6 nodes",likely (shelf) / confirmed (modules)
 9,Power,5,"DC drawer: distribution, 10 breakers",DCD1M (suffix TBC),Eaton,1,"one breaker per adaptor; CB7-10 spare, OFF",likely
@@ -13,34 +13,34 @@ line,group,team list item,item,part number,manufacturer,qty,use,status
 12,Power,5,"-48 V fuse panel 1U, 2 buses x 5 GMT positions",N250110-N-0803,Westell,1,one fused output per surviving IP-50 radio,to confirm
 13,Power,5,GMT fuse for the -48 V panel,GMT 3 A (rating to confirm),Bussmann / Littelfuse,8,6 + 2 spare,to confirm
 14,Power,-,"Isolated 48 V AC/DC supply >= 100 W, wired -48 V (positive grounded)",part TBC,-,2,"one per IP-50 radio switched off at t0, on a switched PDU outlet",to confirm
-15,Power,7,"Rack PDU 32 A, 16 x C13, switched per outlet",AP7922B,APC,2,"IEC 60309 32 A inlet; PDU-B O5, PDU-B O6, PDU-B O7, PDU-B O8, PDU-B O9 switched off at t0",confirmed
-16,Power,-,"Bench-table mains strip, C13 outlets",lab-supplied (part TBC),-,1,9 table loads,to confirm
-17,Power,8,'Micky' lead C14 -> C5 1.83 m,P014-006,Eaton Tripp Lite,9,"PoE injector (inlet TBC), agent-PC bricks, traffic hosts",confirmed
-18,Power,8,'Micky' lead C14 -> C5 3.05 m,P014-010,Eaton Tripp Lite,4,agent-PC bricks,likely
-19,Power,9,'Exten' lead C14 -> C13 1.83 m,P004-006,Eaton Tripp Lite,11,rack and table devices,confirmed
-20,Power,9,'Exten' lead C14 -> C13 3.05 m,P004-010,Eaton Tripp Lite,8,"rack and table devices, servers",confirmed
+15,Power,7,"Rack PDU 1U, 16 A, 12 x C13, switched per outlet",Raritan PX3-5260R class,Raritan (or equal),3,"IEC 60309 16 A inlet; PDU-C O3, PDU-C O4, PDU-C O5, PDU-C O6, PDU-C O7 switched off at t0",to confirm (user: 1U PDU)
+16,Power,-,"Bench-table mains strip, C13 outlets",lab-supplied (part TBC),-,1,4 table loads,to confirm
+17,Power,8,'Micky' lead C14 -> C5 1.83 m,P014-006,Eaton Tripp Lite,4,"PoE injector (inlet TBC), agent-PC bricks",confirmed
+18,Power,8,'Micky' lead C14 -> C5 3.05 m,P014-010,Eaton Tripp Lite,3,agent-PC bricks,likely
+19,Power,9,'Exten' lead C14 -> C13 1.83 m,P004-006,Eaton Tripp Lite,14,rack and table devices,confirmed
+20,Power,9,'Exten' lead C14 -> C13 3.05 m,P004-010,Eaton Tripp Lite,12,"rack and table devices, servers, traffic hosts",confirmed
 21,Power,9,'Exten' lead C14 -> C13 4.57 m,P004-015,Eaton Tripp Lite,2,switched supplies,likely
-22,Power,10,DC cable 2 x 18 AWG (bulk) + ferrules,Belden 8461 + Phoenix 3200519,Belden / Phoenix,31 m + 56 ferrules,14 runs; 100 ft spool = 30.5 m,confirmed
+22,Power,10,DC cable 2 x 18 AWG (bulk) + ferrules,Belden 8461 + Phoenix 3200519,Belden / Phoenix,28 m + 56 ferrules,14 runs; 100 ft spool = 30.5 m,confirmed
 23,Power,10,DC bus link 2 x 10 AWG with ring lugs,part TBC,-,2,rectifier to distribution,to confirm
 24,Network,6,"Data switch, 24 x SFP+ + 4 x SFP28, L3",M4350-24F4V (XSM4328FV),Netgear,1,28 of 28 ports; 1G only on P1-16,confirmed
-25,Network,6,"Management switch, 24 x 1G PoE+ + 2 x 1G + 4 x SFP+",M4250-26G4XF-PoE+ (GSM4230PX),Netgear,1,28 ports: 26 of 26 RJ-45 + 2 SFP+ cage,confirmed
-26,Network,-,1000BASE-T copper SFP,AGM734-10000S,Netgear,16,"14 on SW-DATA P1-16, 2 on SW-OOB",confirmed; switch compatibility to confirm
-27,Network,-,SFP+ SR optics: node side / host side / switch side,AX-SFP+10G-MM / host NIC optic / AXM761-10000S,Siklu / - / Netgear,6 / 4 / 10,both ends of every OM4 run,likely / to confirm / confirmed
-28,Network,-,OM4 LC-LC duplex 1 m,FZ2ERLNLNSNM001,Panduit,2,,likely
-29,Network,-,OM4 LC-LC duplex 2 m,FZ2ERLNLNSNM002,Panduit,4,,confirmed
-30,Network,-,OM4 LC-LC duplex 5 m,FZ2ERLNLNSNM005,Panduit,4,,likely
-31,Network,-,SFP+ DAC 3 m,AXC763-10000S,Netgear,4,,confirmed
+25,Network,6,"Management switch, 24 x 1G PoE+ + 2 x 1G + 4 x SFP+",M4250-26G4XF-PoE+ (GSM4230PX),Netgear,1,29 ports: 26 of 26 RJ-45 + 3 SFP+ cage,confirmed
+26,Network,-,1000BASE-T copper SFP,AGM734-10000S,Netgear,9,"6 on SW-DATA P1-16, 3 on SW-OOB",confirmed; switch compatibility to confirm
+27,Network,-,SFP+ SR optics: node side / host side / switch side,AX-SFP+10G-MM / host NIC optic / AXM761-10000S,Siklu / - / Netgear,6 / 8 / 14,both ends of every OM4 run,likely / to confirm / confirmed
+28,Network,-,OM4 LC-LC duplex 2 m,FZ2ERLNLNSNM002,Panduit,5,,confirmed
+29,Network,-,OM4 LC-LC duplex 3 m,FZ2ERLNLNSNM003,Panduit,1,,likely
+30,Network,-,OM4 LC-LC duplex 5 m,FZ2ERLNLNSNM005,Panduit,8,,likely
+31,Network,-,SFP+ DAC 3 m,AXC763-10000S,Netgear,8,,confirmed
 32,Network,-,Cat6A S/FTP patch 1 m,STP6X1MBU,Panduit,12,,confirmed
-33,Network,-,Cat6A S/FTP patch 2 m,STP6X2MBU,Panduit,18,,confirmed
-34,Network,-,Cat6A S/FTP patch 3 m,STP6X3MBU,Panduit,3,,confirmed
-35,Network,-,Cat6A S/FTP patch 5 m,STP6X5MBU,Panduit,13,,likely
-36,Network,-,Cat6A S/FTP patch 7 m,STP6X7MBU,Panduit,3,,likely
-37,RF/IF,-,"4-ch programmable attenuator 0-63 dB, 0.1-18 GHz",ZTDAT-4-18G63S,Mini-Circuits,9,not on the kit list,to buy: 9
+33,Network,-,Cat6A S/FTP patch 2 m,STP6X2MBU,Panduit,22,,confirmed
+34,Network,-,Cat6A S/FTP patch 3 m,STP6X3MBU,Panduit,6,,confirmed
+35,Network,-,Cat6A S/FTP patch 5 m,STP6X5MBU,Panduit,1,,likely
+36,Network,-,Cat6A S/FTP patch 7 m,STP6X7MBU,Panduit,1,,likely
+37,RF/IF,-,"Programmable attenuator box, 4 ch, 0-63 dB, to 18 GHz (small box with a dial; e.g. ZTDAT-4-18G63S class)",ZTDAT-4-18G63S class (model TBC),Mini-Circuits (or equal),9,5 x 2U shelves,to buy: 9
 38,RF/IF,-,2-way splitter 2-18 GHz,ZN2PD-02183-S+,Mini-Circuits,8,one per tile of each shared hub module,confirmed
-39,RF/IF,3,SMA test cable 18 GHz 0.30 m,CBL-1FT-SMSM+,Mini-Circuits,8,"IF chain, length from the rack span",confirmed
+39,RF/IF,3,SMA test cable 18 GHz 0.30 m,CBL-1FT-SMSM+,Mini-Circuits,12,"IF chain, length from the rack span",confirmed
 40,RF/IF,3,"SMA test cable 18 GHz 0.61 m ('RF cable': 10 on hand, type TBC)",CBL-2FT-SMSM+,Mini-Circuits,38,"IF chain, length from the rack span",confirmed
-41,RF/IF,3,SMA test cable 18 GHz 0.91 m,CBL-3FT-SMSM+,Mini-Circuits,39,"IF chain, length from the rack span",confirmed
-42,RF/IF,3,SMA test cable 18 GHz 1.00 m,CBL-1M-SMSM+,Mini-Circuits,1,"IF chain, length from the rack span; IP-50 chains",confirmed
+41,RF/IF,3,SMA test cable 18 GHz 0.91 m,CBL-3FT-SMSM+,Mini-Circuits,31,"IF chain, length from the rack span",confirmed
+42,RF/IF,3,SMA test cable 18 GHz 1.00 m,CBL-1M-SMSM+,Mini-Circuits,5,"IF chain, length from the rack span; IP-50 chains",confirmed
 43,RF/IF,3,SMA test cable 18 GHz 2.00 m,CBL-2M-SMSM+,Mini-Circuits,2,"IF chain, length from the rack span",confirmed
 44,RF/IF,-,50-ohm SMA load,ANNE-50+,Mini-Circuits,as needed,unused tile and coupler ports,confirmed
 45,RF/IF,-,SMA torque wrench 8 in-lb,ST-SMA3,Fairview,2,,confirmed
@@ -51,10 +51,12 @@ line,group,team list item,item,part number,manufacturer,qty,use,status
 50,Timing,-,GNSS antenna + 1x8 splitter,101898-00 + RMALDCBS1X8,Protempis / GPS Networking,1 + 1,only if the boxes take GNSS (N367 GPS is internal),to confirm
 51,Timing,-,GNSS coax: antenna lead + surge arrestor / splitter jumpers,LMR-400 + arrestor / RG-316 SMA 1 m,part TBC,1 / 4,only if the boxes take GNSS,to confirm
 52,Compute,-,"MARL agent PC (mini PC, 2 x 1G NICs)",lab PC,-,6,,on hand
-53,Compute,-,"Traffic host (10G SFP+ NIC, iperf3/TRex)",lab PC,-,6,,on hand
-54,Compute,-,Servers and controller PCs: SRV-E2E; SRV-DPIR; BENCH-CTL,lab servers / PC,-,3,BENCH-CTL stays powered through the event,on hand; to confirm
-55,Rack,4,19-inch 4-post rack (29U used of 42U),StarTech 4POSTRACK42,StarTech,1,rail type (square hole?) to confirm,confirmed
-56,Rack,4,1U vented shelf,CABSHELFV1U,StarTech,3,"adaptors, tray, agent PCs",likely
-57,Rack,-,Cable manager / blanking panels (pack of 10) / labels,NCMHF1 / AR8136BLK / Brady M21-750-427,various,1 / 2 / 3,13 empty U,confirmed; rail type to confirm
-58,Test,-,18 GHz power sensor / spectrum analyser,NRP18S / FPL1026,R&S,1 / 1,"port checks, calibration",confirmed
-59,Test,-,N-F to SMA-F adapter for the power sensor,NF-SF50+,Mini-Circuits,1,NRP18S input is N-male,confirmed
+53,Compute,-,"Traffic host, 1U rack server (10G SFP+ NIC, iperf3/TRex)",lab server,-,6,"in the rack, with its rails",on hand; to confirm
+54,Compute,-,Rack servers: SRV-E2E (1U); SRV-DPIR (2U),lab servers,-,2,"in the rack, with their rails",on hand; to confirm
+55,Compute,-,Bench controller PC + monitor + keyboard/mouse (operator station on the table),lab PC,-,1 + 1 + 1,stays powered through the event; drives PDUs and attenuators over SW-OOB,on hand; to confirm
+56,Compute,-,Video cable (DisplayPort / HDMI) 1.8 m,part TBC,-,1,PC to monitor,to confirm
+57,Rack,4,19-inch 4-post rack (38U used of 42U),StarTech 4POSTRACK42,StarTech,1,rail type (square hole?) to confirm,confirmed
+58,Rack,4,1U vented shelf,CABSHELFV1U,StarTech,8,"adaptors, tray, agent PCs, attenuator boxes",likely
+59,Rack,-,Cable manager / blanking panels (pack of 10) / labels,NCMHF1 / AR8136BLK / Brady M21-750-427,various,1 / 1 / 3,4 empty U,confirmed; rail type to confirm
+60,Test,-,18 GHz power sensor / spectrum analyser,NRP18S / FPL1026,R&S,1 / 1,"port checks, calibration",confirmed
+61,Test,-,N-F to SMA-F adapter for the power sensor,NF-SF50+,Mini-Circuits,1,NRP18S input is N-male,confirmed

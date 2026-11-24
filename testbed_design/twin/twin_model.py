@@ -70,7 +70,8 @@ class Scene:
         used = set()
         for r in b.rows:
             rid = r["id"]
-            kind = "spider" if rid.startswith("SB") else "ztdat" if rid.startswith("ATT") else kinds[rid]
+            kind = ("spider" if rid.startswith("SB") else "attshelf" if rid.startswith("ATT-SHELF") else
+                    "rackserver" if rid.startswith(("SRV-", "HOST-")) else "pdu" if rid.startswith("PDU-") else kinds[rid])
             k = C.KIND[kind]
             y0 = y1 + (r["top"] - r["n"]) * U
             h = r["n"] * U - 1.0
@@ -110,14 +111,31 @@ class Scene:
         self.add_port(rid, "GNSS", (45, y + h / 2, z + dd), (0, 0, 1), "SMA", "GNSS in (TBC)")
         dv["nodes"] = box["nodes"]
 
-    def _ports_ztdat(self, dv, rid):
+    def _ports_attshelf(self, dv, rid):
         x, y, z, w, h, dd = self._face(dv)
-        for c in range(1, 5):
-            for side in ("in", "out"):
-                self.add_port(rid, f"ch{c}.{side}", (BS.ch_x(c, side), y + h / 2, z), (0, 0, -1), "SMA",
-                              f"CH{c} {side.upper()}")
-        self.add_port(rid, "lan", (380, y + h / 2, z + dd), (0, 0, 1), "RJ45", "LAN")
-        self.add_port(rid, "ac", (445, y + h / 2, z + dd), (0, 0, 1), "C14", "AC")
+        bw, bh, bd = BS.ATT_BOX
+        for a, (sid, slot) in self.b.att_shelf.items():
+            if sid != rid:
+                continue
+            x0 = BS.att_x0(slot)
+            kind, name = self.b.atts[a]
+            k = C.KIND["ztdat"]
+            self.add_dev(a, "ztdat", a, f"programmable attenuator box, 4 ch ({kind} {name})", (x0, y + 4, z + 8),
+                         (bw, bh, bd), k["color"], "rack", "estimate", k["note"], parent=rid, carries=f"{kind} {name}")
+            for c in range(1, 5):
+                for side in ("in", "out"):
+                    self.add_port(a, f"ch{c}.{side}", (BS.ch_x(c, side, slot), y + 4 + bh * 0.35, z + 8), (0, 0, -1), "SMA",
+                                  f"CH{c} {side.upper()}")
+            self.add_port(a, "lan", (x0 + bw * 0.3, y + 4 + bh / 2, z + 8 + bd), (0, 0, 1), "RJ45", "LAN")
+            self.add_port(a, "ac", (x0 + bw * 0.75, y + 4 + bh / 2, z + 8 + bd), (0, 0, 1), "DC", "power (adapter)")
+
+    def _ports_rackserver(self, dv, rid):
+        x, y, z, w, h, dd = self._face(dv)
+        site = next((s[2] for s in self.d["servers"] if s[0] == rid), "host")
+        names = ([("nic10g", "SFP")] if rid.startswith("HOST") else ([("data", "SFP")] if site else [])) + \
+            [("mgmt", "RJ45"), ("ac", "C14")]
+        for i, (nm, pt) in enumerate(names):
+            self.add_port(rid, nm, (120 + i * 110, y + h / 2, z + dd), (0, 0, 1), pt, nm)
 
     def _ports_tray(self, dv, rid):
         x, y, z, w, h, dd = self._face(dv)
@@ -199,11 +217,9 @@ class Scene:
 
     def _ports_pdu(self, dv, rid):
         x, y, z, w, h, dd = self._face(dv)
-        for o in range(1, 17):
-            row, col = (o - 1) // 8, (o - 1) % 8
-            self.add_port(rid, f"O{o}", (50 + col * 46 + row * 10, y + h * (0.7 - 0.4 * row), z + dd), (0, 0, 1),
-                          "C13", f"O{o}")
-        self.add_port(rid, "inlet", (462, y + h / 2, z + dd), (0, 0, 1), "IEC60309", "32 A inlet cord")
+        for o in range(1, BS.PDU_OUT + 1):
+            self.add_port(rid, f"O{o}", (40 + (o - 1) * 30, y + h / 2, z + dd), (0, 0, 1), "C13", f"O{o}")
+        self.add_port(rid, "inlet", (462, y + h / 2, z + dd), (0, 0, 1), "IEC60309", "16 A inlet cord")
         self.add_port(rid, "net", (445, y + h * 0.7, z), (0, 0, -1), "RJ45", "net")
 
     def _ports_sw_data(self, dv, rid):
@@ -238,26 +254,19 @@ class Scene:
         z_front = T["z0"] + 60
         x = T["x0"] + 20
         # compute zone nearest the rack: servers stacked, then PCs
-        srv = [s for s in d["servers"]]
-        for i, (sid, role, site) in enumerate(srv):
-            kind = "server" if sid.startswith("SRV") else "pc"
-            sz = C.TABLE_DEV[kind]["size"]
-            if kind == "server":
-                pos = (x, top + i * sz[1], z_front)
-            else:
-                pos = (x + 460, top, z_front)
-            self._tdev(sid, kind, role, pos, sz, ("data", "SFP") if site else None, ("mgmt", "RJ45"), ("ac", "C14"))
-        hx = x + 460
-        hosts = list(d["hosts"])
-        for i, h in enumerate(hosts):
-            c, r = divmod(i, 3)
-            pos = (hx + 200 + c * 200, top, z_front + r * 215)
-            self._tdev(f"HOST-{h}", "pc", "traffic host, sites " + ",".join(d["hosts"][h]), pos, C.TABLE_DEV["pc"]["size"],
-                       ("nic10g", "SFP"), ("mgmt", "RJ45"), ("ac", "C5"))
+        for sid, role, site in d["servers"]:
+            if sid in BS.TABLE_SERVERS:
+                self._tdev(sid, "pc", role, (x, top, z_front + 250), C.TABLE_DEV["pc"]["size"], ("mgmt", "RJ45"),
+                           ("ac", "C14"), ("video", "DP"), ("usb", "USB"))
+        self._tdev("MONITOR", "monitor", "24-inch monitor (operator station)", (x + 220, top, z_front + 330),
+                   C.TABLE_DEV["monitor"]["size"], ("in", "DP"), ("ac", "C14"))
+        self._tdev("KBD", "keyboard", "keyboard + mouse", (x + 200, top, z_front), C.TABLE_DEV["keyboard"]["size"],
+                   ("usb", "USB"))
+        hx = x + 300
+        hosts = []
         # IP-50 zone
         hops = list(d.get("mw_links", {}).items())
-        nhc = (len(hosts) + 2) // 3
-        mx = hx + 200 + nhc * 200 + 560
+        mx = hx + 900
         if hops:
             ms = C.TABLE_DEV["mwatt"]["size"]
             self._tdev("MWATT", "mwatt", "Keysight J7204B, 4 ch", (mx, top, z_front), ms, ("lan", "RJ45"), ("ac", "C14"))
@@ -302,7 +311,7 @@ class Scene:
             self.add_port("TABLE-STRIP", f"O{i}", (stx + 30 + (i - 1) * (st[0] - 60) / max(1, n - 1), top + st[1],
                                                    T["z1"] - 40), (0, 1, 0), "C13", f"O{i}")
         # wall socket(s) and GNSS antenna
-        self.add_dev("WALL", "wall", "Wall sockets IEC 60309 32 A", "lab wall", (60, 300, C.RACK["rail_depth"] + 260),
+        self.add_dev("WALL", "wall", "Wall sockets IEC 60309 16 A", "lab wall", (60, 300, C.RACK["rail_depth"] + 260),
                      (360, 120, 40), "#7f8c8d", "room", "estimate", "wall sockets behind the rack (estimate)")
         for i in range(1, len(b.pdus) + 1):
             self.add_port("WALL", f"S{i}", (120 + (i - 1) * 160, 360, C.RACK["rail_depth"] + 260), (0, 0, -1), "IEC60309",
@@ -485,8 +494,11 @@ class Scene:
         step("Adaptor shelf", "Fit the 1U shelf and place each DC/PoE adaptor under the node it feeds (spares at the right, "
              "unwired)" + (" and the AC PoE injector of each node that is switched off at t0" if b.inj else "") + ".",
              by(lambda k: k == "PA-SHELF") + [k for k, v in devs.items() if v.get("parent") == "PA-SHELF"], view="rear")
-        step("Programmable attenuators", "Mount ATT units in numeric order from the top of their block downwards (the rack "
-             "schedule gives each U). IN/OUT SMA faces the front.", by(lambda k: k.startswith("ATT")), view="front")
+        shelves = by(lambda k: k.startswith("ATT-SHELF"))
+        step("Programmable attenuators", "Fit one 1U vented shelf per 2U attenuator slot, then stand two attenuator boxes "
+             "on each, ATT-01 top-left, numbers increasing left to right and downwards. SMA IN/OUT and the dial face the "
+             "front; LAN and power at the back.", shelves + [k for k, v in devs.items() if v.get("parent") in shelves],
+             view="front")
         trays = by(lambda k: k.endswith("TRAY"))
         if trays:
             step("Splitter / coupler tray", "Fit the 1U tray directly under the Spider boxes; place one body under each "
@@ -494,17 +506,23 @@ class Scene:
                  view="front")
         step("Spider boxes", "Mount the four 1U Spider boxes in order SB1 (top) to SB4. Note the module map on each front "
              "panel (sheet 2 of the blueprint).", by(lambda k: k.startswith("SB")), view="front")
+        srv = by(lambda k: k.startswith(("SRV-", "HOST-")))
+        if srv:
+            step("Servers and traffic hosts", "Fit the rails and slide in the rack servers (sizes in the rack schedule), "
+                 "network ports at the back.", srv, view="front")
         step("Switches, cable manager, shelves", "Cable manager under the switches; SW-OOB and SW-DATA; GNSS splitter at the top"
              + ("; agent PCs on their shelf" if d.get("agents") else "") + ".",
              by(lambda k: k in ("CM", "SW-DATA", "SW-OOB", "GNSS-SPL", "AGENTS")) +
              [k for k, v in devs.items() if v.get("parent") == "AGENTS"], view="front")
         step("Blanking panels", "Blank every empty U.", [k for k in devs if k.startswith("BLANK")], view="front")
         table = [k for k, v in devs.items() if v["group"] == "table" and not v.get("parent")]
-        step("Bench table", "Place the bench table to the right of the rack and set out the equipment: compute nearest the "
-             "rack, the IP-50 chains around MWATT, the analyser at the far end, the strip along the back edge.",
+        step("Bench table", "Place the bench table to the right of the rack and set out the equipment: the operator station "
+             "(bench controller PC, monitor, keyboard) nearest the rack, the IP-50 chains around MWATT, the analyser at the "
+             "far end, the strip along the back edge.",
              table + [k for k, v in devs.items() if v["group"] == "table" and v.get("parent")], view="table")
         groups = [("AC", "AC mains", "rear"), ("DC", "DC power", "rear"), ("POE", "PoE to the nodes", "rear"),
-                  ("FIB", "Data to SW-DATA", "rear"), ("ETH", "Management to SW-OOB", "rear"), ("GNSS", "GNSS", "rear")]
+                  ("FIB", "Data to SW-DATA", "rear"), ("ETH", "Management to SW-OOB", "rear"), ("GNSS", "GNSS", "rear"),
+                  ("AUX", "Operator station", "table")]
         for cls, title, view in groups:
             cs = [c["id"] for c in self.cables if c["cls"] == cls]
             if cs:

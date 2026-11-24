@@ -4,11 +4,11 @@ TENTATIVE geometry: see the assumptions list.
 
 | Check | Result | Detail |
 |---|---|---|
-| Every port carries at most one cable | PASS | 432 ports used |
-| Every cable reaches along its route | PASS | 205 cables with a length checked |
-| IF cables not grossly over-length (slack loops) | PASS | 1 IF cables use under 35 % of their length (dress the slack in the cable manager) |
-| Every rack device fits the rail depth | PASS | deepest 450 mm of 750 mm |
-| No two devices share a rack unit | PASS | 29 U used of 42 |
+| Every port carries at most one cable | PASS | 442 ports used |
+| Every cable reaches along its route | PASS | 209 cables with a length checked |
+| IF cables not grossly over-length (slack loops) | PASS | 0 IF cables use under 35 % of their length (dress the slack in the cable manager) |
+| Every rack device fits the rail depth | PASS | deepest 600 mm of 750 mm |
+| No two devices share a rack unit | PASS | 38 U used of 42 |
 | Spider SMA tile ports | PASS | 68 of 68 used; unused ones get ANNE-50+ loads |
 
 ## Assumptions to confirm
@@ -18,45 +18,44 @@ TENTATIVE geometry: see the assumptions list.
 - one 3.6 m x 0.8 m bench table to the right of the rack, top at 750 mm (estimate)
 - GNSS-SPL: RMALDCBS1X8 1U assumed
 - SW-OOB: Netgear GSM4230PX: depth estimate
+- SRV-E2E: 1U/2U rack server (lab), 600 mm deep assumed
+- SRV-DPIR: 1U/2U rack server (lab), 600 mm deep assumed
+- HOST-W1: 1U/2U rack server (lab), 600 mm deep assumed
+- HOST-W2: 1U/2U rack server (lab), 600 mm deep assumed
+- HOST-E1: 1U/2U rack server (lab), 600 mm deep assumed
+- HOST-E2: 1U/2U rack server (lab), 600 mm deep assumed
+- HOST-S: 1U/2U rack server (lab), 600 mm deep assumed
+- HOST-N: 1U/2U rack server (lab), 600 mm deep assumed
 - AGENTS: 1U vented shelf
 - SB1: Siklu 1U Spider box: depth and rear panel unknown
 - SB2: Siklu 1U Spider box: depth and rear panel unknown
 - SB3: Siklu 1U Spider box: depth and rear panel unknown
 - SB4: Siklu 1U Spider box: depth and rear panel unknown
 - SPL-TRAY: 1U vented shelf (CABSHELFV1U) carrying splitters / couplers
-- ATT-01: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
-- ATT-02: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
-- ATT-03: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
-- ATT-04: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
-- ATT-05: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
-- ATT-06: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
-- ATT-07: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
-- ATT-08: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
-- ATT-09: Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed
+- ATT-SHELF-1: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
+- ATT-SHELF-2: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
+- ATT-SHELF-3: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
+- ATT-SHELF-4: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
+- ATT-SHELF-5: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
 - PA-SHELF: 1U vented shelf
 - DC-DIST: Eaton DCD1M: breakers front, terminals rear assumed
 - DC-RECT: Mean Well RCP-1UI: AC C14 and DC output at the rear assumed
 - DC-DIST2: Westell N250110-N-0803: fuses front, terminals rear assumed
 - DC-RECT2: Mean Well RCP-1UI: AC C14 and DC output at the rear assumed
-- PDU-A: APC AP7922B 2U: outlets on the rear assumed
-- PDU-B: APC AP7922B 2U: outlets on the rear assumed
-- SRV-E2E: 2U lab server lying on the table
-- SRV-DPIR: 2U lab server lying on the table
+- PDU-A: 1U switched PDU, 12 x C13 (user: 1U); outlets on the rear assumed
+- PDU-B: 1U switched PDU, 12 x C13 (user: 1U); outlets on the rear assumed
+- PDU-C: 1U switched PDU, 12 x C13 (user: 1U); outlets on the rear assumed
 - BENCH-CTL: small form-factor PC
-- HOST-W1: small form-factor PC
-- HOST-W2: small form-factor PC
-- HOST-E1: small form-factor PC
-- HOST-E2: small form-factor PC
-- HOST-S: small form-factor PC
-- HOST-N: small form-factor PC
-- IP50-W1-CORE@W1: Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT
-- IP50-W1-CORE@CORE: Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT
-- IP50-CORE-E1@CORE: Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT
-- IP50-CORE-E1@E1: Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT
-- IP50-W1-W2@W1: Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT
-- IP50-W1-W2@W2: Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT
-- IP50-E1-E2@E1: Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT
-- IP50-E1-E2@E2: Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT
+- MONITOR: 24-inch monitor on a stand
+- KBD: keyboard + mouse
+- IP50-W1-CORE@W1: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
+- IP50-W1-CORE@CORE: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
+- IP50-CORE-E1@CORE: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
+- IP50-CORE-E1@E1: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
+- IP50-W1-W2@W1: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
+- IP50-W1-W2@W2: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
+- IP50-E1-E2@E1: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
+- IP50-E1-E2@E2: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
 - PSU-W1-CORE@CORE: isolated 48 V desktop supply
 - PSU-CORE-E1@CORE: isolated 48 V desktop supply
 - SPECAN: R&S FPL1026 (estimate)

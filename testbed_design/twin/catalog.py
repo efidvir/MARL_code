@@ -20,13 +20,15 @@ TABLE = dict(x0=700.0, x1=4300.0, z0=-150.0, z1=650.0, top=750.0,
 # kind -> depth, colour, label colour, confidence and notes; width/height come from the rack units or the table size
 KIND = {
     "spider":   dict(d=400, color="#3b4252", conf="estimate", note="Siklu 1U Spider box: depth and rear panel unknown"),
-    "ztdat":    dict(d=330, color="#5e81ac", conf="estimate", note="Mini-Circuits ZTDAT-4-18G63S: SMA on the front assumed"),
+    "ztdat":    dict(d=160, color="#5e81ac", conf="estimate", note="programmable attenuator: small 4-channel box with a dial (user), 200 x 70 x 160 mm assumed, SMA on the front"),
+    "attshelf": dict(d=450, color="#4c566a", conf="estimate", note="2U of rack space with a 1U vented shelf carrying two attenuator boxes"),
+    "rackserver": dict(d=600, color="#434c5e", conf="estimate", note="1U/2U rack server (lab), 600 mm deep assumed"),
     "tray":     dict(d=300, color="#4c566a", conf="estimate", note="1U vented shelf (CABSHELFV1U) carrying splitters / couplers"),
     "shelf":    dict(d=450, color="#4c566a", conf="estimate", note="1U vented shelf"),
     "dcdist":   dict(d=300, color="#d08770", conf="estimate", note="Eaton DCD1M: breakers front, terminals rear assumed"),
     "fuse":     dict(d=250, color="#d08770", conf="estimate", note="Westell N250110-N-0803: fuses front, terminals rear assumed"),
     "rect":     dict(d=330, color="#bf616a", conf="estimate", note="Mean Well RCP-1UI: AC C14 and DC output at the rear assumed"),
-    "pdu":      dict(d=200, color="#2e3440", conf="estimate", note="APC AP7922B 2U: outlets on the rear assumed"),
+    "pdu":      dict(d=200, color="#2e3440", conf="estimate", note="1U switched PDU, 12 x C13 (user: 1U); outlets on the rear assumed"),
     "sw_data":  dict(d=400, color="#4f6f52", conf="likely", note="Netgear M4350-24F4V 440 x 43.2 x 400 mm (parts research)"),
     "sw_oob":   dict(d=300, color="#4f6f52", conf="estimate", note="Netgear GSM4230PX: depth estimate"),
     "gnss":     dict(d=200, color="#8fbcbb", conf="estimate", note="RMALDCBS1X8 1U assumed"),
@@ -37,7 +39,9 @@ KIND = {
 # table devices: (w, h, d), colour, note
 TABLE_DEV = {
     "mwatt":   dict(size=(425.6, 88.3, 578.1), color="#5e81ac", conf="likely", note="Keysight J7204B (parts research dims); SMA ports on the front assumed"),
-    "ip50":    dict(size=(230, 75, 230), color="#a3be8c", conf="estimate", note="Ceragon IP-50 (model TBC) laid flat; waveguide flange on the side toward MWATT"),
+    "ip50":    dict(size=(270, 110, 270), color="#a3be8c", conf="estimate", note="Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT"),
+    "monitor": dict(size=(540, 330, 60), color="#2e3440", conf="estimate", note="24-inch monitor on a stand"),
+    "keyboard": dict(size=(440, 25, 140), color="#4c566a", conf="estimate", note="keyboard + mouse"),
     "server":  dict(size=(440, 88, 600), color="#434c5e", conf="estimate", note="2U lab server lying on the table"),
     "pc":      dict(size=(180, 55, 180), color="#4c566a", conf="estimate", note="small form-factor PC"),
     "specan":  dict(size=(408, 186, 235), color="#81a1c1", conf="estimate", note="R&S FPL1026 (estimate)"),
@@ -57,10 +61,11 @@ SMALL = {
 
 # colours by cable class (light theme)
 CABLE = {"AC": "#c0392b", "DC": "#d4a017", "POE": "#e67e22", "FIB": "#16a085", "ETH": "#2980b9", "RF": "#8e44ad",
-         "GNSS": "#27ae60", "WG": "#c2185b"}
+         "GNSS": "#27ae60", "WG": "#c2185b", "AUX": "#7f8c8d"}
 CABLE_NAME = {"AC": "AC mains", "DC": "DC power", "POE": "PoE (power only) to node ETH1", "FIB": "data to SW-DATA",
-              "ETH": "management to SW-OOB", "RF": "IF coax (SMA)", "GNSS": "GNSS coax", "WG": "IP-50 chain"}
-CABLE_DIA = {"AC": 7.0, "DC": 5.0, "POE": 6.0, "FIB": 3.0, "ETH": 6.0, "RF": 3.6, "GNSS": 4.0, "WG": 4.0}
+              "ETH": "management to SW-OOB", "RF": "IF coax (SMA)", "GNSS": "GNSS coax", "WG": "IP-50 chain",
+              "AUX": "operator station (video, USB)"}
+CABLE_DIA = {"AC": 7.0, "DC": 5.0, "POE": 6.0, "FIB": 3.0, "ETH": 6.0, "RF": 3.6, "GNSS": 4.0, "WG": 4.0, "AUX": 5.0}
 
 # standard-length ladders: the twin picks the shortest that covers the routed length + 10 % (DC is cut from bulk)
 LADDER = {
