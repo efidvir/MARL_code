@@ -1,5 +1,20 @@
 // Entry: reads the inlined scene JSON, builds the viewer and the UI, exposes
 // window.twin for scripted renders and applies URL query parameters.
+//
+// window.twin (every call renders synchronously, so a screenshot can follow):
+//   ready                      Promise, resolves once the first frame is drawn
+//   setView(name)              front | rear | left | right | top | iso | table | rack
+//   setStep(n | null, {frame}) installation state after step n (null = finished bench)
+//   frameStep(n)               camera on the items of step n, from the step's view
+//   highlight({devices, cables, ports}) / clearHighlight()   everything else ghosted
+//   select(id) / focus(id)     open the info panel (focus also moves the camera)
+//   trace(cableId, frame=true) follow the signal through passive parts; returns the paths
+//   setClasses([cls] | null)   setScenario('before'|'after')   setLabels(b)  setXray(b)
+//   showTable(b)  showBlanks(b)  setDims(b)  setConfTint(b)  setColorMode('class'|'link')
+//   setUI('full'|'min'|'none') frameBox([x0,y0,z0],[x1,y1,z1], dir?)  render()  getState()
+// URL: ?view=front&step=7&highlight=R001,R002&trace=R009&focus=ATT-03&select=SB2
+//      &classes=RF,WG&scenario=after&labels=0&xray=1&table=0&blanks=0&dims=1&conf=1
+//      &color=link&ui=none
 import css from './style.css';
 import * as THREE from 'three';
 import { Viewer } from './viewer.js';
@@ -16,6 +31,7 @@ const KIND_NAMES = {
   injector: 'PoE injector', splitter: 'RF splitter', coupler: 'directional coupler', transition: 'waveguide transition',
   mwatt: 'multi-channel attenuator', ip50: 'IP-50 radio', server: 'server', pc: 'PC', specan: 'spectrum analyser',
   strip: 'mains strip', psu: 'power supply', wall: 'wall sockets', antenna: 'antenna',
+  rackserver: 'rack server', attshelf: 'attenuator shelf', monitor: 'monitor', keyboard: 'keyboard',
 };
 
 function h(tag, attrs = {}, html = '') {
@@ -36,6 +52,11 @@ class App {
     this.sel = null; // {type,id}
     this.trace = null;
     this.uiMode = 'full';
+    // rack items in elevation order (for callouts that alternate left / right)
+    this.rackOrder = new Map(scene.devices
+      .filter((d) => d.group === 'rack' && !d.parent && d.u && d.kind !== 'blank')
+      .sort((a, b) => (b.u_top || 0) - (a.u_top || 0))
+      .map((d, i) => [d.id, i]));
     this._build();
   }
 
@@ -97,7 +118,8 @@ class App {
     V.getInsets = () => {
       const r = { top: 0, right: 0, bottom: 0, left: 0 };
       if (this.info.classList.contains('show') && this.info.offsetWidth) r.right = this.info.offsetWidth + 24;
-      if (this.stepcap.style.display !== 'none' && this.stepcap.offsetHeight) r.top = this.stepcap.offsetHeight + 18;
+      // the step card is docked on the left, under the view tag
+      if (this.stepcap.style.display !== 'none' && this.stepcap.offsetWidth) r.left = this.stepcap.offsetWidth + 24;
       return r;
     };
 
@@ -150,7 +172,12 @@ class App {
     tog('labels', 'Labels', true, (v) => this.setLabels(v));
     tog('xray', 'X-ray (see cables inside the rack)', false, (v) => this.setXray(v));
     tog('dims', 'Main dimensions', false, (v) => this.setDims(v));
+    tog('conf', 'Tint devices by confidence (amber = estimate, blue = likely)', false, (v) => this.setConfTint(v), 'how sure the geometry is');
     tog('link', 'Colour IF / IP-50 cables by link', false, (v) => this.setColorMode(v ? 'link' : 'class'), 'one colour per attenuated link (like blueprint sheet 2)');
+    this.linkLegend = h('div', { class: 'linklegend' });
+    this.linkLegend.innerHTML = [...V.linkColor.entries()].map(([l, c]) => `<span><i style="background:${esc(c)}"></i>${esc(l === 'spl' ? 'tile→splitter' : l)}</span>`).join('');
+    this.linkLegend.style.display = 'none';
+    secD.appendChild(this.linkLegend);
     side.appendChild(secD);
 
     // --- side: scenario
@@ -164,7 +191,12 @@ class App {
       };
       seg.append(this.scenBtns.before, this.scenBtns.after);
       secS.appendChild(seg);
-      secS.appendChild(h('div', { class: 'event' }, `${esc(s.meta.event || '')}<br><span style="color:var(--bad);font-weight:600">Switched off: ${s.meta.switched.map((id) => `<a class="lnk" data-id="${esc(id)}">${esc(id)}</a>`).join(', ')}</span>`));
+      const dk = this.model.dark;
+      const darkTxt = [...dk.nodes.map((n) => `<a class="lnk" data-id="${esc(n.port)}">${esc(n.box)} ${esc(n.node)}</a>`),
+        ...[...dk.devices].filter((id) => !dk.nodes.some((n) => n.box === id)).map((id) => `<a class="lnk" data-id="${esc(id)}">${esc(id)}</a>`)];
+      secS.appendChild(h('div', { class: 'event' }, `<span style="color:var(--bad);font-weight:600">Switched off at t0:</span> ${s.meta.switched.map((id) => `<a class="lnk" data-id="${esc(id)}">${esc(id)}</a>`).join(', ')}`
+        + (darkTxt.length ? `<div style="margin-top:4px"><span style="color:#9a3412;font-weight:600">Dark downstream (no power):</span> ${darkTxt.join(', ')}; ${dk.cables.size} cables dead, links ${esc([...dk.links].join(', '))}</div>` : '')
+        + `<details class="evt"><summary>what happens at t0</summary>${esc(s.meta.event || '')}</details>`));
       secS.addEventListener('click', (e) => {
         const a = e.target.closest('[data-id]');
         if (a) this.select(a.dataset.id, true);
@@ -214,11 +246,13 @@ class App {
     const nEst = s.devices.filter((d) => d.conf === 'estimate').length;
     cl.appendChild(h('li', {}, `<span class="st warn">INFO</span><span>Confidence of device geometry<span class="dt">${nEst} of ${s.devices.length} devices are estimates, ${s.devices.length - nEst} likely</span></span>`));
     det.appendChild(cl);
-    det.appendChild(h('div', { class: 'sec', style: 'margin-top:10px;font-size:11px;color:var(--ink3);font-weight:700;letter-spacing:.07em;text-transform:uppercase' }, 'Assumptions'));
+    const adet = h('details', { class: 'evt' });
+    adet.appendChild(h('summary', {}, `Assumptions (${s.assumptions.length + 1})`));
+    det.appendChild(adet);
     const al = h('ul', { class: 'assume' });
     for (const a of s.assumptions) al.appendChild(h('li', {}, esc(a)));
     al.appendChild(h('li', {}, 'Viewer: rack devices drawn as a 482.6 mm faceplate plus a 440 mm wide body; overlapping cable runs are spread a few mm apart so each cable stays visible (ports and lengths unchanged).'));
-    det.appendChild(al);
+    adet.appendChild(al);
     secK.appendChild(det);
     side.appendChild(secK);
 
@@ -276,6 +310,7 @@ class App {
   _clearViewTag() {
     for (const b of Object.values(this.viewBtns)) b.classList.remove('on');
     this.viewtag.style.display = 'none';
+    this.viewer.currentView = null;
   }
 
   showTable(v) {
@@ -298,8 +333,13 @@ class App {
     this.toggles.dims.checked = !!v;
     this.viewer.set({ showDims: !!v });
   }
+  setConfTint(v) {
+    this.toggles.conf.checked = !!v;
+    this.viewer.set({ confTint: !!v });
+  }
   setColorMode(m) {
     this.toggles.link.checked = m === 'link';
+    this.linkLegend.style.display = m === 'link' ? 'flex' : 'none';
     this.viewer.set({ colorMode: m });
   }
 
@@ -538,7 +578,20 @@ class App {
     const b = V.boxOf(r.type, r.id);
     if (!b) return;
     let dir = V.currentDirScene();
-    if (r.type === 'port') {
+    if (r.type === 'cable') {
+      // look from the side both ends face: a rear cable from behind the rack
+      const c = this.model.cables.get(r.id);
+      const nz = [c.a, c.b].map((pid) => (this.model.ports.get(pid) || { normal: [0, 0, 0] }).normal[2]);
+      const onTable = [c.a, c.b].some((pid) => {
+        const p = this.model.ports.get(pid);
+        const d = p && this.model.devices.get(p.device);
+        return d && d.group === 'table';
+      });
+      if (nz.every((z) => z > 0.5)) dir = [0.3, 0.25, 1];
+      else if (nz.every((z) => z < -0.5)) dir = [0.3, 0.25, -1];
+      else if (nz.some((z) => z > 0.5)) dir = onTable ? [0.25, 0.55, 1] : [0.3, 0.25, 1];
+      else if (onTable) dir = Viewer.VIEWS.table.dir;
+    } else if (r.type === 'port') {
       const p = this.model.ports.get(r.id);
       const n = p.normal;
       dir = [n[0] + 0.25, n[1] + 0.3, n[2] - (Math.abs(n[2]) < 0.5 ? 0.6 : 0)];
@@ -649,6 +702,12 @@ class App {
       bd += row('Confidence', `<span class="chip ${esc(d.conf)}">${esc(d.conf)}</span>`);
       if (d.note) bd += `<div class="note">${esc(d.note)}</div>`;
       if (m.switched.has(d.id)) bd += row('Event t0', `<span class="chip off">switched off at t0</span>${off ? '' : ' <span style="color:var(--ink3)">(see After t0)</span>'}`);
+      const dkNodes = m.dark.nodes.filter((n) => n.box === d.id);
+      if (m.dark.devices.has(d.id) || dkNodes.length) {
+        const why = m.dark.why.get(d.id) || (dkNodes.length ? m.dark.why.get(`${d.id}.${dkNodes[0].node}`) : null);
+        const what = dkNodes.length ? `node${dkNodes.length > 1 ? 's' : ''} ${dkNodes.map((n) => esc(n.node)).join(', ')}` : 'the whole unit';
+        bd += row('Event t0', `<span class="chip dark">dark after t0</span> ${what}: no power once ${why ? this._link(why.from) : 'its feed'} is off${why && why.via.length ? ` (via ${why.via.map((x) => this._link(x)).join(', ')})` : ''}`);
+      }
       if (d.modules) bd += row('Modules', d.modules.map((x) => `<span class="mono">${esc(x.m)}</span> ${esc(x.sector)}`).join(' · '));
       if (d.spare) bd += row('Spare', 'yes (unwired)');
       const kids = m.children.get(d.id) || [];
@@ -691,8 +750,9 @@ class App {
       }
       const stepN = m.cabStep.get(c.id);
       if (stepN) bd += row('Installed', `<a class="lnk" data-act="step" data-arg="${stepN}">step ${stepN}</a> · ${esc(m.steps.find((s) => s.n === stepN).title)}`);
-      const sw = st.scenario === 'after' && [c.a, c.b].some((pid) => m.switched.has(m.ports.get(pid).device));
+      const sw = [c.a, c.b].some((pid) => m.switched.has(m.ports.get(pid).device));
       if (sw) bd += row('Event t0', '<span class="chip off">dead after t0</span> one end is switched off');
+      else if (m.dark.cables.has(c.id)) bd += row('Event t0', '<span class="chip dark">dead after t0</span> part of a path that loses power at t0');
       if (this.trace) {
         const t = this.trace;
         bd += `<div class="sec">Signal trace (${t.paths.length} path${t.paths.length === 1 ? '' : 's'}${t.truncated ? ', truncated' : ''})</div>`;
@@ -744,18 +804,28 @@ class App {
         out.push({ key: 'off:' + id, cls: 'off', html: `${esc(id)} · OFF at t0`, anchor: e.anchor, pri: 100, force: true });
         continue;
       }
-      if (isHi) {
+      if (e.dark) {
+        out.push({ key: 'dark:' + id, cls: 'dark', html: `${esc(id)} · dark after t0`, anchor: e.anchor, pri: 95, force: true });
+        continue;
+      }
+      const rackTop = d.group === 'rack' && !d.parent && d.u && d.kind !== 'blank';
+      if (isHi && !(rackTop && st.rackCallAll)) {
         out.push({ key: 'd:' + id, cls: 'hi', html: esc(id), anchor: e.anchor, pri: 90 });
         continue;
       }
       if (!st.showLabels || d.kind === 'blank') continue;
-      if (e.mode === 'ghost') continue;
+      // rackCallAll (scripted elevation / band renders): every rack item keeps its callout
+      if (e.mode === 'ghost' && !(rackTop && st.rackCallAll)) continue;
       if (d.group === 'rack' && !d.parent && d.u) {
         const uPx = pxPerMm(e.callFront) * 44.45;
         if (uPx < 15) continue;
         const html = `<b>${esc(d.u)}</b> ${esc(id)}`;
-        out.push({ key: 'rf:' + id, cls: 'rackcall', html, anchor: e.callFront, align: 'left', pad: 0, pri: 30, normal: new THREE.Vector3(0, 0, 1) });
-        out.push({ key: 'rr:' + id, cls: 'rackcall', html, anchor: e.callRear, align: 'auto', away: e.callCenter, pad: 0, pri: 30, normal: new THREE.Vector3(0, 0, -1) });
+        const cur = isHi || e.mode === 'hi' || e.mode === 'hi-x';
+        // alternate mode (elevation drawings): every other item on the other side
+        const alt = !!st.rackCallAlt;
+        const right = alt && (this.rackOrder.get(id) || 0) % 2 === 1;
+        out.push({ key: 'rf:' + id, cls: cur ? 'rackcall cur' : 'rackcall', html, anchor: right ? e.callFrontR : e.callFront, yFrom: e.faceFront, align: right ? 'right' : 'left', pad: 0, pri: 30, normal: new THREE.Vector3(0, 0, 1), force: alt });
+        out.push({ key: 'rr:' + id, cls: cur ? 'rackcall cur' : 'rackcall', html, anchor: right ? e.callRearR : e.callRear, yFrom: e.faceRear, align: 'auto', away: e.callCenter, pad: 0, pri: 30, normal: new THREE.Vector3(0, 0, -1), force: alt });
         continue;
       }
       if (d.group === 'table' || d.group === 'room') {
@@ -785,7 +855,7 @@ class App {
       }
     } else if (st.step != null) {
       const stp = m.steps.find((s) => s.n === st.step);
-      if (stp && stp.cables.length <= 16) {
+      if (stp && stp.cables.length <= (st.cableLabelMax || 16)) {
         for (const cid of stp.cables) {
           const e = V.cab.get(cid);
           if (!e || !e.mesh.visible) continue;
@@ -795,10 +865,6 @@ class App {
     }
     if (st.showDims && V.dimLabels) {
       V.dimLabels.forEach((dl, i) => out.push({ key: 'dim:' + i, cls: 'dim', html: esc(dl.text), anchor: dl.anchor, pri: 60 }));
-    }
-    if (V.tableGroup.visible && st.showLabels) {
-      const T = this.scene.table;
-      out.push({ key: 'table', cls: 'table', html: 'BENCH TABLE (assumed size)', anchor: new THREE.Vector3((T.x0 + T.x1) / 2, T.top - 15, -T.z0 + 4), pri: 5, normal: new THREE.Vector3(0, 0, 1) });
     }
     return out;
   }
@@ -848,6 +914,7 @@ function boot() {
       showBlanks: sync((b) => app.showBlanks(b)),
       setDims: sync((b) => app.setDims(b)),
       setColorMode: sync((m) => app.setColorMode(m)),
+      setConfTint: sync((b) => app.setConfTint(b)),
       setUI: sync((m) => app.setUI(m)),
       focus: sync((id) => app.focus(id, true)),
       frameBox: sync((a, b, dir) => V.frameBox(a, b, dir)),
@@ -866,6 +933,7 @@ function boot() {
     if (q.has('xray')) app.setXray(bool(q.get('xray')));
     if (q.has('dims')) app.setDims(bool(q.get('dims')));
     if (q.has('color')) app.setColorMode(q.get('color'));
+    if (q.has('conf')) app.setConfTint(bool(q.get('conf')));
     if (q.has('scenario')) app.setScenario(q.get('scenario'));
     if (q.has('step')) app.setStep(q.get('step') === 'all' ? null : +q.get('step'), { frame: !q.has('view') });
     if (q.has('view')) app.setView(q.get('view'));

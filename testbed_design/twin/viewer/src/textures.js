@@ -34,10 +34,16 @@ export const lighten = (hex, t) => mix(hex, '#ffffff', t);
 export const darken = (hex, t) => mix(hex, '#000000', t);
 export const textColorFor = (bg) => (luminance(bg) > 0.33 ? '#15181d' : '#f4f6f8');
 
+// Largest canvas side; drawing code must use fitScale() so a long face (e.g. a
+// 42U rack post) is drawn at a scale that fits instead of being clipped and then
+// stretched onto the face (which shifted the post U numbers by up to 2 U).
+const MAX_CANVAS = 4096;
+const fitScale = (wmm, hmm, S) => Math.min(S, MAX_CANVAS / Math.max(1, wmm), MAX_CANVAS / Math.max(1, hmm));
+
 function makeCanvas(wmm, hmm, S) {
   const c = document.createElement('canvas');
-  c.width = Math.max(4, Math.min(4096, Math.round(wmm * S)));
-  c.height = Math.max(4, Math.min(4096, Math.round(hmm * S)));
+  c.width = Math.max(4, Math.min(MAX_CANVAS, Math.round(wmm * S)));
+  c.height = Math.max(4, Math.min(MAX_CANVAS, Math.round(hmm * S)));
   return c;
 }
 
@@ -174,6 +180,7 @@ function portCaption(dev, p) {
 
 // ports: [{p, u, v, w, h}] with u,v = port centre in face mm coords (u from left, v from bottom)
 export function drawFace({ dev, face, W, H, S, bg, ports, ears, uN, shortId }) {
+  S = fitScale(W, H, S);
   const canvas = makeCanvas(W, H, S);
   const ctx = canvas.getContext('2d');
   const fg = textColorFor(bg);
@@ -233,7 +240,7 @@ export function drawFace({ dev, face, W, H, S, bg, ports, ears, uN, shortId }) {
       ctx.fillText(m.m, cx(x0 + 2.5), cy(H - 8.2));
       const mw = ctx.measureText(m.m).width / S;
       ctx.font = `600 ${5.2 * S}px ${FONT}`;
-      ctx.fillStyle = '#ffd479';
+      ctx.fillStyle = luminance(bg) > 0.3 ? '#8a4500' : '#ffd479';
       let sec = m.sector || '';
       while (sec && ctx.measureText(sec).width / S > x1 - x0 - mw - 6) sec = sec.slice(0, -1);
       ctx.fillText(sec, cx(x0 + 2.5 + mw + 2.2), cy(H - 8.2));
@@ -339,6 +346,7 @@ export function drawFace({ dev, face, W, H, S, bg, ports, ears, uN, shortId }) {
 }
 
 export function drawPlain({ W, H, S, bg, ears, uN, caption }) {
+  S = fitScale(W, H, S);
   const canvas = makeCanvas(W, H, S);
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = bg;
@@ -378,6 +386,7 @@ export function drawPlain({ W, H, S, bg, ears, uN, caption }) {
 
 // U numbers + square mounting holes on the front face of a rack post.
 export function drawRailFace({ W, H, S, u1, units, side }) {
+  S = fitScale(W, H, S);
   const canvas = makeCanvas(W, H, S);
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#3a4048';
@@ -426,6 +435,27 @@ export function stripeTexture() {
   t.wrapT = THREE.RepeatWrapping;
   t.magFilter = THREE.NearestFilter;
   t.minFilter = THREE.NearestFilter;
+  t.generateMipmaps = false;
+  return t;
+}
+
+// Light / dark bands along a cable (multiplies the class colour): DC, GNSS and
+// WG carry them so they stay apart from POE, FIB and AC on paper.
+export function bandTexture() {
+  const c = document.createElement('canvas');
+  c.width = 64;
+  c.height = 4;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 64, 4);
+  ctx.fillStyle = '#4a4a4a';
+  ctx.fillRect(40, 0, 24, 4);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = THREE.RepeatWrapping;
+  t.wrapT = THREE.RepeatWrapping;
+  t.magFilter = THREE.NearestFilter;
+  t.minFilter = THREE.LinearFilter;
   t.generateMipmaps = false;
   return t;
 }

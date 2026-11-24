@@ -1,8 +1,25 @@
 // Scene data indexing, signal tracing and small helpers. No three.js here.
 
-export const CLASS_ORDER = ['AC', 'DC', 'POE', 'FIB', 'ETH', 'RF', 'GNSS', 'WG'];
+export const CLASS_ORDER = ['AC', 'DC', 'POE', 'FIB', 'ETH', 'RF', 'GNSS', 'WG', 'AUX'];
+
+// Display palette per cable class. The scene's own colours put three pairs too
+// close for print or a projector (DC/POE, FIB/GNSS, AC/WG); the viewer and the
+// guide both use this palette, and DC, GNSS and WG are also drawn banded.
+export const DISPLAY_COLORS = {
+  AC: '#c0392b', DC: '#f2c200', POE: '#e67e22', FIB: '#16a085', ETH: '#2980b9',
+  RF: '#8e44ad', GNSS: '#8bc34a', WG: '#ff4da6', AUX: '#7f8c8d',
+};
+export const BANDED = new Set(['DC', 'GNSS', 'WG']);
 
 export function buildModel(scene) {
+  for (const c of scene.cables) {
+    if (c.color_scene == null) c.color_scene = c.color;
+    if (DISPLAY_COLORS[c.cls]) c.color = DISPLAY_COLORS[c.cls];
+  }
+  for (const l of scene.legend || []) {
+    if (l.color_scene == null) l.color_scene = l.color;
+    if (DISPLAY_COLORS[l.cls]) l.color = DISPLAY_COLORS[l.cls];
+  }
   const devices = new Map(scene.devices.map((d) => [d.id, d]));
   const ports = new Map(scene.ports.map((p) => [p.id, p]));
   const cables = new Map(scene.cables.map((c) => [c.id, c]));
@@ -63,6 +80,7 @@ export function buildModel(scene) {
     steps, devStep, cabStep, tableStep, switched,
   };
   model.overlaps = findOverlaps(scene.devices);
+  model.dark = computeDark(model);
   model.allIds = [...cables.keys(), ...devices.keys(), ...ports.keys()];
   return model;
 }
@@ -155,7 +173,9 @@ export function traceCable(model, cableId) {
         res.truncated = true;
         break;
       }
-      res.paths.push([...a.slice().reverse(), { t: 'cable', id: cableId }, ...b]);
+      // side A is read backwards: swap each passive device's in/out so the chain reads end to end
+      const ra = a.slice().reverse().map((tok) => (tok.t === 'dev' ? { ...tok, from: tok.to, to: tok.from } : tok));
+      res.paths.push([...ra, { t: 'cable', id: cableId }, ...b]);
     }
   }
   for (const path of res.paths) {
@@ -190,6 +210,101 @@ export function tokenLabel(model, tok) {
   }
   if (d.kind === 'coupler' && pt) return `${d.id} (${pf.name}/${pt.name})`;
   return d.id;
+}
+
+// --- after t0: what goes dark downstream of the switched devices ------------
+// From each switched device follow its POE / DC feed cables to what they power
+// (through adaptors, injectors and PSUs). A fed Spider-box node goes dark with
+// its tiles (modules whose sector starts with the node name); a fed radio goes
+// dark as a whole. Every cable on a dark port, and every cable the signal trace
+// reaches from those ports, is dead after t0.
+const SOURCE_KINDS = new Set(['dcdist', 'fuse', 'rect', 'pdu', 'strip', 'wall']);
+const FEEDER_KINDS = new Set(['adaptor', 'injector', 'psu']);
+
+export function computeDark(model) {
+  const res = {
+    devices: new Set(), ports: new Set(), cables: new Set(), nodes: [], links: new Set(),
+    why: new Map(), // dark device / node key -> {from: switched id, via: [cable ids]}
+  };
+  const sw = model.switched;
+  if (!sw || !sw.size) return res;
+  const darkPortsOfNode = (box, node) => {
+    const d = model.devices.get(box);
+    const out = [];
+    const secs = new Set((d.modules || []).filter((m) => String(m.sector || '').split('.')[0] === node).map((m) => m.m));
+    for (const pid of d.ports || []) {
+      const p = model.ports.get(pid);
+      if (!p) continue;
+      const head = p.name.split('.')[0];
+      if (head === node || secs.has(head)) out.push(pid);
+    }
+    return out;
+  };
+  const queue = [...sw].map((id) => ({ id, from: id, via: [] }));
+  const seen = new Set(sw);
+  const seedPorts = [];
+  while (queue.length) {
+    const { id, from, via } = queue.shift();
+    for (const cid of model.devCables.get(id) || []) {
+      const c = model.cables.get(cid);
+      if (c.cls !== 'POE' && c.cls !== 'DC') continue;
+      const mine = [c.a, c.b].find((pid) => (model.ports.get(pid) || {}).device === id);
+      if (!mine) continue;
+      const other = otherEnd(c, mine);
+      const op = model.ports.get(other);
+      if (!op) continue;
+      const od = model.devices.get(op.device);
+      if (!od || seen.has(od.id) || SOURCE_KINDS.has(od.kind)) continue;
+      // a feeder only passes the outage on when the cable lands on its input
+      if (FEEDER_KINDS.has(od.kind) && /^(rj45|poe|out)$/i.test(op.name)) continue;
+      const path = [...via, cid];
+      if (od.kind === 'spider') {
+        const node = op.name.split('.')[0];
+        const key = `${od.id}.${node}`;
+        if (res.why.has(key)) continue;
+        res.why.set(key, { from, via: path });
+        res.nodes.push({ box: od.id, node, port: other });
+        for (const pid of darkPortsOfNode(od.id, node)) {
+          res.ports.add(pid);
+          seedPorts.push(pid);
+        }
+        continue;
+      }
+      seen.add(od.id);
+      res.devices.add(od.id);
+      const hop = /^IP50-(.+)@/.exec(od.id);
+      if (hop) res.links.add(`IP-50 ${hop[1]}`);
+      res.why.set(od.id, { from, via: path });
+      for (const pid of od.ports || []) seedPorts.push(pid);
+      if (FEEDER_KINDS.has(od.kind)) queue.push({ id: od.id, from, via: path });
+    }
+  }
+  // a Spider box whose every node is dark goes dark as a whole
+  const boxes = new Map();
+  for (const n of res.nodes) {
+    if (!boxes.has(n.box)) boxes.set(n.box, new Set());
+    boxes.get(n.box).add(n.node);
+  }
+  for (const [box, nodes] of boxes) {
+    const d = model.devices.get(box);
+    const all = new Set((d.nodes || []).length ? d.nodes : [...nodes]);
+    if ([...all].every((n) => nodes.has(n))) res.devices.add(box);
+  }
+  for (const pid of seedPorts) {
+    const cid = model.portCable.get(pid);
+    if (!cid || res.cables.has(cid)) continue;
+    const c = model.cables.get(cid);
+    res.cables.add(cid);
+    if (['RF', 'WG', 'GNSS'].includes(c.cls)) {
+      const t = traceCable(model, cid);
+      for (const x of t.cables) res.cables.add(x);
+    }
+  }
+  for (const cid of res.cables) {
+    const l = linkOfBundle(model.cables.get(cid).bundle);
+    if (l && l !== 'spl') res.links.add(l);
+  }
+  return res;
 }
 
 // --- geometry sanity (viewer-side) -----------------------------------------

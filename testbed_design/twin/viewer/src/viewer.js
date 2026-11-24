@@ -7,19 +7,22 @@ import {
   pointAtFraction,
 } from './geom.js';
 import {
-  drawFace, drawPlain, drawRailFace, stripeTexture, setMaxAnisotropy, lighten, darken, luminance, mix,
+  drawFace, drawPlain, drawRailFace, stripeTexture, bandTexture, setMaxAnisotropy, lighten, darken, luminance, mix,
 } from './textures.js';
-import { linkOfBundle } from './model.js';
+import { linkOfBundle, BANDED } from './model.js';
 
 const BG = '#f6f7f9';
 const ACCENT = '#ff7a00';
 const OFF_RED = '#e0262b';
+const DARK_EDGE = '#9a3412';
+export const DEFAULT_FOV = 30;
 const LINK_PALETTE = [
   '#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324',
   '#469990', '#800000', '#808000', '#000075', '#e6a800', '#7b68ee', '#2e8b57', '#c71585',
 ];
 
 const EAR = 16;
+export const CONF_TINT = { estimate: '#f0a830', likely: '#4f9ad8', confirmed: '#3fb56a', other: '#b0b7c0' };
 const _tmpV = new THREE.Vector3();
 const BODY_INSET = (482.6 - 440) / 2;
 
@@ -36,6 +39,10 @@ export class Viewer {
       showBlanks: true,
       showLabels: true,
       showDims: false,
+      rackCallAlt: false,
+      rackCallAll: false,
+      cableLabelMax: 16,
+      confTint: false,
       xray: false,
       scenario: 'before',
       step: null,
@@ -77,7 +84,7 @@ export class Viewer {
     s.fog = new THREE.Fog(BG, 14000, 30000);
     this.three = s;
 
-    this.camera = new THREE.PerspectiveCamera(30, 1, 5, 60000);
+    this.camera = new THREE.PerspectiveCamera(DEFAULT_FOV, 1, 5, 60000);
     this.camera.position.set(4000, 3000, 6000);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = false;
@@ -94,12 +101,14 @@ export class Viewer {
     this._floor();
     this.shapes = portShapes();
     this.stripe = stripeTexture();
+    this.bands = bandTexture();
     this._rack();
     this._table();
     this._devices();
     this._ports();
     this._cables();
     this._dims();
+    this._floorText();
     this._pickSetup();
 
     this.resize();
@@ -127,9 +136,30 @@ export class Viewer {
   }
 
   renderNow() {
+    this._checkWallFade();
     this.needsRender = false;
     this.renderer.render(this.three, this.camera);
     this._updateLabels();
+  }
+
+  // The lab wall stands behind the rack: from behind it hides the lower units,
+  // and seen straight from the front it shows through the empty frame like a
+  // rack part. Fade it to 12 % in those two cases.
+  _checkWallFade() {
+    const cam = this.camera.position;
+    const camZ = -cam.z;
+    const d = new THREE.Vector3().subVectors(cam, this.controls.target).normalize();
+    const dz = -d.z;
+    const hz = Math.hypot(d.x, d.z) || 1;
+    let fade = false;
+    for (const e of this.dev.values()) {
+      if (e.d.kind !== 'wall') continue;
+      if (camZ > e.d.pos[2] - 20 || (dz < 0 && -dz / hz > 0.94)) fade = true;
+    }
+    if (fade !== !!this._wallFaded) {
+      this._wallFaded = fade;
+      this.applyState();
+    }
   }
 
   // ----------------------------------------------------------------- scene
@@ -373,9 +403,15 @@ export class Viewer {
         : new THREE.Vector3(x + w / 2, y + h + 8, -(z + dp / 2));
       entry.box = new THREE.Box3(new THREE.Vector3(x, y, -(z + dp)), new THREE.Vector3(x + w, y + h, -z));
       entry.frontNormal = d.group === 'rack' ? this._partFacing(d, ps) : null;
+      const rd = this.scene3.rack.rail_depth || 750;
       entry.callFront = new THREE.Vector3(-34, y + h / 2, 4);
-      entry.callRear = new THREE.Vector3(-34, y + h / 2, -(this.scene3.rack.rail_depth || 750) - 4);
-      entry.callCenter = new THREE.Vector3(x + w / 2, y + h / 2, -(this.scene3.rack.rail_depth || 750) / 2);
+      entry.callRear = new THREE.Vector3(-34, y + h / 2, -rd - 4);
+      entry.callFrontR = new THREE.Vector3(482.6 + 34, y + h / 2, 4);
+      entry.callRearR = new THREE.Vector3(482.6 + 34, y + h / 2, -rd - 4);
+      entry.callCenter = new THREE.Vector3(x + w / 2, y + h / 2, -rd / 2);
+      // where the faces are actually drawn (rear faces sit at very different depths)
+      entry.faceFront = new THREE.Vector3(x + w / 2, y + h / 2, -z);
+      entry.faceRear = new THREE.Vector3(x + w / 2, y + h / 2, -(z + dp));
     }
   }
 
@@ -434,6 +470,7 @@ export class Viewer {
       const pb = this.model.ports.get(c.b);
       const coincident = pa && pb && Math.hypot(pa.pos[0] - pb.pos[0], pa.pos[1] - pb.pos[1], pa.pos[2] - pb.pos[2]) < 1;
       const mat = new THREE.MeshStandardMaterial({ color: c.color, roughness: 0.42, metalness: 0.05 });
+      if (BANDED.has(c.cls)) mat.map = this.bands;
       let mesh;
       let pts;
       if (coincident) {
@@ -499,6 +536,37 @@ export class Viewer {
     dim([T.x1 + 40, T.top, T.z0], [T.x1 + 40, T.top, T.z1], `${Math.round(T.z1 - T.z0)} mm`, [80, 0, 0]);
     this.three.add(grp);
     this.dimGroup = grp;
+  }
+
+  // big orientation words painted on the floor
+  _floorText() {
+    const R = this.scene3.rack;
+    const T = this.scene3.table;
+    const mk = (text, w, h, x, z, rot = 0, size = 0.55) => {
+      const c = document.createElement('canvas');
+      const S = 0.5;
+      c.width = Math.round(w * S);
+      c.height = Math.round(h * S);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = 'rgba(60,70,85,0.55)';
+      ctx.font = `800 ${Math.round(h * S * size)}px Inter, "Segoe UI", Arial, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, c.width / 2, c.height / 2);
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = 8;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false }));
+      m.rotation.x = -Math.PI / 2;
+      m.rotation.z = rot;
+      m.position.set(x, 1.5, -z);
+      this.three.add(m);
+      return m;
+    };
+    mk('▲ FRONT · operator side', 1800, 170, 241, -430);
+    mk('REAR ▼', 900, 170, 241, (R.rail_depth || 750) + 380);
+    const tl = `BENCH TABLE (assumed ${((T.x1 - T.x0) / 1000).toFixed(1)} m × ${((T.z1 - T.z0) / 1000).toFixed(1)} m, top ${Math.round(T.top)} mm) →`;
+    mk(tl, Math.min(3400, T.x1 - T.x0), 150, (T.x0 + T.x1) / 2, T.z0 - 300, 0, 0.42);
   }
 
   // ------------------------------------------------------------- picking
@@ -580,7 +648,7 @@ export class Viewer {
 
   _isSeeThrough(devId) {
     const e = this.dev.get(devId);
-    return !!(e && e.mode && (e.mode === 'ghost' || e.mode === 'xray'));
+    return !!(e && ((e.mode && (e.mode === 'ghost' || e.mode === 'xray')) || e.faded));
   }
 
   // --------------------------------------------------------------- state
@@ -618,7 +686,7 @@ export class Viewer {
         const s = m.devStep.get(id);
         if (s != null && s > st.step) vis = false;
       }
-      if (d.parent && devVis.has(d.parent) && !devVis.get(d.parent)) vis = vis && true;
+      if (hl && hl.devices.has(id) && !(d.kind === 'blank' && !st.showBlanks)) vis = vis || (d.group !== 'table' || st.showTable);
       devVis.set(id, vis);
     }
     for (const [id, e] of this.dev) {
@@ -629,7 +697,8 @@ export class Viewer {
       if (st.xray && (mode === 'normal' || mode === 'hi')) mode = mode === 'hi' ? 'hi-x' : 'xray';
       if (e.d.group === 'room' && mode === 'normal') mode = 'room';
       const off = st.scenario === 'after' && m.switched.has(id);
-      this._applyDevice(e, vis, mode, off, ghostDev);
+      const dark = st.scenario === 'after' && !off && m.dark.devices.has(id);
+      this._applyDevice(e, vis, mode, off, ghostDev, dark);
     }
     const tableVis = st.showTable && (st.step == null || m.tableStep == null || st.step >= m.tableStep);
     this.tableGroup.visible = tableVis;
@@ -640,7 +709,8 @@ export class Viewer {
       if (mode === 'hi' || mode === 'hi-x' || mode === 'xray') mode = 'normal';
       if (hl && hl.ports.has(id)) mode = 'hi';
       else if (hl && de && hl.devices.has(e.p.device)) mode = 'normal';
-      this._applyPort(e, vis, mode, ghostDev);
+      const darkP = st.scenario === 'after' && (m.dark.ports.has(id) || (de && (de.off || de.dark)));
+      this._applyPort(e, vis, mode, ghostDev, darkP, de && de.d.kind === 'wall' && this._wallFaded);
     }
     for (const [id, e] of this.cab) {
       const c = e.c;
@@ -650,12 +720,12 @@ export class Viewer {
       for (const p of [pa, pb]) if (p && devVis.has(p.device) && !devVis.get(p.device)) vis = false;
       if (st.step != null) {
         const s = m.cabStep.get(id);
-        if (s != null && s > st.step) vis = false;
+        if (s != null && s > st.step && !(hl && hl.cables.has(id))) vis = false;
       }
       let mode = 'normal';
       if (hl) mode = hl.cables.has(id) ? 'hi' : 'ghost';
       else if (stepObj) mode = stepCabs.has(id) ? 'hi' : 'ghost';
-      const dashed = st.scenario === 'after' && ((pa && m.switched.has(pa.device)) || (pb && m.switched.has(pb.device)));
+      const dashed = st.scenario === 'after' && ((pa && m.switched.has(pa.device)) || (pb && m.switched.has(pb.device)) || m.dark.cables.has(id));
       this._applyCable(e, vis, mode, dashed, ghostCab);
     }
     this.dimGroup.visible = !!st.showDims;
@@ -663,42 +733,56 @@ export class Viewer {
     this.emit('state', st);
   }
 
-  _applyDevice(e, vis, mode, off, ghost) {
+  _applyDevice(e, vis, mode, off, ghost, dark = false) {
     e.grp.visible = vis;
     e.mode = mode;
     e.off = off;
-    const transparent = mode === 'ghost' || mode === 'xray' || mode === 'hi-x' || mode === 'room';
-    const op = mode === 'ghost' ? ghost : mode === 'xray' ? 0.2 : mode === 'hi-x' ? 0.55 : mode === 'room' ? 0.5 : 1;
+    e.dark = dark;
+    const faded = e.d.kind === 'wall' && this._wallFaded;
+    e.faded = faded;
+    const transparent = faded || mode === 'ghost' || mode === 'xray' || mode === 'hi-x' || mode === 'room';
+    let op = mode === 'ghost' ? ghost : mode === 'xray' ? 0.2 : mode === 'hi-x' ? 0.55 : mode === 'room' ? 0.5 : 1;
+    if (faded) op = Math.min(op, 0.12);
+    const tint = this.state.confTint ? CONF_TINT[e.d.conf] || CONF_TINT.other : null;
     for (const mat of e.mats) {
       mat.color.copy(mat.userData.baseColor);
+      if (tint && !off) {
+        if (mat.map) mat.color.set(tint).lerp(new THREE.Color('#ffffff'), 0.25);
+        else mat.color.lerp(new THREE.Color(tint), 0.7);
+      }
       if (off) mat.color.multiplyScalar(mat.map ? 0.32 : 0.45);
+      else if (dark) mat.color.multiplyScalar(mat.map ? 0.5 : 0.6);
       if (mat.transparent !== transparent) mat.needsUpdate = true;
       mat.transparent = transparent;
       mat.opacity = op;
       mat.depthWrite = !transparent;
       mat.emissive.set(mode === 'hi' || mode === 'hi-x' ? ACCENT : '#000000');
-      mat.emissiveIntensity = mode === 'hi' || mode === 'hi-x' ? 0.04 : 0;
+      mat.emissiveIntensity = 0;
     }
     for (const ed of e.edges) {
       const lm = ed.material;
       if (off) lm.color.set(OFF_RED);
+      else if (dark) lm.color.set(DARK_EDGE);
       else if (mode === 'hi' || mode === 'hi-x') lm.color.set(ACCENT);
       else lm.color.copy(ed.userData.baseColor);
-      const eo = mode === 'ghost' ? Math.min(0.45, ghost * 1.6) : mode === 'xray' ? 0.55 : 1;
+      let eo = mode === 'ghost' ? Math.min(0.45, ghost * 1.6) : mode === 'xray' ? 0.55 : 1;
+      if (faded) eo = 0.15;
       lm.transparent = eo < 1;
       lm.opacity = eo;
     }
   }
 
-  _applyPort(e, vis, mode, ghost) {
+  _applyPort(e, vis, mode, ghost, dark = false, faded = false) {
     e.mesh.visible = vis;
     const hi = mode === 'hi';
     e.mesh.scale.setScalar(e.mesh.userData.baseScale * (hi ? 1.9 : 1));
-    const transparent = mode === 'ghost';
+    const transparent = mode === 'ghost' || faded;
     e.mats.forEach((mat, i) => {
       if (mat.transparent !== transparent) mat.needsUpdate = true;
       mat.transparent = transparent;
-      mat.opacity = transparent ? Math.min(0.5, ghost * 1.5) : 1;
+      mat.opacity = faded ? 0.12 : transparent ? Math.min(0.5, ghost * 1.5) : 1;
+      mat.color.copy(mat.userData.baseColor);
+      if (dark) mat.color.multiplyScalar(0.35);
       mat.depthWrite = !transparent;
       mat.emissive.set(hi && i === 0 ? ACCENT : '#000000');
       mat.emissiveIntensity = hi ? 0.8 : 0;
@@ -767,7 +851,7 @@ export class Viewer {
     const v = Viewer.VIEWS[name];
     if (!v) return false;
     const b = this.subjectBox(v.subject);
-    this.frameBox(b.min, b.max, v.dir, { margin: v.subject === 'all' ? 1.04 : 1.06 });
+    this.frameBox(b.min, b.max, v.dir, { margin: v.subject === 'all' ? 1.04 : 1.06, fov: DEFAULT_FOV });
     this.currentView = name;
     return true;
   }
@@ -778,8 +862,13 @@ export class Viewer {
   }
 
   // min/max in SCENE coordinates; dir = direction from subject to camera (scene coords)
-  frameBox(min, max, dir, { margin = 1.08, insets = null } = {}) {
+  frameBox(min, max, dir, { margin = 1.08, insets = null, fov = null } = {}) {
     dir = dir || this.currentDirScene();
+    if (fov && fov !== this.camera.fov) {
+      // a narrow field of view keeps straight-on close-ups close to an elevation drawing
+      this.camera.fov = fov;
+      this.camera.updateProjectionMatrix();
+    }
     const ins = insets || (this.getInsets ? this.getInsets() : null) || { top: 0, right: 0, bottom: 0, left: 0 };
     const cw = this.renderer.domElement.clientWidth || 800;
     const ch = this.renderer.domElement.clientHeight || 600;
@@ -945,7 +1034,12 @@ export class Viewer {
       v.copy(it.anchor).project(this.camera);
       if (v.z > 1 || v.z < -1) continue;
       const sx = (v.x * 0.5 + 0.5) * w;
-      const sy = (-v.y * 0.5 + 0.5) * h;
+      let sy = (-v.y * 0.5 + 0.5) * h;
+      if (it.yFrom) {
+        // beside the rack, but at the height the device face itself is drawn
+        _tmpV.copy(it.yFrom).project(this.camera);
+        sy = (-_tmpV.y * 0.5 + 0.5) * h;
+      }
       if (sx < -50 || sx > w + 50 || sy < -20 || sy > h + 20) continue;
       const l = this._labelEl(it.key, it.cls, it.html);
       if (!l.size) {
