@@ -1,0 +1,236 @@
+// Scene data indexing, signal tracing and small helpers. No three.js here.
+
+export const CLASS_ORDER = ['AC', 'DC', 'POE', 'FIB', 'ETH', 'RF', 'GNSS', 'WG'];
+
+export function buildModel(scene) {
+  const devices = new Map(scene.devices.map((d) => [d.id, d]));
+  const ports = new Map(scene.ports.map((p) => [p.id, p]));
+  const cables = new Map(scene.cables.map((c) => [c.id, c]));
+
+  const portCable = new Map();
+  for (const c of scene.cables) {
+    portCable.set(c.a, c.id);
+    portCable.set(c.b, c.id);
+  }
+  const devCables = new Map(scene.devices.map((d) => [d.id, []]));
+  for (const c of scene.cables) {
+    for (const pid of [c.a, c.b]) {
+      const p = ports.get(pid);
+      if (p && devCables.has(p.device)) {
+        const l = devCables.get(p.device);
+        if (!l.includes(c.id)) l.push(c.id);
+      }
+    }
+  }
+  const children = new Map();
+  for (const d of scene.devices) {
+    if (d.parent) {
+      if (!children.has(d.parent)) children.set(d.parent, []);
+      children.get(d.parent).push(d.id);
+    }
+  }
+  // port name -> port id, per device
+  const portByName = new Map();
+  for (const d of scene.devices) {
+    const m = new Map();
+    for (const pid of d.ports || []) {
+      const p = ports.get(pid);
+      if (p) m.set(p.name, pid);
+    }
+    portByName.set(d.id, m);
+  }
+
+  // installation steps
+  const steps = scene.steps || [];
+  const devStep = new Map();
+  const cabStep = new Map();
+  for (const st of steps) {
+    for (const id of st.devices) if (!devStep.has(id)) devStep.set(id, st.n);
+    for (const id of st.cables) if (!cabStep.has(id)) cabStep.set(id, st.n);
+  }
+  let tableStep = null;
+  for (const st of steps) {
+    if (st.devices.some((id) => devices.get(id) && devices.get(id).group === 'table')) {
+      tableStep = st.n;
+      break;
+    }
+  }
+
+  const switched = new Set((scene.meta && scene.meta.switched) || []);
+
+  const model = {
+    scene, devices, ports, cables, portCable, devCables, children, portByName,
+    steps, devStep, cabStep, tableStep, switched,
+  };
+  model.overlaps = findOverlaps(scene.devices);
+  model.allIds = [...cables.keys(), ...devices.keys(), ...ports.keys()];
+  return model;
+}
+
+export function cableEndsDevices(model, c) {
+  const pa = model.ports.get(c.a);
+  const pb = model.ports.get(c.b);
+  return [pa ? pa.device : null, pb ? pb.device : null];
+}
+
+export function otherEnd(c, pid) {
+  return c.a === pid ? c.b : c.a;
+}
+
+// --- signal trace through passive devices --------------------------------
+
+function internalPeers(model, pid) {
+  const p = model.ports.get(pid);
+  if (!p) return [];
+  const d = model.devices.get(p.device);
+  if (!d) return [];
+  const byName = model.portByName.get(d.id);
+  const pick = (...names) => names.map((n) => byName.get(n)).filter(Boolean);
+  const n = p.name;
+  let m;
+  switch (d.kind) {
+    case 'ztdat':
+    case 'mwatt':
+      m = /^ch(\d+)\.(in|out)$/i.exec(n);
+      if (m) return pick(`ch${m[1]}.${m[2].toLowerCase() === 'in' ? 'out' : 'in'}`);
+      return [];
+    case 'splitter':
+      if (n === 'S') return [...byName.keys()].filter((k) => /^P\d+$/.test(k)).map((k) => byName.get(k));
+      if (/^P\d+$/.test(n)) return pick('S');
+      return [];
+    case 'coupler':
+      if (n === 'IN') return pick('THRU', 'CPL');
+      if (n === 'THRU' || n === 'CPL') return pick('IN');
+      return [];
+    case 'transition':
+      if (n === 'wg') return pick('coax');
+      if (n === 'coax') return pick('wg');
+      return [];
+    case 'gnss':
+      if (n === 'in') return [...byName.keys()].filter((k) => /^out\d+$/.test(k)).map((k) => byName.get(k));
+      if (/^out\d+$/.test(n)) return pick('in');
+      return [];
+    default:
+      return [];
+  }
+}
+
+export function isPassive(kind) {
+  return ['ztdat', 'mwatt', 'splitter', 'coupler', 'transition', 'gnss'].includes(kind);
+}
+
+// Returns { paths: [[token]], cables:Set, devices:Set, ports:Set }.
+// token = {t:'port'|'cable'|'dev', id, from?, to?, open?}
+export function traceCable(model, cableId) {
+  const start = model.cables.get(cableId);
+  const res = { paths: [], cables: new Set(), devices: new Set(), ports: new Set(), truncated: false };
+  if (!start) return res;
+  const visited = new Set([cableId]);
+  let budget = 400;
+
+  function explore(pid, depth) {
+    budget -= 1;
+    const peers = internalPeers(model, pid);
+    if (!peers.length || depth > 24 || budget < 0) return [[{ t: 'port', id: pid }]];
+    const dev = model.ports.get(pid).device;
+    const out = [];
+    for (const q of peers) {
+      const tok = { t: 'dev', id: dev, from: pid, to: q };
+      const cq = model.portCable.get(q);
+      if (!cq || visited.has(cq)) {
+        out.push([tok, { t: 'port', id: q, open: !cq }]);
+        continue;
+      }
+      visited.add(cq);
+      const c = model.cables.get(cq);
+      for (const tail of explore(otherEnd(c, q), depth + 1)) out.push([tok, { t: 'cable', id: cq }, ...tail]);
+    }
+    return out;
+  }
+  const sideA = explore(start.a, 0);
+  const sideB = explore(start.b, 0);
+  for (const a of sideA) {
+    for (const b of sideB) {
+      if (res.paths.length >= 16) {
+        res.truncated = true;
+        break;
+      }
+      res.paths.push([...a.slice().reverse(), { t: 'cable', id: cableId }, ...b]);
+    }
+  }
+  for (const path of res.paths) {
+    for (const tok of path) {
+      if (tok.t === 'cable') {
+        res.cables.add(tok.id);
+        const c = model.cables.get(tok.id);
+        res.ports.add(c.a);
+        res.ports.add(c.b);
+      } else if (tok.t === 'dev') {
+        res.devices.add(tok.id);
+      } else if (tok.t === 'port') {
+        res.ports.add(tok.id);
+        const p = model.ports.get(tok.id);
+        if (p) res.devices.add(p.device);
+      }
+    }
+  }
+  return res;
+}
+
+export function tokenLabel(model, tok) {
+  if (tok.t === 'cable') return tok.id;
+  if (tok.t === 'port') return tok.id + (tok.open ? ' (open)' : '');
+  const d = model.devices.get(tok.id);
+  const pf = model.ports.get(tok.from);
+  const pt = model.ports.get(tok.to);
+  if (!d || !pf) return tok.id;
+  if (d.kind === 'ztdat' || d.kind === 'mwatt') {
+    const m = /^ch(\d+)/i.exec(pf.name);
+    return `${d.id} CH${m ? m[1] : '?'}`;
+  }
+  if (d.kind === 'coupler' && pt) return `${d.id} (${pf.name}/${pt.name})`;
+  return d.id;
+}
+
+// --- geometry sanity (viewer-side) -----------------------------------------
+
+function findOverlaps(devs) {
+  const out = [];
+  for (let i = 0; i < devs.length; i++) {
+    for (let j = i + 1; j < devs.length; j++) {
+      const a = devs[i];
+      const b = devs[j];
+      if (a.parent === b.id || b.parent === a.id) continue;
+      let ok = true;
+      for (let k = 0; k < 3; k++) {
+        const lo = Math.max(a.pos[k], b.pos[k]);
+        const hi = Math.min(a.pos[k] + a.size[k], b.pos[k] + b.size[k]);
+        if (!(lo < hi - 0.5)) {
+          ok = false;
+          break;
+        }
+      }
+      if (ok) out.push([a.id, b.id]);
+    }
+  }
+  return out;
+}
+
+export function linkOfBundle(bundle) {
+  if (!bundle) return null;
+  const m = /^\('([^']+)'/.exec(bundle);
+  return m ? m[1] : null;
+}
+
+export function shortPortName(p) {
+  return p.name;
+}
+
+export function fmtMM(v) {
+  if (v == null || Number.isNaN(v)) return '?';
+  return `${Math.round(v)} mm`;
+}
+
+export function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}

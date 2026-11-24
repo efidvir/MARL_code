@@ -1,0 +1,16 @@
+{
+  "name": "unity6g-twin-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Interactive 3D digital twin viewer for the UNITY-6G conducted Terragraph benches (PoC 1 / PoC 2). Tentative geometry.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
