@@ -1,13 +1,13 @@
 // Scene data indexing, signal tracing and small helpers. No three.js here.
 
-export const CLASS_ORDER = ['AC', 'DC', 'POE', 'FIB', 'ETH', 'RF', 'GNSS', 'WG', 'AUX'];
+export const CLASS_ORDER = ['AC', 'DC', 'POE', 'FIB', 'ETH', 'RF', 'GNSS', 'WG', 'AUX', 'PE'];
 
 // Display palette per cable class. The scene's own colours put three pairs too
 // close for print or a projector (DC/POE, FIB/GNSS, AC/WG); the viewer and the
 // guide both use this palette, and DC, GNSS and WG are also drawn banded.
 export const DISPLAY_COLORS = {
   AC: '#c0392b', DC: '#f2c200', POE: '#e67e22', FIB: '#16a085', ETH: '#2980b9',
-  RF: '#8e44ad', GNSS: '#8bc34a', WG: '#ff4da6', AUX: '#7f8c8d',
+  RF: '#8e44ad', GNSS: '#8bc34a', WG: '#ff4da6', AUX: '#7f8c8d', PE: '#2e7d32',
 };
 export const BANDED = new Set(['DC', 'GNSS', 'WG']);
 

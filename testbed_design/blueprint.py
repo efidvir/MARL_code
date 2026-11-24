@@ -356,6 +356,10 @@ def spider_rear(s, b, box, x, y, w=94, h=22, mode="power"):
     sma(s, gx, y + 3.4, r=0.85, used=False)
     s.text(gx - 2.0, y + 3.4, "GNSS", fs=3.0, color=DIM, ha="right", va="center")
     ports[("box", "GNSS")] = (gx, y + 4.6)
+    dx, dy = x + w - 10, y + h - 4.6                    # box DC terminal block (fans + Pi, 48 V assumed, TBC)
+    s.rect(dx - 1.8, dy, 3.6, 2.6, fc=PLATE, ec=INK if mode == "power" and box["id"] in b.dcin else DIM, lw=0.4, z=6)
+    s.text(dx - 2.6, dy + 1.3, "DCIN", fs=2.8, color=DIM, ha="right", va="center")
+    ports[("box", "DCIN")] = (dx, dy + 2.6)
     return ports
 
 
@@ -417,18 +421,23 @@ def dist_face(s, x, y, label, sub, n=10, kind="breaker", w=150, h=16, used=()):
     return ports
 
 
-def rect_face(s, label, sub, x, y, w=150, h=16, n=3):
+def rect_face(s, label, sub, x, y, w=150, h=16, n=3, mods=2):
+    """rectifier shelf: n module slots, 'mods' fitted, one C14 inlet (and cord) per fitted module."""
     rack_face(s, x, y, w, h, label, sub)
     for i in range(n):
-        bx = x + 50 + i * 26
-        s.rect(bx, y + 2.0, 23, h - 8.6, fc=PLATE, lw=0.4, z=5)
-        vents(s, bx + 2, y + 2.0, 14, h - 8.6, 6)
-        s.ax.add_patch(Circle((bx + 19.5, y + 4.6), 0.7, fc=INK if i < 2 else DIM, ec="none", zorder=7))
-    c14(s, x + w - 21, y + 4.5)
-    s.text(x + w - 21, y + 8.0, "AC", fs=3.2, color=DIM, ha="center", va="center")
+        bx = x + 44 + i * 24
+        s.rect(bx, y + 2.0, 21, h - 8.6, fc=PLATE, lw=0.4, z=5)
+        vents(s, bx + 2, y + 2.0, 12, h - 8.6, 5)
+        s.ax.add_patch(Circle((bx + 17.5, y + 4.6), 0.7, fc=INK if i < mods else DIM, ec="none", zorder=7))
+    out = {"out": (x + w - 9, y + h - 1.6)}
+    for k in range(mods):
+        cx = x + w - 21 - k * 10
+        c14(s, cx, y + 4.5)
+        s.text(cx, y + 8.0, f"AC{k + 1}" if mods > 1 else "AC", fs=3.2, color=DIM, ha="center", va="center")
+        out["ac" if k == 0 else f"ac{k + 1}"] = (cx, y + 3.0)
     s.rect(x + w - 13, y + h - 6, 8, 4.4, fc=PLATE, lw=0.4, z=6)
     s.text(x + w - 9, y + h - 7.6, "DC out", fs=3.0, color=DIM, ha="center", va="center")
-    return {"ac": (x + w - 21, y + 3.0), "out": (x + w - 9, y + h - 1.6)}
+    return out
 
 
 def adaptor(s, x, y, name, used=True):
@@ -525,17 +534,25 @@ def sheet_rack(b, pdf, n, N, prefix):
     off = [[sv[0], sv[1][:30], "bench table (operator station)"] for sv in b.d["servers"] if sv[0] in BS.TABLE_SERVERS]
     off += [["MONITOR", "monitor + keyboard/mouse", "bench table"]]
     off += [[k, f"IP-50 radio, hop {hop}", f"site {site}"] for k, (hop, site) in b.ip50.items()]
-    off += [[v, "48 V supply, switched (t0)", f"next to {k}"] for k, v in b.psu.items()]
+    off += [[v, "-48 V supply (floating), switched (t0)", f"feeds {k}"] for k, v in b.psu.items()]
     if b.ip50:
         off.append(["MWATT", "Keysight J7204B, 4 ch", "IP-50 hop attenuator"])
-    off += [["TABLE-STRIP", "bench mains strip, C13", f"{len(b.table_loads)} loads"],
-            ["SPECAN", "spectrum analyser / power sensor", "bench table"], ["GNSS-ANT", "GNSS antenna (TBC)", "roof"]]
+    off += [["TABLE-STRIP", f"bench mains strip, {BS.STRIP_OUT} x C13, switch", f"{len(b.table_loads)} loads"],
+            ["SPECAN", "spectrum analyser / power sensor", "bench table"], ["GNSS-ANT", "GNSS antenna (TBC)", "roof"],
+            ["GNSS-ARR", "GNSS surge arrestor (DC pass)", "room entry, wall"],
+            ["RACK-EARTH", "rack earth bar (grounding kit)", "left rear post"],
+            ["LAB-EARTH", "lab earth bar (rack + arrestor bonds)", "wall (TBC)"],
+            ["CABLE-BRIDGE", "rack-to-table cable bridge", "rack right post"]]
+    if b.ip50:
+        off.append(["TABLE-EARTH", "bench-table earth bar (radios)", "table back edge"])
     s.text(302, 276, "OFF-RACK", fs=6.5, fontweight="bold")
     s.table(302, 272, ["ID", "Item", "Where"], off, [24, 50, 30], fs=4.2, rh=3.6)
     s.notes(128, min(yb - 6, 100), [
         "Spider boxes shaded; their modules and ports are drawn on sheet 2 (front) and sheets 3-4 (rear).",
         "Power at the bottom (PDUs, rectifiers, distribution, adaptors), as in figures/bench_a7.mjs.",
-        "IF cable lengths follow the U span between each box or tray and its attenuator (sheet 6).",
+        "IF cable lengths come from the twin routes through the side lanes (sheet 6, cable schedule).",
+        "The rack earth bar (left rear post) is bonded to the lab earth bar (" +
+        b.cable(cls="PE", a="RACK-EARTH.E1")["id"] + ") before anything is powered.",
         f"Keep AC, DC, Ethernet/fibre and SMA bundles apart. Blank the {size - total} empty U (AR8136BLK).",
         "Rack depth, rail type and the Spider boxes' rear panels to confirm before ordering shelves.",
     ] + ([f"Event: {b.d['event']}"] if b.d.get("event") else []), width=78)
@@ -665,10 +682,13 @@ def sheet_front(b, pdf, n, N, prefix):
         "Tag both ends of every cable with the ID shown; torque SMA to 8 in-lb with a backing wrench.",
         "Before cabling, measure DC, LO and IF level on one tile port per module; DC blocks if DC is present.",
         "Cable lengths and their U spans: sheet 6 and the cable schedule.",
+        "Schematic: tray bodies are drawn under their tiles; the physical tray layout (rows, input end left, output "
+        "end right) and the side-lane IF routing are in the install guide (digital twin).",
     ] + (["Splitters: S to the hub module tile; P1 to the first link's attenuator, P2 to the second "
           "(one splitter per tile)."] if b.split else [])
-      + (["Couplers: IN on the module, THRU to the link attenuator, CPL to the arm; DC block and pad only at the "
-          "arm's input coupler; arms phase-matched."] if b.coupled else [])
+      + (["Couplers: IN on the module, THRU to the link attenuator, CPL to the arm; DC block on both CPL ports, the "
+          "pad (" + ", ".join(f"{k} {v['pn']}" for k, v in b.arm_pad.items()) + ") only at the arm's input; each arm's "
+          "4 tile cables are one stock length (equal length, not a phase-matched set)."] if b.coupled else [])
       + (["Bridges use each node's second sector module (figures/bench_a7.mjs); only the hub's W and E modules "
           "are split, so all 16 modules are in use."] if b.split else []), width=74, fs=4.9)
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))
@@ -721,9 +741,9 @@ def sheet_power(b, pdf, n, N, prefix):
         s.tag(p0[0], sy + 23.2, cab["id"], CLS["POE"][0], va="bottom")
         s.tag(p1[0], 242.5, cab["id"], CLS["POE"][0], va="top")
     # DC drawers, left column
-    used = [i + 1 for i in range(len(dcn))]
+    used = [i + 1 for i in range(len(dcn))] + sorted({v[0] for v in b.dcin.values()})
     dist = dist_face(s, 16, 166, "DC-DIST", "Eaton DCD1M · 48 V · 10 breakers", used=used)
-    rect = rect_face(s, "DC-RECT", "Mean Well RCP-1UI + 2 x RCP-1000-48 · 48 V", 16, 145)
+    rect = rect_face(s, "DC-RECT", "Mean Well RCP-1UI + 2 x RCP-1000-48 · 48 V", 16, 145, mods=BS.RECT_MODULES["DC-RECT"])
     for i, nd in enumerate(dcn):
         a = b.adaptor[nd]
         p0, p1 = dist[i + 1], ad[a]["dc"]
@@ -737,6 +757,21 @@ def sheet_power(b, pdf, n, N, prefix):
         s.badge(p[0], p[1] - 3.6, f"AC {cab['id']} from {cab['a'].replace('.', ' ')}\nswitched off at t0", fs=3.4)
     for i in b.spare_breakers:
         s.text(dist[i][0], dist[i][1] + 1.6, "OFF", fs=3.2, color=DIM, ha="center", va="bottom")
+    done = set()
+    for bx, (cb, port) in b.dcin.items():                # Spider-box DCIN feeds: stubs and tags (box fans / Pi)
+        cab = b.cable(cls="DC", b=f"{bx}.DCIN")
+        p0 = dist[cb]
+        if cb in done:                                    # second run in the same terminal (twin ferrule)
+            s.line([(p0[0], p0[1] + 1.0), (p0[0] + 3.4, p0[1] + 1.0), (p0[0] + 3.4, p0[1] + 3.0)], color=CLS["DC"][0],
+                   lw=0.9, z=9)
+            s.tag(p0[0] + 3.4, p0[1] + 3.3, f"{cab['id']} {bx}", CLS["DC"][0], va="bottom", fs=3.0)
+        else:
+            s.line([p0, (p0[0], p0[1] + 3.0)], color=CLS["DC"][0], lw=0.9, z=9)
+            s.tag(p0[0], p0[1] + 3.3, f"{cab['id']} {bx}", CLS["DC"][0], va="bottom", fs=3.0)
+        done.add(cb)
+        q = rear[(bx, "box", "DCIN")]
+        s.line([q, (q[0], q[1] + 2.5)], color=CLS["DC"][0], lw=0.9, z=9)
+        s.tag(q[0], q[1] + 2.8, f"{cab['id']} CB{cb}", CLS["DC"][0], va="bottom", fs=3.0)
     bus = b.cable(cls="DC", a="DC-RECT.bus")
     s.line([rect["out"], dist["bus"]], color=CLS["DC"][0], lw=1.6, z=9)
     s.tag(rect["out"][0] + 3.4, (rect["out"][1] + dist["bus"][1]) / 2, bus["id"], CLS["DC"][0], rot=0, fs=3.8)
@@ -744,7 +779,8 @@ def sheet_power(b, pdf, n, N, prefix):
     if b.ip50:
         fused = list(range(1, len(b.fuse) + 1))
         dist2 = dist_face(s, 16, 112, "DC-DIST2", "Westell N250110-N-0803 · -48 V · GMT fuses", kind="fuse", used=fused)
-        rect2 = rect_face(s, "DC-RECT2", "RCP-1UI + RCP-1000-48 · -48 V (+ grounded)", 16, 91, n=1)
+        rect2 = rect_face(s, "DC-RECT2", "RCP-1UI + RCP-1000-48 · -48 V (+ grounded)", 16, 91, n=1,
+                          mods=BS.RECT_MODULES["DC-RECT2"])
         faces["DC-RECT2"] = rect2
         bus2 = b.cable(cls="DC", a="DC-RECT2.out")
         s.line([rect2["out"], dist2["bus"]], color=CLS["DC"][0], lw=1.6, z=9)
@@ -760,15 +796,21 @@ def sheet_power(b, pdf, n, N, prefix):
     pdu_ports = {}
     npdu = len(b.pdus)
     wp = min(101.0, (210.0 - 3 * (npdu - 1)) / npdu)
+    bud = {x["supply"]: x for x in (getattr(b, "budget", None) or [])}
     for j, p in enumerate(b.pdus):
         pdu_ports[p] = pdu_face(s, p, "1U · 16 A · switched" if wp < 90 else "1U · 16 A · 12 x C13 · switched",
                                 196 + j * (wp + 3), 150, w=wp, n=BS.PDU_OUT)
+        if p in bud:
+            s.text(196 + j * (wp + 3) + wp / 2, 174.5, f"{bud[p]['total_w']} W of {bud[p]['limit_w']} W (typ.)",
+                   fs=3.6, color=DIM, ha="center", va="bottom")
     vy, vh = 104, 30
     for ld, (pdu, o) in b.outlet.items():
         p0 = pdu_ports[pdu][o]
-        cab = b.cable(cls="AC", b=f"{ld}.ac")
-        if ld in faces:
-            p1 = faces[ld]["ac"]
+        port = b.load_port.get(ld, f"{ld}.ac")
+        cab = b.cable(cls="AC", b=port)
+        base = ld.split(":")[0]
+        if base in faces:
+            p1 = faces[base][port.split(".")[1]]
             p1 = (p1[0] + 2.0, p1[1] + 1.5)
             s.cable(p0, p1, CLS["AC"][0], lw=0.9, d0=(0, -1), d1=(1, 0))
             s.tag(p1[0] + 5.5, p1[1] + 0.6, cab["id"], CLS["AC"][0], rot=0, va="bottom", fs=3.8)
@@ -789,19 +831,41 @@ def sheet_power(b, pdf, n, N, prefix):
     s.legend(300, 96, [CLS[k] for k in ("AC", "DC", "POE")])
     s.notes(16, 84, [
         "N367 power is ETH1 only: 36-57 V DC through the passive adaptor; ETH1 then carries no data.",
-        f"{len(dcn)} nodes x 48 W (PoE-Out off) = {48 * len(dcn)} W on the 48 V drawer; breakers 3-5 A. "
-        + (f"PA-{len(dcn) + 1:02d}..PA-{b.n_adaptors:02d} spare and unwired; CB{b.spare_breakers[0]}-{b.spare_breakers[-1]} OFF."
-           if b.spare_breakers else ""),
+        f"{len(dcn)} nodes x 48 W (PoE-Out off) = {48 * len(dcn)} W on the 48 V drawer; breakers {BS.BREAKER_A} A or "
+        "less (they protect the 18 AWG runs); DC-RECT's +48 V output floats (not earthed). "
+        + f"PA-{len(dcn) + 1:02d}..PA-{b.n_adaptors:02d} spare and unwired." +
+        (f" CB{b.spare_breakers[0]}-{b.spare_breakers[-1]} OFF." if b.spare_breakers else ""),
+        "Spider-box DCIN (box fans + Pi, 48 V assumed, TBC at the Spider-box hold point): " +
+        "; ".join(f"{c['id']} {c['a'].split('.')[1].rstrip('b')} -> {c['b'].split('.')[0]}" for c in b.cables
+                  if c["cls"] == "DC" and c["b"].endswith(".DCIN")) +
+        "; landed at power-up only, closed before the node breakers so the fans run first.",
+        "Bus links (2 x 10 AWG) rely on the rectifier current limit only: " + "; ".join(
+            f"{r} about {BS.RECT_MODULES[r] * TW.C.RCP_MODULE_A:.0f} A" for r in (("DC-RECT", "DC-RECT2") if b.ip50 else
+                                                                                   ("DC-RECT",))) +
+        " (above 30 A: confirm the RCP shuts down on sustained overload, or fit a 30 A DC fuse at that output).",
+        "Schematic: adaptors are drawn under their node; on the shelf: wired ones in node order at the rear, spares "
+        "front right.",
     ] + ([f"Devices that die at t0 lose power at switched PDU outlets (red): {', '.join(b.switched)}. "
           + (f"{', '.join(b.inj)} is powered by an AC PoE injector instead of a DC adaptor so its outlet can cut it. "
              if b.inj else "")
           + "Links between surviving devices are dropped with attenuators instead."] if b.switched else []) + [
-        "Check adaptor terminal polarity with a DMM before power-up; keep node PoE-Out (ETH2) disabled.",
-    ] + (["IP-50 radios: -48 V (positive grounded) from DC-RECT2 through one GMT fuse each on DC-DIST2."] if b.ip50 else [])
-      + ["Spider rear layout (ETH1/ETH2/SFP+ access, GNSS input, any box inlet) is assumed: confirm on the units.",
-         "Servers, traffic hosts and agent PCs are rack loads; the bench controller, monitor, analyser and MWATT take "
-         "mains from the bench-table strip (sheet 5)."]
-      + ([f"Event: {d['event']}"] if d.get("event") else []), width=118, fs=4.8, step=3.3)
+        "DC load ends stay unplugged until power-up: close one breaker / insert one fuse at a time, check voltage and "
+        "polarity at the free plug with a DMM, open it, plug in; keep node PoE-Out (ETH2) disabled.",
+        "Rectifier shelves: one C14 inlet and cord per fitted module (DC-RECT " + str(BS.RECT_MODULES["DC-RECT"]) +
+        (", DC-RECT2 " + str(BS.RECT_MODULES["DC-RECT2"]) if b.ip50 else "") + ").",
+        "DC conductor convention: red (+48 V) or blue (-48 V) sleeve on the supply conductor at both ends of every D "
+        "run; the unsleeved conductor is the 0 V return.",
+    ] + ([f"IP-50 radios: -48 V from DC-RECT2 through one GMT fuse each on DC-DIST2; bus B strapped from bus A ("
+          + b.cable(cls="DC", a="DC-DIST2.strapA")["id"] + "); the RTN bus (= DC-RECT2 +V) is bonded to the rack earth ("
+          + b.cable(cls="PE", a="DC-DIST2.rtn")["id"] + "), which makes the -48 V system positive grounded."
+          + (f" {', '.join(b.psu.values())}: isolated supplies, output floating (not earthed)." if b.psu else "")]
+         if b.ip50 else [])
+      + ([f"PDU load (typical, estimates): " + "; ".join(f"{x['supply']} {x['total_w']} W" for x in b.budget) +
+          f" (limit {b.budget[0]['limit_w']} W = 80 % of 16 A at 230 V each)."] if getattr(b, "budget", None) else [])
+      + ["Spider rear layout (ETH1/ETH2/SFP+ access, GNSS input, box DC terminal block) is assumed: confirm on the units.",
+         "BENCH-CTL, monitor, analyser and MWATT take mains from the bench-table strip (sheet 5) on its own wall "
+         "socket (" + b.cable(cls="AC", b="TABLE-STRIP.inlet")["id"] + "), never a switched PDU outlet."]
+      + ([f"Event: {d['event']}"] if d.get("event") else []), width=172, fs=4.4, step=2.95)
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))
 
 
@@ -1059,7 +1123,8 @@ def sheet_table(b, pdf, n, N, prefix):
     strip_y = y0 - 14
     s.rect(16, strip_y, 30 + 9 * len(order), 8, fc=FACE, lw=0.7, z=3, r=1)
     s.text(18, strip_y + 5.6, "TABLE-STRIP", fs=4.6, fontweight="bold", va="center")
-    s.text(18, strip_y + 2.4, "lab mains, C13", fs=3.4, color=DIM, va="center")
+    feed = b.cable(cls="AC", b="TABLE-STRIP.inlet")
+    s.text(18, strip_y + 2.4, f"C13 · {feed['id']} from wall", fs=3.4, color=DIM, va="center")
     outlets = {}
     for i, nm in enumerate(order):
         ox = 46 + i * 9
@@ -1106,13 +1171,20 @@ def sheet_table(b, pdf, n, N, prefix):
     s.rect(gx, gy - 22, 6, 14, fc=FACE, lw=0.6, z=4, r=2.6)
     s.text(gx + 3, gy - 24.5, "ANT 101898-00 (roof)", fs=3.6, color=DIM, ha="center", va="top")
     g = b.cable(cls="GNSS", a="GNSS-ANT")
+    gj = b.cable(cls="GNSS", a="GNSS-ARR.eqp")
+    ge = b.cable(cls="PE", a="GNSS-ARR.gnd")
     s.rect(gx + 26, gy - 18, 8, 6, fc=PLATE, lw=0.5, z=5)
-    s.text(gx + 30, gy - 10.6, "arrestor", fs=3.4, color=DIM, ha="center")
+    s.text(gx + 29, gy - 10.6, "GNSS-ARR", fs=3.4, color=DIM, ha="right")
+    s.line([(gx + 30, gy - 18), (gx + 30, gy - 23)], color="#9acd32", lw=1.0, z=9)
+    for k_, wl in enumerate((3.0, 2.0, 1.0)):
+        s.line([(gx + 30 - wl, gy - 23 - k_ * 0.8), (gx + 30 + wl, gy - 23 - k_ * 0.8)], color="#9acd32", lw=0.8, z=9)
+    s.text(gx + 30, gy - 26.5, f"{ge['id']} to LAB-EARTH", fs=3.2, color="#9acd32", ha="center", va="top")
+    s.tag(gx + 16, gy - 4, g["id"], CLS["GNSS"][0], rot=0)
     s.rect(gx + 50, gy - 22, 52, 14, fc=FACE, lw=0.6, z=4)
     s.text(gx + 51.5, gy - 10.4, "GNSS-SPL 1x8", fs=4.2, fontweight="bold", va="center")
     s.line([(gx + 3, gy - 8), (gx + 3, gy - 4), (gx + 30, gy - 4), (gx + 30, gy - 12)], color=CLS["GNSS"][0], lw=1.0, z=9)
     s.line([(gx + 34, gy - 15), (gx + 50, gy - 15)], color=CLS["GNSS"][0], lw=1.0, z=9)
-    s.tag(gx + 42, gy - 15, g["id"], CLS["GNSS"][0], rot=0)
+    s.tag(gx + 42, gy - 15, gj["id"], CLS["GNSS"][0], rot=0)
     for i, nd in enumerate(d["nodes"]):
         ox = gx + 54 + i * 6.5
         sma(s, ox, gy - 19, r=0.9)
@@ -1123,11 +1195,17 @@ def sheet_table(b, pdf, n, N, prefix):
            color=DIM, va="center")
     s.notes(gx, gy - 48, [
         "IP-50 band, flange (WR-62 / WR-42 / WR-28) and Tx power TBC; >= 110 dB in the chain takes a hop down.",
-        "30 dB 10 W pads screw onto both transitions; a 1 m SMA cable joins each pad to its MWATT port.",
+        "30 dB 10 W pads screw onto both transitions; an SMA cable (" + ", ".join(sorted(
+            {c["length"] for c in b.cables if c["cls"] == "WG" and "SMSM" in c["pn"]}, key=lambda v: float(v.split()[0])))
+        + ", length from the twin route) joins each pad to its MWATT port.",
         "MWATT is commanded over its LAN from SW-OOB; set each channel before the radios are powered.",
-    ] + (["Event: CORE's two radios lose power at t0 (switched supplies), which takes W1-CORE and CORE-E1 down; "
+    ] + ["Earth: " + "; ".join(x for x in (
+        (f"radio ground screws to TABLE-EARTH ({rb[0]['id']}-{rb[-1]['id']}, 2.5 mm2), TABLE-EARTH to RACK-EARTH "
+         f"({b.cable(cls='PE', a='TABLE-EARTH.bond')['id']})" if rb else ""),
+        f"GNSS-ARR to LAB-EARTH ({ge['id']}) before the roof lead {g['id']} is connected") if x) + "."
+         for rb in [[c for c in b.cables if c["cls"] == "PE" and c["b"].startswith("TABLE-EARTH.R")]]] + (["Event: CORE's two radios lose power at t0 (switched supplies), which takes W1-CORE and CORE-E1 down; "
           "W1-W2 and E1-E2 stay."] if d.get("event") else []),
-        fs=4.6, step=3.1, width=66)
+        fs=4.4, step=2.9, width=72)
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))
 
 

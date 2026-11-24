@@ -44,9 +44,10 @@ PAGE_W = 297 - MARGIN["left"] - MARGIN["right"]  # 275
 PAGE_H = 210 - MARGIN["top"] - MARGIN["bottom"]  # 185
 
 ID_SCHEME = OrderedDict([
-    ("A", ("AC", "AC mains")), ("D", ("DC", "DC power")), ("P", ("POE", "PoE (power only) to node ETH1")),
+    ("A", ("AC", "AC mains")), ("D", ("DC", "DC power")), ("Q", ("POE", "PoE (power only) to node ETH1")),
     ("F", ("FIB", "data to SW-DATA")), ("E", ("ETH", "management to SW-OOB")), ("R", ("RF", "IF coax (SMA)")),
     ("G", ("GNSS", "GNSS coax")), ("W", ("WG", "IP-50 conducted chain")), ("X", ("AUX", "operator station (video, USB)")),
+    ("B", ("PE", "earth bonding (green/yellow)")),
 ])
 KIND_NAMES = {
     "spider": "Siklu Spider box", "ztdat": "programmable attenuator", "tray": "tray", "shelf": "shelf",
@@ -57,12 +58,14 @@ KIND_NAMES = {
     "mwatt": "multi-channel attenuator", "ip50": "IP-50 radio", "server": "server", "rackserver": "rack server",
     "pc": "PC", "specan": "spectrum analyser", "strip": "mains strip", "psu": "power supply", "wall": "wall sockets",
     "antenna": "antenna", "attshelf": "attenuator shelf", "monitor": "monitor", "keyboard": "keyboard",
+    "armstack": "DC block / pad stack", "arrestor": "GNSS surge arrestor", "bridge": "cable bridge",
+    "earthbar": "earth bar", "spacer": "spacer bar",
 }
 # display palette per cable class (same as twin/viewer/src/model.js): the scene's own
 # colours put DC/POE, FIB/GNSS and AC/WG too close on paper; DC, GNSS and WG are banded
 DISPLAY_COLORS = {
     "AC": "#c0392b", "DC": "#f2c200", "POE": "#e67e22", "FIB": "#16a085", "ETH": "#2980b9",
-    "RF": "#8e44ad", "GNSS": "#8bc34a", "WG": "#ff4da6", "AUX": "#7f8c8d",
+    "RF": "#8e44ad", "GNSS": "#8bc34a", "WG": "#ff4da6", "AUX": "#7f8c8d", "PE": "#2e7d32",
 }
 BANDED = {"DC", "GNSS", "WG"}
 CONF_TEXT = {

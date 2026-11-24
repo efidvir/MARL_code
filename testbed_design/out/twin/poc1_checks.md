@@ -4,18 +4,64 @@ TENTATIVE geometry: see the assumptions list.
 
 | Check | Result | Detail |
 |---|---|---|
-| Every port carries at most one cable | PASS | 448 ports used |
-| Every cable reaches along its route | PASS | 212 cables with a length checked |
+| Every port carries at most one cable | PASS | 488 ports used |
+| Every cable reaches along its route | PASS | 231 cables with a length checked |
+| Every cable's route + slack is covered by a stock length | PASS | every ladder / IF stock choice covers its need |
 | IF cables not grossly over-length (slack loops) | PASS | 0 IF cables use under 35 % of their length (dress the slack in the cable manager) |
 | Every rack device fits the rail depth | PASS | deepest 823 mm of 900 mm |
 | No two devices share a rack unit | PASS | 38 U used of 42 |
 | Spider SMA tile ports | PASS | 71 of 71 used; unused ones get ANNE-50+ loads |
+| No two bodies overlap (rack units, shelf / tray parts, table items, room) | PASS | 108 bodies, none intersecting |
+| Loose parts keep 5 mm clearance (shelves, trays, table) | PASS | 66 loose parts; explicit stacks (4) excepted |
+| Every part sits on its shelf, tray or the table | PASS | all inside |
+| Stacked items are seated on the item below (upper y = lower y + height + spacer) | PASS | 4 stacked |
+| No two bodies share a position | PASS | 108 distinct positions for 108 bodies |
+| Every port sits on its own device's body | PASS | 528 ports within 1 mm (face) / 15 mm (connector depth) |
+| No IF cable hangs in front of a tile that is connected later | PASS | IF runs use the side lanes; 0 passes in front of tiles fitted earlier |
+| Every Spider box DCIN (fans / Pi) has a DC feed from a DC-DIST breaker | PASS | SB1.DCIN <- DC-DIST.CB7, SB2.DCIN <- DC-DIST.CB8, SB3.DCIN <- DC-DIST.CB9, SB4.DCIN <- DC-DIST.CB10 |
+| Every earth bond is in the schedule (rack, -48 V RTN, GNSS arrestor, table bar, each radio) | PASS | 12 PE bonds |
+| No cable passes through a body (rack units, tray / shelf parts, the unit above or below, table items) | PASS | 244 routes clear of every body |
+| No cable runs through another cable's plug (20 mm in front of a used port) | PASS | 488 plugs clear |
+| Every used connector has 35 mm of clear space in front of it | PASS | 488 connectors clear |
+| Bench-table cables stay inside the table outline | PASS | every table route inside x / z of the table |
+| Each PDU and the strip stays at or below 80 % of 16 A at 230 V (2944 W, typical draw, estimates) | PASS | PDU-A (WALL.S1) 1069 W; PDU-B (WALL.S2) 1420 W; PDU-C (WALL.S3) 2377 W; TABLE-STRIP (WALL.S4) 290 W |
+| Parts list orders exactly the cables in the schedule (per part number) | PASS | 33 cable part numbers match |
+
+## Power-up order
+
+1. **PDUs**: plug A001 (PDU-A) into WALL.S1, A002 (PDU-B) into WALL.S2, A003 (PDU-C) into WALL.S3; on each PDU's own display check that every outlet reads OFF (power-on state set at commissioning); if any outlet reads ON: unplug that PDU's cord, pull the C13 lead from every outlet of that PDU, recommission it bare as in step 3, refit the leads, then plug the cord in again and re-check
+2. **switches and bench controller**: plug A040 into WALL.S4 and switch the strip ON: BENCH-CTL, MONITOR, SPECAN, MWATT; at PDU-A's own front panel (rack rear; there is no network yet) switch ON PDU-A.O3 (SW-DATA), PDU-A.O4 (SW-OOB), PDU-A.O5 (GNSS-SPL), then set the power-on state of these outlets to ON so management survives a mains dip; wait for the switches to boot; BENCH-CTL must reach every PDU and switch over SW-OOB before the next stage
+3. **attenuators**: from BENCH-CTL switch ON PDU-A.O6 (ATT-01), PDU-A.O7 (ATT-02), PDU-A.O8 (ATT-03), PDU-A.O9 (ATT-04), PDU-A.O10 (ATT-05), PDU-A.O11 (ATT-06), PDU-A.O12 (ATT-07), PDU-B.O1 (ATT-08), PDU-B.O2 (ATT-09); set every channel to its start value (attenuator schedule) and every MWATT channel to its start value; read every value back
+4. **servers and hosts**: switch ON PDU-C.O3 (SRV-E2E) and wait for it to boot, so the E2E controller is up before any Terragraph unit boots; then switch ON PDU-C.O4 (SRV-DPIR), PDU-B.O9 (HOST-W1), PDU-B.O10 (HOST-W2), PDU-B.O11 (HOST-E1), PDU-B.O12 (HOST-E2), PDU-C.O1 (HOST-S), PDU-C.O2 (HOST-N), PDU-B.O3 (AGENT-W1), PDU-B.O4 (AGENT-W2), PDU-B.O5 (AGENT-E1), PDU-B.O6 (AGENT-E2), PDU-B.O7 (AGENT-S), PDU-B.O8 (AGENT-N)
+5. **DC rectifiers**: with the rectifiers still off, check every earth bond end to end with the meter on ohms (leads nulled), under 0.1 ohm (B001-B012); with both rectifiers off, every CB open and every GMT fuse out, meter ohms: DC-DIST + bus to DC-DIST return, + bus to RACK-EARTH and return to RACK-EARTH; DC-DIST2 bus A and bus B to RTN: each must climb to OL or above 1 Mohm (the rectifier capacitors charge first); a reading under 1 kohm is a short or an earth fault (reversed strap, nicked run): find it before switching on; DC-DIST2 RTN to RACK-EARTH must read under 0.1 ohm (positive-ground system); the +48 V system stays floating: do not bond it to earth; switch ON PDU-A.O1 (DC-RECT module 1), PDU-C.O8 (DC-RECT module 2), PDU-A.O2 (DC-RECT2); close the DCD1M main / input breaker if fitted, with every CB still open, and meter the DC-DIST bus: + bus to return +43 to +56 V; then check the earth reference with COM on RACK-EARTH: DC-DIST2 RTN reads 0 V and DC-DIST2 bus A reads -43 to -56 V; then one position at a time (CB1-CB10 and F1-F6): close the breaker (or insert the fuse), meter COM on the return (unsleeved) conductor and the red probe on the supply (sleeved) conductor at the free load end: a DC-DIST breaker output reads about +48 V (+43 to +56 V); a DC-DIST2 fuse output reads about -48 V (-43 to -56 V); a switched supply output reads about -48 V (-43 to -56 V); any other sign or value: stop, open the breaker or pull the fuse and correct the run at its supply end; open the breaker (pull the fuse with the fuse puller) again, then land the red / blue-sleeved conductor on the load's + terminal (PA adaptor, Spider DCIN) or -48 V pin (radio) and the unsleeved conductor on the other, torque adaptor and DCIN terminals to the value marked on them, and for a radio mate the DC connector; the same for the switched supplies PDU-C.O6 (PSU-W1-CORE@CORE), PDU-C.O7 (PSU-CORE-E1@CORE): outlet ON, measure at the free radio end, outlet OFF, then land it and mate the radio's DC connector
+6. **nodes**: close DC-DIST CB7 (SB1 DCIN), CB8 (SB2 DCIN), CB9 (SB3 DCIN), CB10 (SB4 DCIN) one at a time and check that each box's fans run within 1 min (if not: open that breaker, leave the nodes of every box it feeds off and find out why); then close DC-DIST CB1 (PA-01, node W1), CB2 (PA-02, node W2), CB3 (PA-03, node S), CB4 (PA-04, node N), CB5 (PA-05, node E1), CB6 (PA-06, node E2) one at a time; switch ON PDU-C.O5 (INJ-HUB, node HUB); if a box's fans stop while its nodes boot, power that box down: SB1: CB1, CB2, then CB7; SB2:  and switch PDU-C.O5 OFF, then CB8; SB3: CB3, CB4, then CB9; SB4: CB5, CB6, then CB10; wait for every node to join the E2E controller; then read each PDU's input current on its own display (PDU-A, PDU-B, PDU-C): each must be 12.8 A or less (80 % of 16 A); if one is above, stop and move a load
+7. **radios last**: first confirm every IP-50 chain (W001-W016) is complete and torqued (transition bolted, pad and cable on, no open flange or SMA) and MWATT reads back its start value on every channel; never power a radio with an open RF port; then insert the GMT fuses on DC-DIST2 one at a time: F1 (IP50-W1-CORE@W1), F2 (IP50-CORE-E1@E1), F3 (IP50-W1-W2@W1), F4 (IP50-W1-W2@W2), F5 (IP50-E1-E2@E1), F6 (IP50-E1-E2@E2); switch ON PDU-C.O6 (PSU-W1-CORE@CORE), PDU-C.O7 (PSU-CORE-E1@CORE); after 30 min check every radio's temperature (the stacked ones in particular) in the IP-50 web UI or CLI, reached in-band over the data network from SRV-E2E (the NMS host; BENCH-CTL has no data-network port); then read each PDU's input current on its own display (PDU-A, PDU-B, PDU-C): each must be 12.8 A or less (80 % of 16 A); if one is above, stop and move a load
 
 ## Assumptions to confirm
 
 - StarTech 4POSTRACK42 (rails adjustable 559-1016 mm, square holes, M6 cage nuts); rail-to-rail depth set to 900 mm so 800 mm-class rack servers fit
 - U1 bottom 120 mm above the floor (on castors, estimate)
 - one 3.6 m x 0.8 m bench table to the right of the rack, top at 750 mm (estimate)
+- PDUs and SW-OOB on the REAR posts (outlets / ports flush with the rear rail); everything else from the front rail. The Spider boxes, DC-RECT, DC-RECT2 and SW-DATA also run on StarTech UNIRAILS1U 1U rails (420-1054 mm, per the StarTech listing shipped with its own M5 cage nuts and panel screws; each rail bolts to its front and rear post with that kit hardware): confirm the rail flange shares the 1U hole pattern with the ears at a dry fit
+- M6 cage nuts counted for the ears only: 4 per front- or rear-mounted item (2 per ear), 2 per rear lacing bar, +10 % spare; rail-kit servers, UNIRAILS1U rails (own M5 hardware) and toolless blanks take none
+- Rack on castors: the levelling feet are lowered (or the castors locked) and the rack's stabiliser or floor anchor fitted if supplied, before the servers go in; only one server is out on its rails at a time
+- Tray parts lie flat with the long axis along x, input end left and output end right (seen from the front)
+- IF cables run through side lanes just outside the front ears (left or right, whichever is nearer to both ends), never across the face of another unit; that makes them longer than a straight drop
+- Mini-Circuits CBL-4FT/5FT/6FT-SMSM+ assumed available (1.22 / 1.52 / 1.83 m) between the 1 m and 2 m stock
+- IF and IP-50 SMA cables: the shortest stock length covering the longest routed cable of the bundle + 5 % (test cables, no termination waste; the twin's routes are square-cornered polylines, which overstate a real run with bend radii, so 5 % is kept rather than 10 %; lowest slack in this build 5.1 % (R053)); every other cable from its ladder at route + 10 %, DC and earth cut to route + 10 %
+- Tile and arm cables need equal stock length only, not a phase-matched set: the per-tile phase spread is taken up by beam training. Confirm with the radio team; if not, order a phase-matched set of 4 per bundle (8 per arm) or add a phase / delay measurement to the port check
+- One wall socket IEC 60309 16 A per PDU plus one for the bench strip, each on its own circuit
+- PX3-class PDUs support a per-outlet power-on state (Off) and front-panel outlet switching: confirm on the delivered unit; if not, leave each C13 lead unplugged at its PDU outlet until its power-up stage
+- DC conductor convention: the supply conductor of every D run gets a red (+48 V) or blue (-48 V) heat-shrink sleeve at both ends before it is landed; the unsleeved conductor is the 0 V return (Belden 8461 colours vary by reel)
+- Electrical loads are typical-draw estimates (catalog.LOAD_W; rectifier modules from their DC load, each rated for the full load; SRV-DPIR 800 W is a GPU-server guess): replace with nameplate or measured values; each PDU and the strip is held to 80 % of 16 A at 230 V, and every PDU's input current is read at power-up (12.8 A or less) and again with SRV-DPIR's GPU under its working load
+- Bench-table cable lanes along the back edge: data bundle 70-110 mm from the back edge, power bundle within 30 mm of it (50 mm or more apart); table cables reach the lanes through the 120 mm gap between the radio rows and the aisles beside the radio columns; rack-to-table runs cross on the cable bridge (CABLE-BRIDGE: data in front, power behind); the strip cord crosses the floor under a cable protector
+- GNSS: the roof antenna's lead enters the room through the wall behind the rack, at the surge arrestor (GNSS-ARR, DC pass) bonded to the lab earth bar; position TBC with facilities, and if the building already has an entry arrestor, the lead is bonded there instead
+- IP-50 radios of hops W1-W2, E1-E2 are stacked on those of hops W1-CORE, CORE-E1, on two 25 mm spacer bars each (front and rear edge of the lower lid, fixed with double-sided foam tape) so the lower radio (about 58 W) keeps a convection gap; about 6 kg each; 120 mm or more between front and back rows for the rear connectors
+- Front-row agent PCs on the AGENTS shelf are turned round (connectors to the front) so every connector has 35 mm or more of clear space; their data and management cables go along the front to the right side
+- Servers that die at t0 (SRV-E2E, SRV-DPIR) run on ONE PSU: a second PSU is removed before the server goes in the rack, so cutting its one switched outlet takes it down
+- DCD1M breakers 5 A or less (they protect the 18 AWG adaptor and DCIN runs; a node draws about 1 A); the 10 AWG bus links are protected by the rectifier current limit only: DC-RECT 2 x RCP-1000-48, about 44 A; DC-RECT2 1 x RCP-1000-48, about 22 A (above 30 A: confirm the RCP shuts down on sustained overload, or fit a 30 A DC fuse at that rectifier's output); a DCD1M main / input breaker, if fitted, is closed at power-up but not counted on
+- Spider box DC terminal block (DCIN, rear) powers only the box fans and the Raspberry Pi, assumed 48 V DC (TBC); the nodes are powered only through ETH1. The 4 DCIN inputs are fed from DC-DIST CB7-CB10 and closed first at power-up so the fans run before the nodes boot. Hold point in step 8 (Spider boxes): confirm DCIN's voltage and function before any DCIN run is landed; any other voltage or function: STOP, design change
+- Earthing: the rack frame is bonded to the lab earth bar (B001, 6 mm2 green/yellow); the -48 V system is positive grounded by bonding the DC-DIST2 RTN bus (= DC-RECT2 +V) to the rack earth bar; the +48 V node system (DC-RECT) stays floating; the switched supplies (PSU-W1-CORE@CORE, PSU-CORE-E1@CORE) are isolated and float; the GNSS arrestor is bonded to the lab earth bar; every IP-50 chassis ground screw is bonded (2.5 mm2) to the bench-table earth bar TABLE-EARTH, which is bonded (6 mm2) to the rack earth bar: the radio DC input may be isolated from the chassis or tied to its 0 V, both fit (RTN is earthed, the switched supplies float); confirm with Ceragon's indoor guidance
 - SRV-E2E: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
 - SRV-DPIR: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
 - HOST-W1: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
@@ -28,15 +74,10 @@ TENTATIVE geometry: see the assumptions list.
 - SB2: Siklu 1U Spider box: brushed aluminium front, 16 SMA measured from lab photos (+/-8 mm); depth ~331 body / 345 overall and the rear panel (seen from inside one box) to confirm
 - SB3: Siklu 1U Spider box: brushed aluminium front, 16 SMA measured from lab photos (+/-8 mm); depth ~331 body / 345 overall and the rear panel (seen from inside one box) to confirm
 - SB4: Siklu 1U Spider box: brushed aluminium front, 16 SMA measured from lab photos (+/-8 mm); depth ~331 body / 345 overall and the rear panel (seen from inside one box) to confirm
-- ATT-SHELF-1: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
-- ATT-SHELF-2: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
-- ATT-SHELF-3: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
-- ATT-SHELF-4: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
-- ATT-SHELF-5: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
 - DC-DIST: Eaton DCD1M (~280 mm): breakers front; load terminal face to confirm (rear assumed)
-- PDU-A: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); outlets on the rear assumed
-- PDU-B: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); outlets on the rear assumed
-- PDU-C: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); outlets on the rear assumed
+- PDU-A: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); mounted on the REAR posts with the outlets and network port facing the rack rear (assumed)
+- PDU-B: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); mounted on the REAR posts with the outlets and network port facing the rack rear (assumed)
+- PDU-C: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); mounted on the REAR posts with the outlets and network port facing the rack rear (assumed)
 - BENCH-CTL: small form-factor PC
 - MONITOR: 24-inch monitor on a stand
 - KBD: keyboard + mouse
@@ -48,8 +89,13 @@ TENTATIVE geometry: see the assumptions list.
 - IP50-W1-W2@W2: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
 - IP50-E1-E2@E1: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
 - IP50-E1-E2@E2: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
-- PSU-W1-CORE@CORE: isolated 48 V 120 W desktop supply (e.g. Mean Well GST120A48)
-- PSU-CORE-E1@CORE: isolated 48 V 120 W desktop supply (e.g. Mean Well GST120A48)
-- TABLE-STRIP: bench mains strip, C13 (part TBC)
-- WALL: wall sockets behind the rack (estimate)
-- GNSS-ANT: GNSS antenna lead enters above the rack (estimate)
+- PSU-W1-CORE@CORE: isolated 48 V 120 W desktop supply (e.g. Mean Well GST120A48), output floating, wired -48 V (PSU - to the radio -48 V pin, PSU + to the radio 0 V pin) through a barrel-to-terminal adaptor
+- PSU-CORE-E1@CORE: isolated 48 V 120 W desktop supply (e.g. Mean Well GST120A48), output floating, wired -48 V (PSU - to the radio -48 V pin, PSU + to the radio 0 V pin) through a barrel-to-terminal adaptor
+- TABLE-STRIP: bench mains strip, 6 x C13 outlets, C20 inlet, 16 A, with an on/off switch (part TBC); fed from its own wall socket, never from a switched PDU outlet; laid lengthwise front to back on the table
+- WALL: 4 wall sockets IEC 60309 16 A behind the rack, one circuit each: S1-S3 for the PDUs, S4 for the bench strip (estimate)
+- LAB-EARTH: lab earth bar on the wall behind the rack (estimate)
+- RACK-EARTH: rack earth bar with M6 studs on the left rear post (part TBC, in the grounding kit)
+- GNSS-ANT: GNSS roof antenna: the lead's way down to the room entry is TBC with facilities (estimate)
+- GNSS-ARR: GNSS surge arrestor where the antenna lead enters the room, on the wall just above the lab earth bar (position TBC)
+- CABLE-BRIDGE: rack-to-table cable bridge (wire-basket section, part TBC)
+- TABLE-EARTH: earth bar screwed to the bench table's back edge behind MWATT, studs up just below the table top (estimate)

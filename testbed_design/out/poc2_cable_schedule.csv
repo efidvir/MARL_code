@@ -1,210 +1,228 @@
 id,class,from,to,part,length,vlan,note
-A001,AC,Lab wall socket IEC 60309 16 A,PDU-A.inlet,PDU cord (IEC 60309 16 A plug),fixed,,
-A002,AC,Lab wall socket IEC 60309 16 A,PDU-B.inlet,PDU cord (IEC 60309 16 A plug),fixed,,
-A003,AC,PDU-A.O1,DC-RECT.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,
-A004,AC,PDU-A.O2,DC-RECT2.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,
-A005,AC,PDU-A.O3,SW-DATA.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2329 mm)
-A006,AC,PDU-A.O4,SW-OOB.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2331 mm)
-A007,AC,PDU-A.O5,GNSS-SPL.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2282 mm)
-A008,AC,PDU-A.O6,ATT-01.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A009,AC,PDU-A.O7,ATT-02.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A010,AC,PDU-A.O8,ATT-03.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A011,AC,PDU-A.O9,ATT-04.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A012,AC,PDU-A.O10,ATT-05.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A013,AC,PDU-A.O11,ATT-06.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A014,AC,PDU-A.O12,ATT-07.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A015,AC,PDU-B.O1,ATT-08.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
+A001,AC,WALL.S1 (lab wall socket IEC 60309 16 A),PDU-A.inlet,PDU cord (IEC 60309 16 A plug),fixed,,"PDU's own cord: route it, but leave the plug OUT of the wall until power-up"
+A002,AC,WALL.S2 (lab wall socket IEC 60309 16 A),PDU-B.inlet,PDU cord (IEC 60309 16 A plug),fixed,,"PDU's own cord: route it, but leave the plug OUT of the wall until power-up"
+A003,AC,PDU-A.O1,DC-RECT.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,rectifier module 1 of 2 (one cord per module)
+A004,AC,PDU-A.O2,DC-RECT2.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,rectifier module 1 of 1 (one cord per module)
+A005,AC,PDU-A.O3,SW-DATA.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2693 mm)
+A006,AC,PDU-A.O4,SW-OOB.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2192 mm)
+A007,AC,PDU-A.O5,GNSS-SPL.ac,Eaton Tripp Lite P004-015 C14-C13 lead 4.57 m,4.57 m,,length from the twin route (2961 mm)
+A008,AC,PDU-A.O6,ATT-01.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (1907 mm)"
+A009,AC,PDU-A.O7,ATT-02.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (2138 mm)"
+A010,AC,PDU-A.O8,ATT-03.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (1858 mm)"
+A011,AC,PDU-A.O9,ATT-04.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (2137 mm)"
+A012,AC,PDU-A.O10,ATT-05.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (1857 mm)"
+A013,AC,PDU-A.O11,ATT-06.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (2088 mm)"
+A014,AC,PDU-A.O12,ATT-07.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (1808 mm)"
+A015,AC,PDU-B.O1,ATT-08.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (1771 mm)"
 A016,AC,PDU-B.O2,ATT-09.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A017,AC,PDU-B.O3,ATT-10.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,"attenuator box power: own adapter, inlet TBC"
-A018,AC,PDU-B.O4,SRV-DPIR.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2436 mm)
-A019,AC,PDU-B.O5,SRV-E2E.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2576 mm)
-A020,AC,PDU-B.O6,HOST-H.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2252 mm)
-A021,AC,PDU-B.O7,HOST-A.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2254 mm)
-A022,AC,PDU-B.O8,HOST-B.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2255 mm)
-A023,AC,PDU-B.O9,HOST-D.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,
-A024,AC,PDU-B.O10,HOST-E.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,
-A025,AC,TABLE-STRIP,BENCH-CTL.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,
-A026,AC,TABLE-STRIP,MONITOR.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,
-A027,AC,TABLE-STRIP,SPECAN.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2147 mm)
-A028,AC,TABLE-STRIP,MWATT.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,inlet type TBC
+A017,AC,PDU-B.O3,ATT-10.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,"attenuator box power: own adapter, inlet TBC; length from the twin route (1722 mm)"
+A018,AC,PDU-B.O4,SRV-DPIR.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2054 mm)
+A019,AC,PDU-B.O5,SRV-E2E.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2042 mm)
+A020,AC,PDU-B.O6,HOST-H.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2368 mm)
+A021,AC,PDU-B.O7,HOST-A.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2368 mm)
+A022,AC,PDU-B.O8,HOST-B.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2367 mm)
+A023,AC,PDU-B.O9,HOST-D.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2367 mm)
+A024,AC,PDU-B.O10,HOST-E.ac,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,length from the twin route (2366 mm)
+A025,AC,TABLE-STRIP.O1,BENCH-CTL.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,
+A026,AC,TABLE-STRIP.O2,MONITOR.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,
+A027,AC,TABLE-STRIP.O3,SPECAN.ac,Eaton Tripp Lite P004-015 C14-C13 lead 4.57 m,4.57 m,,length from the twin route (3290 mm)
+A028,AC,TABLE-STRIP.O4,MWATT.ac,Eaton Tripp Lite P004-006 C14-C13 lead 1.83 m,1.83 m,,inlet type TBC
+A029,AC,PDU-B.O11,DC-RECT.ac2,Eaton Tripp Lite P004-010 C14-C13 lead 3.05 m,3.05 m,,rectifier module 2 of 2 (one cord per module); length from the twin route (1671 mm)
+A030,AC,WALL.S3 (lab wall socket IEC 60309 16 A),TABLE-STRIP.inlet,"CORD-60309-C19-5M power cord IEC 60309 16 A (2P+E) plug to IEC C19, 5 m (part TBC)",5 m,,bench strip supply on its own wall socket (not a PDU outlet): BENCH-CTL stays powered through t0; leave the plug OUT of the wall until power-up; length from the twin route (2755 mm)
 X001,AUX,BENCH-CTL.video,MONITOR.in,DisplayPort / HDMI cable 1.8 m (part TBC),1.8 m,,operator station
 X002,AUX,KBD.usb,BENCH-CTL.usb,USB keyboard + mouse (cables attached),1.5 m,,operator station
-D001,DC,DC-RECT.bus,DC-DIST.bus,DC bus link 2 x 10 AWG with ring lugs,0.25 m (cut),,48 V bus
-D002,DC,DC-DIST.CB1,PA-01.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.5 m (cut),,feeds node B
-D003,DC,DC-DIST.CB2,PA-02.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.75 m (cut),,feeds node E
-D004,DC,DC-DIST.CB3,PA-03.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.25 m (cut),,feeds node H
-D005,DC,DC-DIST.CB4,PA-04.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.25 m (cut),,feeds node A
-D006,DC,DC-DIST.CB5,PA-05.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.5 m (cut),,feeds node D
-D007,DC,DC-DIST.CB6,PA-06.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.25 m (cut),,feeds node C
-D008,DC,DC-DIST.CB7,PA-07.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.5 m (cut),,feeds node F
-D009,DC,DC-RECT2.out,DC-DIST2.bus,DC bus link 2 x 10 AWG with ring lugs (A and B buses),1.5 m (cut),,"-48 V bus, positive grounded"
-D010,DC,DC-DIST2.F1,IP50-MAF@A.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3.75 m (cut),,-48 V through a GMT fuse
-D011,DC,DC-DIST2.F2,IP50-MAF@F.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),5.25 m (cut),,-48 V through a GMT fuse
-D012,DC,DC-DIST2.F3,IP50-MBE@B.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3.5 m (cut),,-48 V through a GMT fuse
-D013,DC,DC-DIST2.F4,IP50-MBE@E.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),4.75 m (cut),,-48 V through a GMT fuse
-D014,DC,DC-DIST2.F5,IP50-MCD@C.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3.25 m (cut),,-48 V through a GMT fuse
-D015,DC,DC-DIST2.F6,IP50-MCD@D.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),4.25 m (cut),,-48 V through a GMT fuse
-P001,POE,PA-01.rj45,SB1.B.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P002,POE,PA-02.rj45,SB1.E.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P003,POE,PA-03.rj45,SB2.H.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P004,POE,PA-04.rj45,SB3.A.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P005,POE,PA-05.rj45,SB3.D.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P006,POE,PA-06.rj45,SB4.C.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-P007,POE,PA-07.rj45,SB4.F.ETH1,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,,power only (passive adaptor)
-F001,FIB,SB2.H.SFP+,SW-DATA.P1,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,101,"node H data, in-band management; length from the twin route (1825 mm)"
+D001,DC,DC-RECT.bus,DC-DIST.bus,"DC bus link 2 x 10 AWG with ring lugs: RECT +V to DIST + bus, RECT -V to DIST return",1.25 m (cut),,"+48 V bus, output floating (not earthed); bus link protected by the rectifier current limit only (2 x RCP-1000-48, about 44 A into 2 x 10 AWG: confirm the RCP shuts down on sustained overload, or fit a 30 A DC fuse at each rectifier output)"
+D002,DC,DC-DIST.CB1,PA-01.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.5 m (cut),,"feeds node B: breaker output (+48 V, red sleeve) to the adaptor + terminal, return to its - terminal"
+D003,DC,DC-DIST.CB2,PA-02.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.5 m (cut),,"feeds node E: breaker output (+48 V, red sleeve) to the adaptor + terminal, return to its - terminal"
+D004,DC,DC-DIST.CB3,PA-03.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.75 m (cut),,"feeds node H: breaker output (+48 V, red sleeve) to the adaptor + terminal, return to its - terminal"
+D005,DC,DC-DIST.CB4,PA-04.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.75 m (cut),,"feeds node A: breaker output (+48 V, red sleeve) to the adaptor + terminal, return to its - terminal"
+D006,DC,DC-DIST.CB5,PA-05.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,0.75 m (cut),,"feeds node D: breaker output (+48 V, red sleeve) to the adaptor + terminal, return to its - terminal"
+D007,DC,DC-DIST.CB6,PA-06.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m (cut),,"feeds node C: breaker output (+48 V, red sleeve) to the adaptor + terminal, return to its - terminal"
+D008,DC,DC-DIST.CB7,PA-07.dc,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1 m (cut),,"feeds node F: breaker output (+48 V, red sleeve) to the adaptor + terminal, return to its - terminal"
+D009,DC,DC-RECT2.out,DC-DIST2.bus,"DC bus link 2 x 10 AWG with ring lugs: RECT2 -V to DC-DIST2 BAT A (-48 V), RECT2 +V to RTN",1.25 m (cut),,"-48 V bus; positive grounded by the green/yellow bond from the RTN bus to the rack earth bar; DC-DIST2 has no main breaker: bus link protected by the rectifier current limit only (1 x RCP-1000-48, about 22 A into 2 x 10 AWG, within the 10 AWG rating)"
+D010,DC,DC-DIST2.F1,IP50-MAF@A.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3.75 m (cut),,"-48 V through a GMT fuse: fuse output (-48 V, blue sleeve) to the radio -48 V pin, RTN to the radio 0 V pin"
+D011,DC,DC-DIST2.F2,IP50-MAF@F.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),5.5 m (cut),,"-48 V through a GMT fuse: fuse output (-48 V, blue sleeve) to the radio -48 V pin, RTN to the radio 0 V pin"
+D012,DC,DC-DIST2.F3,IP50-MBE@B.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),3.5 m (cut),,"-48 V through a GMT fuse: fuse output (-48 V, blue sleeve) to the radio -48 V pin, RTN to the radio 0 V pin"
+D013,DC,DC-DIST2.F4,IP50-MBE@E.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),4.75 m (cut),,"-48 V through a GMT fuse: fuse output (-48 V, blue sleeve) to the radio -48 V pin, RTN to the radio 0 V pin"
+D014,DC,DC-DIST2.F5,IP50-MCD@C.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),4 m (cut),,"-48 V through a GMT fuse: fuse output (-48 V, blue sleeve) to the radio -48 V pin, RTN to the radio 0 V pin"
+D015,DC,DC-DIST2.F6,IP50-MCD@D.dc,Belden 8461 2 x 18 AWG (IP-50 connector TBC),5.25 m (cut),,"-48 V through a GMT fuse: fuse output (-48 V, blue sleeve) to the radio -48 V pin, RTN to the radio 0 V pin"
+D016,DC,DC-DIST2.strapA,DC-DIST2.busB,"DC-DIST2 bus A to bus B strap (-48 V and RTN), 2 x 10 AWG with ring lugs",0.5 m (cut),,feeds bus B (fuses F6-F10) from bus A; omit if the panel ships strapped
+D017,DC,DC-DIST.CB8,SB1.DCIN,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1.75 m (cut),,"SB1 box fans + Raspberry Pi: CB8 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change"
+D018,DC,DC-DIST.CB9,SB2.DCIN,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules,1.75 m (cut),,"SB2 box fans + Raspberry Pi: CB9 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change"
+D019,DC,DC-DIST.CB10,SB3.DCIN,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules (twin ferrule at the shared breaker output),1.75 m (cut),,"SB3 box fans + Raspberry Pi: CB10 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CB10 is shared with SB4 (both supply conductors in one twin ferrule); CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change"
+D020,DC,DC-DIST.CB10b,SB4.DCIN,Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules (twin ferrule at the shared breaker output),1.75 m (cut),,"SB4 box fans + Raspberry Pi: CB10 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CB10 is shared with SB3 (both supply conductors in one twin ferrule); CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change"
+B001,PE,RACK-EARTH.E1,LAB-EARTH.bar,"green/yellow earth cable 6 mm2 (10 AWG), 2-hole lug at the rack bar, ring lug at the lab bar",site (allow 5 m),,"rack earth bar to the lab earth bar; fitted first, before anything is powered"
+B002,PE,DC-DIST2.rtn,RACK-EARTH.E2,green/yellow earth cable 6 mm2 (10 AWG) with ring lugs,1.5 m (cut),,-48 V return bus (= DC-RECT2 +V) to the rack earth: this bond makes the -48 V system positive grounded
+B003,PE,GNSS-ARR.gnd,LAB-EARTH.bar2,"green/yellow earth cable 6 mm2 (10 AWG) with ring lugs, short and straight, no loops",0.25 m (cut),,"GNSS surge arrestor ground lug to the lab earth bar; fitted BEFORE the antenna lead is connected (if the building has its own entry arrestor, bond to that: facilities)"
+B004,PE,TABLE-EARTH.bond,RACK-EARTH.E3,green/yellow earth cable 6 mm2 (10 AWG) with ring lugs,4.25 m (cut),,"bench-table earth bar to the rack earth bar (the radios' one earth point, through the rack); along the floor under the cable protector with the strip cord"
+B005,PE,IP50-MAF@A.gnd,TABLE-EARTH.R1,green/yellow earth cable 2.5 mm2 (14 AWG) with ring lugs,1.25 m (cut),,radio chassis ground screw to the table earth bar
+B006,PE,IP50-MAF@F.gnd,TABLE-EARTH.R2,green/yellow earth cable 2.5 mm2 (14 AWG) with ring lugs,1.75 m (cut),,radio chassis ground screw to the table earth bar
+B007,PE,IP50-MBE@B.gnd,TABLE-EARTH.R3,green/yellow earth cable 2.5 mm2 (14 AWG) with ring lugs,0.75 m (cut),,radio chassis ground screw to the table earth bar
+B008,PE,IP50-MBE@E.gnd,TABLE-EARTH.R4,green/yellow earth cable 2.5 mm2 (14 AWG) with ring lugs,1.25 m (cut),,radio chassis ground screw to the table earth bar
+B009,PE,IP50-MCD@C.gnd,TABLE-EARTH.R5,green/yellow earth cable 2.5 mm2 (14 AWG) with ring lugs,1.5 m (cut),,radio chassis ground screw to the table earth bar
+B010,PE,IP50-MCD@D.gnd,TABLE-EARTH.R6,green/yellow earth cable 2.5 mm2 (14 AWG) with ring lugs,1.75 m (cut),,radio chassis ground screw to the table earth bar
+Q001,POE,PA-01.rj45,SB1.B.ETH1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,,power only (passive adaptor); length from the twin route (1204 mm)
+Q002,POE,PA-02.rj45,SB1.E.ETH1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,,power only (passive adaptor); length from the twin route (1477 mm)
+Q003,POE,PA-03.rj45,SB2.H.ETH1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,,power only (passive adaptor); length from the twin route (1277 mm)
+Q004,POE,PA-04.rj45,SB3.A.ETH1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,,power only (passive adaptor); length from the twin route (1292 mm)
+Q005,POE,PA-05.rj45,SB3.D.ETH1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,,power only (passive adaptor); length from the twin route (1565 mm)
+Q006,POE,PA-06.rj45,SB4.C.ETH1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,,power only (passive adaptor); length from the twin route (1365 mm)
+Q007,POE,PA-07.rj45,SB4.F.ETH1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,,power only (passive adaptor); length from the twin route (1590 mm)
+F001,FIB,SB2.H.SFP+,SW-DATA.P1,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,101,"node H data, in-band management; length from the twin route (2105 mm)"
 F002,FIB,HOST-H.nic10g,SW-DATA.P2,Netgear AXC763-10000S SFP+ DAC 3 m,3 m,101,traffic host
 F003,FIB,SRV-E2E.data,SW-DATA.P3,Netgear AXC763-10000S SFP+ DAC 3 m,3 m,101,TG E2E controller + NMS (POP at H)
-F004,FIB,SB3.A.SFP+,SW-DATA.P4,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,102,"node A data, in-band management; length from the twin route (1909 mm)"
-F005,FIB,IP50-MAF@A.data,SW-DATA.P5,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,102,hop MAF: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (3378 mm)
+F004,FIB,SB3.A.SFP+,SW-DATA.P4,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,102,"node A data, in-band management; length from the twin route (2177 mm)"
+F005,FIB,IP50-MAF@A.data,SW-DATA.P5,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,102,hop MAF: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (3686 mm)
 F006,FIB,HOST-A.nic10g,SW-DATA.P6,Netgear AXC763-10000S SFP+ DAC 3 m,3 m,102,traffic host
-F007,FIB,SB1.B.SFP+,SW-DATA.P7,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,103,"node B data, in-band management; length from the twin route (1862 mm)"
-F008,FIB,IP50-MBE@B.data,SW-DATA.P8,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,103,hop MBE: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (3107 mm)
+F007,FIB,SB1.B.SFP+,SW-DATA.P7,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,103,"node B data, in-band management; length from the twin route (2022 mm)"
+F008,FIB,IP50-MBE@B.data,SW-DATA.P8,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,103,hop MBE: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (3173 mm)
 F009,FIB,HOST-B.nic10g,SW-DATA.P9,Netgear AXC763-10000S SFP+ DAC 3 m,3 m,103,traffic host
-F010,FIB,SB4.C.SFP+,SW-DATA.P10,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,104,"node C data, in-band management; length from the twin route (1986 mm)"
-F011,FIB,IP50-MCD@C.data,SW-DATA.P11,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,104,hop MCD: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (3075 mm)
-F012,FIB,SB3.D.SFP+,SW-DATA.P12,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m,2 m,105,"node D data, in-band management"
-F013,FIB,IP50-MCD@D.data,SW-DATA.P13,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,105,hop MCD: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (4101 mm)
+F010,FIB,SB4.C.SFP+,SW-DATA.P10,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,104,"node C data, in-band management; length from the twin route (2134 mm)"
+F011,FIB,IP50-MCD@C.data,SW-DATA.P11,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,104,hop MCD: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (3682 mm)
+F012,FIB,SB3.D.SFP+,SW-DATA.P12,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,105,"node D data, in-band management; length from the twin route (1894 mm)"
+F013,FIB,IP50-MCD@D.data,SW-DATA.P13,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM007 OM4 LC-LC 7 m,7 m,105,hop MCD: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (4904 mm)
 F014,FIB,HOST-D.nic10g,SW-DATA.P14,Netgear AXC763-10000S SFP+ DAC 3 m,3 m,105,traffic host
 F015,FIB,SB1.E.SFP+,SW-DATA.P15,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m,2 m,106,"node E data, in-band management"
-F016,FIB,IP50-MBE@E.data,SW-DATA.P16,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,106,hop MBE: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (4194 mm)
+F016,FIB,IP50-MBE@E.data,SW-DATA.P16,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,106,hop MBE: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (4328 mm)
 F017,FIB,HOST-E.nic10g,SW-DATA.P17,Netgear AXC763-10000S SFP+ DAC 3 m,3 m,106,traffic host
-F018,FIB,SB4.F.SFP+,SW-DATA.P18,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM002 OM4 LC-LC 2 m,2 m,107,"node F data, in-band management"
-F019,FIB,IP50-MAF@F.data,SW-DATA.P19,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM005 OM4 LC-LC 5 m,5 m,107,hop MAF: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (4490 mm)
-E001,ETH,HOST-H.mgmt,SW-OOB.P1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1047 mm)
-E002,ETH,HOST-A.mgmt,SW-OOB.P2,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1094 mm)
-E003,ETH,HOST-B.mgmt,SW-OOB.P3,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1149 mm)
-E004,ETH,HOST-D.mgmt,SW-OOB.P4,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1196 mm)
-E005,ETH,HOST-E.mgmt,SW-OOB.P5,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1251 mm)
-E006,ETH,SRV-DPIR.mgmt,SW-OOB.P6,Panduit STP6X1MBU Cat6A S/FTP 1 m,1 m,100,server management; length from the twin route (540 mm)
-E007,ETH,SRV-E2E.mgmt,SW-OOB.P7,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,server management; length from the twin route (1368 mm)
-E008,ETH,BENCH-CTL.mgmt,SW-OOB.P8,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,server management
-E009,ETH,ATT-01.lan,SW-OOB.P9,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (1847 mm)"
-E010,ETH,ATT-02.lan,SW-OOB.P10,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,"attenuator control, SCPI over TCP"
-E011,ETH,ATT-03.lan,SW-OOB.P11,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (1949 mm)"
-E012,ETH,ATT-04.lan,SW-OOB.P12,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,"attenuator control, SCPI over TCP"
-E013,ETH,ATT-05.lan,SW-OOB.P13,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (1931 mm)"
-E014,ETH,ATT-06.lan,SW-OOB.P14,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,"attenuator control, SCPI over TCP"
-E015,ETH,ATT-07.lan,SW-OOB.P15,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2033 mm)"
-E016,ETH,ATT-08.lan,SW-OOB.P16,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,"attenuator control, SCPI over TCP"
-E017,ETH,ATT-09.lan,SW-OOB.P17,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2087 mm)"
-E018,ETH,ATT-10.lan,SW-OOB.P18,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,"attenuator control, SCPI over TCP"
-E019,ETH,MWATT.lan,SW-OOB.P19,Panduit STP6X5MBU Cat6A S/FTP 5 m,5 m,100,J7204B control (LAN); length from the twin route (2944 mm)
-E020,ETH,PDU-A.net,SW-OOB.P20,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"PDU management, outlet switching; length from the twin route (2305 mm)"
-E021,ETH,PDU-B.net,SW-OOB.P21,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"PDU management, outlet switching; length from the twin route (2370 mm)"
-E022,ETH,SPECAN.lan,SW-OOB.P22,Panduit STP6X7MBU Cat6A S/FTP 7 m,7 m,100,analyser; length from the twin route (4561 mm)
-G001,GNSS,GNSS-ANT,GNSS-SPL.in,LMR-400 coax + surge arrestor (part TBC),site,,
-G002,GNSS,GNSS-SPL.out1,SB1.B.GNSS,RG-316 SMA coax 1 m (part TBC),1 m,,only if the node's rear SMA is a GNSS input (TBC)
-G003,GNSS,GNSS-SPL.out2,SB1.E.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC)
-G004,GNSS,GNSS-SPL.out3,SB2.H.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC)
-G005,GNSS,GNSS-SPL.out4,SB3.A.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC)
-G006,GNSS,GNSS-SPL.out5,SB3.D.GNSS,RG-316 SMA coax 1 m (part TBC),1 m,,only if the node's rear SMA is a GNSS input (TBC)
-G007,GNSS,GNSS-SPL.out6,SB4.C.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC)
-G008,GNSS,GNSS-SPL.out7,SB4.F.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC)
-R001,RF,SB2.M1.T1,ATT-01.ch1.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"THA H.N tile 1; span 4U, needs 0.37 m"
-R002,RF,SB2.M1.T2,ATT-01.ch2.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"THA H.N tile 2; span 4U, needs 0.37 m"
-R003,RF,SB2.M1.T3,ATT-01.ch3.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"THA H.N tile 3; span 4U, needs 0.37 m"
-R004,RF,SB2.M1.T4,ATT-01.ch4.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"THA H.N tile 4; span 4U, needs 0.37 m"
-R005,RF,SB3.M1.T1,CPL-AS.t1.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THA A.S tile 1: module to coupler IN; span 2U, needs 0.19 m"
-R006,RF,SB3.M1.T2,CPL-AS.t2.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THA A.S tile 2: module to coupler IN; span 2U, needs 0.19 m"
-R007,RF,SB3.M1.T3,CPL-AS.t3.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THA A.S tile 3: module to coupler IN; span 2U, needs 0.19 m"
-R008,RF,SB3.M1.T4,CPL-AS.t4.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THA A.S tile 4: module to coupler IN; span 2U, needs 0.19 m"
-R009,RF,CPL-AS.t1.THRU,ATT-01.ch1.out,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THA tile 1; span 1U, needs 0.26 m"
-R010,RF,CPL-AS.t2.THRU,ATT-01.ch2.out,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THA tile 2; span 1U, needs 0.26 m"
-R011,RF,CPL-AS.t3.THRU,ATT-01.ch3.out,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THA tile 3; span 1U, needs 0.26 m"
-R012,RF,CPL-AS.t4.THRU,ATT-01.ch4.out,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THA tile 4; span 1U, needs 0.26 m"
-R013,RF,SB3.M2.T1,ATT-02.ch1.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TAB A.W tile 1; span 3U, needs 0.47 m"
-R014,RF,SB3.M2.T2,ATT-02.ch2.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TAB A.W tile 2; span 3U, needs 0.47 m"
-R015,RF,SB3.M2.T3,ATT-02.ch3.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TAB A.W tile 3; span 3U, needs 0.47 m"
-R016,RF,SB3.M2.T4,ATT-02.ch4.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TAB A.W tile 4; span 3U, needs 0.47 m"
-R017,RF,SB1.M1.T1,CPL-BE.t1.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"TAB B.E tile 1: module to coupler IN; span 4U, needs 0.28 m"
-R018,RF,SB1.M1.T2,CPL-BE.t2.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"TAB B.E tile 2: module to coupler IN; span 4U, needs 0.28 m"
-R019,RF,SB1.M1.T3,CPL-BE.t3.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"TAB B.E tile 3: module to coupler IN; span 4U, needs 0.28 m"
-R020,RF,SB1.M1.T4,CPL-BE.t4.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"TAB B.E tile 4: module to coupler IN; span 4U, needs 0.28 m"
-R021,RF,CPL-BE.t1.THRU,ATT-02.ch1.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TAB tile 1; span 1U, needs 0.49 m"
-R022,RF,CPL-BE.t2.THRU,ATT-02.ch2.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TAB tile 2; span 1U, needs 0.49 m"
-R023,RF,CPL-BE.t3.THRU,ATT-02.ch3.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TAB tile 3; span 1U, needs 0.49 m"
-R024,RF,CPL-BE.t4.THRU,ATT-02.ch4.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TAB tile 4; span 1U, needs 0.49 m"
-R025,RF,SB1.M2.T1,ATT-03.ch1.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TBC B.S tile 1; span 7U, needs 0.53 m"
-R026,RF,SB1.M2.T2,ATT-03.ch2.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TBC B.S tile 2; span 7U, needs 0.53 m"
-R027,RF,SB1.M2.T3,ATT-03.ch3.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TBC B.S tile 3; span 7U, needs 0.53 m"
-R028,RF,SB1.M2.T4,ATT-03.ch4.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TBC B.S tile 4; span 7U, needs 0.53 m"
-R029,RF,SB4.M1.T1,ATT-03.ch1.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TBC C.N tile 1; span 4U, needs 0.39 m"
-R030,RF,SB4.M1.T2,ATT-03.ch2.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TBC C.N tile 2; span 4U, needs 0.39 m"
-R031,RF,SB4.M1.T3,ATT-03.ch3.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TBC C.N tile 3; span 4U, needs 0.39 m"
-R032,RF,SB4.M1.T4,ATT-03.ch4.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TBC C.N tile 4; span 4U, needs 0.39 m"
-R033,RF,SB4.M2.T1,ATT-04.ch1.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TCH C.E tile 1; span 4U, needs 0.51 m"
-R034,RF,SB4.M2.T2,ATT-04.ch2.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TCH C.E tile 2; span 4U, needs 0.51 m"
-R035,RF,SB4.M2.T3,ATT-04.ch3.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TCH C.E tile 3; span 4U, needs 0.51 m"
-R036,RF,SB4.M2.T4,ATT-04.ch4.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TCH C.E tile 4; span 4U, needs 0.51 m"
-R037,RF,SB2.M4.T1,ATT-04.ch1.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TCH H.W tile 1; span 6U, needs 0.43 m"
-R038,RF,SB2.M4.T2,ATT-04.ch2.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TCH H.W tile 2; span 6U, needs 0.43 m"
-R039,RF,SB2.M4.T3,ATT-04.ch3.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TCH H.W tile 3; span 6U, needs 0.43 m"
-R040,RF,SB2.M4.T4,ATT-04.ch4.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TCH H.W tile 4; span 6U, needs 0.43 m"
-R041,RF,SB2.M2.T1,ATT-05.ch1.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THD H.E tile 1; span 8U, needs 0.57 m"
-R042,RF,SB2.M2.T2,ATT-05.ch2.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THD H.E tile 2; span 8U, needs 0.57 m"
-R043,RF,SB2.M2.T3,ATT-05.ch3.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THD H.E tile 3; span 8U, needs 0.57 m"
-R044,RF,SB2.M2.T4,ATT-05.ch4.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THD H.E tile 4; span 8U, needs 0.57 m"
-R045,RF,SB3.M3.T1,CPL-DW.t1.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THD D.W tile 1: module to coupler IN; span 2U, needs 0.19 m"
-R046,RF,SB3.M3.T2,CPL-DW.t2.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THD D.W tile 2: module to coupler IN; span 2U, needs 0.19 m"
-R047,RF,SB3.M3.T3,CPL-DW.t3.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THD D.W tile 3: module to coupler IN; span 2U, needs 0.19 m"
-R048,RF,SB3.M3.T4,CPL-DW.t4.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"THD D.W tile 4: module to coupler IN; span 2U, needs 0.19 m"
-R049,RF,CPL-DW.t1.THRU,ATT-05.ch1.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"THD tile 1; span 5U, needs 0.52 m"
-R050,RF,CPL-DW.t2.THRU,ATT-05.ch2.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"THD tile 2; span 5U, needs 0.52 m"
-R051,RF,CPL-DW.t3.THRU,ATT-05.ch3.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"THD tile 3; span 5U, needs 0.52 m"
-R052,RF,CPL-DW.t4.THRU,ATT-05.ch4.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"THD tile 4; span 5U, needs 0.52 m"
-R053,RF,SB3.M4.T1,ATT-06.ch1.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TDE D.S tile 1; span 7U, needs 0.48 m"
-R054,RF,SB3.M4.T2,ATT-06.ch2.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TDE D.S tile 2; span 7U, needs 0.48 m"
-R055,RF,SB3.M4.T3,ATT-06.ch3.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TDE D.S tile 3; span 7U, needs 0.48 m"
-R056,RF,SB3.M4.T4,ATT-06.ch4.in,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TDE D.S tile 4; span 7U, needs 0.48 m"
-R057,RF,SB1.M3.T1,CPL-EN.t1.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"TDE E.N tile 1: module to coupler IN; span 4U, needs 0.28 m"
-R058,RF,SB1.M3.T2,CPL-EN.t2.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"TDE E.N tile 2: module to coupler IN; span 4U, needs 0.28 m"
-R059,RF,SB1.M3.T3,CPL-EN.t3.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"TDE E.N tile 3: module to coupler IN; span 4U, needs 0.28 m"
-R060,RF,SB1.M3.T4,CPL-EN.t4.IN,Mini-Circuits CBL-1FT-SMSM+,0.30 m,,"TDE E.N tile 4: module to coupler IN; span 4U, needs 0.28 m"
-R061,RF,CPL-EN.t1.THRU,ATT-06.ch1.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TDE tile 1; span 5U, needs 0.48 m"
-R062,RF,CPL-EN.t2.THRU,ATT-06.ch2.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TDE tile 2; span 5U, needs 0.48 m"
-R063,RF,CPL-EN.t3.THRU,ATT-06.ch3.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TDE tile 3; span 5U, needs 0.48 m"
-R064,RF,CPL-EN.t4.THRU,ATT-06.ch4.out,Mini-Circuits CBL-2FT-SMSM+,0.61 m,,"TDE tile 4; span 5U, needs 0.48 m"
-R065,RF,SB1.M4.T1,ATT-07.ch1.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TEF E.W tile 1; span 11U, needs 0.90 m"
-R066,RF,SB1.M4.T2,ATT-07.ch2.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TEF E.W tile 2; span 11U, needs 0.90 m"
-R067,RF,SB1.M4.T3,ATT-07.ch3.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TEF E.W tile 3; span 11U, needs 0.90 m"
-R068,RF,SB1.M4.T4,ATT-07.ch4.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TEF E.W tile 4; span 11U, needs 0.90 m"
-R069,RF,SB4.M3.T1,ATT-07.ch1.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TEF F.E tile 1; span 8U, needs 0.65 m"
-R070,RF,SB4.M3.T2,ATT-07.ch2.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TEF F.E tile 2; span 8U, needs 0.65 m"
-R071,RF,SB4.M3.T3,ATT-07.ch3.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TEF F.E tile 3; span 8U, needs 0.65 m"
-R072,RF,SB4.M3.T4,ATT-07.ch4.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TEF F.E tile 4; span 8U, needs 0.65 m"
-R073,RF,SB4.M4.T1,ATT-08.ch1.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TFH F.N tile 1; span 8U, needs 0.53 m"
-R074,RF,SB4.M4.T2,ATT-08.ch2.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TFH F.N tile 2; span 8U, needs 0.53 m"
-R075,RF,SB4.M4.T3,ATT-08.ch3.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TFH F.N tile 3; span 8U, needs 0.53 m"
-R076,RF,SB4.M4.T4,ATT-08.ch4.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TFH F.N tile 4; span 8U, needs 0.53 m"
-R077,RF,SB2.M3.T1,ATT-08.ch1.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TFH H.S tile 1; span 10U, needs 0.70 m"
-R078,RF,SB2.M3.T2,ATT-08.ch2.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TFH H.S tile 2; span 10U, needs 0.70 m"
-R079,RF,SB2.M3.T3,ATT-08.ch3.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TFH H.S tile 3; span 10U, needs 0.70 m"
-R080,RF,SB2.M3.T4,ATT-08.ch4.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TFH H.S tile 4; span 10U, needs 0.70 m"
-R081,RF,CPL-BE.t1.CPL,ATT-09.ch1.in,"BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,"arm KBD tile 1, phase-matched; span 9U, needs 0.60 m"
-R082,RF,CPL-BE.t2.CPL,ATT-09.ch2.in,"BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,"arm KBD tile 2, phase-matched; span 9U, needs 0.60 m"
-R083,RF,CPL-BE.t3.CPL,ATT-09.ch3.in,"BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,"arm KBD tile 3, phase-matched; span 9U, needs 0.60 m"
-R084,RF,CPL-BE.t4.CPL,ATT-09.ch4.in,"BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,"arm KBD tile 4, phase-matched; span 9U, needs 0.60 m"
-R085,RF,ATT-09.ch1.out,CPL-DW.t1.CPL,"Mini-Circuits CBL-3FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",0.91 m,,"arm KBD tile 1; span 9U, needs 0.69 m"
-R086,RF,ATT-09.ch2.out,CPL-DW.t2.CPL,"Mini-Circuits CBL-3FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",0.91 m,,"arm KBD tile 2; span 9U, needs 0.69 m"
-R087,RF,ATT-09.ch3.out,CPL-DW.t3.CPL,"Mini-Circuits CBL-3FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",0.91 m,,"arm KBD tile 3; span 9U, needs 0.69 m"
-R088,RF,ATT-09.ch4.out,CPL-DW.t4.CPL,"Mini-Circuits CBL-3FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",0.91 m,,"arm KBD tile 4; span 9U, needs 0.69 m"
-R089,RF,CPL-AS.t1.CPL,ATT-10.ch1.in,"BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,"arm KAE tile 1, phase-matched; span 9U, needs 0.83 m"
-R090,RF,CPL-AS.t2.CPL,ATT-10.ch2.in,"BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,"arm KAE tile 2, phase-matched; span 9U, needs 0.83 m"
-R091,RF,CPL-AS.t3.CPL,ATT-10.ch3.in,"BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,"arm KAE tile 3, phase-matched; span 9U, needs 0.83 m"
-R092,RF,CPL-AS.t4.CPL,ATT-10.ch4.in,"BLK-18-S+ DC block + BW-S<n>W2+ pad on the coupler's CPL port, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,"arm KAE tile 4, phase-matched; span 9U, needs 0.83 m"
-R093,RF,ATT-10.ch1.out,CPL-EN.t1.CPL,"Mini-Circuits CBL-3FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",0.91 m,,"arm KAE tile 1; span 9U, needs 0.66 m"
-R094,RF,ATT-10.ch2.out,CPL-EN.t2.CPL,"Mini-Circuits CBL-3FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",0.91 m,,"arm KAE tile 2; span 9U, needs 0.66 m"
-R095,RF,ATT-10.ch3.out,CPL-EN.t3.CPL,"Mini-Circuits CBL-3FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",0.91 m,,"arm KAE tile 3; span 9U, needs 0.66 m"
-R096,RF,ATT-10.ch4.out,CPL-EN.t4.CPL,"Mini-Circuits CBL-3FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",0.91 m,,"arm KAE tile 4; span 9U, needs 0.66 m"
+F018,FIB,SB4.F.SFP+,SW-DATA.P18,SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m,3 m,107,"node F data, in-band management; length from the twin route (1851 mm)"
+F019,FIB,IP50-MAF@F.data,SW-DATA.P19,SFP+ SR at both ends (IP-50CX SFP+ optic TBC / Netgear AXM761) + Panduit FZ2ERLNLNSNM007 OM4 LC-LC 7 m,7 m,107,hop MAF: IP-50CX 10GbE port (a hop can exceed 1 Gb/s); length from the twin route (4678 mm)
+E001,ETH,HOST-H.mgmt,SW-OOB.P1,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1493 mm)
+E002,ETH,HOST-A.mgmt,SW-OOB.P2,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1538 mm)
+E003,ETH,HOST-B.mgmt,SW-OOB.P3,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1591 mm)
+E004,ETH,HOST-D.mgmt,SW-OOB.P4,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1635 mm)
+E005,ETH,HOST-E.mgmt,SW-OOB.P5,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,traffic host control; length from the twin route (1689 mm)
+E006,ETH,SRV-DPIR.mgmt,SW-OOB.P6,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,server management; length from the twin route (1235 mm)
+E007,ETH,SRV-E2E.mgmt,SW-OOB.P7,Panduit STP6X2MBU Cat6A S/FTP 2 m,2 m,100,server management; length from the twin route (1102 mm)
+E008,ETH,BENCH-CTL.mgmt,SW-OOB.P8,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"bench controller: PDU and attenuator control, logging"
+E009,ETH,ATT-01.lan,SW-OOB.P9,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2512 mm)"
+E010,ETH,ATT-02.lan,SW-OOB.P10,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2277 mm)"
+E011,ETH,ATT-03.lan,SW-OOB.P11,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2610 mm)"
+E012,ETH,ATT-04.lan,SW-OOB.P12,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2375 mm)"
+E013,ETH,ATT-05.lan,SW-OOB.P13,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2660 mm)"
+E014,ETH,ATT-06.lan,SW-OOB.P14,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2425 mm)"
+E015,ETH,ATT-07.lan,SW-OOB.P15,Panduit STP6X5MBU Cat6A S/FTP 5 m,5 m,100,"attenuator control, SCPI over TCP; length from the twin route (2758 mm)"
+E016,ETH,ATT-08.lan,SW-OOB.P16,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2523 mm)"
+E017,ETH,ATT-09.lan,SW-OOB.P17,Panduit STP6X5MBU Cat6A S/FTP 5 m,5 m,100,"attenuator control, SCPI over TCP; length from the twin route (2808 mm)"
+E018,ETH,ATT-10.lan,SW-OOB.P18,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"attenuator control, SCPI over TCP; length from the twin route (2573 mm)"
+E019,ETH,MWATT.lan,SW-OOB.P19,Panduit STP6X5MBU Cat6A S/FTP 5 m,5 m,100,J7204B control (LAN); length from the twin route (3393 mm)
+E020,ETH,PDU-A.net,SW-OOB.P20,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"PDU management, outlet switching; length from the twin route (1952 mm)"
+E021,ETH,PDU-B.net,SW-OOB.P21,Panduit STP6X3MBU Cat6A S/FTP 3 m,3 m,100,"PDU management, outlet switching; length from the twin route (2005 mm)"
+E022,ETH,SPECAN.lan,SW-OOB.P22,Panduit STP6X7MBU Cat6A S/FTP 7 m,7 m,100,analyser; length from the twin route (5064 mm)
+G001,GNSS,GNSS-ANT,GNSS-ARR.ant,"LMR-400 antenna lead, N connectors (part TBC), from the roof antenna to the surge arrestor where the lead enters the room",site,,connect it at the arrestor only after the arrestor's earth bond is fitted
+G002,GNSS,GNSS-SPL.out1,SB1.B.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC); length from the twin route (1734 mm)
+G003,GNSS,GNSS-SPL.out2,SB1.E.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC); length from the twin route (1520 mm)
+G004,GNSS,GNSS-SPL.out3,SB2.H.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC); length from the twin route (1747 mm)
+G005,GNSS,GNSS-SPL.out4,SB3.A.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC); length from the twin route (1775 mm)
+G006,GNSS,GNSS-SPL.out5,SB3.D.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC); length from the twin route (1561 mm)
+G007,GNSS,GNSS-SPL.out6,SB4.C.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC); length from the twin route (1740 mm)
+G008,GNSS,GNSS-SPL.out7,SB4.F.GNSS,RG-316 SMA coax 2 m (part TBC),2 m,,only if the node's rear SMA is a GNSS input (TBC); length from the twin route (1526 mm)
+G009,GNSS,GNSS-ARR.eqp,GNSS-SPL.in,"LMR-240 coax jumper, N-male (arrestor) to the splitter input (connector TBC), 3 m (part TBC)",3 m,,arrestor (equipment side) to the splitter input; the splitter feeds the antenna DC through the arrestor
+R001,RF,SB2.M1.T1,ATT-01.ch1.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THA H.N tile 1; span 6U, needs 0.81 m (twin route)"
+R002,RF,SB2.M1.T2,ATT-01.ch2.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THA H.N tile 2; span 6U, needs 0.81 m (twin route)"
+R003,RF,SB2.M1.T3,ATT-01.ch3.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THA H.N tile 3; span 6U, needs 0.81 m (twin route)"
+R004,RF,SB2.M1.T4,ATT-01.ch4.in,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THA H.N tile 4; span 6U, needs 0.81 m (twin route)"
+R005,RF,SB3.M1.T1,CPL-AS.t1.IN,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THA A.S tile 1: module to coupler IN; span 2U, needs 0.85 m (twin route)"
+R006,RF,SB3.M1.T2,CPL-AS.t2.IN,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THA A.S tile 2: module to coupler IN; span 2U, needs 0.85 m (twin route)"
+R007,RF,SB3.M1.T3,CPL-AS.t3.IN,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THA A.S tile 3: module to coupler IN; span 2U, needs 0.85 m (twin route)"
+R008,RF,SB3.M1.T4,CPL-AS.t4.IN,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"THA A.S tile 4: module to coupler IN; span 2U, needs 0.85 m (twin route)"
+R009,RF,CPL-AS.t1.THRU,ATT-01.ch1.out,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"THA tile 1; span 3U, needs 0.99 m (twin route)"
+R010,RF,CPL-AS.t2.THRU,ATT-01.ch2.out,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"THA tile 2; span 3U, needs 0.99 m (twin route)"
+R011,RF,CPL-AS.t3.THRU,ATT-01.ch3.out,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"THA tile 3; span 3U, needs 0.99 m (twin route)"
+R012,RF,CPL-AS.t4.THRU,ATT-01.ch4.out,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"THA tile 4; span 3U, needs 0.99 m (twin route)"
+R013,RF,SB3.M2.T1,ATT-02.ch1.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TAB A.W tile 1; span 5U, needs 0.96 m (twin route)"
+R014,RF,SB3.M2.T2,ATT-02.ch2.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TAB A.W tile 2; span 5U, needs 0.96 m (twin route)"
+R015,RF,SB3.M2.T3,ATT-02.ch3.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TAB A.W tile 3; span 5U, needs 0.96 m (twin route)"
+R016,RF,SB3.M2.T4,ATT-02.ch4.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TAB A.W tile 4; span 5U, needs 0.96 m (twin route)"
+R017,RF,SB1.M1.T1,CPL-BE.t1.IN,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TAB B.E tile 1: module to coupler IN; span 4U, needs 0.87 m (twin route)"
+R018,RF,SB1.M1.T2,CPL-BE.t2.IN,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TAB B.E tile 2: module to coupler IN; span 4U, needs 0.87 m (twin route)"
+R019,RF,SB1.M1.T3,CPL-BE.t3.IN,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TAB B.E tile 3: module to coupler IN; span 4U, needs 0.87 m (twin route)"
+R020,RF,SB1.M1.T4,CPL-BE.t4.IN,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TAB B.E tile 4: module to coupler IN; span 4U, needs 0.87 m (twin route)"
+R021,RF,CPL-BE.t1.THRU,ATT-02.ch1.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TAB tile 1; span 3U, needs 1.12 m (twin route)"
+R022,RF,CPL-BE.t2.THRU,ATT-02.ch2.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TAB tile 2; span 3U, needs 1.12 m (twin route)"
+R023,RF,CPL-BE.t3.THRU,ATT-02.ch3.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TAB tile 3; span 3U, needs 1.12 m (twin route)"
+R024,RF,CPL-BE.t4.THRU,ATT-02.ch4.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TAB tile 4; span 3U, needs 1.12 m (twin route)"
+R025,RF,SB1.M2.T1,ATT-03.ch1.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TBC B.S tile 1; span 9U, needs 1.14 m (twin route)"
+R026,RF,SB1.M2.T2,ATT-03.ch2.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TBC B.S tile 2; span 9U, needs 1.14 m (twin route)"
+R027,RF,SB1.M2.T3,ATT-03.ch3.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TBC B.S tile 3; span 9U, needs 1.14 m (twin route)"
+R028,RF,SB1.M2.T4,ATT-03.ch4.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TBC B.S tile 4; span 9U, needs 1.14 m (twin route)"
+R029,RF,SB4.M1.T1,ATT-03.ch1.out,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TBC C.N tile 1; span 6U, needs 0.96 m (twin route)"
+R030,RF,SB4.M1.T2,ATT-03.ch2.out,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TBC C.N tile 2; span 6U, needs 0.96 m (twin route)"
+R031,RF,SB4.M1.T3,ATT-03.ch3.out,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TBC C.N tile 3; span 6U, needs 0.96 m (twin route)"
+R032,RF,SB4.M1.T4,ATT-03.ch4.out,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TBC C.N tile 4; span 6U, needs 0.96 m (twin route)"
+R033,RF,SB4.M2.T1,ATT-04.ch1.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TCH C.E tile 1; span 6U, needs 1.05 m (twin route)"
+R034,RF,SB4.M2.T2,ATT-04.ch2.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TCH C.E tile 2; span 6U, needs 1.05 m (twin route)"
+R035,RF,SB4.M2.T3,ATT-04.ch3.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TCH C.E tile 3; span 6U, needs 1.05 m (twin route)"
+R036,RF,SB4.M2.T4,ATT-04.ch4.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TCH C.E tile 4; span 6U, needs 1.05 m (twin route)"
+R037,RF,SB2.M4.T1,ATT-04.ch1.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TCH H.W tile 1; span 8U, needs 1.01 m (twin route)"
+R038,RF,SB2.M4.T2,ATT-04.ch2.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TCH H.W tile 2; span 8U, needs 1.01 m (twin route)"
+R039,RF,SB2.M4.T3,ATT-04.ch3.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TCH H.W tile 3; span 8U, needs 1.01 m (twin route)"
+R040,RF,SB2.M4.T4,ATT-04.ch4.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TCH H.W tile 4; span 8U, needs 1.01 m (twin route)"
+R041,RF,SB2.M2.T1,ATT-05.ch1.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"THD H.E tile 1; span 10U, needs 1.21 m (twin route)"
+R042,RF,SB2.M2.T2,ATT-05.ch2.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"THD H.E tile 2; span 10U, needs 1.21 m (twin route)"
+R043,RF,SB2.M2.T3,ATT-05.ch3.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"THD H.E tile 3; span 10U, needs 1.21 m (twin route)"
+R044,RF,SB2.M2.T4,ATT-05.ch4.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"THD H.E tile 4; span 10U, needs 1.21 m (twin route)"
+R045,RF,SB3.M3.T1,CPL-DW.t1.IN,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"THD D.W tile 1: module to coupler IN; span 2U, needs 0.94 m (twin route)"
+R046,RF,SB3.M3.T2,CPL-DW.t2.IN,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"THD D.W tile 2: module to coupler IN; span 2U, needs 0.94 m (twin route)"
+R047,RF,SB3.M3.T3,CPL-DW.t3.IN,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"THD D.W tile 3: module to coupler IN; span 2U, needs 0.94 m (twin route)"
+R048,RF,SB3.M3.T4,CPL-DW.t4.IN,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"THD D.W tile 4: module to coupler IN; span 2U, needs 0.94 m (twin route)"
+R049,RF,CPL-DW.t1.THRU,ATT-05.ch1.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"THD tile 1; span 7U, needs 1.21 m (twin route)"
+R050,RF,CPL-DW.t2.THRU,ATT-05.ch2.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"THD tile 2; span 7U, needs 1.21 m (twin route)"
+R051,RF,CPL-DW.t3.THRU,ATT-05.ch3.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"THD tile 3; span 7U, needs 1.21 m (twin route)"
+R052,RF,CPL-DW.t4.THRU,ATT-05.ch4.out,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"THD tile 4; span 7U, needs 1.21 m (twin route)"
+R053,RF,SB3.M4.T1,ATT-06.ch1.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TDE D.S tile 1; span 9U, needs 0.95 m (twin route)"
+R054,RF,SB3.M4.T2,ATT-06.ch2.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TDE D.S tile 2; span 9U, needs 0.95 m (twin route)"
+R055,RF,SB3.M4.T3,ATT-06.ch3.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TDE D.S tile 3; span 9U, needs 0.95 m (twin route)"
+R056,RF,SB3.M4.T4,ATT-06.ch4.in,Mini-Circuits CBL-1M-SMSM+,1.00 m,,"TDE D.S tile 4; span 9U, needs 0.95 m (twin route)"
+R057,RF,SB1.M3.T1,CPL-EN.t1.IN,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TDE E.N tile 1: module to coupler IN; span 4U, needs 1.08 m (twin route)"
+R058,RF,SB1.M3.T2,CPL-EN.t2.IN,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TDE E.N tile 2: module to coupler IN; span 4U, needs 1.08 m (twin route)"
+R059,RF,SB1.M3.T3,CPL-EN.t3.IN,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TDE E.N tile 3: module to coupler IN; span 4U, needs 1.08 m (twin route)"
+R060,RF,SB1.M3.T4,CPL-EN.t4.IN,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TDE E.N tile 4: module to coupler IN; span 4U, needs 1.08 m (twin route)"
+R061,RF,CPL-EN.t1.THRU,ATT-06.ch1.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TDE tile 1; span 7U, needs 0.89 m (twin route)"
+R062,RF,CPL-EN.t2.THRU,ATT-06.ch2.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TDE tile 2; span 7U, needs 0.89 m (twin route)"
+R063,RF,CPL-EN.t3.THRU,ATT-06.ch3.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TDE tile 3; span 7U, needs 0.89 m (twin route)"
+R064,RF,CPL-EN.t4.THRU,ATT-06.ch4.out,Mini-Circuits CBL-3FT-SMSM+,0.91 m,,"TDE tile 4; span 7U, needs 0.89 m (twin route)"
+R065,RF,SB1.M4.T1,ATT-07.ch1.in,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TEF E.W tile 1; span 13U, needs 1.49 m (twin route)"
+R066,RF,SB1.M4.T2,ATT-07.ch2.in,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TEF E.W tile 2; span 13U, needs 1.49 m (twin route)"
+R067,RF,SB1.M4.T3,ATT-07.ch3.in,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TEF E.W tile 3; span 13U, needs 1.49 m (twin route)"
+R068,RF,SB1.M4.T4,ATT-07.ch4.in,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TEF E.W tile 4; span 13U, needs 1.49 m (twin route)"
+R069,RF,SB4.M3.T1,ATT-07.ch1.out,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TEF F.E tile 1; span 10U, needs 1.31 m (twin route)"
+R070,RF,SB4.M3.T2,ATT-07.ch2.out,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TEF F.E tile 2; span 10U, needs 1.31 m (twin route)"
+R071,RF,SB4.M3.T3,ATT-07.ch3.out,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TEF F.E tile 3; span 10U, needs 1.31 m (twin route)"
+R072,RF,SB4.M3.T4,ATT-07.ch4.out,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TEF F.E tile 4; span 10U, needs 1.31 m (twin route)"
+R073,RF,SB4.M4.T1,ATT-08.ch1.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TFH F.N tile 1; span 10U, needs 1.04 m (twin route)"
+R074,RF,SB4.M4.T2,ATT-08.ch2.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TFH F.N tile 2; span 10U, needs 1.04 m (twin route)"
+R075,RF,SB4.M4.T3,ATT-08.ch3.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TFH F.N tile 3; span 10U, needs 1.04 m (twin route)"
+R076,RF,SB4.M4.T4,ATT-08.ch4.in,Mini-Circuits CBL-4FT-SMSM+,1.22 m,,"TFH F.N tile 4; span 10U, needs 1.04 m (twin route)"
+R077,RF,SB2.M3.T1,ATT-08.ch1.out,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TFH H.S tile 1; span 12U, needs 1.24 m (twin route)"
+R078,RF,SB2.M3.T2,ATT-08.ch2.out,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TFH H.S tile 2; span 12U, needs 1.24 m (twin route)"
+R079,RF,SB2.M3.T3,ATT-08.ch3.out,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TFH H.S tile 3; span 12U, needs 1.24 m (twin route)"
+R080,RF,SB2.M3.T4,ATT-08.ch4.out,Mini-Circuits CBL-5FT-SMSM+,1.52 m,,"TFH H.S tile 4; span 12U, needs 1.24 m (twin route)"
+R081,RF,CPL-BE.t1.CPL,ATT-09.ch1.in,"BLK-18-S+ DC block + Mini-Circuits BW-S15W2+ 15 dB pad on the coupler's CPL port, then Mini-Circuits CBL-5FT-SMSM+",1.52 m,,"arm KBD tile 1; same stock length as the other 3 tiles (equal length, not a phase-matched set); span 11U, needs 1.39 m (twin route)"
+R082,RF,CPL-BE.t2.CPL,ATT-09.ch2.in,"BLK-18-S+ DC block + Mini-Circuits BW-S15W2+ 15 dB pad on the coupler's CPL port, then Mini-Circuits CBL-5FT-SMSM+",1.52 m,,"arm KBD tile 2; same stock length as the other 3 tiles (equal length, not a phase-matched set); span 11U, needs 1.39 m (twin route)"
+R083,RF,CPL-BE.t3.CPL,ATT-09.ch3.in,"BLK-18-S+ DC block + Mini-Circuits BW-S15W2+ 15 dB pad on the coupler's CPL port, then Mini-Circuits CBL-5FT-SMSM+",1.52 m,,"arm KBD tile 3; same stock length as the other 3 tiles (equal length, not a phase-matched set); span 11U, needs 1.39 m (twin route)"
+R084,RF,CPL-BE.t4.CPL,ATT-09.ch4.in,"BLK-18-S+ DC block + Mini-Circuits BW-S15W2+ 15 dB pad on the coupler's CPL port, then Mini-Circuits CBL-5FT-SMSM+",1.52 m,,"arm KBD tile 4; same stock length as the other 3 tiles (equal length, not a phase-matched set); span 11U, needs 1.39 m (twin route)"
+R085,RF,ATT-09.ch1.out,CPL-DW.t1.CPL,"Mini-Circuits CBL-6FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",1.83 m,,"arm KBD tile 1; span 11U, needs 1.66 m (twin route)"
+R086,RF,ATT-09.ch2.out,CPL-DW.t2.CPL,"Mini-Circuits CBL-6FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",1.83 m,,"arm KBD tile 2; span 11U, needs 1.66 m (twin route)"
+R087,RF,ATT-09.ch3.out,CPL-DW.t3.CPL,"Mini-Circuits CBL-6FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",1.83 m,,"arm KBD tile 3; span 11U, needs 1.66 m (twin route)"
+R088,RF,ATT-09.ch4.out,CPL-DW.t4.CPL,"Mini-Circuits CBL-6FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",1.83 m,,"arm KBD tile 4; span 11U, needs 1.66 m (twin route)"
+R089,RF,CPL-AS.t1.CPL,ATT-10.ch1.in,"BLK-18-S+ DC block + Mini-Circuits BW-S15W2+ 15 dB pad on the coupler's CPL port, then Mini-Circuits CBL-2M-SMSM+",2.00 m,,"arm KAE tile 1; same stock length as the other 3 tiles (equal length, not a phase-matched set); span 11U, needs 1.84 m (twin route)"
+R090,RF,CPL-AS.t2.CPL,ATT-10.ch2.in,"BLK-18-S+ DC block + Mini-Circuits BW-S15W2+ 15 dB pad on the coupler's CPL port, then Mini-Circuits CBL-2M-SMSM+",2.00 m,,"arm KAE tile 2; same stock length as the other 3 tiles (equal length, not a phase-matched set); span 11U, needs 1.84 m (twin route)"
+R091,RF,CPL-AS.t3.CPL,ATT-10.ch3.in,"BLK-18-S+ DC block + Mini-Circuits BW-S15W2+ 15 dB pad on the coupler's CPL port, then Mini-Circuits CBL-2M-SMSM+",2.00 m,,"arm KAE tile 3; same stock length as the other 3 tiles (equal length, not a phase-matched set); span 11U, needs 1.84 m (twin route)"
+R092,RF,CPL-AS.t4.CPL,ATT-10.ch4.in,"BLK-18-S+ DC block + Mini-Circuits BW-S15W2+ 15 dB pad on the coupler's CPL port, then Mini-Circuits CBL-2M-SMSM+",2.00 m,,"arm KAE tile 4; same stock length as the other 3 tiles (equal length, not a phase-matched set); span 11U, needs 1.84 m (twin route)"
+R093,RF,ATT-10.ch1.out,CPL-EN.t1.CPL,"Mini-Circuits CBL-5FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",1.52 m,,"arm KAE tile 1; span 11U, needs 1.42 m (twin route)"
+R094,RF,ATT-10.ch2.out,CPL-EN.t2.CPL,"Mini-Circuits CBL-5FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",1.52 m,,"arm KAE tile 2; span 11U, needs 1.42 m (twin route)"
+R095,RF,ATT-10.ch3.out,CPL-EN.t3.CPL,"Mini-Circuits CBL-5FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",1.52 m,,"arm KAE tile 3; span 11U, needs 1.42 m (twin route)"
+R096,RF,ATT-10.ch4.out,CPL-EN.t4.CPL,"Mini-Circuits CBL-5FT-SMSM+, then BLK-18-S+ DC block on the coupler's CPL port",1.52 m,,"arm KAE tile 4; span 11U, needs 1.42 m (twin route)"
 W001,WG,IP50-MAF@A.wg,WGT-MAF-A.wg,waveguide-to-coax transition PEWCA1003 (band TBC),flange,,hop MAF
 W002,WG,WGT-MAF-A.coax,MWATT.ch1.in,"SA18S10W-30 pad on the transition, then Mini-Circuits CBL-2FT-SMSM+",0.61 m,,hop MAF
 W003,WG,MWATT.ch1.out,WGT-MAF-B.coax,"Mini-Circuits CBL-3FT-SMSM+, then SA18S10W-30 pad on the transition",0.91 m,,hop MAF
 W004,WG,WGT-MAF-B.wg,IP50-MAF@F.wg,waveguide-to-coax transition PEWCA1003 (band TBC),flange,,hop MAF
 W005,WG,IP50-MBE@B.wg,WGT-MBE-A.wg,waveguide-to-coax transition PEWCA1003 (band TBC),flange,,hop MBE
-W006,WG,WGT-MBE-A.coax,MWATT.ch2.in,"SA18S10W-30 pad on the transition, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,hop MBE
-W007,WG,MWATT.ch2.out,WGT-MBE-B.coax,"Mini-Circuits CBL-1M-SMSM+, then SA18S10W-30 pad on the transition",1 m,,hop MBE
+W006,WG,WGT-MBE-A.coax,MWATT.ch2.in,"SA18S10W-30 pad on the transition, then Mini-Circuits CBL-4FT-SMSM+",1.22 m,,hop MBE
+W007,WG,MWATT.ch2.out,WGT-MBE-B.coax,"Mini-Circuits CBL-4FT-SMSM+, then SA18S10W-30 pad on the transition",1.22 m,,hop MBE
 W008,WG,WGT-MBE-B.wg,IP50-MBE@E.wg,waveguide-to-coax transition PEWCA1003 (band TBC),flange,,hop MBE
 W009,WG,IP50-MCD@C.wg,WGT-MCD-A.wg,waveguide-to-coax transition PEWCA1003 (band TBC),flange,,hop MCD
-W010,WG,WGT-MCD-A.coax,MWATT.ch3.in,"SA18S10W-30 pad on the transition, then Mini-Circuits CBL-2M-SMSM+",2.00 m,,hop MCD
-W011,WG,MWATT.ch3.out,WGT-MCD-B.coax,"Mini-Circuits CBL-2M-SMSM+, then SA18S10W-30 pad on the transition",2.00 m,,hop MCD
+W010,WG,WGT-MCD-A.coax,MWATT.ch3.in,"SA18S10W-30 pad on the transition, then Mini-Circuits CBL-3FT-SMSM+",0.91 m,,hop MCD
+W011,WG,MWATT.ch3.out,WGT-MCD-B.coax,"Mini-Circuits CBL-3FT-SMSM+, then SA18S10W-30 pad on the transition",0.91 m,,hop MCD
 W012,WG,WGT-MCD-B.wg,IP50-MCD@D.wg,waveguide-to-coax transition PEWCA1003 (band TBC),flange,,hop MCD

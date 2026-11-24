@@ -431,8 +431,8 @@ function buildSpecs(scene) {
     let y0 = Infinity;
     let y1 = -Infinity;
     const add = (d) => {
-      if (!d || d.group !== 'rack') return;
-      const top = d.parent ? devs.get(d.parent) : d;
+      if (!d || (d.group !== 'rack' && d.group !== 'room')) return;   // room: earth bars, arrestor by the rack
+      const top = d.parent && d.group === 'rack' ? devs.get(d.parent) : d;
       y0 = Math.min(y0, top.pos[1]);
       y1 = Math.max(y1, top.pos[1] + top.size[1]);
     };
@@ -485,8 +485,9 @@ function buildSpecs(scene) {
     const base = { title: `Step ${st.n}: ${st.title}`, step: st.n, stepView: st.view, cableLabelMax: 40 };
     const xs = st.cables.flatMap((id) => (cabs.get(id).route || []).map((p) => p[0]));
     const toTable = xs.length && Math.max(...xs) > 650;
-    if (st.view === 'rear' && (st.devices.length || st.cables.length)) {
-      let [y0, y1] = rackRange(st);
+    const rr = rackRange(st);
+    if (st.view === 'rear' && Number.isFinite(rr[0]) && (st.devices.length || st.cables.length)) {
+      let [y0, y1] = rr;
       y0 = Math.max(R.u1_y - 70, y0 - 0.7 * U);
       y1 = Math.min(rackTopY + 50, y1 + 0.7 * U);
       const parts = y1 - y0 > 22 * U ? [[(y0 + y1) / 2 - 10, y1], [y0, (y0 + y1) / 2 + 10]] : [[y0, y1]];
