@@ -4,47 +4,39 @@ TENTATIVE geometry: see the assumptions list.
 
 | Check | Result | Detail |
 |---|---|---|
-| Every port carries at most one cable | PASS | 442 ports used |
-| Every cable reaches along its route | PASS | 209 cables with a length checked |
+| Every port carries at most one cable | PASS | 448 ports used |
+| Every cable reaches along its route | PASS | 212 cables with a length checked |
 | IF cables not grossly over-length (slack loops) | PASS | 0 IF cables use under 35 % of their length (dress the slack in the cable manager) |
-| Every rack device fits the rail depth | PASS | deepest 600 mm of 750 mm |
+| Every rack device fits the rail depth | PASS | deepest 823 mm of 900 mm |
 | No two devices share a rack unit | PASS | 38 U used of 42 |
-| Spider SMA tile ports | PASS | 68 of 68 used; unused ones get ANNE-50+ loads |
+| Spider SMA tile ports | PASS | 71 of 71 used; unused ones get ANNE-50+ loads |
 
 ## Assumptions to confirm
 
-- rail-to-rail depth set to 750 mm (adjustable)
-- U1 bottom 100 mm above the floor (estimate)
+- StarTech 4POSTRACK42 (rails adjustable 559-1016 mm, square holes, M6 cage nuts); rail-to-rail depth set to 900 mm so 800 mm-class rack servers fit
+- U1 bottom 120 mm above the floor (on castors, estimate)
 - one 3.6 m x 0.8 m bench table to the right of the rack, top at 750 mm (estimate)
-- GNSS-SPL: RMALDCBS1X8 1U assumed
-- SW-OOB: Netgear GSM4230PX: depth estimate
-- SRV-E2E: 1U/2U rack server (lab), 600 mm deep assumed
-- SRV-DPIR: 1U/2U rack server (lab), 600 mm deep assumed
-- HOST-W1: 1U/2U rack server (lab), 600 mm deep assumed
-- HOST-W2: 1U/2U rack server (lab), 600 mm deep assumed
-- HOST-E1: 1U/2U rack server (lab), 600 mm deep assumed
-- HOST-E2: 1U/2U rack server (lab), 600 mm deep assumed
-- HOST-S: 1U/2U rack server (lab), 600 mm deep assumed
-- HOST-N: 1U/2U rack server (lab), 600 mm deep assumed
-- AGENTS: 1U vented shelf
-- SB1: Siklu 1U Spider box: depth and rear panel unknown
-- SB2: Siklu 1U Spider box: depth and rear panel unknown
-- SB3: Siklu 1U Spider box: depth and rear panel unknown
-- SB4: Siklu 1U Spider box: depth and rear panel unknown
-- SPL-TRAY: 1U vented shelf (CABSHELFV1U) carrying splitters / couplers
+- SRV-E2E: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
+- SRV-DPIR: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
+- HOST-W1: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
+- HOST-W2: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
+- HOST-E1: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
+- HOST-E2: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
+- HOST-S: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
+- HOST-N: lab rack server, stand-in Dell R260 (1U, 497 mm) / R660 (1U, 823 mm) / R760 (2U, 772 mm)
+- SB1: Siklu 1U Spider box: brushed aluminium front, 16 SMA measured from lab photos (+/-8 mm); depth ~331 body / 345 overall and the rear panel (seen from inside one box) to confirm
+- SB2: Siklu 1U Spider box: brushed aluminium front, 16 SMA measured from lab photos (+/-8 mm); depth ~331 body / 345 overall and the rear panel (seen from inside one box) to confirm
+- SB3: Siklu 1U Spider box: brushed aluminium front, 16 SMA measured from lab photos (+/-8 mm); depth ~331 body / 345 overall and the rear panel (seen from inside one box) to confirm
+- SB4: Siklu 1U Spider box: brushed aluminium front, 16 SMA measured from lab photos (+/-8 mm); depth ~331 body / 345 overall and the rear panel (seen from inside one box) to confirm
 - ATT-SHELF-1: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
 - ATT-SHELF-2: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
 - ATT-SHELF-3: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
 - ATT-SHELF-4: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
 - ATT-SHELF-5: 2U of rack space with a 1U vented shelf carrying two attenuator boxes
-- PA-SHELF: 1U vented shelf
-- DC-DIST: Eaton DCD1M: breakers front, terminals rear assumed
-- DC-RECT: Mean Well RCP-1UI: AC C14 and DC output at the rear assumed
-- DC-DIST2: Westell N250110-N-0803: fuses front, terminals rear assumed
-- DC-RECT2: Mean Well RCP-1UI: AC C14 and DC output at the rear assumed
-- PDU-A: 1U switched PDU, 12 x C13 (user: 1U); outlets on the rear assumed
-- PDU-B: 1U switched PDU, 12 x C13 (user: 1U); outlets on the rear assumed
-- PDU-C: 1U switched PDU, 12 x C13 (user: 1U); outlets on the rear assumed
+- DC-DIST: Eaton DCD1M (~280 mm): breakers front; load terminal face to confirm (rear assumed)
+- PDU-A: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); outlets on the rear assumed
+- PDU-B: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); outlets on the rear assumed
+- PDU-C: 1U switched PDU, 12 x C13, 16 A (Raritan PX3-5260R class, 183 mm); outlets on the rear assumed
 - BENCH-CTL: small form-factor PC
 - MONITOR: 24-inch monitor on a stand
 - KBD: keyboard + mouse
@@ -56,9 +48,8 @@ TENTATIVE geometry: see the assumptions list.
 - IP50-W1-W2@W2: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
 - IP50-E1-E2@E1: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
 - IP50-E1-E2@E2: Ceragon IP-50CX (about 6 kg; size estimate, ceragon.com not reachable) laid flat; waveguide flange on the side toward MWATT
-- PSU-W1-CORE@CORE: isolated 48 V desktop supply
-- PSU-CORE-E1@CORE: isolated 48 V desktop supply
-- SPECAN: R&S FPL1026 (estimate)
-- TABLE-STRIP: bench mains strip, C13
+- PSU-W1-CORE@CORE: isolated 48 V 120 W desktop supply (e.g. Mean Well GST120A48)
+- PSU-CORE-E1@CORE: isolated 48 V 120 W desktop supply (e.g. Mean Well GST120A48)
+- TABLE-STRIP: bench mains strip, C13 (part TBC)
 - WALL: wall sockets behind the rack (estimate)
 - GNSS-ANT: GNSS antenna lead enters above the rack (estimate)

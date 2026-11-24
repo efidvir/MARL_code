@@ -17,30 +17,30 @@ line,group,team list item,item,part number,manufacturer,qty,use,status
 16,Power,-,"Bench-table mains strip, C13 outlets",lab-supplied (part TBC),-,1,4 table loads,to confirm
 17,Power,8,'Micky' lead C14 -> C5 1.83 m,P014-006,Eaton Tripp Lite,4,"PoE injector (inlet TBC), agent-PC bricks",confirmed
 18,Power,8,'Micky' lead C14 -> C5 3.05 m,P014-010,Eaton Tripp Lite,3,agent-PC bricks,likely
-19,Power,9,'Exten' lead C14 -> C13 1.83 m,P004-006,Eaton Tripp Lite,14,rack and table devices,confirmed
-20,Power,9,'Exten' lead C14 -> C13 3.05 m,P004-010,Eaton Tripp Lite,12,"rack and table devices, servers, traffic hosts",confirmed
-21,Power,9,'Exten' lead C14 -> C13 4.57 m,P004-015,Eaton Tripp Lite,2,switched supplies,likely
-22,Power,10,DC cable 2 x 18 AWG (bulk) + ferrules,Belden 8461 + Phoenix 3200519,Belden / Phoenix,28 m + 56 ferrules,14 runs; 100 ft spool = 30.5 m,confirmed
-23,Power,10,DC bus link 2 x 10 AWG with ring lugs,part TBC,-,2,rectifier to distribution,to confirm
+19,Power,9,'Exten' lead C14 -> C13 1.83 m,P004-006,Eaton Tripp Lite,16,"rack and table devices, traffic hosts",confirmed
+20,Power,9,'Exten' lead C14 -> C13 3.05 m,P004-010,Eaton Tripp Lite,9,"rack and table devices, servers, traffic hosts",confirmed
+21,Power,9,'Exten' lead C14 -> C13 4.57 m,P004-015,Eaton Tripp Lite,3,"servers, switched supplies",likely
+22,Power,10,DC cable 2 x 18 AWG (bulk) + ferrules,Belden 8461 + Phoenix 3200519,Belden / Phoenix,30 m + 56 ferrules,14 runs; 100 ft spool = 30.5 m,confirmed
+23,Power,10,DC bus link 2 x 10 AWG with ring lugs (cut to length),part TBC,-,2,"rectifier to distribution, 1.75 m in all",to confirm
 24,Network,6,"Data switch, 24 x SFP+ + 4 x SFP28, L3",M4350-24F4V (XSM4328FV),Netgear,1,28 of 28 ports; 1G only on P1-16,confirmed
 25,Network,6,"Management switch, 24 x 1G PoE+ + 2 x 1G + 4 x SFP+",M4250-26G4XF-PoE+ (GSM4230PX),Netgear,1,29 ports: 26 of 26 RJ-45 + 3 SFP+ cage,confirmed
 26,Network,-,1000BASE-T copper SFP,AGM734-10000S,Netgear,9,"6 on SW-DATA P1-16, 3 on SW-OOB",confirmed; switch compatibility to confirm
 27,Network,-,SFP+ SR optics: node side / host side / switch side,AX-SFP+10G-MM / host NIC optic / AXM761-10000S,Siklu / - / Netgear,6 / 8 / 14,both ends of every OM4 run,likely / to confirm / confirmed
-28,Network,-,OM4 LC-LC duplex 2 m,FZ2ERLNLNSNM002,Panduit,5,,confirmed
-29,Network,-,OM4 LC-LC duplex 3 m,FZ2ERLNLNSNM003,Panduit,1,,likely
+28,Network,-,OM4 LC-LC duplex 2 m,FZ2ERLNLNSNM002,Panduit,4,,confirmed
+29,Network,-,OM4 LC-LC duplex 3 m,FZ2ERLNLNSNM003,Panduit,2,,likely
 30,Network,-,OM4 LC-LC duplex 5 m,FZ2ERLNLNSNM005,Panduit,8,,likely
 31,Network,-,SFP+ DAC 3 m,AXC763-10000S,Netgear,8,,confirmed
-32,Network,-,Cat6A S/FTP patch 1 m,STP6X1MBU,Panduit,12,,confirmed
-33,Network,-,Cat6A S/FTP patch 2 m,STP6X2MBU,Panduit,22,,confirmed
-34,Network,-,Cat6A S/FTP patch 3 m,STP6X3MBU,Panduit,6,,confirmed
+32,Network,-,Cat6A S/FTP patch 1 m,STP6X1MBU,Panduit,14,,confirmed
+33,Network,-,Cat6A S/FTP patch 2 m,STP6X2MBU,Panduit,16,,confirmed
+34,Network,-,Cat6A S/FTP patch 3 m,STP6X3MBU,Panduit,10,,confirmed
 35,Network,-,Cat6A S/FTP patch 5 m,STP6X5MBU,Panduit,1,,likely
 36,Network,-,Cat6A S/FTP patch 7 m,STP6X7MBU,Panduit,1,,likely
 37,RF/IF,-,"Programmable attenuator box, 4 ch, 0-63 dB, to 18 GHz (small box with a dial; e.g. ZTDAT-4-18G63S class)",ZTDAT-4-18G63S class (model TBC),Mini-Circuits (or equal),9,5 x 2U shelves,to buy: 9
 38,RF/IF,-,2-way splitter 2-18 GHz,ZN2PD-02183-S+,Mini-Circuits,8,one per tile of each shared hub module,confirmed
 39,RF/IF,3,SMA test cable 18 GHz 0.30 m,CBL-1FT-SMSM+,Mini-Circuits,12,"IF chain, length from the rack span",confirmed
 40,RF/IF,3,"SMA test cable 18 GHz 0.61 m ('RF cable': 10 on hand, type TBC)",CBL-2FT-SMSM+,Mini-Circuits,38,"IF chain, length from the rack span",confirmed
-41,RF/IF,3,SMA test cable 18 GHz 0.91 m,CBL-3FT-SMSM+,Mini-Circuits,31,"IF chain, length from the rack span",confirmed
-42,RF/IF,3,SMA test cable 18 GHz 1.00 m,CBL-1M-SMSM+,Mini-Circuits,5,"IF chain, length from the rack span; IP-50 chains",confirmed
+41,RF/IF,3,SMA test cable 18 GHz 0.91 m,CBL-3FT-SMSM+,Mini-Circuits,27,"IF chain, length from the rack span",confirmed
+42,RF/IF,3,SMA test cable 18 GHz 1.00 m,CBL-1M-SMSM+,Mini-Circuits,9,"IF chain, length from the rack span; IP-50 chains",confirmed
 43,RF/IF,3,SMA test cable 18 GHz 2.00 m,CBL-2M-SMSM+,Mini-Circuits,2,"IF chain, length from the rack span",confirmed
 44,RF/IF,-,50-ohm SMA load,ANNE-50+,Mini-Circuits,as needed,unused tile and coupler ports,confirmed
 45,RF/IF,-,SMA torque wrench 8 in-lb,ST-SMA3,Fairview,2,,confirmed
@@ -49,7 +49,7 @@ line,group,team list item,item,part number,manufacturer,qty,use,status
 48,IP-50 chain,-,Programmable attenuator 4 ch DC-18 GHz (<=18 GHz set),J7204B opt 002,Keysight,1,4 channels used; LAN to SW-OOB,confirmed
 49,IP-50 chain,-,Alternative set if the band is 18-26.5 GHz (replaces the 3 lines above),PEWCA1018 + FMAT4009-30 + 84906K/84904K/11713C,Pasternack / Fairview / Keysight,replaces the set,2.92 mm pads and cables,alternative
 50,Timing,-,GNSS antenna + 1x8 splitter,101898-00 + RMALDCBS1X8,Protempis / GPS Networking,1 + 1,only if the boxes take GNSS (N367 GPS is internal),to confirm
-51,Timing,-,GNSS coax: antenna lead + surge arrestor / splitter jumpers,LMR-400 + arrestor / RG-316 SMA 1 m,part TBC,1 / 4,only if the boxes take GNSS,to confirm
+51,Timing,-,GNSS coax: antenna lead + surge arrestor / splitter jumpers,LMR-400 + arrestor / RG-316 SMA 1 m,part TBC,1 / 7,only if the boxes take GNSS,to confirm
 52,Compute,-,"MARL agent PC (mini PC, 2 x 1G NICs)",lab PC,-,6,,on hand
 53,Compute,-,"Traffic host, 1U rack server (10G SFP+ NIC, iperf3/TRex)",lab server,-,6,"in the rack, with its rails",on hand; to confirm
 54,Compute,-,Rack servers: SRV-E2E (1U); SRV-DPIR (2U),lab servers,-,2,"in the rack, with their rails",on hand; to confirm

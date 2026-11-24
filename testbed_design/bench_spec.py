@@ -411,9 +411,9 @@ class Bench:
         self.oob_model = ("M4250-26G4XF-PoE+ (GSM4230PX)", OOB_RJ45, OOB_SFP)
         # GNSS -------------------------------------------------------------------------------------
         self.add("GNSS", "GNSS-ANT", "GNSS-SPL.in", "LMR-400 coax + surge arrestor (part TBC)", "site", pn="LMR-400")
-        for i, bx in enumerate(d["boxes"]):
-            self.add("GNSS", f"GNSS-SPL.out{i + 1}", f"{bx['id']}.GNSS", "RG-316 SMA coax 1 m (part TBC)", "1 m",
-                     "only if the box has a GNSS input (TBC)", pn="RG-316")
+        for i, nd in enumerate(nodes):
+            self.add("GNSS", f"GNSS-SPL.out{i + 1}", f"{d['nodes'][nd]['box']}.{nd}.GNSS", "RG-316 SMA coax 1 m (part TBC)",
+                     "1 m", "only if the node's rear SMA is a GNSS input (TBC)", pn="RG-316")
         # RF / IF: one bundle (4 tiles) at a time so that each bundle has consecutive IDs --------------
         tray = "SPL-TRAY" if self.split else "CPL-TRAY"
         for s, sid in self.split.items():
@@ -622,8 +622,9 @@ def parts(b):
     add("Power", "10", "DC cable 2 x 18 AWG (bulk) + ferrules", "Belden 8461 + Phoenix 3200519", "Belden / Phoenix",
         f"{m:.0f} m + {4 * b.count_pn('Belden 8461')} ferrules", f"{b.count_pn('Belden 8461')} runs; 100 ft spool = 30.5 m",
         "confirmed")
-    add("Power", "10", "DC bus link 2 x 10 AWG with ring lugs", "part TBC", "-", b.count_pn("bus link"),
-        "rectifier to distribution", "to confirm")
+    mb = sum(c.get("metres", 0) for c in b.cables if c["pn"] == "bus link")
+    add("Power", "10", "DC bus link 2 x 10 AWG with ring lugs (cut to length)", "part TBC", "-", b.count_pn("bus link"),
+        f"rectifier to distribution, {mb:g} m in all", "to confirm")
     add("Network", "6", "Data switch, 24 x SFP+ + 4 x SFP28, L3", "M4350-24F4V (XSM4328FV)", "Netgear", 1,
         f"{len(b.sw_port)} of 28 ports; 1G only on P1-16", "confirmed")
     add("Network", "6", "Management switch, 24 x 1G PoE+ + 2 x 1G + 4 x SFP+", b.oob_model[0], "Netgear", 1,

@@ -68,6 +68,7 @@ class Scene:
                  "SPL-TRAY": "tray", "CPL-TRAY": "tray", "PA-SHELF": "shelf", "DC-DIST": "dcdist", "DC-DIST2": "fuse",
                  "DC-RECT": "rect", "DC-RECT2": "rect", "PDU-A": "pdu", "PDU-B": "pdu"}
         used = set()
+        sdepth = {"SRV-E2E": 823.0, "SRV-DPIR": 772.0}
         for r in b.rows:
             rid = r["id"]
             kind = ("spider" if rid.startswith("SB") else "attshelf" if rid.startswith("ATT-SHELF") else
@@ -77,8 +78,9 @@ class Scene:
             h = r["n"] * U - 1.0
             for u in range(r["top"] - r["n"] + 1, r["top"] + 1):
                 used.add(u)
+            dep = sdepth.get(rid, 497.0) if kind == "rackserver" else k["d"]
             dv = self.add_dev(rid, kind, rid if not rid.startswith("SB") else f"{rid} {r['label'].split('·')[0].strip()}",
-                              r["sub"], (0, y0, 0), (C.PANEL_W, h, k["d"]), k["color"], "rack", k["conf"], k["note"],
+                              r["sub"], (0, y0, 0), (C.PANEL_W, h, dep), k["color"], "rack", k["conf"], k["note"],
                               u=f"U{r['top'] - r['n'] + 1}" + (f"-U{r['top']}" if r["n"] > 1 else ""), u_top=r["top"],
                               u_n=r["n"], title=r["label"])
             getattr(self, "_ports_" + kind, lambda *a: None)(dv, rid)
@@ -97,18 +99,24 @@ class Scene:
         x, y, z, w, h, dd = self._face(dv)
         box = next(bx for bx in self.d["boxes"] if bx["id"] == rid)
         used = {m: f"{s[0]}.{s[1]}" for s, (bx, m) in self.d["module"].items() if bx == rid}
-        dv["modules"] = [dict(m=f"M{k}", x0=BS.mod_x(f"M{k}", 1) - 12, x1=BS.mod_x(f"M{k}", 4) + 12,
+        var = C.SPIDER_VARIANT.get(rid, "C")
+        ysma = y + C.SPIDER_FRONT[var][1]
+        dv["modules"] = [dict(m=f"M{k}", x0=C.spider_tile_x(rid, k, 1) - 9, x1=C.spider_tile_x(rid, k, 4) + 9,
                               sector=used.get(f"M{k}", "spare")) for k in range(1, 5)]
+        dv["serial"], dv["variant"] = C.SPIDER_SERIAL.get(rid, ""), var
         for k in range(1, 5):
             for t in range(1, 5):
-                self.add_port(rid, f"M{k}.T{t}", (BS.mod_x(f"M{k}", t), y + h * 0.42, z), (0, 0, -1), "SMA",
+                self.add_port(rid, f"M{k}.T{t}", (C.spider_tile_x(rid, k, t), ysma, z - 10), (0, 0, -1), "SMA",
                               f"M{k} T{t}")
-        nn = len(box["nodes"])
-        for i, nd in enumerate(box["nodes"]):
-            bx0 = 120 + i * 170 if nn > 1 else 200
-            for j, (nm, pt) in enumerate((("ETH1", "RJ45"), ("ETH2", "RJ45"), ("SFP+", "SFP"))):
-                self.add_port(rid, f"{nd}.{nm}", (bx0 + j * 42, y + h / 2, z + dd), (0, 0, 1), pt, f"{nd} {nm}")
-        self.add_port(rid, "GNSS", (45, y + h / 2, z + dd), (0, 0, 1), "SMA", "GNSS in (TBC)")
+        R = C.SPIDER_REAR
+        yr = y + R["y"]
+        for nd, grp in zip(box["nodes"], ("node_a", "node_b")):
+            g = R[grp]
+            for nm, key, pt in (("ETH1", "eth1", "RJ45"), ("ETH2", "eth2", "RJ45"), ("SFP+", "sfp", "SFP"),
+                                ("GNSS", "gnss", "SMA"), ("USB", "usb", "USB")):
+                self.add_port(rid, f"{nd}.{nm}", (g[key], yr, z + dd), (0, 0, 1), pt, f"{nd} {nm}")
+        self.add_port(rid, "PI.LAN", (R["pi"], yr, z + dd), (0, 0, 1), "RJ45", "box controller LAN (Raspberry Pi; use TBC)")
+        self.add_port(rid, "DCIN", (R["dcin"], yr + 6, z + dd), (0, 0, 1), "DC", "box DC terminal block (TBC)")
         dv["nodes"] = box["nodes"]
 
     def _ports_attshelf(self, dv, rid):
@@ -144,13 +152,13 @@ class Scene:
         for sec, sid in list(b.split.items()) + list(b.coupled.items()):
             bx, m = self.d["module"][sec]
             for t in T:
-                cx = BS.mod_x(m, t)
+                cx = C.spider_tile_x(bx, int(m[1]), t)
                 kind = "splitter" if sec in b.split else "coupler"
                 s = C.SMALL[kind]
                 bid = f"{sid}.t{t}"
-                self.add_dev(bid, kind, bid, s["note"], (cx - s["size"][0] / 2, y + 6, z + 4), s["size"], s["color"],
+                self.add_dev(bid, kind, bid, s["note"], (cx - s["size"][0] / 2, y + 4, z + 4), s["size"], s["color"],
                              "rack", "estimate", s["note"], parent=rid)
-                yc = y + 6 + s["size"][1] / 2
+                yc = y + 4 + s["size"][1] / 2
                 if kind == "splitter":
                     self.add_port(bid, "S", (cx, yc + 4, z + 4), (0, 0, -1), "SMA", "S")
                     self.add_port(bid, "P1", (cx - 4, yc - 4, z + 4), (0, 0, -1), "SMA", "P1")
@@ -183,13 +191,15 @@ class Scene:
                 a = f"PA-{len(b.dc_nodes) + j + 1:02d}"
                 self._small(a, "adaptor", xx, y, z + dd - 100, rid, spare=True)
         elif rid == "AGENTS":
+            ms = C.TABLE_DEV["minipc"]["size"]
             for i, s in enumerate(self.d.get("agents", [])):
                 aid = f"AGENT-{s}"
-                px = 20 + i * 75
-                self.add_dev(aid, "minipc", aid, "MARL agent mini PC (2 NICs)", (px, y + 4, z + 150), (70, 40, 120),
+                col, row = i % 3, i // 3
+                px, pz = 30 + col * 150, z + 10 + row * 125
+                self.add_dev(aid, "minipc", aid, "MARL agent mini PC (2 NICs)", (px, y + 4, pz), ms,
                              C.TABLE_DEV["minipc"]["color"], "rack", "estimate", "mini PC size estimate", parent=rid)
                 for j, nm in enumerate(("data", "mgmt", "ac")):
-                    self.add_port(aid, nm, (px + 12 + j * 22, y + 24, z + 270), (0, 0, 1),
+                    self.add_port(aid, nm, (px + 20 + j * 35, y + 30, pz + ms[2]), (0, 0, 1),
                                   "RJ45" if nm != "ac" else "C5", nm)
 
     def _small(self, sid, kind, cx, y, z0, parent, *ports, color=None, spare=False):
@@ -208,7 +218,11 @@ class Scene:
         self.add_port(rid, "bus", (440, y + h / 2, z + dd), (0, 0, 1), "DC", "bus")
 
     def _ports_fuse(self, dv, rid):
-        self._ports_dcdist(dv, rid, 10, "F")
+        x, y, z, w, h, dd = self._face(dv)
+        for i in range(1, 11):
+            xx = 82 + (i - 1) * 17 if i <= 5 else 334 + (i - 6) * 16.5
+            self.add_port(rid, f"F{i}", (xx, y + 13, z - 5), (0, 0, -1), "DC", f"F{i} output (bus {'A' if i <= 5 else 'B'})")
+        self.add_port(rid, "bus", (52, y + 22, z - 5), (0, 0, -1), "DC", "bus A input studs (B strapped)")
 
     def _ports_rect(self, dv, rid):
         x, y, z, w, h, dd = self._face(dv)
@@ -234,8 +248,8 @@ class Scene:
         x, y, z, w, h, dd = self._face(dv)
         for p in range(1, BS.OOB_RJ45 + BS.OOB_SFP + 1):
             col, row = (p - 1) // 2, (p - 1) % 2
-            px = 40 + col * 24 + (16 if p > BS.OOB_RJ45 else 0)
-            self.add_port(rid, f"P{p}", (px, y + h * (0.66 - 0.32 * row), z), (0, 0, -1),
+            px = 90 + col * 19 + (16 if p > BS.OOB_RJ45 else 0)
+            self.add_port(rid, f"P{p}", (px, y + h * (0.66 - 0.32 * row), z + dd), (0, 0, 1),
                           "RJ45" if p <= BS.OOB_RJ45 else "SFP", f"P{p}")
         self.add_port(rid, "ac", (450, y + h / 2, z + dd), (0, 0, 1), "C14", "AC")
 
@@ -272,7 +286,7 @@ class Scene:
             self._tdev("MWATT", "mwatt", "Keysight J7204B, 4 ch", (mx, top, z_front), ms, ("lan", "RJ45"), ("ac", "C14"))
             for j, (k, (a, bb)) in enumerate(hops):
                 for side in ("in", "out"):
-                    self.add_port("MWATT", f"ch{j + 1}.{side}", (mx + 50 + j * 95 + (0 if side == "in" else 40), top + 44,
+                    self.add_port("MWATT", f"ch{j + 1}.{side}", (mx + 150 + j * 68 + (0 if side == "in" else 30), top + 44,
                                                                  z_front), (0, 0, -1), "SMA", f"CH{j + 1} {side}")
             rs = C.TABLE_DEV["ip50"]["size"]
             for j, (k, (a, bb)) in enumerate(hops):
@@ -358,6 +372,9 @@ class Scene:
             if n0[2] < 0 and n1[2] < 0:                       # front to front: lane plane in front of the rack
                 zl = -so
                 pts = [p0, [p0[0], p0[1], zl], [p0[0], p1[1], zl], [p1[0], p1[1], zl], p1]
+            elif n0[2] * n1[2] < 0:                            # front <-> rear: round the side of the rack
+                side = -35 - 3 * (lane % 8) if cls in ("AC", "DC", "POE") else C.PANEL_W + 35 + 3 * (lane % 8)
+                pts = [p0, a, [side, a[1], a[2]], [side, bpt[1], a[2]], [side, bpt[1], bpt[2]], bpt, p1]
             else:                                              # rear: behind the deeper device, side lane if far apart
                 zl = max(p0[2], p1[2]) + so
                 side = -35 - 3 * (lane % 8) if cls in ("AC", "DC", "POE") else C.PANEL_W + 35 + 3 * (lane % 8)
@@ -450,7 +467,7 @@ class Scene:
                     lad = "OM4"
             elif pn.startswith("FZ2ERLNLNSNM"):
                 lad = "OM4"
-            if c["cls"] == "DC" and pn == "Belden 8461":
+            if c["cls"] == "DC" and pn in ("Belden 8461", "bus link"):
                 m = math.ceil(need / 250.0) * 0.25
                 c["metres"], c["length"] = m, f"{m:g} m (cut)"
                 continue

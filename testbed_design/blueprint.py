@@ -1108,18 +1108,18 @@ def sheet_table(b, pdf, n, N, prefix):
     g = b.cable(cls="GNSS", a="GNSS-ANT")
     s.rect(gx + 26, gy - 18, 8, 6, fc=PLATE, lw=0.5, z=5)
     s.text(gx + 30, gy - 10.6, "arrestor", fs=3.4, color=DIM, ha="center")
-    s.rect(gx + 50, gy - 22, 30, 14, fc=FACE, lw=0.6, z=4)
+    s.rect(gx + 50, gy - 22, 52, 14, fc=FACE, lw=0.6, z=4)
     s.text(gx + 51.5, gy - 10.4, "GNSS-SPL 1x8", fs=4.2, fontweight="bold", va="center")
     s.line([(gx + 3, gy - 8), (gx + 3, gy - 4), (gx + 30, gy - 4), (gx + 30, gy - 12)], color=CLS["GNSS"][0], lw=1.0, z=9)
     s.line([(gx + 34, gy - 15), (gx + 50, gy - 15)], color=CLS["GNSS"][0], lw=1.0, z=9)
     s.tag(gx + 42, gy - 15, g["id"], CLS["GNSS"][0], rot=0)
-    for i, box in enumerate(d["boxes"]):
+    for i, nd in enumerate(d["nodes"]):
         ox = gx + 54 + i * 6.5
         sma(s, ox, gy - 19, r=0.9)
-        cab = b.cable(cls="GNSS", b=f"{box['id']}.GNSS")
+        cab = b.cable(cls="GNSS", b=f"{d['nodes'][nd]['box']}.{nd}.GNSS")
         s.line([(ox, gy - 20), (ox, gy - 30)], color=CLS["GNSS"][0], lw=0.8, z=9, ls=CLS["GNSS"][2])
-        s.tag(ox, gy - 30.4, f"{cab['id']} {box['id']}", CLS["GNSS"][0], va="top", fs=3.6)
-    s.text(gx + 84, gy - 15, "-> Spider box rear\nGNSS input (sheets\n3-4); N367 GPS\nis internal", fs=3.8,
+        s.tag(ox, gy - 30.4, f"{cab['id']} {nd}", CLS["GNSS"][0], va="top", fs=3.4)
+    s.text(gx + 106, gy - 15, "-> Spider box rear\nGNSS input (sheets\n3-4); N367 GPS\nis internal", fs=3.8,
            color=DIM, va="center")
     s.notes(gx, gy - 48, [
         "IP-50 band, flange (WR-62 / WR-42 / WR-28) and Tx power TBC; >= 110 dB in the chain takes a hop down.",
