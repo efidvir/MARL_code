@@ -96,7 +96,25 @@ SMALL = {
     "arrestor": dict(size=(80, 40, 25), color="#2e7d32", note="GNSS surge arrestor, DC pass (the splitter powers the antenna through it), N-female both ends, ground lug (part TBC)"),
     "bridge":   dict(size=(135, 6, 140), color="#6b7785", note="rack-to-table cable bridge: wire-basket cable tray section with a divider (data in front, power behind) on two brackets, rack right post to the table edge, its floor at table height (part TBC)"),
     "transition": dict(size=(33.3, 33.3, 35), color="#d8dee9", note="Pasternack PEWCA1003 WR-62 to SMA-F (33.3 mm flange); band to confirm"),
+    # fixed pads screwed straight onto a port (PoC 1: no programmable attenuators): the stack's size comes from PAD
+    "padstack": dict(size=(10, 10, 62), color="#d8a657", note="fixed SMA pad stack (one or two pads screwed together) on "
+                     "a port: its IN end is screwed onto the port, the cable goes on its OUT end"),
 }
+
+# fixed SMA pads (attenuators), per part family: mated body length (SMA male to female) and the largest diameter, mm.
+# TENTATIVE: estimates until the lab measures one; a two-pad stack is drawn as the sum of the two (overlap ignored)
+PAD = {
+    "BW-S": dict(len=31.0, dia=10.0, w=2, note="Mini-Circuits BW-S<n>W2+ fixed attenuator, SMA male to female, DC-18 GHz, "
+                 "2 W: about 31 mm long, 10 mm across (estimate)"),
+    "SA18S10W-30": dict(len=60.0, dia=25.0, w=10, note="Fairview SA18S10W-30 30 dB 10 W fixed attenuator, SMA male to "
+                        "female, DC-18 GHz: about 60 mm long, 25 mm across the fins (estimate)"),
+}
+
+
+def pad_dims(pn):
+    """(length, diameter) of a fixed pad by part number (BW-S<n>W2+ or SA18S10W-30)."""
+    p = PAD["BW-S"] if pn.startswith("BW-S") else PAD[pn]
+    return p["len"], p["dia"]
 
 # colours by cable class (light theme)
 CABLE = {"AC": "#c0392b", "DC": "#d4a017", "POE": "#e67e22", "FIB": "#16a085", "ETH": "#2980b9", "RF": "#8e44ad",

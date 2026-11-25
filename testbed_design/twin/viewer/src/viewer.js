@@ -372,6 +372,39 @@ export class Viewer {
         const rearTex = drawFace({ dev: d, face: 'rear', W: bx1 - bx0, H: h, S: 2.5, bg: darken(color, 0.05), ports: rearPorts, ears: false, uN: d.u_n });
         const rear = mk(rearTex);
         addMesh(this._box(bx0, y + 0.3, z + 3, bx1, y + h - 0.3, z + dp, [side, side, topM, plain, plain, rear]));
+      } else if (d.kind === 'padstack') {
+        // fixed SMA pad stack: one cylinder per pad along IN -> OUT (port end first),
+        // a steel hex at every joint; alternate pads a shade darker so the count reads
+        const pin = this.model.ports.get(`${d.id}.in`);
+        const pout = this.model.ports.get(`${d.id}.out`);
+        const c0 = [x + w / 2, y + h / 2, z + dp / 2];
+        const A = toThree(pin ? pin.pos : c0);
+        const B = toThree(pout ? pout.pos : c0);
+        const axis = B.clone().sub(A);
+        const L = axis.length() || Math.max(w, h, dp);
+        if (axis.lengthSq() < 1e-6) axis.set(1, 0, 0);
+        axis.normalize();
+        const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), axis);
+        const pads = (d.pads && d.pads.length) ? d.pads : [{ len_mm: L, dia_mm: Math.min(w, h, dp) }];
+        const tot = pads.reduce((s, pd) => s + (pd.len_mm || 0), 0) || L;
+        const steel = mk(null, '#aeb5bd');
+        const at = (t, len, r, seg, mat) => {
+          const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, seg), mat);
+          m.position.copy(A).addScaledVector(axis, t);
+          m.quaternion.copy(q);
+          return addMesh(m);
+        };
+        let t0 = 0;
+        pads.forEach((pd, i) => {
+          const len = ((pd.len_mm || L / pads.length) * L) / tot;
+          const r = Math.max(2, (pd.dia_mm || Math.min(w, h, dp)) / 2);
+          const nut = Math.min(6, len * 0.2);
+          const body = mk(null, i % 2 ? darken(color, 0.22) : color);
+          at(t0 + nut / 2, nut, r * 1.02, 6, steel);
+          at(t0 + nut + (len - 2 * nut) / 2, len - 2 * nut, r * 0.9, 20, body);
+          at(t0 + len - nut / 2, nut, r * 0.8, 6, steel);
+          t0 += len;
+        });
       } else if (d.kind === 'antenna') {
         const m = mk(null, color);
         const c = new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2, h, 24), m);
@@ -828,10 +861,11 @@ export class Viewer {
     if (name === 'rack') return this.rackBox;
     if (name === 'table') return this.tableBox;
     if (name === 'rackIF') {
-      const ds = this.scene3.devices.filter((d) => d.group === 'rack' && ['spider', 'ztdat', 'tray', 'attshelf', 'splitter', 'coupler'].includes(d.kind));
+      const ds = this.scene3.devices.filter((d) => d.group === 'rack' && ['spider', 'ztdat', 'tray', 'attshelf', 'splitter', 'coupler', 'padstack'].includes(d.kind));
       if (!ds.length) return this.rackBox;
       const b = union(ds.map(devBox));
-      return { min: [-70, b.min[1] - 10, -70], max: [560, b.max[1] + 10, 60] };
+      // pad stacks on the Spider tiles stand proud of the front rail
+      return { min: [-70, b.min[1] - 10, Math.min(-70, b.min[2] - 10)], max: [560, b.max[1] + 10, 60] };
     }
     const room = this.scene3.devices.filter((d) => d.group === 'room' && d.kind !== 'antenna').map(devBox);
     return union([this.rackBox, this.tableBox, { min: [0, 0, 0], max: [0, 0, 0] }, ...room]);

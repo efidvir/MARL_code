@@ -12,13 +12,13 @@
 //   setClasses([cls] | null)   setScenario('before'|'after')   setLabels(b)  setXray(b)
 //   showTable(b)  showBlanks(b)  setDims(b)  setConfTint(b)  setColorMode('class'|'link')
 //   setUI('full'|'min'|'none') frameBox([x0,y0,z0],[x1,y1,z1], dir?)  render()  getState()
-// URL: ?view=front&step=7&highlight=R001,R002&trace=R009&focus=ATT-03&select=SB2
+// URL: ?view=front&step=7&highlight=R001,R002&trace=R009&focus=SB2&select=SB2
 //      &classes=RF,WG&scenario=after&labels=0&xray=1&table=0&blanks=0&dims=1&conf=1
 //      &color=link&ui=none
 import css from './style.css';
 import * as THREE from 'three';
 import { Viewer } from './viewer.js';
-import { buildModel, traceCable, tokenLabel, escapeHtml as esc, CLASS_ORDER, linkOfBundle, isPassive } from './model.js';
+import { buildModel, traceCable, tokenLabel, escapeHtml as esc, CLASS_ORDER, linkOfBundle, isPassive, mateOf, cableAt as cableAtPort } from './model.js';
 
 const VIEW_NAMES = [
   ['front', 'Front'], ['rear', 'Rear'], ['left', 'Left'], ['right', 'Right'],
@@ -32,6 +32,8 @@ const KIND_NAMES = {
   mwatt: 'multi-channel attenuator', ip50: 'IP-50 radio', server: 'server', pc: 'PC', specan: 'spectrum analyser',
   strip: 'mains strip', psu: 'power supply', wall: 'wall sockets', antenna: 'antenna',
   rackserver: 'rack server', attshelf: 'attenuator shelf', monitor: 'monitor', keyboard: 'keyboard',
+  padstack: 'fixed pad stack (SMA attenuators)', armstack: 'DC block / pad stack', arrestor: 'GNSS surge arrestor',
+  bridge: 'cable bridge', earthbar: 'earth bar', spacer: 'spacer bar',
 };
 
 function h(tag, attrs = {}, html = '') {
@@ -84,7 +86,9 @@ class App {
     top.appendChild(views);
     const search = h('div', { class: 'search' });
     search.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>';
-    const inp = h('input', { type: 'search', placeholder: 'Find R057, ATT-03, SW-DATA.P7…', list: 'twin-ids', spellcheck: 'false' });
+    // search example: a cable, a passive part of this bench (attenuator or pad stack) and a switch port
+    const exPart = ['ATT-03', ...this.scene.devices.filter((d) => d.kind === 'padstack' || d.kind === 'ztdat').map((d) => d.id)].find((id) => this.model.devices.has(id)) || 'SB2';
+    const inp = h('input', { type: 'search', placeholder: `Find R057, ${exPart}, SW-DATA.P7…`, list: 'twin-ids', spellcheck: 'false' });
     const dl = h('datalist', { id: 'twin-ids' });
     dl.innerHTML = this.model.allIds.map((id) => `<option value="${esc(id)}">`).join('');
     const msg = h('div', { class: 'msg' });
@@ -173,7 +177,7 @@ class App {
     tog('xray', 'X-ray (see cables inside the rack)', false, (v) => this.setXray(v));
     tog('dims', 'Main dimensions', false, (v) => this.setDims(v));
     tog('conf', 'Tint devices by confidence (amber = estimate, blue = likely)', false, (v) => this.setConfTint(v), 'how sure the geometry is');
-    tog('link', 'Colour IF / IP-50 cables by link', false, (v) => this.setColorMode(v ? 'link' : 'class'), 'one colour per attenuated link (like blueprint sheet 2)');
+    tog('link', 'Colour IF / IP-50 cables by link', false, (v) => this.setColorMode(v ? 'link' : 'class'), 'one colour per IF link / IP-50 hop (like blueprint sheet 2)');
     this.linkLegend = h('div', { class: 'linklegend' });
     this.linkLegend.innerHTML = [...V.linkColor.entries()].map(([l, c]) => `<span><i style="background:${esc(c)}"></i>${esc(l === 'spl' ? 'tile→splitter' : l)}</span>`).join('');
     this.linkLegend.style.display = 'none';
@@ -532,7 +536,7 @@ class App {
     const r = this.resolve(cableId);
     if (!r) return null;
     let cid = r.id;
-    if (r.type === 'port') cid = this.model.portCable.get(r.id);
+    if (r.type === 'port') cid = cableAtPort(this.model, r.id);
     if (r.type === 'device') {
       const l = this.model.devCables.get(r.id) || [];
       cid = l[0];
@@ -632,7 +636,8 @@ class App {
     } else if (hit.type === 'port') {
       const p = m.ports.get(hit.id);
       const cid = m.portCable.get(hit.id);
-      html = `<b>${esc(p.id)}</b> · ${esc(p.type)}<div class="tt2">${esc(p.label || '')}${cid ? ` · cable ${esc(cid)}` : ' · not connected'}</div>`;
+      const mt = cid ? null : mateOf(m, hit.id);
+      html = `<b>${esc(p.id)}</b> · ${esc(p.type)}<div class="tt2">${esc(p.label || '')}${cid ? ` · cable ${esc(cid)}` : mt ? ` · screwed onto ${esc(mt)}` : ' · not connected'}</div>`;
     }
     tt.innerHTML = html;
     const rect = this.stage.getBoundingClientRect();
@@ -711,6 +716,12 @@ class App {
         bd += row('Event t0', `<span class="chip dark">dark after t0</span> ${what}: no power once ${why ? this._link(why.from) : 'its feed'} is off${why && why.via.length ? ` (via ${why.via.map((x) => this._link(x)).join(', ')})` : ''}`);
       }
       if (d.modules) bd += row('Modules', d.modules.map((x) => `<span class="mono">${esc(x.m)}</span> ${esc(x.sector)}`).join(' · '));
+      if (d.kind === 'padstack') {
+        const pads = (d.pads || []).map((x) => `<span class="mono">${esc(x.pn)}</span> ${esc(x.db)} dB`).join(' + ');
+        bd += row('Pads', `${pads || esc(d.text)} = <b>${esc(d.db)} dB</b>${d.target_db != null ? ` <span style="color:var(--ink3)">(target ${esc(d.target_db)} dB)</span>` : ''}`);
+        if (d.host) bd += row('On', `${this._link(d.host)} <span style="color:var(--ink3)">(IN screwed on; port first, ${esc(d.stack_mm)} mm long)</span>`);
+        if (d.support) bd += row('Support', esc(d.support));
+      }
       if (d.spare) bd += row('Spare', 'yes (unwired)');
       const kids = m.children.get(d.id) || [];
       if (kids.length) bd += row('Holds', kids.map((k) => this._link(k)).join(' '));
@@ -723,7 +734,9 @@ class App {
           const cid = m.portCable.get(p.id);
           const c = cid ? m.cables.get(cid) : null;
           const other = c ? (c.a === p.id ? c.b : c.a) : '';
-          bd += `<tr><td class="mono">${this._link(p.id).replace(`>${esc(p.id)}<`, `>${esc(p.name || p.id)}<`)}</td><td>${esc(p.type)}</td><td>${c ? this._link(cid) : '<span style="color:#b3bac4">—</span>'}</td><td class="mono">${other ? this._link(other) : ''}</td></tr>`;
+          const mt = c ? null : mateOf(m, p.id);
+          const cabCell = c ? this._link(cid) : mt ? '<span style="color:var(--ink3)">screwed on</span>' : '<span style="color:#b3bac4">—</span>';
+          bd += `<tr><td class="mono">${this._link(p.id).replace(`>${esc(p.id)}<`, `>${esc(p.name || p.id)}<`)}</td><td>${esc(p.type)}</td><td>${cabCell}</td><td class="mono">${other ? this._link(other) : mt ? this._link(mt) : ''}</td></tr>`;
         }
         bd += '</table>';
       }
@@ -777,11 +790,15 @@ class App {
       bd += row('Label', esc(p.label || p.name));
       bd += row('Faces', `<span class="mono">${p.normal[2] < -0.5 ? 'front' : p.normal[2] > 0.5 ? 'rear' : p.normal[1] > 0.5 ? 'up' : p.normal[1] < -0.5 ? 'down' : p.normal[0] > 0 ? 'right' : 'left'}</span>`);
       bd += row('Position', `<span class="mono">x ${Math.round(p.pos[0])}, y ${Math.round(p.pos[1])}, z ${Math.round(p.pos[2])} mm</span>`);
+      const mt = c ? null : mateOf(m, p.id);
       if (c) {
         bd += row('Cable', `${this._link(cid)} · ${esc(c.cls)} · ${esc(c.length)}`);
         bd += row('Other end', this._link(c.a === p.id ? c.b : c.a));
+      } else if (mt) {
+        bd += row('Screwed onto', `${this._link(mt)} <span style="color:var(--ink3)">(no cable: direct SMA mate)</span>`);
       } else bd += row('Cable', '<span style="color:var(--ink3)">not connected</span>');
-      bd += `<div class="btns">${c ? `<button class="pri" data-act="trace" data-arg="${esc(cid)}">Trace signal</button>` : ''}<button data-act="focus" data-arg="${esc(p.id)}">Focus</button><button data-act="clear">Clear</button></div>`;
+      const tc = c ? cid : mt ? cableAtPort(m, p.id) : null;
+      bd += `<div class="btns">${tc ? `<button class="pri" data-act="trace" data-arg="${esc(tc)}">Trace signal</button>` : ''}<button data-act="focus" data-arg="${esc(p.id)}">Focus</button><button data-act="clear">Clear</button></div>`;
     }
     box.innerHTML = `<div class="hd">${hd}<button class="x" title="close">×</button></div><div class="bd">${bd}</div>`;
     box.classList.add('show');
@@ -798,6 +815,7 @@ class App {
     const el = V.renderer.domElement;
     const tanV = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
     const pxPerMm = (p) => el.clientHeight / (2 * tanV * Math.max(1, cam.position.distanceTo(p)));
+    const padGroups = new Map(); // highlighted pad stacks: one label per link side
     for (const [id, e] of V.dev) {
       if (!e.grp.visible) continue;
       const d = e.d;
@@ -808,6 +826,12 @@ class App {
       }
       if (e.dark) {
         out.push({ key: 'dark:' + id, cls: 'dark', html: `${esc(id)} · dark after t0`, anchor: e.anchor, pri: 95, force: true });
+        continue;
+      }
+      if (d.kind === 'padstack' && (isHi || (!hl && e.mode === 'hi'))) {
+        const k = `${d.chain}|${d.link}|${d.side}`;
+        if (!padGroups.has(k)) padGroups.set(k, []);
+        padGroups.get(k).push(e);
         continue;
       }
       const rackTop = d.group === 'rack' && !d.parent && d.u && d.kind !== 'blank';
@@ -838,9 +862,26 @@ class App {
         if (st.partLabels === false) continue;
         // parts big enough to carry their id on their own face need no overlay
         if (d.size[0] >= 60 && d.size[1] >= 30) continue;
-        if (pxPerMm(e.anchor) * d.size[0] < 20) continue;
-        out.push({ key: 'd:' + id, cls: 'part', html: esc(id), anchor: e.anchor, pri: 20, normal: e.frontNormal, occlude: true, devId: id });
+        // pad stacks: only once they are drawn large enough to tell apart (zoomed in)
+        if (pxPerMm(e.anchor) * (d.kind === 'padstack' ? Math.max(...d.size) / 2.5 : d.size[0]) < 20) continue;
+        const html = d.kind === 'padstack' ? `${esc(id)} · ${esc(d.text)} dB` : esc(id);
+        out.push({ key: 'd:' + id, cls: 'part', html, anchor: e.anchor, pri: 20, normal: d.kind === 'padstack' ? null : e.frontNormal, occlude: d.kind !== 'padstack', devId: id });
       }
+    }
+    for (const [k, es] of padGroups) {
+      // 'PAD-HUB-S.t1-t4 · 30 + 5 dB' above the group of stacks
+      const d0 = es[0].d;
+      const anchor = new THREE.Vector3();
+      es.forEach((e) => anchor.add(e.anchor));
+      anchor.multiplyScalar(1 / es.length);
+      anchor.y = Math.max(...es.map((e) => e.anchor.y));
+      const tiles = es.map((e) => e.d.tile).filter((t) => t != null).sort((a, b) => a - b);
+      let name = d0.id;
+      if (es.length > 1 && tiles.length === es.length) {
+        const run = tiles.every((t, i) => !i || t === tiles[i - 1] + 1);
+        name = `${d0.id.replace(/\.t\d+$/, '')}.${run ? `t${tiles[0]}-t${tiles[tiles.length - 1]}` : tiles.map((t) => `t${t}`).join(',')}`;
+      }
+      out.push({ key: 'pg:' + k, cls: 'hi', html: `${esc(name)} · ${esc(d0.text)} dB`, anchor, pri: 88 });
     }
     if (hl) {
       const many = hl.cables.size > 36;

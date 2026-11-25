@@ -16,16 +16,22 @@ A design is a plain dict:
   servers    [(id, role, site or None)]           site = the site VLAN its data NIC joins
   no_data    [site]                               nodes with no wired data port (PoC 1 hub)
   att_order  [link or arm]                        attenuator order (optional)
-  att_set    {link: (job, before, t0, after, margin)}   attenuator settings in dB (optional)
+  att_set    {link: (job, before, t0, after, margin)}   attenuator settings in dB (optional); with if_pads, the
+                                                  value each link's fixed pads stand in for
   att_reuse  int                                  attenuators carried over from PoC 1 (optional)
+  if_pads    bool  (PoC 1) no programmable attenuators: every IF tile path gets a fixed pad stack (BW-S<n>W2+,
+             at most PAD_MAX pads) on its A-end port (the hub splitter's P1/P2, else the A tile), sized from att_set
+  mw_pads    bool  (PoC 1) no J7204B (MWATT): every IP-50 hop is radio - transition - 30 dB 10 W pad - 10 dB pad -
+             one SMA cable - 30 dB 10 W pad - transition - radio
   event      text; event_off [device]   (PoC 1) devices that go down at t0 lose power: servers, TG nodes and
              IP-50 radios in event_off sit on switched PDU outlets (nodes through an AC PoE injector, radios
-             through their own 48 V supply); links between surviving devices are dropped with attenuators
+             through their own 48 V supply); links between surviving devices are dropped with attenuators, or
+             (if_pads) held down with Terragraph ignition disabled until MARL engages them: no RF change
 
 Management is in-band: the E2E controller reaches every node through the radio network from its data
 NIC, so no node ETH2 (and no IP-50 management port, until it is shown not to bridge to the data port) is
-cabled to the management switch.  SW-OOB carries only lab equipment: attenuators, PDUs, the analyser and
-the PCs' second NICs.
+cabled to the management switch.  SW-OOB carries only lab equipment: attenuators (if any), PDUs, the analyser
+and the PCs' second NICs.
 """
 import csv
 import math
@@ -68,6 +74,13 @@ POLARITY_NOTE = ("odd / even / hybrid is the Terragraph polarity the E2E control
 ARM_BUDGET = dict(span_db=46.0, snr_db=25.0, inr_max_db=24.0, coupling_db=10.0, dc_block_db=0.5, att_il_db=5.0,
                   cable_db_per_m=1.5, conn_db=0.5)
 BW_S_DB = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 30]
+# fixed-pad links (design 'if_pads', PoC 1, TENTATIVE: user, 2026-11-25): at most PAD_MAX BW-S pads per tile path,
+# spares per value; IP-50 hop chain (design 'mw_pads'): a 30 dB 10 W pad on each transition + one 10 dB pad on the A side
+PAD_MAX = 2
+PAD_SPARE = 0.10                # ~10 % spare pads per value, at least 1
+MW_PAD_HI = ("SA18S10W-30", 30)                     # on each transition (10 W: the radio's full output)
+MW_PAD_LO = ("BW-S10W2+", 10)                       # A side, after the 30 dB pad
+MW_PAD_LO_K = "2.92 mm 10 dB fixed attenuator DC-40 GHz (part TBC)"   # replaces MW_PAD_LO if the band is 23 GHz
 BELDEN_SPOOL_M = 30.48          # Belden 8461, 100 ft spool
 DC_WASTE = 0.10                 # stripping, dressing and offcuts on bulk DC cable
 DC_CUT = ("Belden 8461", "bus link", "bus strap", "PE 6 mm2", "PE 2.5 mm2")   # cut from bulk to the twin route + 10 %
@@ -126,12 +139,64 @@ def ch_x(c, side, slot=0):
     return att_x0(slot) + 28 + (c - 1) * 42 + (-9 if side == "in" else 9)
 
 
+def _pad_combos(values=BW_S_DB, n=PAD_MAX):
+    """{total dB: pads} for every total that 1..n available BW-S values make: the fewest pads first, then the largest
+    first pad (28 -> 20 + 8, 35 -> 30 + 5, not 20 + 15)."""
+    vs = sorted(values, reverse=True)
+    out = OrderedDict((v, (v,)) for v in vs)
+    if n >= 2:
+        for a in vs:
+            for b_ in vs:
+                if b_ <= a:
+                    out.setdefault(a + b_, (a, b_))
+    return out
+
+
+PAD_COMBOS = _pad_combos()
+
+
+def pad_target(row):
+    """the attenuation (dB) a link's fixed pads stand in for, from its A7 attenuator row (job, before, t0, after, margin):
+    the 'after' setting when it has one (a bridge, as MARL engages it), else 'before' (a hub path: it only goes down with
+    the hub, so its attenuator only ever set the link quality)."""
+    _, bef, _, aft, _ = row
+    return float(aft) if isinstance(aft, (int, float)) else float(bef)
+
+
+def pad_stack(target):
+    """Fixed pad stack for a target attenuation: the target rounded to the nearest whole dB (a tie rounds UP, toward more
+    loss, so a path is never stronger than the model), split into at most PAD_MAX available BW-S values. A whole-dB value
+    that no stack makes takes the achievable total nearest the unrounded target (a tie again toward more loss)."""
+    r = int(math.floor(target + 0.5))
+    if r in PAD_COMBOS:
+        db, rule = r, "nearest whole dB" + (" (tie rounded up)" if abs(target - math.floor(target) - 0.5) < 1e-9 else "")
+    else:
+        db = min(PAD_COMBOS, key=lambda v: (abs(v - target), -v))
+        rule = f"{r} dB needs more than {PAD_MAX} pads: nearest total {PAD_MAX} pads make"
+    pads = list(PAD_COMBOS[db])
+    return dict(target=round(target, 1), rounded=r, db=db, pads=pads, pn=[f"BW-S{v}W2+" for v in pads],
+                text=" + ".join(str(v) for v in pads), rule=rule)
+
+
+def pad_parts(pns):
+    """[dict(pn, db, len_mm, dia_mm)] for a list of pad part numbers, in stack order (port end first)."""
+    out = []
+    for pn in pns:
+        L, dia = CAT.pad_dims(pn)
+        m = re.match(r"^(?:BW-S(\d+)W2\+|SA18S10W-(\d+))$", pn)
+        out.append(dict(pn=pn, db=int(m.group(1) or m.group(2)), len_mm=L, dia_mm=dia))
+    return out
+
+
 # ------------------------------------------------------------------------------------------
 # designs
 # ------------------------------------------------------------------------------------------
 def poc1_design():
     """A7 as cabled on the bench (figures/bench_a7.mjs): each node's hub link on one module and its
-    bridge on the other, the hub's W and E modules split to two peers, 9 attenuators."""
+    bridge on the other, the hub's W and E modules split to two peers. TENTATIVE (user, 2026-11-25): links only need to
+    go down, and that happens because whole devices lose power at t0, so there are no programmable attenuators and no
+    J7204B: every IF tile path gets a fixed pad stack sized from the A7 settings below (if_pads), every IP-50 hop fixed
+    pads (mw_pads); the bridges are held down with Terragraph ignition disabled until MARL engages them."""
     boxes = [dict(id="SB1", code="GTS003 #1", kind="GTS003", nodes=["W1", "W2"]),
              dict(id="SB2", code="GTST002B", kind="GTST002B", nodes=["HUB"]),
              dict(id="SB3", code="GTST003", kind="GTST003", nodes=["S", "N"]),
@@ -153,7 +218,8 @@ def poc1_design():
         ("HUB-S", (("HUB", "S"), ("S", "N"))), ("HUB-N", (("HUB", "N"), ("N", "S"))),
         ("E2-W2", (("E2", "N"), ("W2", "S"))), ("E1-N", (("E1", "N"), ("N", "W"))), ("W1-S", (("W1", "S"), ("S", "E")))])
     # out/option_A7_sectors.md, 'V-band paths and programmable attenuators': job, before, at t0, after, margin
-    # the hub's paths go down with the hub (power cut at t0): their attenuators only set the link quality before
+    # the hub's paths go down with the hub (power cut at t0): their attenuators only set the link quality before.
+    # With fixed pads (if_pads) each link's pad stands in for: hub paths 'before', bridges 'after' (bench_spec.pad_target)
     down = "hub off at t0"
     att_set = OrderedDict([
         ("HUB-W1", (down, 27.6, "hold", "hold", "21.6 / -13.9")), ("HUB-W2", (down, 23.1, "hold", "hold", "21.6 / -18.4")),
@@ -174,14 +240,17 @@ def poc1_design():
                            ("N", ["N"])]),
         agents=["W1", "W2", "E1", "E2", "S", "N"],
         servers=[("SRV-E2E", "TG E2E controller + NMS", "CORE"), ("SRV-DPIR", "DPIR planner + predictor", "CORE"),
-                 ("BENCH-CTL", "bench controller: event script, ATT / PDU commands, logging (always on)", None)],
-        no_data=["HUB"], att_set=att_set,
-        mw_set=OrderedDict([("W1-CORE", ("10 + fades", "CORE radio off")), ("CORE-E1", ("10 + fades", "CORE radio off")),
-                            ("W1-W2", ("10 + fades", "unchanged")), ("E1-E2", ("10 + fades", "unchanged"))]),
+                 ("BENCH-CTL", "bench controller: event script, PDU commands, logging (always on)", None)],
+        no_data=["HUB"], att_set=att_set, if_pads=True, mw_pads=True,
+        mw_set=OrderedDict([("W1-CORE", ("10 (fixed pad)", "CORE radio off")),
+                            ("CORE-E1", ("10 (fixed pad)", "CORE radio off")),
+                            ("W1-W2", ("10 (fixed pad)", "unchanged")), ("E1-E2", ("10 (fixed pad)", "unchanged"))]),
         event="t0: the devices that die lose power at their switched PDU outlets: the hub (its AC PoE injector), "
               "CORE's two IP-50 radios, SRV-E2E and SRV-DPIR. The hub's six paths and the W1-CORE and CORE-E1 hops go "
-              "down with them; no attenuator moves at t0. W1-W2 and E1-E2 unchanged. Bridges ATT-07..09 (links "
-              "between surviving nodes) step down from their off-beam setting when MARL engages their sites.",
+              "down with them; nothing RF moves at t0 (fixed pads, no programmable attenuators). W1-W2 and E1-E2 "
+              "unchanged. The bridges E2-W2, E1-N and W1-S (links between surviving nodes, on their fixed pads) are held "
+              "down before t0 with Terragraph ignition disabled for the link (tg ignition link -n <link> --disable); "
+              "MARL engages a bridge by enabling it (tg ignition link -n <link> --enable): no RF change.",
         event_off=["SRV-E2E", "SRV-DPIR", "HUB", "IP50-W1-CORE@CORE", "IP50-CORE-E1@CORE"],
     )
 
@@ -300,6 +369,57 @@ class Bench:
     def count_pn(self, pn):
         return sum(1 for c in self.cables if c["pn"] == pn)
 
+    def load_w(self, ld):
+        """typical mains draw of a rack or table load, W (TENTATIVE: catalog.LOAD_W; a rectifier module from its DC load,
+        each module rated for the full load)."""
+        base = ld.split(":")[0]
+        if base == "DC-RECT":                                # nodes + Spider-box fans / Pi (DCIN)
+            return (len(self.dc_nodes) * CAT.NODE_W + self.n_dcin * CAT.BOX_AUX_W) / CAT.RECT_EFF
+        if base == "DC-RECT2":
+            return sum(1 for k in self.ip50 if k not in self.psu) * CAT.IP50_W / CAT.RECT_EFF
+        for pre in ("ATT", "AGENT", "HOST", "INJ", "PSU"):
+            if base.startswith(pre):
+                return CAT.LOAD_W[pre]
+        return CAT.LOAD_W.get(base, 0)
+
+    def _pdu_plan(self, rack_loads):
+        """PDUs and {load: (PDU, outlet)}. Outlets in load order, PDU_OUT per PDU; a rectifier's 2nd / 3rd module goes on
+        ANOTHER PDU (another wall circuit), on that PDU's first free outlet, so the modules do not share a supply and no
+        other outlet number moves. If that plan puts a PDU over 80 % of its 16 A circuit (typical draw, load_w), the loads
+        are spread evenly over one PDU more at a time until every PDU fits."""
+        extra = [ld for ld in rack_loads if ":" in ld]
+        base = [ld for ld in rack_loads if ld not in extra]
+
+        def plan(n, per):
+            pdus = [f"PDU-{'ABCDEF'[i]}" for i in range(n)]
+            out = OrderedDict((ld, (pdus[i // per], i % per + 1)) for i, ld in enumerate(base))
+            for ld in extra:
+                home = out[ld.split(":")[0]][0]
+                k = pdus.index(home)
+                order = pdus[k + 1:] + pdus[:k] + [home]
+                taken = set(out.values())
+                free = [(p, o) for p in order for o in range(1, PDU_OUT + 1) if (p, o) not in taken]
+                fits = [(p, o) for p, o in free if load(out, p) + self.load_w(ld) <= CAT.CIRCUIT_W]
+                out[ld] = (fits or free)[0] if per < PDU_OUT else free[0]
+            return pdus, out
+
+        def load(out, p):
+            return sum(self.load_w(ld) for ld, (pp, _) in out.items() if pp == p)
+
+        n = math.ceil(len(rack_loads) / PDU_OUT)
+        pdus, out = plan(n, PDU_OUT)
+        while any(load(out, p) > CAT.CIRCUIT_W for p in pdus) and n < 6:
+            per = math.ceil(len(base) / n)
+            pdus, out = plan(n, per)
+            if all(load(out, p) <= CAT.CIRCUIT_W for p in pdus):
+                self.assumptions.append(
+                    f"PDU outlets: {len(rack_loads)} rack loads fit {math.ceil(len(rack_loads) / PDU_OUT)} PDU(s) by outlet "
+                    f"count, but the typical draw (catalog.LOAD_W estimates) would put one over 80 % of 16 A, so they are "
+                    f"spread over {n} PDUs, about {per} loads each")
+                break
+            n += 1
+        return pdus, out
+
     def cable(self, **match):
         cs = [c for c in self.cables if all(c[k] == v for k, v in match.items())]
         assert len(cs) == 1, (match, len(cs))
@@ -317,13 +437,30 @@ class Bench:
         self.split = OrderedDict((s, f"SPL-{s[0]}{s[1]}") for s in d.get("splitters", {}))
         order = d.get("att_order") or (list(d["link_ends"]) + list(d["couplings"]))
         self.atts = OrderedDict()
-        for name in order:
-            self.atts[f"ATT-{len(self.atts) + 1:02d}"] = ("link" if name in d["link_ends"] else "arm", name)
+        # fixed pads (if_pads): no programmable attenuators; each link's pad stack is sized from its A7 setting
+        self.if_pads = bool(d.get("if_pads"))
+        self.pad_links = OrderedDict()
+        self.pads = OrderedDict()           # pad stack id -> its data (chain, link, tile, host port, pads, dB)
+        self.pad_host = {}                  # host port -> pad stack id (the stack is screwed straight onto it)
+        if self.if_pads:
+            assert not d["couplings"], "fixed pads replace link attenuators only"
+            for name in d["link_ends"]:
+                row = d["att_set"][name]
+                self.pad_links[name] = dict(pad_stack(pad_target(row)), job=row[0],
+                                            setting="after" if isinstance(row[3], (int, float)) else "before")
+        else:
+            for name in order:
+                self.atts[f"ATT-{len(self.atts) + 1:02d}"] = ("link" if name in d["link_ends"] else "arm", name)
         self.att_of = {v[1]: k for k, v in self.atts.items()}
         self.ip50 = OrderedDict()
         for k, (a, b) in d.get("mw_links", {}).items():
             self.ip50[f"IP50-{k}@{a}"] = (k, a)
             self.ip50[f"IP50-{k}@{b}"] = (k, b)
+        self.mw_pads = bool(d.get("mw_pads")) and bool(self.ip50)
+        self.mwatt = bool(self.ip50) and not self.mw_pads          # Keysight J7204B on the table
+        # IP-50 radios stacked on spacer bars: the 3rd / 4th hop on the 1st / 2nd (MWATT bench); with fixed pads the two
+        # radios of a hop sit side by side, none stacked
+        self.stacked_hops = list(d.get("mw_links", {}))[2:] if self.mwatt else []
         off = d.get("event_off", [])
         # devices that go down at t0 are switched at the PDU: nodes through an AC PoE injector, radios through
         # their own supply; every other node keeps its passive DC/PoE adaptor on the 48 V drawer
@@ -345,21 +482,12 @@ class Bench:
         self.rack_servers = [s[0] for s in d["servers"] if s[0] not in TABLE_SERVERS]
         rack_loads += [x for x in self.rack_servers if x not in self.switched] + [f"HOST-{h}" for h in d["hosts"]]
         rack_loads += self.switched                         # event loads go on switched rack-PDU outlets
-        self.pdus = [f"PDU-{'ABCDEF'[i]}" for i in range(math.ceil(len(rack_loads) / PDU_OUT))]
+        # the Spider-box DCIN feeds (box fans + Pi) load DC-RECT: every box is fed while a DC-DIST breaker is spare
+        self.n_dcin = len(d["boxes"]) if len(self.dc_nodes) < 10 else 0
+        self.pdus, out = self._pdu_plan(rack_loads)
         for i, p in enumerate(self.pdus):
             self.add("AC", f"WALL.S{i + 1}", f"{p}.inlet", "PDU cord (IEC 60309 16 A plug)", "fixed",
                      "PDU's own cord: route it, but leave the plug OUT of the wall until power-up", pn="PDU cord")
-        # outlets in load order; a rectifier's 2nd / 3rd module goes on ANOTHER PDU (another wall circuit), on that
-        # PDU's first free outlet, so the modules do not share a supply and no other outlet number moves
-        extra = [ld for ld in rack_loads if ":" in ld]
-        base = [ld for ld in rack_loads if ld not in extra]
-        out = OrderedDict((ld, (self.pdus[i // PDU_OUT], i % PDU_OUT + 1)) for i, ld in enumerate(base))
-        for ld in extra:
-            home = out[ld.split(":")[0]][0]
-            k = self.pdus.index(home)
-            order = self.pdus[k + 1:] + self.pdus[:k] + [home]
-            taken = set(out.values())
-            out[ld] = next((p, o) for p in order for o in range(1, PDU_OUT + 1) if (p, o) not in taken)
         self.outlet = OrderedDict(sorted(out.items(), key=lambda kv: (self.pdus.index(kv[1][0]), kv[1][1])))
 
         def outlet_lead(ld, pdu, o):
@@ -387,7 +515,7 @@ class Bench:
             if ":" not in ld:
                 outlet_lead(ld, pdu, o)
         self.table_loads = [s[0] for s in d["servers"] if s[0] in TABLE_SERVERS] + ["MONITOR", "SPECAN"] + \
-            (["MWATT"] if self.ip50 else [])
+            (["MWATT"] if self.mwatt else [])
         for i, t in enumerate(self.table_loads):
             self.add("AC", f"TABLE-STRIP.O{i + 1}", f"{t}.ac", "Eaton Tripp Lite P004-006 C14-C13 lead", "1.8 m",
                      "inlet type TBC" if t == "MWATT" else "", pn="P004-006")
@@ -529,14 +657,15 @@ class Bench:
                 if sts == [site]:
                     oob.append((f"HOST-{h}.mgmt", "traffic host control", "STP6X3MBU", "3 m", site))
         for sid, role, st in d["servers"]:
-            oob.append((f"{sid}.mgmt", "bench controller: PDU and attenuator control, logging" if sid in TABLE_SERVERS
+            oob.append((f"{sid}.mgmt", ("bench controller: PDU and attenuator control, logging" if self.atts or self.mwatt
+                                        else "bench controller: PDU control, logging") if sid in TABLE_SERVERS
                         else "server management", "STP6X3MBU", "3 m", st or "table"))
         for h, sts in d["hosts"].items():
             if len(sts) > 1:
                 oob.append((f"HOST-{h}.mgmt", "traffic host control", "STP6X3MBU", "3 m", "trunk"))
         for a in self.atts:
             oob.append((f"{a}.lan", "attenuator control, SCPI over TCP", "STP6X2MBU", "2 m", "rack"))
-        if self.ip50:
+        if self.mwatt:
             oob.append(("MWATT.lan", "J7204B control (LAN)", "STP6X3MBU", "3 m", "rack"))
         for pdu in self.pdus:
             oob.append((f"{pdu}.net", "PDU management, outlet switching", "STP6X2MBU", "2 m", "rack"))
@@ -569,7 +698,9 @@ class Bench:
                 x = mod_x(mod, t)
                 self.add("RF", f"{box}.{mod}.T{t}", f"{sid}.t{t}.S", "{pn}", "", f"{s[0]}.{s[1]} tile {t} to its splitter",
                          geo=(box, x, tray, x), bundle=("spl", s))
-        for name, (sa, sb) in d["link_ends"].items():
+        if self.if_pads:
+            self._pad_links(T, tray)
+        for name, (sa, sb) in (() if self.if_pads else d["link_ends"].items()):
             att = self.att_of[name]
             for side, s in (("in", sa), ("out", sb)):
                 box, mod = d["module"][s]
@@ -606,6 +737,9 @@ class Bench:
         # IP-50 chains ------------------------------------------------------------------------------
         for j, (k, (a, b)) in enumerate(d.get("mw_links", {}).items()):
             ra, rb = f"IP50-{k}@{a}", f"IP50-{k}@{b}"
+            if self.mw_pads:
+                self._mw_pad_chain(k, ra, rb)
+                continue
             self.add("WG", f"{ra}.wg", f"WGT-{k}-A.wg", "waveguide-to-coax transition PEWCA1003 (band TBC)", "flange",
                      f"hop {k}", pn="PEWCA1003")
             self.add("WG", f"WGT-{k}-A.coax", f"MWATT.ch{j + 1}.in",
@@ -618,6 +752,53 @@ class Bench:
                      f"hop {k}", pn="PEWCA1003")
         self.size, self.rows, self.total = rack_layout(self)
         self._size_rf()
+
+    def _pad_links(self, T, tray):
+        """if_pads: one cable per tile path, from a fixed pad stack screwed straight onto the A-end port (the hub
+        splitter's P1 / P2 for a split hub module, else the A tile) to the B tile; one bundle (4 tiles) per link."""
+        d = self.d
+        for name, (sa, sb) in d["link_ends"].items():
+            pl = self.pad_links[name]
+            parts_ = pad_parts(pl["pn"])
+            bx_b, m_b = d["module"][sb]
+            for t in T:
+                if sa in self.split:
+                    k = d["splitters"][sa].index(name) + 1
+                    host, ua, xa = f"{self.split[sa]}.t{t}.P{k}", tray, mod_x(d["module"][sa][1], t)
+                else:
+                    bx_a, m_a = d["module"][sa]
+                    host, ua, xa = f"{bx_a}.{m_a}.T{t}", bx_a, mod_x(m_a, t)
+                pid = f"PAD-{name}.t{t}"
+                self.pads[pid] = dict(chain="if", link=name, tile=t, host=host, side="a", parts=parts_, db=pl["db"],
+                                      target=pl["target"], rounded=pl["rounded"], text=pl["text"],
+                                      stack_mm=sum(p["len_mm"] for p in parts_), dia_mm=max(p["dia_mm"] for p in parts_))
+                self.pad_host[host] = pid
+                self.add("RF", f"{pid}.out", f"{bx_b}.{m_b}.T{t}", "{pn}", "",
+                         f"{name} tile {t}: from the {pl['text']} dB pad stack on {host} to {sb[0]}.{sb[1]} tile {t}",
+                         geo=(ua, xa, bx_b, mod_x(m_b, t)), bundle=(name, "pad"), pad=pid)
+
+    def _mw_pad_chain(self, k, ra, rb):
+        """mw_pads: radio - transition - 30 dB 10 W pad (- 10 dB pad, A side) - ONE SMA cable - 30 dB 10 W pad -
+        transition - radio; the pads are stacks screwed onto the transition SMA (WGP-<hop>-A / -B)."""
+        stacks = {"A": [MW_PAD_HI[0], MW_PAD_LO[0]], "B": [MW_PAD_HI[0]]}
+        for side, pns in stacks.items():
+            parts_ = pad_parts(pns)
+            pid = f"WGP-{k}-{side}"
+            host = f"WGT-{k}-{side}.coax"
+            self.pads[pid] = dict(chain="ip50", link=k, tile=None, host=host, side=side.lower(), parts=parts_,
+                                  db=sum(p["db"] for p in parts_), target=None, rounded=None,
+                                  text=" + ".join(str(p["db"]) for p in parts_),
+                                  stack_mm=sum(p["len_mm"] for p in parts_), dia_mm=max(p["dia_mm"] for p in parts_))
+            self.pad_host[host] = pid
+        self.add("WG", f"{ra}.wg", f"WGT-{k}-A.wg", "waveguide-to-coax transition PEWCA1003 (band TBC)", "flange",
+                 f"hop {k}", pn="PEWCA1003")
+        self.add("WG", f"WGP-{k}-A.out", f"WGP-{k}-B.out",
+                 f"Mini-Circuits CBL-1FT-SMSM+ between the pad stacks (A: {MW_PAD_HI[0]} {MW_PAD_HI[1]} dB + {MW_PAD_LO[0]} "
+                 f"{MW_PAD_LO[1]} dB on the transition; B: {MW_PAD_HI[0]} {MW_PAD_HI[1]} dB on the transition)", "0.30 m",
+                 f"hop {k}: the one SMA cable of the chain, {2 * MW_PAD_HI[1] + MW_PAD_LO[1]} dB of fixed pads",
+                 pn="CBL-1FT-SMSM+")
+        self.add("WG", f"WGT-{k}-B.wg", f"{rb}.wg", "waveguide-to-coax transition PEWCA1003 (band TBC)", "flange",
+                 f"hop {k}", pn="PEWCA1003")
 
     def _size_rf(self):
         """Pick each IF bundle's cable from the rack span: vertical distance between the two units' centres +
@@ -712,7 +893,8 @@ def rack_layout(b):
         units.append((x["id"], 1, f"{x['code']}  ·  " + ", ".join(x["nodes"]),
                       f"{x['kind']} · serial {BOX_SERIAL.get(x['code'], 'TBC')} · TG polarity {'/'.join(pols)} (E2E setting)"))
     if b.split:
-        units.append(("SPL-TRAY", 1, "Splitter tray (shelf)", f"{len(b.split) * b.tiles} x 2-way splitters ZN2PD-02183-S+"))
+        units.append(("SPL-TRAY", 1, "Splitter tray (shelf)", f"{len(b.split) * b.tiles} x 2-way splitters ZN2PD-02183-S+" +
+                      (", the hub links' pad stacks on P1 / P2" if b.if_pads else "")))
     if b.coupled:
         # 3U: the DC block (+ pad), the plug and the cable bend stand on each coupler's top CPL port (about 95 mm)
         units.append(("CPL-TRAY", 3, "Coupler tray (1U shelf, 2U clear above)",
@@ -923,6 +1105,18 @@ def parts(b):
     if b.split:
         add("RF/IF", "-", "2-way splitter 2-18 GHz", "ZN2PD-02183-S+", "Mini-Circuits", len(b.split) * b.tiles,
             "one per tile of each shared hub module", "confirmed")
+    if b.if_pads:
+        # fixed pads per value (pad schedule: bench_spec.pad_stack), ~10 % spare per value, at least 1
+        cnt = Counter(p["pn"] for v in b.pads.values() if v["chain"] == "if" for p in v["parts"])
+        for pn in sorted(cnt, key=lambda x: int(re.sub(r"\D", "", x.split("W2")[0]))):
+            q = cnt[pn]
+            links = [k for k, v in b.pad_links.items() if pn in v["pn"]]
+            per = sorted({v["pn"].count(pn) for k, v in b.pad_links.items() if k in links})
+            add("RF/IF", "-", f"Fixed attenuator (pad) DC-18 GHz 2 W, SMA M-F, {pn[4:-3]} dB", pn, "Mini-Circuits",
+                f"{q} + {max(1, math.ceil(q * PAD_SPARE))} spare",
+                f"{' or '.join(map(str, per)) if per != [1] else 'one'} per tile path of {', '.join(links)} "
+                f"({len(links)} link{'s' if len(links) > 1 else ''} x {b.tiles} tiles; pad schedule, sheet 6); "
+                f"{max(1, math.ceil(q * PAD_SPARE))} spare", "likely (value from the A7 model; confirm at the port check)")
     if b.coupled:
         add("RF/IF", "-", "10 dB directional coupler 1-18 GHz, SMA-F (one part for all 16 positions)", "KRYTAR 1821", "KRYTAR",
             len(b.coupled) * b.tiles, "IN from the module tile, THRU to the link attenuator, CPL to the arm "
@@ -940,11 +1134,14 @@ def parts(b):
     for pn, L in RF_STOCK:
         q = b.count_pn(pn)
         tag = " ('RF cable': 10 on hand, type TBC)" if pn == "CBL-2FT-SMSM+" else ""
+        wg_only = b.mw_pads and q and all(c["cls"] == "WG" for c in b.cables if c["pn"] == pn)
         add("RF/IF", "3", f"SMA test cable 18 GHz {L / 1000:.2f} m{tag}", pn, "Mini-Circuits", q,
+            "IP-50 chains (the one SMA cable between a hop's pad stacks), length from the twin route" if wg_only else
             "IF chain, length from the twin route" + ("; IP-50 chains" if any(c["pn"] == pn and c["cls"] == "WG"
                                                                                 for c in b.cables) else ""),
             "likely (catalogue length to confirm)" if pn in RF_LIKELY else "confirmed", cab={pn: q})
     used_tiles = {e for c in b.cables if c["cls"] == "RF" for e in (c["a"], c["b"]) if re.match(r"^SB\d+\.M\d+\.T\d+$", e)}
+    used_tiles |= {h for h in b.pad_host if re.match(r"^SB\d+\.M\d+\.T\d+$", h)}      # a pad stack on the tile
     open_tiles = 16 * len(d["boxes"]) - len(used_tiles)
     open_gnss = 8 - len(d["nodes"])
     nl = open_tiles + max(0, open_gnss)
@@ -957,18 +1154,29 @@ def parts(b):
             2 * hops, "band and flange mating TBC", "likely", cab={"PEWCA1003": b.count_pn("PEWCA1003")})
         add("IP-50 chain", "-", "30 dB 10 W pad DC-18 GHz (<=18 GHz set)", "SA18S10W-30", "Fairview", 2 * hops,
             "one at each radio port, on the transition", "confirmed")
-        add("IP-50 chain", "-", "Programmable attenuator 4 ch DC-18 GHz (<=18 GHz set)", "J7204B opt 002", "Keysight", 1,
-            f"{hops} channels used; LAN to SW-OOB", "confirmed")
-        nst = sum(1 for j in range(hops) if j >= 2)
+        if b.mwatt:
+            add("IP-50 chain", "-", "Programmable attenuator 4 ch DC-18 GHz (<=18 GHz set)", "J7204B opt 002", "Keysight",
+                1, f"{hops} channels used; LAN to SW-OOB", "confirmed")
+        if b.mw_pads:
+            add("IP-50 chain", "-", f"Fixed attenuator (pad) DC-18 GHz 2 W, SMA M-F, {MW_PAD_LO[1]} dB (<=18 GHz set)",
+                MW_PAD_LO[0], "Mini-Circuits", f"{hops} + {max(1, math.ceil(hops * PAD_SPARE))} spare",
+                f"A side of each hop, on the {MW_PAD_HI[0]} (after the 30 dB pad, so it sees 2 W or less): "
+                f"{2 * MW_PAD_HI[1] + MW_PAD_LO[1]} dB fixed per chain, no programmable attenuator", "confirmed")
+        nst = len(b.stacked_hops)                          # hops whose two radios sit on spacer bars
         if nst:
             add("IP-50 chain", "-", f"Spacer bar 25 x 25 x 300 mm (aluminium) between stacked radios", "part TBC", "-",
                 2 * 2 * nst, f"2 per stacked radio ({2 * nst} stacked): a {SPACER_MM:g} mm air gap over the lower "
                 "radio's lid", "to confirm")
             add("IP-50 chain", "-", "Double-sided foam mounting tape, 25 mm wide, 1 roll", "part TBC", "-", 1,
                 "fixes each spacer bar to the lower lid and the upper radio to the bars so it cannot slide", "to confirm")
-        add("IP-50 chain", "-", "Alternative set if the band is 18-26.5 GHz (replaces the 3 lines above)",
-            "PEWCA1018 + FMAT4009-30 + 84906K/84904K/11713C", "Pasternack / Fairview / Keysight", "replaces the set",
-            "2.92 mm pads and cables", "alternative")
+        if b.mw_pads:
+            add("IP-50 chain", "-", "Alternative set if the band is 18-26.5 GHz, e.g. 23 GHz (replaces the 3 lines above)",
+                f"PEWCA1018 + FMAT4009-30 + {MW_PAD_LO_K}", "Pasternack / Fairview / -", "replaces the set",
+                "2.92 mm pads and a 2.92 mm cable; the 10 dB pad becomes a 2.92 mm DC-40 GHz part", "alternative")
+        else:
+            add("IP-50 chain", "-", "Alternative set if the band is 18-26.5 GHz (replaces the 3 lines above)",
+                "PEWCA1018 + FMAT4009-30 + 84906K/84904K/11713C", "Pasternack / Fairview / Keysight", "replaces the set",
+                "2.92 mm pads and cables", "alternative")
     add("Timing", "-", "GNSS antenna + 1x8 splitter", "101898-00 + RMALDCBS1X8", "Protempis / GPS Networking", "1 + 1",
         "only if the boxes take GNSS (N367 GPS is internal)", "to confirm")
     add("Timing", "-", "GNSS antenna lead, roof to the room entry (N connectors)", "LMR-400 (part TBC)", "-",
@@ -992,7 +1200,8 @@ def parts(b):
     add("Compute", "-", "Rack servers: " + "; ".join(f"{x} ({SERVER_U.get(x, 1)}U)" for x in b.rack_servers), "lab servers", "-",
         len(b.rack_servers), "in the rack, with their rails", "on hand; to confirm")
     add("Compute", "-", "Bench controller PC + monitor + keyboard/mouse (operator station on the table)", "lab PC", "-",
-        "1 + 1 + 1", "stays powered through the event; drives PDUs and attenuators over SW-OOB", "on hand; to confirm",
+        "1 + 1 + 1", "stays powered through the event; drives PDUs" + (" and attenuators" if b.atts or b.mwatt else "") +
+        " over SW-OOB", "on hand; to confirm",
         cab={"keyboard + mouse": b.count_pn("keyboard + mouse")})
     add("Compute", "-", "Video cable (DisplayPort / HDMI) 1.8 m", "part TBC", "-", b.count_pn("video cable"), "PC to monitor",
         "to confirm", cab={"video cable": b.count_pn("video cable")})

@@ -84,15 +84,53 @@ class Scene:
                        "budget entry; rear rows sit about 220 mm deep: confirm reach at a dry fit, or split them over two "
                        "trays")
         hops = list(d.get("mw_links", {}))
-        if len(hops) > 2:
-            up = hops[2:]
+        if b.stacked_hops:
+            up = b.stacked_hops
             out.append(f"IP-50 radios of hop{'s' if len(up) > 1 else ''} {', '.join(up)} are stacked on those of hop"
                        f"{'s' if len(up) > 1 else ''} {', '.join(hops[:len(up)])}, on two {BS.SPACER_MM:g} mm spacer bars "
                        "each (front and rear edge of the lower lid, fixed with double-sided foam tape) so the lower radio "
                        "(about 58 W) keeps a convection gap; about 6 kg each; 120 mm or more between front and back rows "
                        "for the rear connectors")
+        elif hops and b.mw_pads:
+            out.append("IP-50 radios in hop pairs: the two radios of a hop sit side by side on the table, flanges facing "
+                       f"each other, {self.TABLE_PADS['chain_gap']:g} mm between the two pad stacks for the one SMA cable; "
+                       "the four hops in a front and a back row of two columns, 120 mm or more between the rows for the "
+                       f"rear connectors, {self.TABLE_PADS['aisle']:g} mm aisle between the columns; none stacked")
         elif hops:
             out.append("IP-50 radios in a front and a back row, 120 mm or more apart for the rear connectors; none stacked")
+        if b.if_pads:
+            P = C.PAD["BW-S"]
+            rows = "; ".join(f"{k} {v['target']:g} -> {v['db']} dB = {v['text']}" + (f" ({v['rule']})" if "needs" in v["rule"]
+                                                                                  or "tie" in v["rule"] else "")
+                             for k, v in b.pad_links.items())
+            out.append("Fixed pads instead of programmable attenuators (user, 2026-11-25: PoC 1 links only need to go down, "
+                       "and whole devices lose power at t0): each IF tile path gets a stack of at most "
+                       f"{BS.PAD_MAX} Mini-Circuits BW-S<n>W2+ pads (values assumed available: "
+                       f"{', '.join(str(v) for v in BS.BW_S_DB)} dB), sized from the A7 attenuator setting (hub paths the "
+                       "'before' value, they die with the hub; bridges the 'after' value, as MARL engages them), rounded to "
+                       "the nearest whole dB (a tie rounds up, toward more loss); a value no stack makes takes the nearest "
+                       f"total that one does (a tie toward more loss): {rows}. Confirm each link's margin at the port check "
+                       "and swap a pad if it differs")
+            out.append(f"Pad stacks: BW-S pad about {P['len']:g} mm long and {P['dia']:g} mm across (estimate), "
+                       f"a two-pad stack drawn {2 * P['len']:g} mm (the mated overlap ignored). The hub W / E links' stacks "
+                       "screw onto the splitter's P1 / P2 and lie on the splitter tray (the tray is laid out for them: one "
+                       "column per split module, 12 mm between the P1 and P2 stacks, about 2 mm between their bodies: if two "
+                       "stacks foul, fit one through a short SMA M-F adapter); every other link's stack screws onto its A-end "
+                       "tile (the first site of the link name) and stands about "
+                       f"{2 * P['len']:g} mm proud of the Spider box: its cable is strapped to the side lane so the tile carries "
+                       "only the stack (two pads, about 60 g, estimate), never the cable")
+            out.append("Bridges (links between surviving nodes) are held down before t0 with Terragraph ignition disabled for "
+                       "the link on the E2E controller (tg ignition link -n <link> --disable), set after SRV-E2E boots and "
+                       "before the nodes do; MARL engages a bridge by enabling it (tg ignition link -n <link> --enable): no RF "
+                       "change at any time. Check that the Siklu E2E honours per-link ignition the same way")
+        if b.mw_pads:
+            Q = C.PAD[BS.MW_PAD_HI[0]]
+            out.append(f"IP-50 chains without a programmable attenuator: {BS.MW_PAD_HI[0]} ({BS.MW_PAD_HI[1]} dB 10 W, about "
+                       f"{Q['len']:g} x {Q['dia']:g} mm, estimate) on each transition and one {BS.MW_PAD_LO[0]} "
+                       f"({BS.MW_PAD_LO[1]} dB) on the A side after it, then one SMA cable: "
+                       f"{2 * BS.MW_PAD_HI[1] + BS.MW_PAD_LO[1]} dB fixed plus the cable; the 10 dB pad stands in for the "
+                       "former J7204B rest value. If the band turns out to be 23 GHz: WR-42 transitions, 2.92 mm pads and "
+                       f"cable, and the 10 dB pad becomes a {BS.MW_PAD_LO_K}")
         if d.get("agents"):
             out.append("Front-row agent PCs on the AGENTS shelf are turned round (connectors to the front) so every "
                        "connector has 35 mm or more of clear space; their data and management cables go along the front "
@@ -140,6 +178,7 @@ class Scene:
         self._rack()
         self._arm_budget()
         self._table()
+        self._pads()
         self._cables()
         self._steps()
         self._checks()
@@ -285,7 +324,10 @@ class Scene:
     # CPL_EXIT above the CPL port (DC block + pad + plug + bend), then moves 12 + LANE_X * k to the right and runs
     # forward. Splitters: P2 runs 8 mm further out than P1; the rear row rises 10 mm over the front-row plugs.
     TRAY = {"splitter": dict(x0=51.3, xpitch=105.0, z0=10.0, zpitch=55.0, cols="tile"),
-            "coupler": dict(x0=(86.0, 304.0), z0=10.0, zpitch=28.0, cols="side")}
+            "coupler": dict(x0=(86.0, 304.0), z0=10.0, zpitch=28.0, cols="side"),
+            # if_pads: a pad stack (up to 62 mm) on each P1 / P2: one column per split module (175 mm wide: S plug,
+            # splitter, stack, plug and the P2 lane), rows front to back = tile 1-4
+            "splitter_pads": dict(x0=51.3, xpitch=175.0, z0=10.0, zpitch=55.0, cols="module")}
     LANE_X = 6.0
     PLUG_MM, BEND_MM = 18.0, 25.0                       # mated SMA plug length; cable bend before it runs level
     BLOCK_MM, PAD_MM = 30.0, 22.0                       # BLK-18-S+ and BW-S pad lengths (estimates)
@@ -295,7 +337,12 @@ class Scene:
         b = self.b
         T = list(range(1, b.tiles + 1))
         out = OrderedDict()
-        if b.split:
+        if b.split and b.if_pads:
+            L = self.TRAY["splitter_pads"]
+            for r, (sec, sid) in enumerate(b.split.items()):
+                for t in T:
+                    out[f"{sid}.t{t}"] = (L["x0"] + r * L["xpitch"], L["z0"] + (t - 1) * L["zpitch"])
+        elif b.split:
             L = self.TRAY["splitter"]
             for r, (sec, sid) in enumerate(b.split.items()):
                 for t in T:
@@ -351,7 +398,7 @@ class Scene:
         kind = "splitter" if b.split else "coupler"
         s = C.SMALL[kind]
         sw, sh, sd = s["size"]
-        L = self.TRAY[kind]
+        L = self.TRAY["splitter_pads" if (b.split and b.if_pads) else kind]
         sec_of = {sid: sec for sec, sid in (b.split or b.coupled).items()}
         for bid, (bx0, bz0) in self.tray_slots(rid).items():
             self.add_dev(bid, kind, bid, s["note"], (x + bx0, y + 4, z + bz0), s["size"], s["color"],
@@ -498,6 +545,9 @@ class Scene:
                       specan_x=3330.0, monitor=(730.0, 40.0), ctl=(720.0, 150.0), psu=(930.0, 150.0, 180.0),
                       strip=(1310.0, 40.0), kbd=(780.0, -140.0))
     LANES = dict(data=(540.0, 580.0), power=(620.0, 650.0))       # z bands on the table (back edge at 650)
+    # mw_pads (no MWATT): the two radios of a hop side by side, flanges facing; hops in a 2 x 2 grid (front / back row,
+    # two columns), none stacked; chain_gap = between the two pad stacks' OUT ports (one SMA cable, about 0.3 m)
+    TABLE_PADS = dict(radio_rows=(-145.0, 245.0), radio_x0=1500.0, chain_gap=180.0, aisle=150.0, specan_gap=40.0)
 
     def _table(self):
         b, d, T = self.b, self.d, C.TABLE
@@ -515,7 +565,12 @@ class Scene:
                    ("usb", "USB"))
         hops = list(d.get("mw_links", {}).items())
         mx, mz = TP["mwatt_x"], TP["mwatt_z"]
-        if hops:
+        specan_x, earth_cx = TP["specan_x"], mx + C.TABLE_DEV["mwatt"]["size"][0] / 2
+        if hops and not b.mwatt:
+            x_end = self._hop_pairs(hops, top)
+            specan_x = max(specan_x, x_end + self.TABLE_PADS["specan_gap"])
+            earth_cx = (self.TABLE_PADS["radio_x0"] + x_end) / 2
+        if hops and b.mwatt:
             ms = C.TABLE_DEV["mwatt"]["size"]
             self._tdev("MWATT", "mwatt", "Keysight J7204B, 4 ch", (mx, top, mz), ms, ("lan", "RJ45"), ("ac", "C14"))
             for j, (k, (a, bb)) in enumerate(hops):
@@ -569,7 +624,7 @@ class Scene:
         for i, p in enumerate(b.psu.values()):
             self._tdev(p, "psu", "isolated -48 V supply (floating), switched at t0 (operator end of the table)",
                        (px + i * pp, top, pz), C.TABLE_DEV["psu"]["size"], ("out", "DC"), ("ac", "C14"))
-        self._tdev("SPECAN", "specan", "spectrum analyser / power sensor", (TP["specan_x"], top, mz),
+        self._tdev("SPECAN", "specan", "spectrum analyser / power sensor", (specan_x, top, mz),
                    C.TABLE_DEV["specan"]["size"], ("lan", "RJ45"), ("ac", "C14"))
         # the strip lies lengthwise (front to back): outlets on top, C20 inlet at its back end toward the power lane
         sl, sw_, sh = C.TABLE_DEV["strip"]["size"]
@@ -584,18 +639,92 @@ class Scene:
         self.add_port("TABLE-STRIP", "inlet", (stx + sw_ / 2, top + sh / 2, stz + sl), (0, 0, 1), "C20", "C20 inlet")
         self._room()
         if b.ip50:                                         # bench-table earth bar on the back edge, behind MWATT
-            nr = len(b.ip50)
+            nr = len(b.ip50)                               # (no MWATT: behind the aisle between the radio columns)
             L = 40 + 22 * nr
-            cx = mx + C.TABLE_DEV["mwatt"]["size"][0] / 2
+            cx = earth_cx
             x0, y0, z0 = cx - L / 2, top - 35, C.TABLE["z1"] + 2
             self.add_dev("TABLE-EARTH", "earthbar", "TABLE-EARTH", f"bench-table earth bar, {nr + 1} M6 studs",
                          (x0, y0, z0), (L, 30, 10), "#2e7d32", "room", "estimate",
-                         "earth bar screwed to the bench table's back edge behind MWATT, studs up just below the table "
-                         "top (estimate)", mount="table back edge")
+                         "earth bar screwed to the bench table's back edge behind " +
+                         ("MWATT" if b.mwatt else "the aisle between the radio columns") +
+                         ", studs up just below the table top (estimate)", mount="table back edge")
             self.add_port("TABLE-EARTH", "bond", (x0 + 15, y0, z0 + 5), (0, -1, 0), "PE", "stud to the rack earth bar")
             for i in range(1, nr + 1):
                 self.add_port("TABLE-EARTH", f"R{i}", (x0 + 31 + (i - 1) * 22, y0 + 30, z0 + 5), (0, 1, 0), "PE",
                               f"radio stud {i}")
+
+    def _hop_pairs(self, hops, top):
+        """mw_pads: each hop's two radios side by side, flanges facing (A on the left), the transitions on the flanges
+        and the pad stacks on them (_pads); hop j in row j % 2 (front / back) and column j // 2. Returns the right end x
+        of the radios."""
+        TP = self.TABLE_PADS
+        rs = C.TABLE_DEV["ip50"]["size"]
+        ts = C.SMALL["transition"]["size"]
+        b = self.b
+        stack = {sd: max(v["stack_mm"] for v in b.pads.values() if v["chain"] == "ip50" and v["side"] == sd.lower())
+                 for sd in "AB"}
+        W = 2 * rs[0] + 2 * ts[0] + stack["A"] + stack["B"] + TP["chain_gap"]
+        x_end = TP["radio_x0"]
+        for j, (k, (a, bb)) in enumerate(hops):
+            zr = TP["radio_rows"][j % len(TP["radio_rows"])]
+            xa = TP["radio_x0"] + (j // len(TP["radio_rows"])) * (W + TP["aisle"])
+            for side, site, xr, face in (("A", a, xa, +1), ("B", bb, xa + W - rs[0], -1)):
+                rid = f"IP50-{k}@{site}"
+                self._tdev(rid, "ip50", f"IP-50, hop {k} at {site} ({side} side, flange toward its peer)", (xr, top, zr),
+                           rs, ("data", "RJ45"), ("mgmt", "RJ45"), ("dc", "DC"),
+                           note=C.TABLE_DEV["ip50"]["note"].replace("toward MWATT", "toward the other radio of its hop"))
+                self.add_port(rid, "gnd", (xr + rs[0] * 0.92, top + 20, zr + rs[2]), (0, 0, 1), "PE",
+                              "chassis ground screw (position TBC)")
+                self.dev[rid].update(stack=rid, hop=k, hop_side=side)
+                wx = xr + rs[0] if face > 0 else xr
+                self.add_port(rid, "wg", (wx, top + rs[1] / 2, zr + rs[2] / 2), (face, 0, 0), "WG", "waveguide")
+                tid = f"WGT-{k}-{side}"
+                tx0 = wx if face > 0 else wx - ts[0]
+                self.add_dev(tid, "transition", tid, C.SMALL["transition"]["note"],
+                             (tx0, top + rs[1] / 2 - ts[1] / 2, zr + rs[2] / 2 - ts[2] / 2), ts,
+                             C.SMALL["transition"]["color"], "table", "estimate", C.SMALL["transition"]["note"], parent=rid)
+                self.add_port(tid, "wg", (wx, top + rs[1] / 2, zr + rs[2] / 2), (-face, 0, 0), "WG", "flange")
+                self.add_port(tid, "coax", (wx + face * ts[0], top + rs[1] / 2, zr + rs[2] / 2), (face, 0, 0), "SMA",
+                              "coax (SMA-F): the pad stack screws on here")
+                x_end = max(x_end, xr + rs[0])
+        return x_end
+
+    def _pads(self):
+        """fixed pad stacks (bench_spec if_pads / mw_pads): a body from its host port along the port's normal, IN screwed
+        onto the host (port field 'mate' on both: a joint with no cable), OUT at the far end, where the cable goes on.
+        Device fields: host, chain ('if' / 'ip50'), link, tile, pads [dict(pn, db, len_mm, dia_mm)] in stack order (host
+        end first), db (fitted), target_db / rounded_db (IF), stack_mm."""
+        b = self.b
+        s = C.SMALL["padstack"]
+        for pid, v in b.pads.items():
+            H = self.ports[v["host"]]
+            hd = self.dev[H["device"]]
+            p, n = H["pos"], H["normal"]
+            L, D = v["stack_mm"], v["dia_mm"]
+            lo = [p[i] - D / 2 if n[i] == 0 else (p[i] if n[i] > 0 else p[i] - L) for i in range(3)]
+            size = [D if n[i] == 0 else L for i in range(3)]
+            pads = " + ".join(f"{x['pn']} ({x['db']} dB)" for x in v["parts"])
+            if v["chain"] == "if":
+                where = (f"on {hd['id']} {H['name']}, lying on the splitter tray" if hd["kind"] == "splitter" else
+                         f"on tile {H['name']} of {hd['id']}, {L:g} mm proud of the box front")
+                sub = f"IF link {v['link']} tile {v['tile']}: {v['text']} = {v['db']} dB (target {v['target']:g} dB) {where}"
+                support = ("lies on the tray" if hd["kind"] == "splitter" else
+                           "cable strapped to the side lane so the tile carries only the stack")
+            else:
+                sub = f"IP-50 hop {v['link']}, {v['side'].upper()} side: {v['text']} = {v['db']} dB on {H['device']}"
+                support = "carried by the transition, which is bolted to the radio flange"
+            note = (f"{pads} screwed together, IN onto {v['host']}; about {L:g} mm long, {D:g} mm across (estimate)")
+            kw = {}
+            if hd["kind"] == "splitter":                  # keeps its splitter port's lane on the tray
+                kw = dict(tray_row=hd.get("tray_row", 0), lane_dx=8 if H["name"] == "P2" else 0)
+            self.add_dev(pid, "padstack", pid, sub, lo, size, s["color"], hd["group"], "estimate", note,
+                         parent=hd["id"], host=v["host"], chain=v["chain"], link=v["link"], tile=v["tile"],
+                         side=v["side"], pads=[dict(x) for x in v["parts"]], db=v["db"], target_db=v["target"],
+                         rounded_db=v["rounded"], text=v["text"], stack_mm=L, support=support, **kw)
+            self.add_port(pid, "in", p, [-x if x else 0 for x in n], "SMA", f"IN (SMA-M, screwed onto {v['host']})")
+            self.add_port(pid, "out", [p[i] + n[i] * L for i in range(3)], list(n), "SMA", "OUT (SMA-F, the cable)")
+            self.ports[f"{pid}.in"]["mate"] = v["host"]
+            H["mate"] = f"{pid}.in"
 
     def _room(self):
         b = self.b
@@ -638,11 +767,11 @@ class Scene:
                      g["size"][1], C.TABLE["z1"] - g["size"][2] + 5), g["size"], g["color"], "room", "estimate",
                      "rack-to-table cable bridge (wire-basket section, part TBC)")
 
-    def _tdev(self, did, kind, sub, pos, size, *ports, fracs=None):
+    def _tdev(self, did, kind, sub, pos, size, *ports, fracs=None, note=None):
         """a table device with its ports on the rear face, evenly spread (or at the given fractions of its width:
         the bench PC keeps its mains inlet 75 mm or more from its data ports)."""
         t = C.TABLE_DEV[kind]
-        self.add_dev(did, kind, did, sub, pos, size, t["color"], "table", t["conf"], t["note"])
+        self.add_dev(did, kind, did, sub, pos, size, t["color"], "table", t["conf"], note or t["note"])
         x, y, z = pos
         w, h, dd = size
         ps = [p for p in ports if p]
@@ -711,9 +840,11 @@ class Scene:
         pts = [p, e]
         if dv["kind"] == "coupler" and k:
             pts.append([p[0] + n[0] * (self.PLUG_MM + self.LANE_X * k), p[1], p[2]])
-        elif dv["kind"] == "splitter":
-            if P["name"] == "P2":
-                pts.append([p[0] + n[0] * (self.PLUG_MM + 8), p[1], p[2]])
+        elif dv["kind"] == "splitter" or (dv["kind"] == "padstack" and dv.get("tray_row") is not None):
+            # a pad stack on a splitter port keeps that port's lane: P2 8 mm further out, the rear rows rise
+            dx = dv.get("lane_dx", 0) if dv["kind"] == "padstack" else (8 if P["name"] == "P2" else 0)
+            if dx:
+                pts.append([p[0] + n[0] * (self.PLUG_MM + dx), p[1], p[2]])
             if k:
                 q = pts[-1]
                 pts.append([q[0], q[1] + 10 * k, q[2]])
@@ -725,6 +856,9 @@ class Scene:
         of the other unit and up to the port. It never hangs across the face of another unit, so every tile stays
         reachable for the torque wrench."""
         zl = -(25 + 5 * (lane % 12))
+        front = [P["pos"][2] for P in (P0, P1) if P["normal"][2] < -0.5]
+        if front:                                          # a pad stack on a tile: its OUT stands proud of the tile row
+            zl -= max(0.0, -10.0 - min(front))
         h0, h1 = self.exits(P0), self.exits(P1)
         e0, e1 = h0[-1], h1[-1]
         t0, t1 = self.top_dev(P0["device"]), self.top_dev(P1["device"])
@@ -1050,6 +1184,10 @@ class Scene:
                 sid = "ARM-" + pid[len("CPL-"):].rsplit(".", 1)[0] if pid.startswith("CPL-") and pid.endswith(".CPL") else ""
                 if sid in self.dev:
                     stack = dict(stack=sid, stack_end=e, stack_mm=self.dev[sid]["size"][1])
+            pe = [dict(end=e, pad=self.ports[pid]["device"], host=self.dev[self.ports[pid]["device"]]["host"])
+                  for e, pid in (("a", a), ("b", z)) if self.dev[self.ports[pid]["device"]]["kind"] == "padstack"]
+            if pe:                                          # the cable's end is a fixed pad stack's OUT (if_pads / mw_pads)
+                stack["pad_ends"] = pe
             self.cables.append(dict(id=c["id"], cls=c["cls"], a=a, b=z, a_raw=BS.end_text(c["a"]), b_raw=BS.end_text(c["b"]),
                                     part=c["part"],
                                     pn=c["pn"], length=c["length"], spec_mm=spec, route_mm=round(L), vlan=c["vlan"],
@@ -1171,7 +1309,7 @@ class Scene:
                "radius: OM4 30 mm or more, DAC 50 mm or more, Cat6A 4 x diameter. Coil slack behind the cable manager, "
                "Velcro only.",
         "ETH": "Management runs up the RIGHT side as seen from the front. SW-OOB and the PDUs sit on the rear posts, so "
-               "their runs stay at the rear; the attenuator LAN ports are at the back of each box; BENCH-CTL, MWATT and "
+               "their runs stay at the rear; {att_lan}BENCH-CTL{mwatt} and "
                "the analyser come from the table's data lane through the front (data) compartment of the cable bridge "
                "and up the right side. {agents}Cat6A bend radius 4 x diameter; Velcro every 300 mm; slack on the lacing "
                "bars.",
@@ -1220,6 +1358,8 @@ class Scene:
                      f"{step_of.get('Servers and traffic hosts', '?')})." if any(x.startswith("SRV-") for x in b.switched)
                      else ""),
             what="Adaptor (or injector)" if b.inj else "Adaptor",
+            att_lan="the attenuator LAN ports are at the back of each box; " if b.atts else "",
+            mwatt=", MWATT" if b.mwatt else "",
             gz=self._gnss_depth(),
             agents=("The front-row agent PCs face the front: their data and management leads run along the front of "
                     "the AGENTS shelf to the right side. " if agents else ""),
@@ -1251,6 +1391,10 @@ class Scene:
         used = {e for c in getattr(self, "cables", []) for e in (c["a"], c["b"])}
         return [p for p in self.dev.get(did, {}).get("ports", []) if p not in used]
 
+    def _ends(self, c):
+        """a cable's two end ports plus the ports its fixed pad stacks are screwed onto (if_pads / mw_pads)."""
+        return {c["a"], c["b"]} | {x["host"] for x in c.get("pad_ends", [])}
+
     def tile_clearance(self):
         """smallest vertical distance from a tile SMA to an IF run passing in front of it (other cables only)."""
         tiles = [p for p in self.ports.values() if re.match(r"^SB\d+\.M\d+\.T\d+$", p["id"])]
@@ -1262,7 +1406,7 @@ class Scene:
                 if p[2] > -5 or q[2] > -5 or abs(p[1] - q[1]) > 0.1:
                     continue
                 for t in tiles:
-                    if t["id"] in (c["a"], c["b"]):
+                    if t["id"] in self._ends(c):
                         continue
                     if min(p[0], q[0]) - 10 <= t["pos"][0] <= max(p[0], q[0]) + 10:
                         best = min(best, abs(p[1] - t["pos"][1]))
@@ -1360,15 +1504,30 @@ class Scene:
              f". RJ45 and DC terminals face the rear; every body {math.floor(self.min_gap('PA-SHELF'))} mm or more "
              "from the next.", ["PA-SHELF"] + pa, view="rear")
         shelves = by(lambda k: k.startswith("ATT-SHELF"))
-        step("Programmable attenuators", "Fit one 1U vented shelf (front posts, 4 cage nuts) at the bottom of each 2U "
-             "attenuator space and stand its one or two attenuator boxes on it, ATT-01 top-left, numbers increasing left "
-             "to right and downwards. SMA IN/OUT and the dial face the front; LAN and power at the back. Each box's "
-             "plug-in power adapter is Velcroed to the rear lacing bar beside its shelf, never on the shelf between "
-             "the boxes.", shelves + [k for k, v in devs.items() if v.get("parent") in shelves], view="front")
+        if shelves:                                    # none with fixed pads (if_pads): no attenuator step
+            step("Programmable attenuators", "Fit one 1U vented shelf (front posts, 4 cage nuts) at the bottom of each 2U "
+                 "attenuator space and stand its one or two attenuator boxes on it, ATT-01 top-left, numbers increasing "
+                 "left to right and downwards. SMA IN/OUT and the dial face the front; LAN and power at the back. Each "
+                 "box's plug-in power adapter is Velcroed to the rear lacing bar beside its shelf, never on the shelf "
+                 "between the boxes.", shelves + [k for k, v in devs.items() if v.get("parent") in shelves], view="front")
         trays = by(lambda k: k.endswith("TRAY"))
         for tr in trays:
             parts = [k for k, v in devs.items() if v.get("parent") == tr]
-            if b.split:
+            if b.split and b.if_pads:
+                cols = [f"{sid} ({sec[0]}.{sec[1]}) t1-t{b.tiles}" for sec, sid in b.split.items()]
+                title = f"Splitter tray ({len(parts)} splitters)"
+                txt = (f"Fit the 1U tray at {u(tr)}, directly under the Spider boxes (front posts, 4 cage nuts). Lay the "
+                       f"{len(parts)} splitters flat, all the same way round: S port to the LEFT, ports 1 and 2 to the "
+                       "RIGHT (port 1 toward the front), printed label up. One column per split hub module, left to right: "
+                       f"{'; '.join(cols)}; rows front to back = tile 1-{b.tiles}. Leave the "
+                       f"{self.TRAY['splitter_pads']['xpitch'] - C.SMALL['splitter']['size'][0]:.0f} mm right of each "
+                       "splitter clear: ports 1 and 2 take the links' fixed pad stacks (up to "
+                       f"{max(v['stack_mm'] for v in b.pads.values() if v['chain'] == 'if'):g} mm, fitted in the IF-link "
+                       "steps), which lie on the tray. The tile cables reach S from the left side lane. Cable lanes: every "
+                       "cable leaves its port (or pad stack) straight out; the port-2 stack's cable runs 8 mm further out "
+                       "than port 1's; each row further back rises 10 mm more before running forward, over the front rows' "
+                       "plugs.")
+            elif b.split:
                 grp = [f"{sid} t1-t{b.tiles}" for sid in b.split.values()]
                 title = f"Splitter tray ({len(parts)} splitters)"
                 txt = (f"Fit the 1U tray at {u(tr)}, directly under the Spider boxes (front posts, 4 cage nuts). Lay the "
@@ -1459,19 +1618,25 @@ class Scene:
              "it, BENCH-CTL behind the monitor"
              + (", the switched -48 V supplies beside BENCH-CTL" if b.psu else "") +
              f") and the strip lengthwise just right of the monitor ({st_['pos'][0] - T['x0']:.0f} mm from the "
-             "rack-side end), inlet toward the back edge; MWATT in the middle, 90 mm in from the front edge, with the "
-             "IP-50 radios left (A side) and right (B side) of it in a front and a back row 120 mm apart, waveguide "
-             "flanges toward MWATT"
+             "rack-side end), inlet toward the back edge; " +
+             ("MWATT in the middle, 90 mm in from the front edge, with the IP-50 radios left (A side) and right (B side) "
+              "of it in a front and a back row 120 mm apart, waveguide flanges toward MWATT" if b.mwatt else
+              "the IP-50 radios in hop pairs, the two radios of a hop side by side with their waveguide flanges facing "
+              f"each other ({self._hop_pair_text()}), in a front and a back row 120 mm apart and two columns with a "
+              f"{self.TABLE_PADS['aisle']:g} mm aisle between them; the gap between the two radios of a hop takes the "
+              "transitions, the pad stacks and the hop's one SMA cable (IP-50 chain step); no radio is stacked")
              + (f"; stacked radios sit on two {BS.SPACER_MM:g} mm spacer bars on the lid of the one below (front and "
                 "rear edge), each bar fixed to the lower lid with double-sided foam tape and the upper radio pressed onto "
                 f"tape on the bars so it cannot slide: {', '.join(stacked)}" if stacked else "") +
              "; the analyser at the far end" +
-             ("; screw the table earth bar (TABLE-EARTH) to the table's back edge behind MWATT, studs up just below the "
-              "top" if "TABLE-EARTH" in devs else "") +
+             ("; screw the table earth bar (TABLE-EARTH) to the table's back edge behind " +
+              ("MWATT" if b.mwatt else "the aisle between the radio columns") + ", studs up just below the top"
+              if "TABLE-EARTH" in devs else "") +
              f". Keep the back {T['z1'] - dl[0]:.0f} mm of the table clear for the cable lanes: data bundle "
              f"{T['z1'] - dl[1]:.0f}-{T['z1'] - dl[0]:.0f} mm from the back edge, power bundle within "
              f"{T['z1'] - pl[0]:.0f} mm of it; keep the aisle between the strip and the A-side radios clear.",
-             table + [k for k, v in devs.items() if v["group"] == "table" and v.get("parent")] + extra, view="table")
+             table + [k for k, v in devs.items() if v["group"] == "table" and v.get("parent") and
+                      v["kind"] != "padstack"] + extra, view="table")
         # DC before AC: the DC is wired with no mains cord anywhere near a wall socket
         groups = [("DC", "DC power", "rear"), ("POE", "PoE to the nodes", "rear"), ("AC", "AC mains", "rear"),
                   ("FIB", "Data to SW-DATA", "rear"), ("ETH", "Management to SW-OOB", "rear"), ("GNSS", "GNSS", "rear"),
@@ -1499,7 +1664,67 @@ class Scene:
                      f"both ends before routing. {lead}{self.route_text(cls, step_of)}", cables=cs, view=view)
         lane = {c["id"]: c.get("lane_side") for c in self.cables}
         clear = self.tile_clearance()
-        for name, (sa, sb) in d["link_ends"].items():
+        route_txt = ("straight out from the port (or pad stack), down to the lower edge of its unit (for a Spider box: on "
+                     "the seam with the unit below, between the two tile rows), along that edge to the side of the rack, "
+                     "along the side, and in along the lower edge of the other unit; never across the face of another box, "
+                     f"so every tile keeps {math.floor(clear)} mm or more clear above and below its SMA and the runs pass "
+                     "15 mm or more in front of it. Connect the lowest tile first; "
+                     f"{self.SMA_TORQUE}. Where a seam bundle from an earlier step lies close to a tile, ease it aside by "
+                     "hand and fit the torque wrench with its handle sideways; never lever against a fitted cable. The four "
+                     "tile cables are one stock length (equal length, not a phase-matched set: see the assumptions); coil "
+                     "slack in the side lane.")
+        for name, (sa, sb) in (d["link_ends"].items() if b.if_pads else ()):
+            # fixed pads: tile (-> splitter S, P1 / P2) -> pad stack -> cable -> peer tile, one cable per tile path
+            pl = b.pad_links[name]
+            pids = [k for k, v in b.pads.items() if v["chain"] == "if" and v["link"] == name]
+            ids = [c["id"] for c in self.cables if c["cls"] == "RF" and c["a"].rsplit(".", 1)[0] in pids]
+            A, B = f"{sa[0]}.{sa[1]}", f"{sb[0]}.{sb[1]}"
+            bxb, mb = d["module"][sb]
+            pv = devs[pids[0]]
+            if sa in b.split:
+                bx, m = d["module"][sa]
+                sid = b.split[sa]
+                k = d["splitters"][sa].index(name) + 1
+                tile = [c["id"] for c in self.cables if c["cls"] == "RF" and c["a"].startswith(f"{bx}.{m}.T") and
+                        c["b"].startswith(sid + ".")]
+                done = [x for x in tile if x in taken]
+                if done:                       # a tile-to-splitter cable shared by two links: in the first link's step
+                    n0 = min(st["n"] for st in S if set(done) & set(st["cables"]))
+                    shared = f" (already fitted in step {n0}: {done[0]}-{done[-1]}, shared)"
+                else:
+                    shared = " (fitted once, shared by " + " and ".join(d["splitters"][sa]) + ")"
+                ids += [x for x in tile if x not in taken]
+                path = (f"tile i of {A} to {sid}.ti S{shared}; pad stack PAD-{name}.ti screwed onto {sid}.ti P{k}; "
+                        f"cable from the stack's OUT to tile i of {B} ({bxb}.{mb}.Ti)")
+                where = f"on port {k} (P{k}) of each of {sid}.t1-t{b.tiles}, straight out to the right"
+                support = ("The stacks lie on the tray, straight out from the splitter; the port-1 and port-2 stacks of a "
+                           "splitter sit 12 mm apart: fit and torque P1's stack first, then P2's, and never bend a stack "
+                           "to make room.")
+            else:
+                bxa, ma = d["module"][sa]
+                path = (f"pad stack PAD-{name}.ti screwed onto tile i of {A} ({bxa}.{ma}.Ti); cable from the stack's OUT "
+                        f"to tile i of {B} ({bxb}.{mb}.Ti)")
+                where = f"on each tile of {A} ({bxa}.{ma}.T1-T{b.tiles}), straight out to the front"
+                support = (f"Each stack stands {pv['stack_mm']:g} mm proud of {bxa}'s front and must not carry the cable: "
+                           "fit the cable on the stack's OUT, run it straight forward, and strap it (Velcro) to the side "
+                           "lane within 150 mm of the stack so it hangs on the strap and the tile carries only the stack; "
+                           "hold the stack, never lever it sideways.")
+            fit = (f"Fit the pad stacks first, {where}: " +
+                   ", then ".join(f"{pn} ({db} dB)" + (" on the port" if i == 0 else " on it")
+                                 for i, (pn, db) in enumerate(zip(pl["pn"], pl["pads"]))) +
+                   f" = {pl['db']} dB (target {pl['target']:g} dB, the A7 '{pl['setting']}' setting; pad schedule). Hold "
+                   "the jack you screw onto with the backing wrench and torque every joint (port to pad, pad to pad) to "
+                   f"8 in-lb (0.9 N m) with the SMA torque wrench. {support}")
+            job = (f" {name} is a bridge: it is held down before t0 with Terragraph ignition disabled for the link (tg "
+                   "ignition link -n <link> --disable on the E2E controller, set at power-up before the nodes boot); "
+                   "MARL engages it by enabling it (tg ignition link -n <link> --enable); nothing RF changes."
+                   if pl["job"] == "bridge" else
+                   f" {name} goes down at t0 with the hub (its PoE injector's outlet is switched off); nothing RF changes.")
+            sides = sorted({lane[i] for i in ids if lane.get(i)})
+            step(f"IF link {name} ({pl['text']} dB pads)", f"{path}. {fit}{job} Then route every cable through the "
+                 f"{' and '.join(sides)} side lane{'s' if len(sides) > 1 else ''}: {route_txt}", pids,
+                 cables=sorted(set(ids)), view="front")
+        for name, (sa, sb) in (() if b.if_pads else d["link_ends"].items()):
             att = b.att_of[name]
             ids = [c["id"] for c in self.cables if c["cls"] == "RF" and (f"{att}." in c["a"] + c["b"])]
             shared_before = {}
@@ -1532,15 +1757,8 @@ class Scene:
                 return f"tile i of {nm} to {att} CH i IN" if side == "in" else f"{att} CH i OUT to tile i of {nm}"
             sides = sorted({lane[i] for i in ids if lane.get(i)})
             step(f"IF link {name} ({att})", f"{path(sa, 'in')}; {path(sb, 'out')}. Route every cable through the "
-                 f"{' and '.join(sides)} side lane{'s' if len(sides) > 1 else ''}: straight out from the port, down to the "
-                 "lower edge of its unit (for a Spider box: on the seam with the unit below, between the two tile rows), "
-                 "along that edge to the side of the rack, along the side, and in along the lower edge of the other unit; "
-                 f"never across the face of another box, so every tile keeps {math.floor(clear)} mm or more clear above "
-                 "and below its SMA and the runs pass 15 mm or more in front of it. Connect the lowest tile first; "
-                 f"{self.SMA_TORQUE}. Where a seam bundle from an earlier step lies close to a tile, ease it aside by hand "
-                 "and fit the torque wrench with its handle sideways; never lever against a fitted cable. The four tile "
-                 "cables are one stock length (equal length, not a phase-matched set: see the assumptions); coil slack in "
-                 "the side lane.", cables=sorted(set(ids)), view="front")
+                 f"{' and '.join(sides)} side lane{'s' if len(sides) > 1 else ''}: {route_txt.replace(' (or pad stack)', '')}",
+                 cables=sorted(set(ids)), view="front")
         for name, (x, z) in d["couplings"].items():
             att = b.att_of[name]
             ids = [c["id"] for c in self.cables if c["cls"] == "RF" and f"{att}." in c["a"] + c["b"]]
@@ -1564,12 +1782,28 @@ class Scene:
             ls = sorted({c["length"] for c in self.cables if c["cls"] == "WG" and "SMSM" in c["pn"]},
                         key=lambda v: float(v.split()[0]))
             rng = ls[0] if len(ls) == 1 else f"{ls[0].split()[0]}-{ls[-1]}"
-            step("IP-50 conducted chains", "Radio -> waveguide transition (bolted to the radio flange) -> SA18S10W-30 "
-                 f"30 dB pad -> SMA cable ({rng}, see the table) -> MWATT CH j IN; CH j OUT -> SMA cable -> pad -> "
-                 "transition -> radio. The SMA cables drop from the transition to the table top and run on it, round "
-                 f"MWATT's front corner, to its front ports. {self.SMA_TORQUE[0].upper() + self.SMA_TORQUE[1:]}. The "
-                 "radios stay unpowered until the last stage of power-up, after every chain is closed and every MWATT "
-                 "channel is set.", cables=ws, view="table")
+            if b.mw_pads:
+                wp = [k for k, v in devs.items() if v["kind"] == "padstack" and v["chain"] == "ip50"]
+                hi, lo = BS.MW_PAD_HI, BS.MW_PAD_LO
+                step("IP-50 conducted chains", f"Per hop: radio (A side) -> waveguide transition (bolted to the radio "
+                     f"flange) -> {hi[0]} {hi[1]} dB 10 W pad -> {lo[0]} {lo[1]} dB pad -> ONE SMA cable ({rng}, see the "
+                     f"table) -> {hi[0]} {hi[1]} dB 10 W pad -> transition -> radio (B side): {2 * hi[1] + lo[1]} dB "
+                     "fixed, no programmable attenuator. First screw the pads onto each transition's SMA: the 30 dB 10 W "
+                     "pad on every transition, its input (high-power) side on the transition (if it carries an arrow, the "
+                     f"arrow points away from the radio), then the {lo[1]} dB pad on the A side's 30 dB pad (stacks "
+                     f"{wp[0]} to {wp[-1]}); the transition carries the stack. "
+                     f"{self.SMA_TORQUE[0].upper() + self.SMA_TORQUE[1:]}, every pad joint included. The SMA cable drops "
+                     "from the A-side stack to the table top and rises to the B-side stack. If the band turns out to be "
+                     f"23 GHz the {lo[1]} dB pad becomes a {BS.MW_PAD_LO_K} (assumptions). The radios stay unpowered "
+                     "until the last stage of power-up, after every chain is complete with its pads.", wp, cables=ws,
+                     view="table")
+            else:
+                step("IP-50 conducted chains", "Radio -> waveguide transition (bolted to the radio flange) -> SA18S10W-30 "
+                     f"30 dB pad -> SMA cable ({rng}, see the table) -> MWATT CH j IN; CH j OUT -> SMA cable -> pad -> "
+                     "transition -> radio. The SMA cables drop from the transition to the table top and run on it, round "
+                     f"MWATT's front corner, to its front ports. {self.SMA_TORQUE[0].upper() + self.SMA_TORQUE[1:]}. The "
+                     "radios stay unpowered until the last stage of power-up, after every chain is closed and every MWATT "
+                     "channel is set.", cables=ws, view="table")
         self.power_up = self._power_up(step_of)
         bonds = [c["id"] for c in self.cables if c["cls"] == "PE"]
         pre = ("Before mains: every earth bond fitted and checked under 0.1 ohm (" + f"{bonds[0]}-{bonds[-1]}" + ")" +
@@ -1581,6 +1815,16 @@ class Scene:
              ", ".join(f"{s['title']} ({s['do']})" for s in self.power_up) + ".", view="iso")
         self.steps = S
         self.step_titles = step_of
+
+    def _hop_pair_text(self):
+        """'W1-CORE: IP50-W1-CORE@W1 | IP50-W1-CORE@CORE front row, left; ...' for the hop-pair table layout."""
+        out = []
+        for k, (a, bb) in self.d.get("mw_links", {}).items():
+            ra, rb = self.dev[f"IP50-{k}@{a}"], self.dev[f"IP50-{k}@{bb}"]
+            row = "front" if ra["pos"][2] < 0 else "back"
+            col = "left" if ra["pos"][0] < self.TABLE_PADS["radio_x0"] + 10 else "right"
+            out.append(f"{k}: {ra['id']} | {rb['id']}, {row} row, {col}")
+        return "; ".join(out)
 
     def cable_cls(self, cid):
         return next((c["cls"] for c in self.cables if c["id"] == cid), None)
@@ -1646,11 +1890,12 @@ class Scene:
               ([strip[0]["a"]] if strip else []) + [o for o, _, _ in swp])
         atts = list(b.atts)
         ap = pairs(atts)
-        stage("attenuators", "their outlets ON; BENCH-CTL sets every attenuator" + (" and MWATT" if b.ip50 else "") +
-              " channel to its start value",
-              f"from BENCH-CTL switch ON {on_list(ap)}; set every channel to its start value (attenuator schedule)" +
-              (" and every MWATT channel to its start value" if b.ip50 else "") + "; read every value back",
-              atts + (["MWATT"] if b.ip50 else []), [o for o, _, _ in ap])
+        if atts or b.mwatt:                          # none with fixed pads (if_pads / mw_pads): no attenuator stage
+            stage("attenuators", "their outlets ON; BENCH-CTL sets every attenuator" + (" and MWATT" if b.mwatt else "") +
+                  " channel to its start value",
+                  f"from BENCH-CTL switch ON {on_list(ap)}; set every channel to its start value (attenuator schedule)" +
+                  (" and every MWATT channel to its start value" if b.mwatt else "") + "; read every value back",
+                  atts + (["MWATT"] if b.mwatt else []), [o for o, _, _ in ap])
         comp = [x for x in b.rack_servers] + [f"HOST-{h}" for h in d["hosts"]] + [f"AGENT-{s_}" for s_ in d.get("agents", [])]
         comp = sorted(comp, key=lambda x: x != "SRV-E2E")              # SRV-E2E first
         cp = pairs(comp)
@@ -1743,8 +1988,15 @@ class Scene:
         cur = ("then read each PDU's input current on its own display (" + ", ".join(b.pdus) + "): each must be 12.8 A "
                "or less (80 % of 16 A); if one is above, stop and move a load")
         tight = [s_["supply"] for s_ in self.power_budget() if s_["total_w"] > 0.9 * s_["limit_w"]]
+        # fixed pads (if_pads): a bridge has no RF way down, so its ignition is disabled before any node boots
+        bridges = [k for k, v in b.pad_links.items() if v["job"] == "bridge"]
+        ign = (f"before closing any breaker, on the E2E controller (SRV-E2E, up since the last stage) disable ignition "
+               f"for the bridge links {', '.join(bridges)} (tg ignition link -n <link> --disable, one per bridge) and read "
+               "the setting back, so they stay down until MARL engages them (tg ignition link -n <link> --enable); "
+               if bridges else "")
         stage("nodes", (f"close {rng(fan_cb)} (box fans) first and check every fan runs; then " if fan_cb else "") +
               f"{rng(node_cb)} one at a time" + (f"; {' + '.join(b.inj.values())} outlet ON" if b.inj else ""),
+              ign +
               (f"close DC-DIST {fan_txt} one at a time and check that each box's fans run within 1 min (if not: open "
                "that breaker, leave the nodes of every box it feeds off and find out why); then " if fan_cb else "") +
               "close DC-DIST " + ", ".join(f"{c['a'].split('.')[1]} ({c['b'].split('.')[0]}, node "
@@ -1752,23 +2004,32 @@ class Scene:
               " one at a time" + (f"; switch ON {', '.join(f'{o} ({lab}, node {n})' for (o, lab, _), n in zip(ip, b.inj))}"
                                   if b.inj else "") +
               "; if a box's fans stop while its nodes boot, power that box down: " +
-              "; ".join(down) +
-              "; wait for every node to join the E2E controller; " + cur +
+              "; ".join(down) + "; wait for every node to join the E2E controller; " +
+              (f"the bridges {', '.join(bridges)} stay down (ignition disabled before the first breaker): check on the "
+               "E2E controller that they are not ignited and that every other link comes up on its fixed pads; "
+               if bridges else "") + cur +
               (f" ({', '.join(tight)} is within 10 % of its limit on the estimates: read it first)" if tight else ""),
               boxes + [c["b"].split(".")[0] for c in nodes] + list(b.inj.values()),
               [c["a"] for c in cbs] + [o for o, _, _ in ip], nodes=list(b.dc_nodes) + list(b.inj))
         if b.ip50:
             ws_ = sorted({c["id"] for c in self.cables if c["cls"] == "WG"})
+            chain_ok = ("only after every chain is complete with its pads" if b.mw_pads else
+                        "only after every chain is closed and every MWATT channel is set")
+            chain_detail = (f"first confirm every IP-50 chain ({ws_[0]}-{ws_[-1]}) is complete and torqued (transition "
+                            f"bolted, a {BS.MW_PAD_HI[0]} on each transition, the {BS.MW_PAD_LO[0]} on the A side's, the "
+                            "one SMA cable on both stacks; no open flange or SMA); never power a radio with an open RF "
+                            "port; then " if b.mw_pads else
+                            f"first confirm every IP-50 chain ({ws_[0]}-{ws_[-1]}) is complete and torqued (transition "
+                            "bolted, pad and cable on, no open flange or SMA) and MWATT reads back its start value on "
+                            "every channel; never power a radio with an open RF port; then ")
             stage("radios last", (f"GMT fuses {fpos[0]}-{fpos[-1]} in one at a time" if fs else "") +
-                  ("; supply outlets ON" if psu else "") +
-                  "; only after every chain is closed and every MWATT channel is set",
-                  f"first confirm every IP-50 chain ({ws_[0]}-{ws_[-1]}) is complete and torqued (transition bolted, pad "
-                  "and cable on, no open flange or SMA) and MWATT reads back its start value on every channel; never "
-                  "power a radio with an open RF port; then " +
+                  ("; supply outlets ON" if psu else "") + "; " + chain_ok,
+                  chain_detail +
                   (f"insert the GMT fuses on DC-DIST2 one at a time: " +
                    ", ".join(f"{c['a'].split('.')[1]} ({c['b'].split('.')[0]})" for c in fs) if fs else "") +
                   (f"; switch ON {on_list(pp)}" if psu else "") +
-                  "; after 30 min check every radio's temperature (the stacked ones in particular) in the IP-50 web UI "
+                  "; after 30 min check every radio's temperature" +
+                  (" (the stacked ones in particular)" if b.stacked_hops else "") + " in the IP-50 web UI "
                   "or CLI, reached in-band over the data network from SRV-E2E (the NMS host; BENCH-CTL has no data-"
                   "network port); " + cur,
                   list(b.ip50) + psu, [c["a"] for c in fs] + [o for o, _, _ in pp])
@@ -1811,8 +2072,11 @@ class Scene:
         ch.append(dict(name="No two devices share a rack unit", ok=len(us) == len(set(us)),
                        detail=f"{len(set(us))} U used of {self.rack['units']}"))
         unres = [p for p in self.ports.values() if p["type"] == "SMA" and p["device"].startswith("SB")]
-        ch.append(dict(name="Spider SMA tile ports", ok=True, detail=f"{sum(1 for p in unres if p['id'] in used)} of "
-                       f"{len(unres)} used; unused ones get ANNE-50+ loads"))
+        ch.append(dict(name="Spider SMA tile ports", ok=True, detail=f"{sum(1 for p in unres if p['id'] in used or p.get('mate'))} "
+                       f"of {len(unres)} used" + (f" ({sum(1 for p in unres if p.get('mate'))} carry a pad stack)"
+                                                  if any(p.get("mate") for p in unres) else "") +
+                       "; unused ones get ANNE-50+ loads"))
+        ch += self._pad_checks(used)
         ch += self._body_checks()
         off = [p["id"] for p in self.ports.values() if not all(
             self.dev[p["device"]]["pos"][k] - (1 if k < 2 else 15.5) <= p["pos"][k] <=
@@ -1947,6 +2211,41 @@ class Scene:
                 dict(name="Bench-table cables stay inside the table outline", ok=not outside,
                      detail="; ".join(outside[:20]) or "every table route inside x / z of the table")]
 
+    def _pad_checks(self, used):
+        """fixed pad stacks (if_pads / mw_pads): each IF tile path has one stack, screwed onto a port that carries no
+        cable, with its OUT carrying the path's one cable; at most PAD_MAX available BW-S values, within 1 dB of the
+        target; each IP-50 hop has its A and B stacks."""
+        b, d = self.b, self.d
+        if not b.pads:
+            return []
+        bad, val = [], []
+        for pid, v in b.pads.items():
+            host, inp, out = v["host"], f"{pid}.in", f"{pid}.out"
+            if self.ports.get(host, {}).get("mate") != inp or self.ports[inp].get("mate") != host:
+                bad.append(f"{pid}: not mated to {host}")
+            if host in used:
+                bad.append(f"{pid}: its host {host} also carries a cable")
+            if len([c for c in self.cables if out in (c["a"], c["b"])]) != 1:
+                bad.append(f"{pid}: OUT does not carry exactly one cable")
+            if v["chain"] == "if":
+                dbs = [x["db"] for x in v["parts"]]
+                if len(dbs) > BS.PAD_MAX or any(x not in BS.BW_S_DB for x in dbs) or sum(dbs) != v["db"] or \
+                        abs(v["db"] - v["target"]) > 1.0:
+                    val.append(f"{pid}: {dbs} = {v['db']} dB for {v['target']} dB")
+        paths = {(v["link"], v["tile"]) for v in b.pads.values() if v["chain"] == "if"}
+        want = {(k, t) for k in (d["link_ends"] if b.if_pads else ()) for t in range(1, b.tiles + 1)}
+        hops = {v["link"] + v["side"] for v in b.pads.values() if v["chain"] == "ip50"}
+        want_h = {k + sd for k in (d.get("mw_links", {}) if b.mw_pads else ()) for sd in "ab"}
+        miss = sorted(f"{k} tile {t}" for k, t in want - paths) + sorted(want_h - hops)
+        n_if = sum(1 for v in b.pads.values() if v["chain"] == "if")
+        return [dict(name="Every IF tile path and IP-50 hop end has its fixed pad stack, screwed onto a port that carries "
+                          "no cable, its OUT carrying the one cable", ok=not (bad or miss),
+                     detail="; ".join(bad + miss) or f"{n_if} IF stacks ({len(want)} tile paths), "
+                                                    f"{len(b.pads) - n_if} IP-50 stacks ({len(want_h) // 2} hops)"),
+                dict(name=f"Pad stacks: at most {BS.PAD_MAX} available BW-S values, within 1 dB of the A7 target", ok=not val,
+                     detail="; ".join(val) or "; ".join(f"{k} {v['target']:g} -> {v['text']} = {v['db']} dB"
+                                                         for k, v in b.pad_links.items()) or "no IF pads")]
+
     def _arm_fit_check(self):
         """coupler CPL stacks: DC block (+ pad) + plug + bend fit under the unit above the coupler tray."""
         if not self.b.coupled:
@@ -1970,16 +2269,8 @@ class Scene:
         """typical draw per PDU and for the strip (TENTATIVE: catalog.LOAD_W), against 80 % of a 16 A 230 V circuit."""
         b = self.b
 
-        def watts(ld):
-            base = ld.split(":")[0]
-            if base == "DC-RECT":                        # nodes + Spider-box fans / Pi (DCIN)
-                return (len(b.dc_nodes) * C.NODE_W + len(getattr(b, "dcin", {})) * C.BOX_AUX_W) / C.RECT_EFF
-            if base == "DC-RECT2":
-                return len(b.fuse) * C.IP50_W / C.RECT_EFF
-            for pre in ("ATT", "AGENT", "HOST", "INJ", "PSU"):
-                if base.startswith(pre):
-                    return C.LOAD_W[pre]
-            return C.LOAD_W.get(base, 0)
+        assert b.n_dcin == len(b.dcin) and sum(1 for k in b.ip50 if k not in b.psu) == len(b.fuse)
+        watts = b.load_w                                 # the same estimate the PDU outlet plan used
         out = []
         for p in b.pdus:
             loads = [(f"{p}.O{o}", ld, round(watts(ld))) for ld, (pp, o) in b.outlet.items() if pp == p]
@@ -2092,7 +2383,7 @@ class Scene:
                 owner.setdefault(cid, st["n"])
         tile_cable = {}
         for c in self.cables:
-            for e in (c["a"], c["b"]):
+            for e in self._ends(c):                         # a tile with a pad stack on it: the stack's cable
                 if re.match(r"^SB\d+\.M\d+\.T\d+$", e):
                     tile_cable[e] = c["id"]
         tiles = [p for p in self.ports.values() if re.match(r"^SB\d+\.M\d+\.T\d+$", p["id"])]
@@ -2102,7 +2393,7 @@ class Scene:
                 continue
             segs = [(p, q) for p, q in zip(c["route"], c["route"][1:]) if p[2] < -5 and q[2] < -5]
             for t in tiles:
-                if t["id"] in (c["a"], c["b"]):
+                if t["id"] in self._ends(c):
                     continue
                 tx, ty = t["pos"][0], t["pos"][1]
                 hit = any(max(min(p[0], q[0]) - tx, tx - max(p[0], q[0]), 0) <= 10 and
@@ -2142,7 +2433,34 @@ class Scene:
                               switched=self.b.switched, tentative=True),
                     rack=self.rack, table=self.table, devices=list(self.dev.values()), ports=list(self.ports.values()),
                     cables=self.cables, steps=self.steps, checks=self.checks, assumptions=assumed, legend=legend,
-                    power_up=self.power_up, power_budget=self.budget)
+                    power_up=self.power_up, power_budget=self.budget, **self.pad_schedule())
+
+    def pad_schedule(self):
+        """scene field 'pad_schedule' (additive, fixed-pad benches only): one row per IF link (target, rounded, fitted
+        dB, pads, where the stacks sit, A / B tiles, cables) and one per IP-50 hop (its two stacks and the cable)."""
+        b, d = self.b, self.d
+        if not b.pads:
+            return {}
+        rows = []
+        for name, pl in b.pad_links.items():
+            sa, sb = d["link_ends"][name]
+            pids = [k for k, v in b.pads.items() if v["chain"] == "if" and v["link"] == name]
+            rows.append(dict(chain="if", link=name, job=pl["job"], setting=pl["setting"], target_db=pl["target"],
+                             rounded_db=pl["rounded"], db=pl["db"], pads=pl["pads"], pn=pl["pn"], rule=pl["rule"],
+                             stacks=pids, hosts=[b.pads[p]["host"] for p in pids],
+                             a_sector=f"{sa[0]}.{sa[1]}", b_sector=f"{sb[0]}.{sb[1]}",
+                             a_tiles=["{}.{}.T{}".format(*d["module"][sa], t) for t in range(1, b.tiles + 1)],
+                             b_tiles=["{}.{}.T{}".format(*d["module"][sb], t) for t in range(1, b.tiles + 1)],
+                             cables=[c["id"] for c in self.cables if c["a"].rsplit(".", 1)[0] in pids]))
+        for k in (d.get("mw_links", {}) if b.mw_pads else ()):
+            st = [f"WGP-{k}-A", f"WGP-{k}-B"]
+            rows.append(dict(chain="ip50", link=k, db=sum(b.pads[x]["db"] for x in st),
+                             pads=[[p["db"] for p in b.pads[x]["parts"]] for x in st],
+                             pn=[[p["pn"] for p in b.pads[x]["parts"]] for x in st], stacks=st,
+                             hosts=[b.pads[x]["host"] for x in st],
+                             cables=[c["id"] for c in self.cables if c["cls"] == "WG" and
+                                     c["a"].rsplit(".", 1)[0] in st]))
+        return dict(pad_schedule=rows)
 
 
 def build(design, prefix, b=None):

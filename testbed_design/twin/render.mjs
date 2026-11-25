@@ -19,11 +19,20 @@
 //                            step to the PC, monitor and keyboard).
 //   sb_SBn.png, sb_rear_SBn.png   Spider box front / rear panel, straight on, one 1U, no cables
 //   panel_<ID>.png           the connector face of a switch, DC unit, PDU, GNSS splitter or
-//                            the MWATT, straight on, no cables (the guide tags every port)
+//                            the MWATT (if the bench has one), straight on, no cables (the guide
+//                            tags every port)
 //   link_<NAME>.png          IF link / coupling arm, its cables traced and highlighted
 //   link_<NAME>_tiles.png    the Spider-box tiles of that link, straight on (no cables)
+//   link_<NAME>_pads.png     (fixed-pad benches) the link's pad stacks close up: on the splitter
+//                            tray seen from above (the units above it left out), or on the tiles
+//                            seen from the front right
+//   tray_<ID>.png            (fixed-pad benches) the splitter tray from above with the pad stacks
+//                            on its splitters, the units above and below left out, no cables
 //   power.png, data_mgmt.png       AC + DC + POE only / FIB + ETH only
-//   ip50_chains.png, ip50_chains_top.png, ip50_col_1/2.png   IP-50 conducted chains
+//   ip50_chains.png, ip50_chains_top.png    IP-50 conducted chains
+//   ip50_col_1/2.png         (with an MWATT) one close-up per radio column beside it
+//   ip50_hop_<HOP>.png       (fixed pads, no MWATT) one close-up per hop: radio, transition,
+//                            pad stack, SMA cable, pad stack, transition, radio
 //   event_t0.png             (PoC with a t0 event) the bench after t0
 // Every picture carries an orientation badge (FRONT VIEW / REAR VIEW / ...) and the
 // TENTATIVE mark; clipped pictures carry both in a band above the drawing.
@@ -206,6 +215,16 @@ function pageApply(spec) {
         if (!r.width || getComputedStyle(el).display === 'none' || getComputedStyle(el).visibility === 'hidden' || +getComputedStyle(el).opacity === 0) continue;
         if (r.bottom < y0 - 4 || r.top > y1 + 4) continue;
         x0 = Math.min(x0, r.left); x1 = Math.max(x1, r.right); y0 = Math.min(y0, r.top); y1 = Math.max(y1, r.bottom);
+      }
+      // labels of items just beside the rack (earth bar, arrestor, cable bridge) that the clip would cut
+      const [cx0, cx1] = [x0, x1];
+      for (const el of document.querySelectorAll('.tlabel:not(.rackcall)')) {
+        const r = el.getBoundingClientRect();
+        if (!r.width || getComputedStyle(el).display === 'none' || getComputedStyle(el).visibility === 'hidden' || +getComputedStyle(el).opacity === 0) continue;
+        if (r.bottom < y0 || r.top > y1) continue;
+        const cut = (r.left < cx0 && r.right > cx0) || (r.left < cx1 && r.right > cx1);
+        if (!cut || r.left < cx0 - 160 || r.right > cx1 + 160) continue;
+        x0 = Math.min(x0, r.left); x1 = Math.max(x1, r.right);
       }
     }
     const pad = spec.clip.pad ?? 12;
@@ -469,7 +488,7 @@ function buildSpecs(scene) {
       });
     }
   }
-  specs.push({ name: 'overview_table', title: 'Bench table, from the operator side above', hideLabels: true, ...tableTop(), anchors: tableAnchors(tableDevs.filter((id) => devs.get(id).kind !== 'transition')) });
+  specs.push({ name: 'overview_table', title: 'Bench table, from the operator side above', hideLabels: true, ...tableTop(), anchors: tableAnchors(tableDevs.filter((id) => !['transition', 'padstack'].includes(devs.get(id).kind))) });
   specs.push({ name: 'overview_top', title: 'Plan view from above', view: 'top' });
   specs.push({
     name: 'overview_table_plan', title: 'Bench table seen from above',
@@ -512,7 +531,10 @@ function buildSpecs(scene) {
           dir: [0.35, 0.9, -1], fov: 26, margin: 1.1, anchors,
         });
       } else {
-        const ids = st.devices.length ? st.devices : tableDevs.filter((id) => ['ip50', 'mwatt', 'psu'].includes(devs.get(id).kind));
+        const chainKinds = ['ip50', 'mwatt', 'psu'];
+        const wgStep = st.cables.length && st.cables.every((id) => cabs.get(id).cls === 'WG');
+        const ids = !st.devices.length ? tableDevs.filter((id) => chainKinds.includes(devs.get(id).kind))
+          : wgStep ? [...tableDevs.filter((id) => chainKinds.includes(devs.get(id).kind)), ...st.devices] : st.devices;
         specs.push({
           name: `step_${pad2(st.n)}`, ...base, hideLabels: true, ...tableTop(),
           anchors: [...tableAnchors(ids.filter((id) => devs.get(id).kind !== 'transition')), ...st.cables.map((id) => ({ kind: 'cable', id }))],
@@ -530,6 +552,8 @@ function buildSpecs(scene) {
     specs.push({
       name: `sb_${d.id}`, title: `${d.id} front panel (${d.u})`, device: d.id,
       opts: { classes: [] }, hideLabels: true,
+      // as fitted in the Spider-box step: the pad stacks (IF-link steps) would hide the tiles end on
+      hideDevices: scene.devices.filter((x) => x.kind === 'padstack' && x.parent === d.id).map((x) => x.id),
       box, dir: [0, 0, -1], fov: 8, margin: 1.0, insets: INS,
       clip: { box: [[box[0][0], d.pos[1] - 1, 0], [box[1][0], d.pos[1] + d.size[1] + 1, 0]], pad: 2 },
       anchors: [
@@ -540,6 +564,29 @@ function buildSpecs(scene) {
     });
     const rp = panel(d.id, 'rear');
     specs.push({ name: `sb_rear_${d.id}`, title: `${d.id} rear panel (${d.u}), seen from the rear`, ...rp });
+  }
+
+  // ---------------- splitter tray with pad stacks on its splitters, from above (fixed-pad benches)
+  for (const tr of scene.devices.filter((d) => d.kind === 'tray')) {
+    const spl = scene.devices.filter((d) => d.parent === tr.id && d.kind === 'splitter');
+    const pads = scene.devices.filter((d) => d.kind === 'padstack' && spl.some((x) => x.id === d.parent));
+    if (!pads.length) continue;
+    const top = tr.pos[1] + tr.size[1];
+    const away = scene.devices.filter((d) => d.group === 'rack' && !d.parent && d.id !== tr.id
+      && (d.pos[1] >= top - 1 || d.pos[1] + d.size[1] <= tr.pos[1] + 1)).map((d) => d.id);
+    const kids = scene.devices.filter((d) => d.parent && away.includes(d.parent)).map((d) => d.id);
+    const zs = [...spl, ...pads].flatMap((d) => [d.pos[2], d.pos[2] + d.size[2]]);
+    const ys = [...spl, ...pads].flatMap((d) => [d.pos[1], d.pos[1] + d.size[1]]);
+    specs.push({
+      name: `tray_${tr.id}`, title: `${tr.id} from above: the splitters and the pad stacks on their ports`, device: tr.id,
+      opts: { classes: [] }, hideLabels: true, hideDevices: [...away, ...kids, 'WALL'],
+      box: [[tr.pos[0] - 5, Math.min(...ys) - 5, Math.min(...zs) - 20], [tr.pos[0] + tr.size[0] + 5, Math.max(...ys) + 10, Math.max(...zs) + 15]],
+      dir: [0.06, 2.6, -1], fov: 18, margin: 1.04, insets: INS, clip: { box: 'frame', pad: 6 },
+      badge: ['VIEW FROM ABOVE', 'front edge at the bottom; the units above and below the tray left out'],
+      anchors: [...spl.map((d) => ({ kind: 'device', id: d.id, face: 'top' })), ...pads.map((d) => ({ kind: 'device', id: d.id, face: 'center' })),
+        ...spl.flatMap((d) => (d.ports || []).map((pid) => ({ kind: 'port', id: pid })))],
+      pads: pads.map((d) => d.id),
+    });
   }
 
   // ---------------- unit faces the guide tags port by port
@@ -558,12 +605,21 @@ function buildSpecs(scene) {
 
   // ---------------- IF links / coupling arms
   const linkTiles = (rf) => {
-    // tile ports of a link: direct, or behind a splitter / coupler
+    // tile ports of a link: direct, behind a splitter / coupler, or under a pad stack
+    // (the cable starts on the stack's OUT; its IN is screwed onto a tile or a splitter port)
     const out = [];
     const add = (pid) => { if (isTile(pid) && !out.includes(pid)) out.push(pid); };
     for (const id of rf) {
       const c = cabs.get(id);
-      for (const pid of [c.a, c.b]) {
+      for (const end of [c.a, c.b]) {
+        let pid = end;
+        const pe = ports.get(pid);
+        const pd = pe && devs.get(pe.device);
+        if (pd && pd.kind === 'padstack') {
+          const pin = ports.get(`${pd.id}.in`);
+          if (!pin || !pin.mate) continue;
+          pid = pin.mate;
+        }
         add(pid);
         const p = ports.get(pid);
         const d = p && devs.get(p.device);
@@ -593,6 +649,53 @@ function buildSpecs(scene) {
       dir: [0.22, 0.1, -1], margin: 1.08,
       anchors: [...rf.map((id) => ({ kind: 'cable', id })), ...devAnchors([...endDevs], 'front')],
     });
+    const padIds = st.devices.filter((id) => (devs.get(id) || {}).kind === 'padstack');
+    if (padIds.length) {
+      // the link's pad stacks close up, with their host ports and the first part of each cable
+      const pads = padIds.map((id) => devs.get(id));
+      const hosts = pads.map((d) => ports.get(d.host)).filter(Boolean);
+      const onTray = pads.every((d) => (devs.get(d.parent) || {}).kind === 'splitter');
+      const mn = [Infinity, Infinity, Infinity];
+      const mx = [-Infinity, -Infinity, -Infinity];
+      const grow = (p) => { for (let k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], p[k]); mx[k] = Math.max(mx[k], p[k]); } };
+      for (const d of pads) { grow(d.pos); grow([0, 1, 2].map((k) => d.pos[k] + d.size[k])); }
+      for (const h of hosts) grow(h.pos);
+      const parents = [...new Set(pads.map((d) => d.parent))].map((id) => devs.get(id)).filter(Boolean);
+      let spec;
+      if (onTray) {
+        // the splitters and their stacks seen from above: every rack unit over the tray left out
+        for (const d of parents) { grow(d.pos); grow([0, 1, 2].map((k) => d.pos[k] + d.size[k])); }
+        const tray = devs.get(parents[0].parent);
+        const top = tray ? tray.pos[1] + tray.size[1] : mx[1] + 20;
+        const bottom = tray ? tray.pos[1] : mn[1] - 20;
+        // every rack unit above and below the tray left out: the tray seen from above, on its own
+        const away = scene.devices.filter((d) => d.group === 'rack' && !d.parent && d.id !== (tray && tray.id)
+          && (d.pos[1] >= top - 1 || d.pos[1] + d.size[1] <= bottom + 1)).map((d) => d.id);
+        const kids = scene.devices.filter((d) => d.parent && away.includes(d.parent)).map((d) => d.id);
+        // the whole tray width: the link's column and the other one (pale) side by side
+        const tx0 = tray ? Math.min(mn[0] - 60, tray.pos[0] - 5) : mn[0] - 60;
+        const tx1 = tray ? Math.max(mx[0] + 40, tray.pos[0] + tray.size[0] + 5) : mx[0] + 40;
+        spec = {
+          box: [[tx0, mn[1] - 5, mn[2] - 20], [tx1, mx[1] + 10, mx[2] + 15]], dir: [0.06, 2.6, -1], fov: 18,
+          hideDevices: [...away, ...kids, 'WALL'], opts: { classes: ['RF'] },
+          badge: ['VIEW FROM ABOVE', 'splitter tray, front edge at the bottom; the units above and below it left out'],
+        };
+      } else {
+        spec = {
+          box: [[mn[0] - 170, mn[1] - 45, mn[2] - 30], [mx[0] + 150, mx[1] + 40, mx[2] + 10]], dir: [0.7, 0.42, -1], fov: 18,
+          opts: { classes: ['RF'] },
+        };
+      }
+      specs.push({
+        name: `link_${name}_pads`, title: `${st.title}: pad stacks close up`, link: name, stepN: st.n,
+        step: st.n, stepView: null, hideLabels: true, cableLabelMax: 0, margin: 1.06, insets: INS, clip: { box: 'frame', pad: 6 },
+        ...spec,
+        anchors: [...pads.map((d) => ({ kind: 'device', id: d.id, face: 'center' })),
+          ...pads.map((d) => ({ kind: 'port', id: `${d.id}.in` })), ...pads.map((d) => ({ kind: 'port', id: `${d.id}.out` })),
+          ...hosts.map((h) => ({ kind: 'port', id: h.id })), ...rf.map((id) => ({ kind: 'cable', id, at: 0.12 }))],
+        pads: padIds,
+      });
+    }
     const tiles = linkTiles(rf);
     const sbIds = [...new Set(tiles.map((p) => p.split('.')[0]))];
     if (sbIds.length) {
@@ -646,6 +749,29 @@ function buildSpecs(scene) {
           radios: ids, transitions: tr, cables: wgc,
         });
       });
+    }
+    const hops = [...new Set(radios.filter((d) => d.hop).map((d) => d.hop))];
+    if (!mw && hops.length) {
+      // fixed pads: the two radios of a hop sit side by side, flanges facing (A on the left);
+      // one close-up per hop from the operator side, above
+      for (const hop of hops) {
+        const rs = radios.filter((d) => d.hop === hop).sort((a, b) => a.pos[0] - b.pos[0]);
+        const ids = rs.map((d) => d.id);
+        const tr = scene.devices.filter((d) => d.kind === 'transition' && ids.includes(d.parent)).map((d) => d.id);
+        const pads = scene.devices.filter((d) => d.kind === 'padstack' && tr.includes(d.parent)).map((d) => d.id);
+        const mine = new Set([...ids, ...tr, ...pads]);
+        const wgc = scene.cables.filter((c) => c.cls === 'WG' && [c.a, c.b].some((pid) => mine.has((ports.get(pid) || {}).device))).map((c) => c.id);
+        specs.push({
+          name: `ip50_hop_${hop}`, title: `IP-50 hop ${hop}: radio, transition, pads, SMA cable, pads, transition, radio`,
+          opts: { classes: ['WG'] }, hideLabels: true, hl: { devices: [...mine], cables: wgc, ports: [] },
+          boxIds: [...[...mine].map((id) => ['device', id]), ...wgc.map((id) => ['cable', id])], boxPad: [25, 10, 25],
+          dir: [0, 1.0, -1], fov: 20, margin: 1.04, insets: INS, clip: { box: 'frame', pad: 6 },
+          anchors: [...ids.map((id) => ({ kind: 'device', id, face: 'top' })), ...tr.map((id) => ({ kind: 'device', id, face: 'center' })),
+            ...pads.map((id) => ({ kind: 'device', id, face: 'center' })), ...wgc.map((id) => ({ kind: 'cable', id, at: 0.5 })),
+            ...[...tr, ...pads].flatMap((id) => (devs.get(id).ports || []).map((pid) => ({ kind: 'port', id: pid })))],
+          radios: ids, transitions: tr, pads, cables: wgc, hop,
+        });
+      }
     }
   }
   if ((scene.meta.switched || []).length) {
@@ -739,6 +865,7 @@ async function renderPoc(browser, poc) {
       anchors: res.anchors, traces: res.traces, tiles: spec.tiles || null, camera: res.camera,
       face: spec.face || null, ports: spec.ports || null, part: spec.part || null,
       radios: spec.radios || null, transitions: spec.transitions || null, cables: spec.cables || null,
+      ...(spec.pads ? { pads: spec.pads } : {}), ...(spec.hop ? { hop: spec.hop } : {}),
     });
     process.stdout.write(`  ${poc} ${file} (${((Date.now() - tr0) / 1000).toFixed(1)} s)\n`);
   }

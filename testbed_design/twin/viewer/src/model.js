@@ -124,6 +124,11 @@ function internalPeers(model, pid) {
       if (n === 'wg') return pick('coax');
       if (n === 'coax') return pick('wg');
       return [];
+    case 'padstack':
+      // fixed SMA pad stack: IN is screwed onto its host port (port.mate), OUT takes the cable
+      if (n === 'in') return pick('out');
+      if (n === 'out') return pick('in');
+      return [];
     case 'gnss':
       if (n === 'in') return [...byName.keys()].filter((k) => /^out\d+$/.test(k)).map((k) => byName.get(k));
       if (/^out\d+$/.test(n)) return pick('in');
@@ -134,7 +139,28 @@ function internalPeers(model, pid) {
 }
 
 export function isPassive(kind) {
-  return ['ztdat', 'mwatt', 'splitter', 'coupler', 'transition', 'gnss'].includes(kind);
+  return ['ztdat', 'mwatt', 'splitter', 'coupler', 'transition', 'gnss', 'padstack'].includes(kind);
+}
+
+// Ports screwed straight onto each other (a pad stack's IN on a tile or a
+// splitter port) carry `mate` instead of a cable.
+export function mateOf(model, pid) {
+  const p = model.ports.get(pid);
+  return p && p.mate && model.ports.has(p.mate) ? p.mate : null;
+}
+
+// The cable on a port, or (for a port with a pad stack screwed onto it) the
+// cable on the far side of that stack.
+export function cableAt(model, pid) {
+  const cid = model.portCable.get(pid);
+  if (cid) return cid;
+  const m = mateOf(model, pid);
+  if (!m) return null;
+  for (const q of internalPeers(model, m)) {
+    const c = model.portCable.get(q);
+    if (c) return c;
+  }
+  return null;
 }
 
 // Returns { paths: [[token]], cables:Set, devices:Set, ports:Set }.
@@ -144,6 +170,7 @@ export function traceCable(model, cableId) {
   const res = { paths: [], cables: new Set(), devices: new Set(), ports: new Set(), truncated: false };
   if (!start) return res;
   const visited = new Set([cableId]);
+  const mated = new Set();
   let budget = 400;
 
   function explore(pid, depth) {
@@ -155,6 +182,16 @@ export function traceCable(model, cableId) {
     for (const q of peers) {
       const tok = { t: 'dev', id: dev, from: pid, to: q };
       const cq = model.portCable.get(q);
+      const mq = cq ? null : mateOf(model, q);
+      if (mq && !mated.has(q)) {
+        // screwed straight onto the next part (pad stack on a tile or splitter port): no cable between
+        mated.add(q);
+        mated.add(mq);
+        res.ports.add(q);
+        res.ports.add(mq);
+        for (const tail of explore(mq, depth + 1)) out.push([tok, ...tail]);
+        continue;
+      }
       if (!cq || visited.has(cq)) {
         out.push([tok, { t: 'port', id: q, open: !cq }]);
         continue;
@@ -208,6 +245,7 @@ export function tokenLabel(model, tok) {
     const m = /^ch(\d+)/i.exec(pf.name);
     return `${d.id} CH${m ? m[1] : '?'}`;
   }
+  if (d.kind === 'padstack') return `${d.id} (${d.text || d.db} dB)`;
   if (d.kind === 'coupler' && pt) return `${d.id} (${pf.name}/${pt.name})`;
   return d.id;
 }
@@ -291,7 +329,8 @@ export function computeDark(model) {
     if ([...all].every((n) => nodes.has(n))) res.devices.add(box);
   }
   for (const pid of seedPorts) {
-    const cid = model.portCable.get(pid);
+    // a dark tile may carry a pad stack: its cable starts on the stack
+    const cid = cableAt(model, pid);
     if (!cid || res.cables.has(cid)) continue;
     const c = model.cables.get(cid);
     res.cables.add(cid);
@@ -311,11 +350,17 @@ export function computeDark(model) {
 
 function findOverlaps(devs) {
   const out = [];
+  const byId = new Map(devs.map((d) => [d.id, d]));
+  // a part on a part on a shelf (a pad stack on a splitter on the tray) sits inside its ancestors' boxes
+  const ancestor = (a, d) => {
+    for (let p = d.parent, k = 0; p && k < 8; p = (byId.get(p) || {}).parent, k++) if (p === a.id) return true;
+    return false;
+  };
   for (let i = 0; i < devs.length; i++) {
     for (let j = i + 1; j < devs.length; j++) {
       const a = devs[i];
       const b = devs[j];
-      if (a.parent === b.id || b.parent === a.id) continue;
+      if (ancestor(a, b) || ancestor(b, a)) continue;
       let ok = true;
       for (let k = 0; k < 3; k++) {
         const lo = Math.max(a.pos[k], b.pos[k]);

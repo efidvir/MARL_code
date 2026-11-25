@@ -173,6 +173,8 @@ function portCaption(dev, p) {
       return n.toUpperCase();
     case 'gnss':
       return n.replace('out', '');
+    case 'padstack':
+      return n.toUpperCase();
     default:
       return (p.label && p.label.length <= 8 ? p.label : n).toUpperCase();
   }
