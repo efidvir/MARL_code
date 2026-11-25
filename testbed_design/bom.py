@@ -100,7 +100,8 @@ ITEMS = [
      "at every flow and service endpoint"),
     (17, "Compute", "Servers: DPIR controller + predictor (GPU); TG E2E controller + NMS", lambda c: 2,
      "the TG controller sits at CORE and is lost with it"),
-    (18, "Network", "Out-of-band switch (logging only)", lambda c: 1, "never a control path during the event"),
+    (18, "Network", "Out-of-band switch (logging only)", lambda c: 1,
+     "never a control path for the radios during the event; on PoC 1 it also carries BENCH-CTL's PDU outlet commands at t0"),
     (19, "Network", "PTP / GNSS time server", lambda c: 1, ""),
     (20, "Power", "-48 VDC supply + distribution for IP-50", lambda c: 1, "lab bench supply"),
     (21, "Cabling", "SFP+ 10G modules / LC fibre patch cords", lambda c: f"{2 * c['n_tg']} / {c['n_tg']}",
@@ -117,6 +118,12 @@ def table():
     # the others are sized for every feasible bridge candidate
     cs = {k: counts(CONFIGS[k], analyze(k), CONFIGS[k].get("bench_final_only", False)) for k in keys}
     rows = [(n, group, item, [rule(cs[k]) for k in keys], note) for n, group, item, rule, note in ITEMS]
+    # A7 is built as PoC 1 (fixed pads, no programmable attenuators, no J7204B): its cells say where PoC 1 differs
+    if "A7" in keys:
+        i = keys.index("A7")
+        poc1 = {4: 0, 5: cs["A7"]["n_mw"], 8: 0}      # row 5: one SMA cable per hop between the two pad stacks
+        rows = [(n, g, it, [f"{v} (PoC 1: {poc1[n]})" if j == i and n in poc1 else v for j, v in enumerate(q)], nt)
+                for n, g, it, q, nt in rows]
     return keys, cs, rows
 
 
@@ -130,8 +137,9 @@ def main():
     for n, group, item, q, note in rows:
         lines.append(f"| {n} | {group} | {item} | " + " | ".join(str(x) for x in q) + f" | {note} |")
     lines += ["", "A7 is built as PoC 1 (bench_spec.py, out/poc1_parts_list.md), which supersedes its column here: no",
-              "programmable attenuators (rows 4 and 8 are 0 for PoC 1); every IF tile path has a fixed BW-S pad stack, and",
-              "each IP-50 hop is a fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+, one SMA cable)."]
+              "programmable attenuators (rows 4 and 8 are 0 for PoC 1, and row 5 is one SMA cable per hop, no J7204B: the",
+              "'PoC 1:' figures in the A7 column); every IF tile path has a fixed BW-S pad stack, and each IP-50 hop is a",
+              "fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+, one SMA cable)."]
     lines += ["", "## V-band RF mesh per option", ""]
     for k in keys:
         fo = CONFIGS[k].get("bench_final_only", False)

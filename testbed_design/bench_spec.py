@@ -81,6 +81,13 @@ PAD_SPARE = 0.10                # ~10 % spare pads per value, at least 1
 MW_PAD_HI = ("SA18S10W-30", 30)                     # on each transition (10 W: the radio's full output)
 MW_PAD_LO = ("BW-S10W2+", 10)                       # A side, after the 30 dB pad
 MW_PAD_LO_K = "2.92 mm 10 dB fixed attenuator DC-40 GHz (part TBC)"   # replaces MW_PAD_LO if the band is 23 GHz
+# port check (fixed pads, TENTATIVE): expected link figures from the A7 model (option_A7_sectors.md 'Margin up' = clear-air
+# margin above the lowest data MCS threshold) and Terragraph's link-adaptation SNR thresholds (copied from poc2.MCS:
+# QTI firmware 10.11 defaults, laMinMcs 2, MCS5 disabled); a link outside +/- PORT_CHECK_TOL_DB of its expected SNR gets
+# a trim pad (TRIM_PADS, at the B tile) or a smaller outer pad
+TG_MCS_SNR = [(4.5, 2), (5.5, 3), (6.5, 4), (7.5, 6), (8.5, 7), (9.5, 8), (10.5, 9), (13.5, 10), (14.5, 11), (16.5, 12)]
+PORT_CHECK_TOL_DB = 3.0
+TRIM_PADS = (3, 5)              # 4 of each (one link's four tile paths): 3, 5 or 3 + 5 = 8 dB at the B tile
 BELDEN_SPOOL_M = 30.48          # Belden 8461, 100 ft spool
 DC_WASTE = 0.10                 # stripping, dressing and offcuts on bulk DC cable
 DC_CUT = ("Belden 8461", "bus link", "bus strap", "PE 6 mm2", "PE 2.5 mm2")   # cut from bulk to the twin route + 10 %
@@ -169,7 +176,7 @@ def pad_stack(target):
     that no stack makes takes the achievable total nearest the unrounded target (a tie again toward more loss)."""
     r = int(math.floor(target + 0.5))
     if r in PAD_COMBOS:
-        db, rule = r, "nearest whole dB" + (" (tie rounded up)" if abs(target - math.floor(target) - 0.5) < 1e-9 else "")
+        db, rule = r, "nearest whole dB" + (", tie rounded up" if abs(target - math.floor(target) - 0.5) < 1e-9 else "")
     else:
         db = min(PAD_COMBOS, key=lambda v: (abs(v - target), -v))
         if min(PAD_COMBOS) < r < max(PAD_COMBOS):
@@ -180,6 +187,21 @@ def pad_stack(target):
     pads = list(PAD_COMBOS[db])
     return dict(target=round(target, 1), rounded=r, db=db, pads=pads, pn=[f"BW-S{v}W2+" for v in pads],
                 text=" + ".join(str(v) for v in pads), rule=rule)
+
+
+def link_expect(row, db):
+    """the port-check figures of a fixed-pad IF link from its A7 row (job, before, t0, after, margin 'up / at max'): the
+    model margin above the lowest data MCS at the A7 setting, the same at the fitted pads (db), the expected SNR (lowest
+    data-MCS threshold + margin) and MCS, and the acceptance band (+/- PORT_CHECK_TOL_DB)."""
+    m = re.match(r"^\s*(-?[\d.]+)", str(row[4]))
+    if not m:
+        return {}
+    up = float(m.group(1))
+    margin = up - (db - pad_target(row))
+    snr = TG_MCS_SNR[0][0] + margin
+    mcs = max((k for thr, k in TG_MCS_SNR if snr >= thr), default=None)
+    return dict(margin_model_db=round(up, 1), margin_db=round(margin, 1), snr_exp_db=round(snr, 1), mcs_exp=mcs,
+                snr_min_db=round(snr - PORT_CHECK_TOL_DB, 1), snr_max_db=round(snr + PORT_CHECK_TOL_DB, 1))
 
 
 def pad_parts(pns):
@@ -521,6 +543,7 @@ class Bench:
                 row = d["att_set"][name]
                 self.pad_links[name] = dict(pad_stack(pad_target(row)), job=row[0],
                                             setting="after" if isinstance(row[3], (int, float)) else "before")
+                self.pad_links[name].update(link_expect(row, self.pad_links[name]["db"]))
         else:
             for name in order:
                 self.atts[f"ATT-{len(self.atts) + 1:02d}"] = ("link" if name in d["link_ends"] else "arm", name)
@@ -1182,16 +1205,30 @@ def parts(b):
     if b.if_pads:
         # fixed pads per value (pad schedule: bench_spec.pad_stack), ~10 % spare per value, at least 1
         cnt = Counter(p["pn"] for v in b.pads.values() if v["chain"] == "if" for p in v["parts"])
-        for pn in sorted(cnt, key=lambda x: int(re.sub(r"\D", "", x.split("W2")[0]))):
-            q = cnt[pn]
+        # port-check trim pads: one link's four tile paths per value, fitted at the B tile if a link reads too strong
+        trim = {f"BW-S{v}W2+": b.tiles for v in TRIM_PADS}
+        for pn in sorted(set(cnt) | set(trim), key=lambda x: int(re.sub(r"\D", "", x.split("W2")[0]))):
+            q = cnt.get(pn, 0)
             links = [k for k, v in b.pad_links.items() if pn in v["pn"]]
             per = sorted({v["pn"].count(pn) for k, v in b.pad_links.items() if k in links})
+            sp = max(1, math.ceil(q * PAD_SPARE)) if q else 0
+            tq = trim.get(pn, 0)
+            qty = " + ".join(x for x in (f"{q}" if q else "", f"{sp} spare" if sp else "", f"{tq} trim" if tq else "") if x)
+            use_ = (f"{' or '.join(map(str, per)) if per != [1] else 'one'} per tile path of {', '.join(links)} "
+                    f"({len(links)} link{'s' if len(links) > 1 else ''} x {b.tiles} tiles; pad schedule: guide 'Pad schedule' "
+                    f"page and blueprint sheet 6); {sp} spare" if q else "")
+            if tq:
+                use_ += ("; " if use_ else "") + (f"{tq} port-check trim pads (one link's {b.tiles} tile paths: fitted at the "
+                                                  "B tile if the link reads too strong; guide 'Port check')")
             add("RF/IF", "-", f"Fixed attenuator (pad) DC-18 GHz 2 W, SMA M-F, {pn[4:-3]} dB", pn, "Mini-Circuits",
-                f"{q} + {max(1, math.ceil(q * PAD_SPARE))} spare",
-                f"{' or '.join(map(str, per)) if per != [1] else 'one'} per tile path of {', '.join(links)} "
-                f"({len(links)} link{'s' if len(links) > 1 else ''} x {b.tiles} tiles; pad schedule: guide 'Pad schedule' "
-                f"page and blueprint sheet 6); "
-                f"{max(1, math.ceil(q * PAD_SPARE))} spare", "likely (value from the A7 model; confirm at the port check)")
+                qty, use_, "likely (value from the A7 model; confirm at the port check)")
+        if b.split:
+            # the P1 / P2 stacks of one splitter lie about 2 mm apart (estimate): P2's through an adapter if they foul
+            ns = len(b.split) * b.tiles
+            add("RF/IF", "-", "SMA male to SMA female adapter DC-18 GHz (short, straight)", "SM-SF50+", "Mini-Circuits",
+                f"{ns} if needed + 1 spare", "P2 stacks only, if the two stacks of a splitter foul: P2's stack screws on "
+                "through the adapter so its nuts stand beyond P1's (splitter-tray step); order once a pad is measured",
+                "if needed")
     if b.coupled:
         add("RF/IF", "-", "10 dB directional coupler 1-18 GHz, SMA-F (one part for all 16 positions)", "KRYTAR 1821", "KRYTAR",
             len(b.coupled) * b.tiles, "IN from the module tile, THRU to the link attenuator, CPL to the arm "

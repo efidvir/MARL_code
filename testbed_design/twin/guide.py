@@ -828,6 +828,17 @@ class Guide:
         legend = self.table([("Class / colour", ""), ("ID", ""), ("What it carries", ""), ("Cables", "n"), ("Typical part", ""), ("Step", "")],
                             rows, widths=[16, 10, 30, 8, 26, 10])
         loads = any("ANNE-50" in (r.get("part number") or "") for r in self.parts())
+        # which SMA ports take a 50-ohm load: unused Spider tiles, coupler ports, else the parts list's own 'use'
+        free_tiles = [p for p in b.P if re.match(r"^SB\d+\.M\d+\.T\d+$", p) and p not in b.portcable and not b.P[p].get("mate")]
+        kinds_ = (["tile"] if free_tiles else []) + (["coupler"] if b.has("coupler") else [])
+        lrow = next((r for r in self.parts() if "ANNE-50" in (r.get("part number") or "")), {})
+        if not loads:
+            load_rule = ""
+        elif kinds_:
+            load_rule = f"<li><b>Terminate unused {' and '.join(kinds_)} SMA ports</b> with 50-ohm loads (ANNE-50+).</li>"
+        else:
+            load_rule = (f"<li><b>Terminate every unused SMA output</b> with a 50-ohm load (ANNE-50+): {esc(lrow.get('use') or '')}; "
+                         "every Spider tile is in use.</li>")
         atts = b.has("ztdat", "mwatt")
         pads = b.has("padstack")
         touch = "Spider box, " + ("attenuator, " if atts else "") + ("pad, " if pads else "") + "SFP or radio"
@@ -878,7 +889,7 @@ class Guide:
   <ol start="4">
    <li><b>Front</b> is the operator side ({front}). <b>Rear</b> carries the PDU outlets, DC terminals and the node ETH / SFP ports. Every picture has a badge in its top-left corner: <b>FRONT VIEW</b>, <b>REAR VIEW</b> (seen from behind: the rack's left and right swap) or <b>VIEW FROM ABOVE</b>. "Left" and "right" in the tables are always as seen from the FRONT.</li>
    <li><b>Length</b> is the stock length to fit; "route" is the length the twin measured along the cable path. Dress the slack in the cable manager.</li>
-   {"<li><b>Terminate unused tile and coupler SMA ports</b> with 50-ohm loads (ANNE-50+).</li>" if loads else ""}
+   {load_rule}
    <li><b>Power stays off</b> until the last step: PDUs unplugged, breakers and fuses OFF.</li>
   </ol>
  </div>
@@ -986,8 +997,12 @@ class Guide:
         elif "dc drawers" in t:
             warn("Breakers OFF and fuses out. The two DC systems (+48 V and -48 V) stay unwired until the DC cable step.")
         elif "splitter" in t and b.has("padstack"):
-            warn("ESD wrist strap clipped to the rack earth. Take a port's dust cap off only to fit its pad stack (in the hand, before the splitter "
-                 "goes on the tray); keep the caps on S and on the stacks' OUT ends until the IF-link steps.")
+            warn("ESD wrist strap clipped to the rack earth. Every tray joint is made in the hand, before the splitter goes on the tray: take a "
+                 "port's dust cap off only to fit its pad stack or its cable; the Spider-box tile jacks keep their caps until the IF-link steps.")
+            hr = b.scene.get("tray_headroom_mm")
+            info("Why in the hand: once the Spider boxes are in (next step), the lowest box sits "
+                 + (f"about {hr:.0f} mm " if hr else "just ")
+                 + "above the tray floor, so no wrench reaches a tray joint again. The IF-link steps only uncoil, route and land the tile ends.")
         elif t.startswith("programmable attenuators") or "splitter" in t or t.startswith("spider boxes"):
             warn("ESD wrist strap clipped to the rack earth; keep the SMA dust caps on until the IF-link steps.")
         elif t.startswith("servers"):
@@ -1039,8 +1054,8 @@ class Guide:
                 if on_tray:
                     port = "1" if pads[0]["host"].endswith(".P1") else "2"
                     info(f"<b>Pads for {esc(name)}: {esc(vals)} = {row['db']} dB on each of the {len(pads)} tile paths</b> ({esc(pn)}; target "
-                         f"{row['target_db']} dB), on port {port} of each splitter: <b>already fitted in step {fitted}</b> (splitter tray); check "
-                         f"the value printed on each stack. This step lays the cables only, each joint torqued with the splitter lifted off the tray."
+                         f"{row['target_db']} dB), on port {port} of each splitter: <b>already fitted in step {fitted}</b> (splitter tray), with the "
+                         f"tray ends of this link's cables. Do not reach into the tray: this step routes the cables and lands the tile ends only."
                          f"{floor}")
                 else:
                     info(f"<b>Pads for {esc(name)}: {esc(vals)} = {row['db']} dB on each of the {len(pads)} tile paths</b> ({esc(pn)}; target "
@@ -1138,7 +1153,8 @@ class Guide:
         # a long position list pushes the 3D view onto its own page: then it may fill the page
         big = sum(1 for d in b.D.values() if d["group"] == "table") > 24
         body = self.table_tags_fig("overview_table", PAGE_W, 150 if big else 92, caption="<b>Bench table</b> seen from the operator side, from above (about 50°). "
-                                   "Every item is tagged; a device standing on another one is tagged on its front face (dashed outline in the plan)"
+                                   "Every item is tagged" + ("; a device standing on another one is tagged on its front face (dashed outline in the plan)"
+                                                             if any(d.get("stacked_on") for d in b.D.values()) else "")
                                    + ("; the pad stacks are tagged in the IP-50 chain step." if b.has("padstack") else "."))
         self.section("table-plan", "Bench table layout", self.table_plan() + f'<div class="keep"><h2 class="sec" id="table-view" style="margin-top:4mm">Bench table, 3D view</h2>{body}</div>',
                      level=2, toc_text="Bench table layout (from above)")
@@ -1250,7 +1266,8 @@ class Guide:
         tab = self.table([("#", "n"), ("ID", ""), ("What it is", ""), ("Position (from the table's rack-side end / front edge)", ""), ("W × D × H mm", ""), ("Conf.", "")],
                          rows, widths=[3.5, 16, 31, 32, 10, 7.5], cls="tight")
         return (f'<p class="small">Plan from above, to scale. Rear (wall side) at the top, operator side at the bottom. Numbers match the table. '
-                f'Dashed boxes stand on top of another device; pink squares are the waveguide transitions on the radio flanges'
+                + ('Dashed boxes stand on top of another device; pink' if any(d.get("stacked_on") for d in devs) else 'Pink')
+                + f' squares are the waveguide transitions on the radio flanges'
                 f'{"; amber bars the pad stacks on them (not numbered, listed last)" if b.has("padstack") else ""}. '
                 f'Assumed: {esc("; ".join(T.get("assumed") or []))}.</p>{svg}<h3>Positions</h3>{tab}')
 
@@ -1376,6 +1393,8 @@ class Guide:
             sbs = [d for d in st["devices"] if b.D[d]["kind"] == "spider"]
             if sbs:
                 after = self.spider_panels(sbs) + self.spider_rear_panels(sbs)
+            if st.get("cable_ends"):
+                after += self.cable_ends_table(st)
             for tr in [d for d in st["devices"] if b.D[d]["kind"] == "tray" and f"tray_{d}" in b.renders]:
                 after += self.tray_from_above(tr)
         elif kind == "rack":
@@ -1408,7 +1427,8 @@ class Guide:
             chain = [d for d in b.D if b.D[d]["kind"] in ("ip50", "mwatt", "psu")]
             ids = (chain + st["devices"]) if kind == "IP-50 chains" and st["devices"] else (st["devices"] or chain)
             parts.append(self.table_tags_fig(name, PAGE_W, fig_h, caption=cap + " Tags name every item of the step.", ids=set(ids)))
-        elif fig_h < 60 and not same:
+        elif fig_h < (45 if is_link else 60) and not same:
+            # (an IF-link step keeps a smaller picture under its text: its close-ups and tables follow on the next pages)
             # a long step text leaves too little room: the picture goes full size on the next page
             parts.append(f'<div class="newpage">{self.fig(name, PAGE_W, 150, caption=cap)}</div>')
         else:
@@ -1520,6 +1540,35 @@ class Guide:
         return (f'<h3>Where the cable ends land in the rack</h3><p class="small">Cable ends of this step per rack item, top to bottom. '
                 f'Ends on the bench table are in the table that follows.</p>{tab}')
 
+    def cable_ends_table(self, st):
+        """the cable ends a step fits without the rest of the cable (fixed pads: the tray ends, in the hand): one row per
+        splitter, its S cable and the cables on its P1 / P2 stacks, with the far (tile) end and the step that lands it."""
+        b = self.b
+        by = OrderedDict()
+        for e in st["cable_ends"]:
+            by.setdefault(e["splitter"], []).append(e)
+
+        def cell(e):
+            c = b.C.get(e["cable"]) or {}
+            land = b.owner.get(e["cable"])
+            return (f'{swatch(c.get("color", "#999"))}<span class="cid">{esc(e["cable"])}</span> '
+                    f'<span class="muted">{esc(c.get("length") or "")}</span><br>'
+                    f'<span class="mono">{esc(e["port"])}</span> → <span class="mono">{esc(e["far"])}</span>'
+                    + (f' <span class="muted">(landed in <a href="#step-{land}">step {land}</a>)</span>' if land else ""))
+        rows = []
+        for sp, es in by.items():
+            S = next((e for e in es if not e.get("stack")), None)
+            pp = [e for e in es if e.get("stack")]
+            rows.append([f'<span class="cid">{esc(sp)}</span>', cell(S) if S else "-"] +
+                        [f'<b>{esc(e["link"])}</b> · ' + cell(e) for e in pp] + ["-"] * (2 - len(pp)))
+        self.table_w = PAGE_W
+        tab = self.table([("Splitter", ""), ("S cable: tray end → hub tile", ""), ("Port 1 stack's OUT → B tile", ""),
+                          ("Port 2 stack's OUT → B tile", "")], rows, widths=[12, 29, 29, 30], cls="tight")
+        return (f'<div class="keep"><h3>Tray ends of {len(st["cable_ends"])} cables, fitted in this step (in the hand)</h3>'
+                f'<p class="small">Tag both ends first. Screw each cable\'s tray end on and torque it to 8 in-lb, backing wrench on the cable '
+                f'plug\'s body, before the splitter goes on the tray; coil the far end at the tray front. The IF-link step named in each cell '
+                f'routes the cable and lands its tile end.</p>{tab}</div>')
+
     def tray_from_above(self, tr):
         """the splitter tray from above with the pad stacks on its splitters (fitted in the tray step or later)."""
         b = self.b
@@ -1537,15 +1586,30 @@ class Guide:
                     cols.setdefault(d["id"].rsplit(".", 1)[0], OrderedDict())[q] = (pd["link"], pd.get("text"), b.dev_step.get(pd["id"]))
             an = r["anchors"].get(d["id"])
             if an and an["in"]:
-                tags.append({"x": an["x"], "y": an["y"], "lines": [d["id"]], "fill": "#1f2933"})
+                # which stack is on which port: P1 (front) / P2 (rear), its pads, the port pad first
+                pv = []
+                for q in ("P1", "P2"):
+                    pd = b.dev_of((b.P.get(f"{d['id']}.{q}") or {}).get("mate") or "")
+                    if pd and pd["kind"] == "padstack":
+                        pv.append(f"{q} {'+'.join(str(x['db']) for x in pd.get('pads') or [])}")
+                tags.append({"x": an["x"], "y": an["y"], "lines": [d["id"]] + ([" · ".join(pv) + " dB"] if pv else []),
+                             "fill": "#1f2933"})
+            if d.get("tray_row") == 0:
+                # the front row's P1 stack tagged on its own: P1 is the stack nearer the front edge, P2 the other one
+                pd = b.dev_of((b.P.get(f"{d['id']}.P1") or {}).get("mate") or "")
+                a2 = r["anchors"].get(pd["id"]) if pd else None
+                if a2 and a2["in"]:
+                    tags.append({"x": a2["x"], "y": a2["y"], "side": "bottom", "fill": "#8a5a00",
+                                 "lines": [f"P1 (front stack): {' + '.join(str(x['db']) for x in pd.get('pads') or [])} dB"]})
         what = "; ".join(f'{esc(col)}.t1-t4: ' + ", ".join(f'port {q[1]} {esc(l)} {esc(v)} dB (step {st_})' for q, (l, v, st_) in ports.items())
                          for col, ports in cols.items())
         now = all(st_ == b.dev_step.get(tr) for ports in cols.values() for (_, _, st_) in ports.values())
         fig = self.fig_tags(name, PAGE_W, 120, tags,
                             caption=f"<b>{esc(tr)} from above</b> when the bench is complete (front edge at the bottom, rows front to back = tile 1-4; "
                                     f"the units above and below left out; no cables). Amber: the pad stacks on the splitter ports, {what}"
-                                    + (". They are fitted in this step, in the hand, before each splitter is laid on the tray; they lie on the tray "
-                                       "to the right of their splitter." if now else ". In this step leave that room clear."))
+                                    + (". On every splitter P1's stack is the one nearer the front edge (lower in the picture; tagged on the "
+                                       "front row). They are fitted in this step, in the hand, with the tray ends of their cables, before each splitter "
+                                       "is laid on the tray; they lie on the tray to the right of their splitter." if now else ". In this step leave that room clear."))
         return f'<div class="keep"><h3>Splitter tray from above</h3>{fig}</div>'
 
     def spider_panels(self, sbs):
@@ -1908,7 +1972,12 @@ class Guide:
                 an = r["anchors"].get(d["id"])
                 cab = b.portcable.get(f"{d['id']}.out")
                 if an and an["in"]:
-                    tags.append({"x": an["x"], "y": an["y"], "lines": [f"{d['id']}" + (f" · {cab['id']}" if cab else "")], "fill": "#8a5a00"})
+                    hp = ((b.P.get(d["host"]) or {}).get("name") or "").split(".")[-1]
+                    pv = [str(x["db"]) for x in d.get("pads") or []]
+                    on = "the tile" if hp.startswith("T") else "the port"
+                    tags.append({"x": an["x"], "y": an["y"], "fill": "#8a5a00",
+                                 "lines": [f"{d['id']}" + (f" · {cab['id']}" if cab else ""),
+                                           f"on {hp}: {' + '.join(pv)} dB" + (f", {pv[0]} on {on}" if len(pv) > 1 else "")]})
             onTray = (b.dev_of(pads[0]["host"]) or {}).get("kind") == "splitter"
             where = ("on the splitter tray, seen from above with the units above the tray left out (front edge at the bottom)" if onTray else
                      f"on the tiles of {esc(row.get('a_sector') or '')}, seen from the front right")
@@ -2098,15 +2167,21 @@ class Guide:
             else:
                 where = f'tiles <span class="mono">{esc(span(hosts))}</span>'
             steps = sorted({b.owner[c] for c in r.get("cables") or [] if c in b.owner})
+            ss = r.get("stack_step") or min((b.dev_step.get(x) for x in r.get("stacks") or [] if b.dev_step.get(x)), default=None)
+            if ss and ss not in steps:
+                # tray stacks: fitted (with the tray ends of their cables) in the splitter-tray step, cables landed later
+                step_txt = (f'<a href="#step-{ss}">{ss}</a> <span class="muted">stacks, tray ends</span>, '
+                            + ", ".join(f'<a href="#step-{x}">{x}</a>' for x in steps) + ' <span class="muted">tile ends</span>')
+            else:
+                step_txt = ", ".join(f'<a href="#step-{x}">{x}</a>' for x in steps)
             rows.append([f'<b class="mono">{esc(r["link"])}</b><br><span class="muted">{esc(r.get("a_sector"))} → {esc(r.get("b_sector"))}</span>',
                          esc("bridge (ignition hold)" if r.get("job") == "bridge" else r.get("job")),
                          f'{r.get("target_db")} <span class="muted">({esc(r.get("setting"))})</span>', f'{r.get("rounded_db")}',
                          f'<b>{" + ".join(str(v) for v in r["pads"])} = {r["db"]}</b>', f'<span class="mono">{esc(" + ".join(r["pn"]))}</span>',
-                         where, f'<span class="mono">{esc(span(r["stacks"]))}</span>',
-                         ", ".join(f'<a href="#step-{x}">{x}</a>' for x in steps)])
+                         where, f'<span class="mono">{esc(span(r["stacks"]))}</span>', step_txt])
         self.table_w = PAGE_W
         t1 = self.table([("IF link", ""), ("Job at t0", ""), ("Target dB", ""), ("Rounded", "n"), ("Fitted dB", ""), ("Pads, port end first", ""),
-                         ("Stacks screw onto", ""), ("Stacks", ""), ("Step", "")], rows, widths=[11, 12, 9, 7, 10, 18, 16, 13, 4], cls="tight")
+                         ("Stacks screw onto", ""), ("Stacks", ""), ("Step", "")], rows, widths=[10, 11, 9, 6, 9, 17, 15, 12, 11], cls="tight")
         rows = []
         for r in b.pad_rows("ip50"):
             steps = sorted({b.owner[c] for c in r.get("cables") or [] if c in b.owner})
@@ -2143,11 +2218,16 @@ class Guide:
                      + " ".join(f"{esc(r['link'])}: {r['rounded_db']} dB needs 3 pads, so it takes {r['db']} dB, the nearest total two pads make "
                                 f"({abs(r['db'] - r['target_db']):.1f} dB from the target)." for r in limit))
         notes.append("<b>The larger pad goes on the port</b>; hold the jack you screw onto with the backing wrench; every joint 8 in-lb.")
-        notes.append("Confirm each link's margin at the port check and swap a pad if it differs. The parts-list quantities carry about 10 % "
-                     "spares, at least one per value.")
+        pc = b.scene.get("port_check") or {}
+        if pc:
+            notes.append('The <a href="#port-check">port check</a> (after the nodes are up, before the radios) reads each link\'s SNR against '
+                         'its expected value from the A7 model; a link that reads strong gets trim pads at its B tiles. The parts list carries '
+                         'about 10 % spares per value (at least one) plus the trim pads.')
+        else:
+            notes.append("The parts-list quantities carry about 10 % spares, at least one per value.")
         notes.append("The pads stand in for the attenuator setting alone: the programmable attenuator's own insertion loss (about 5 dB) and "
-                     "its second cable are gone, so each path is a few dB stronger than on the attenuator bench; a path may need about 5 dB "
-                     "more once measured (spares per value allow the swap).")
+                     "its second cable are gone, so each path is likely a few dB stronger than on the attenuator bench: the port check "
+                     "finds out, and the trim pads take up the excess.")
         body = (f'<p class="small">No programmable attenuator: every IF tile path and every IP-50 hop has a fixed pad stack. Links go down at t0 '
                 f'because whole devices lose power at their switched outlets; the bridges are held down by Terragraph ignition, not by RF. '
                 f'How the values were chosen: below the IP-50 table.</p>{t1}'
@@ -2298,7 +2378,9 @@ class Guide:
         manual = [
             "Every cable carries its ID tag at both ends.",
             "Every SMA torqued to 8 in-lb; no cable bent tighter than its minimum radius.",
-            "Unused Spider tiles and coupler ports terminated (50-ohm loads).",
+            ("Unused Spider tiles and coupler ports terminated (50-ohm loads)." if b.has("coupler") or any(
+                re.match(r"^SB\d+\.M\d+\.T\d+$", p_) and p_ not in b.portcable and not b.P[p_].get("mate") for p_ in b.P)
+             else "Every unused SMA output terminated (50-ohm load); every Spider tile in use."),
             "Every rack device on its U as in the front elevation; blanking panels in every empty U.",
             "DC polarity checked on every breaker and fuse output before any node or radio is connected (meter).",
             "PDUs, breakers and fuses OFF; PDU cords not yet in the wall.",
@@ -2333,6 +2415,8 @@ class Guide:
                 if b.bridges() and bp.get("hold"):
                     extra = (f"first, {bp['hold']}; then {extra}; check the bridges stay down and every other link comes up on its "
                              f"fixed pads")
+                if b.scene.get("port_check"):
+                    extra += "; then the port check (section 'Port check', after this one) before the radios"
             elif "radio" in k:
                 devs = [d for d in b.D.values() if d["kind"] == "ip50"]
                 extra = ("only after every MWATT channel is set" if b.has("mwatt") else
@@ -2355,13 +2439,51 @@ class Guide:
                       f'<div class="cols"><div style="flex:1">{mk(ov[:half])}</div><div style="flex:1">{mk(ov[half:])}</div></div></div>')
         body = f"""
 <div class="cols">
- <div style="flex:1"><h3>Model checks (from the twin)</h3>{tab}
-  <h3>Before power-up: installer checklist</h3><ul>{man}</ul></div>
- <div style="flex:1"><h3>Power-up order</h3><p class="small">From the last step: “{esc(last['text'])}”</p><ol>{''.join(detail)}</ol></div>
+ <div style="flex:1"><h3>Model checks (from the twin)</h3>{tab}</div>
+ <div style="flex:1"><h3>Power-up order</h3><p class="small">From the last step: “{esc(last['text'])}”</p><ol>{''.join(detail)}</ol>
+  <h3>Before power-up: installer checklist</h3><p class="small">Tick every line before the PDU cords go into the wall (stage 1).</p><ul>{man}</ul></div>
 </div>{ovhtml}"""
         self.section("checks", "Install checks and power-up", body, num="6")
+        if b.scene.get("port_check"):
+            self.port_check()
         if b.meta.get("event"):
             self.event()
+
+    def port_check(self):
+        """fixed pads: every IF link's SNR against its expected value (A7 model), after the nodes stage and before the
+        radios, with the fixes (trim pads at the B tile, a smaller outer pad) and the pad-change procedure."""
+        b = self.b
+        pc = b.scene["port_check"]
+        rows = []
+        for r in pc.get("rows") or []:
+            bt = r.get("b_tiles") or []
+            fix = (f'<b>strong:</b> trim pads on <span class="mono">{esc(span_ids(bt))}</span>'
+                   f'<br><b>weak:</b> {esc(r["weak"])}')
+            job = "bridge (ignition hold)" if r.get("job") == "bridge" else r.get("job")
+            rows.append([f'<b class="mono">{esc(r["link"])}</b><br><span class="muted">{esc(job)}</span>',
+                         f'{" + ".join(str(v) for v in r.get("pads") or [])} = <b>{r["db"]}</b>',
+                         f'{r["margin_model_db"]:.1f} → <b>{r["margin_db"]:.1f}</b>',
+                         f'<b>{r["snr_exp_db"]:.1f}</b><br><span class="muted">{r["snr_min_db"]:.1f} to {r["snr_max_db"]:.1f}</span>',
+                         f'MCS {r["mcs_exp"]}', '<span class="muted">A→B ______<br>B→A ______<br>MCS ____</span>', fix,
+                         "<br>".join(esc(x) for x in r.get("off") or [])])
+        self.table_w = PAGE_W
+        tab = self.table([("IF link", ""), ("Fitted dB", ""), ("Margin dB<br>A7 → fitted", ""), ("Expected SNR dB<br>band", ""),
+                          ("Expected", ""), ("Measured SNR dB", ""), ("If out of band", ""), ("Nodes off for a pad change", "")],
+                         rows, widths=[10, 8, 8, 9, 6, 11, 30, 18], cls="tight")
+        cap = lambda x: x[:1].upper() + x[1:]
+        notes = [f"<b>When.</b> {esc(cap(pc['when']))}.", f"<b>Read.</b> {esc(cap(pc['read']))}.",
+                 f"<b>Expected.</b> {esc(cap(pc['model']))}.", f"<b>Accept.</b> {esc(cap(pc['accept']))}.",
+                 f"<b>Too strong.</b> {esc(cap(pc['strong']))}.", f"<b>Too weak.</b> {esc(cap(pc['weak']))}."]
+        br = "".join(f"<li>{esc(x)}.</li>" for x in pc.get("bridges") or [])
+        sw = "".join(f"<li>{esc(cap(x))}.</li>" for x in pc.get("swap") or [])
+        body = (f'<div class="box warn small"><b>Port check, between power-up stage {pc.get("after_stage") or "?"} (nodes) and the radios.</b> '
+                f'Every IF link runs on fixed pads sized from the A7 model, without the attenuator bench\'s own losses: read each link once '
+                f'before the radios and the run, and fix a link that is out of band before t0.</div>'
+                f'<ul class="small">{"".join(f"<li>{x}</li>" for x in notes)}</ul>{tab}'
+                f'<div class="cols keep" style="margin-top:2mm"><div style="flex:1"><h3>Bridges: read one at a time, then hold them down again</h3>'
+                f'<ol class="small">{br}</ol></div>'
+                f'<div style="flex:1"><h3>Changing a pad (trim pad or stack)</h3><ol class="small">{sw}</ol></div></div>')
+        self.section("port-check", "Port check (link SNR on the fixed pads)", body, level=2, toc_text="Port check (fixed pads)")
 
     def event(self):
         b = self.b
@@ -2398,7 +2520,7 @@ class Guide:
             steps = sorted({b.owner[c] for c in cids if c in b.owner})
             link_rows.append([f'<b class="mono">{esc(l)}</b>', str(len(cids)), ", ".join(f'<a href="#step-{x}">{x}</a>' for x in steps)])
         dtab = self.table([("Link down after t0", ""), ("Dead cables", "n"), ("Steps", "")], link_rows, widths=[40, 20, 40], cls="tight") if link_rows else ""
-        fig = self.fig("event_t0", 160, 84, caption="<b>After t0</b>: switched devices dark with a red outline and an OFF tag; what they fed "
+        fig = self.fig("event_t0", 106, 56, caption="<b>After t0</b>: switched devices dark with a red outline and an OFF tag; what they fed "
                        "dark with a brown outline; every dead cable grey and dashed")
         br = b.bridges()
         if b.has("ztdat", "mwatt"):
@@ -2409,11 +2531,10 @@ class Guide:
             bp = b.scene.get("bridges") or {}
             if br and bp.get("hold"):
                 rows_ = bp.get("rows") or []
-                ev = [f"Before t0: every other link up on its fixed pads; the bridges {', '.join(br)} held down with Terragraph ignition "
-                      f"disabled on the E2E controller ({', '.join(r['tg'] for r in rows_)}, names TBC; set at power-up: read it back again "
-                      "now); logging running on BENCH-CTL.",
-                      "At t0: switch the outlets above OFF together from the bench controller (PDUs on SW-OOB). Nothing RF moves: the pads "
-                      "stay as fitted. SRV-E2E is one of the outlets, so after t0 there is no E2E controller.",
+                ev = [f"Before t0: every other link up on its fixed pads; the bridges held down by ignition (set at power-up: read it back "
+                      "again now); logging running on BENCH-CTL.",
+                      "At t0: switch the outlets above OFF together from the bench controller (PDUs on SW-OOB). Nothing RF moves. SRV-E2E "
+                      "is one of the outlets: after t0 there is no E2E controller.",
                       "After t0: MARL engages a bridge at node level, from the A-end agent PC in-band over its site VLAN: tg2 minion assoc, "
                       "initiator = A-end sector, responder = B-end sector (" +
                       "; ".join(f"{r['link']}: {r.get('agent') or '?'}, {r['a_sector']} to {r['b_sector']}" for r in rows_) +
@@ -2430,7 +2551,7 @@ class Guide:
 <div class="cols" style="margin-top:3mm">
  <div style="flex:1"><h3>Outlets to switch OFF at t0</h3>{tab}
   <ol class="small">{steps_html}</ol></div>
- <div style="flex:0 0 162mm">{fig}{f'<h3>What goes down with them ({len(dk.get("cables") or [])} cables)</h3>' + dtab if dtab else ''}</div>
+ <div style="flex:0 0 108mm">{fig}{f'<h3>What goes down with them ({len(dk.get("cables") or [])} cables)</h3>' + dtab if dtab else ''}</div>
 </div>"""
         self.section("event", "Event procedure (t0)", body, level=2)
 
@@ -2461,8 +2582,10 @@ class Guide:
         md = self.fill_questions(md)
         if b.has("ztdat", "mwatt") or not b.has("padstack"):
             return md
-        md = md.replace("attenuators are small 4-channel boxes with a dial; ", "")
-        md = re.sub(r"\(the 23 GHz version would need the 18-26\.5 GHz attenuator chain instead of the J7204B\)",
+        md = re.sub(r"attenuators (\([^)]*\) )?are small 4-channel boxes with a dial; ", "", md)
+        # Q5: the PoC 1 half of the band note only ('(PoC 2: ...; PoC 1: ...)', possibly wrapped over two lines)
+        md = re.sub(r"\((?:PoC 2: )?the 23 GHz version would need the 18-26\.5 GHz attenuator chain instead of the J7204B"
+                    r"(?:;\s+PoC 1:\s+[^)]*)?\)",
                     "(the 23 GHz version would need WR-42 transitions and 2.92 mm pads and cable)", md)
         lines = md.split("\n")
         out, skip = [], False

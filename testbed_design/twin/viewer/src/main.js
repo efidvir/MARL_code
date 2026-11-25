@@ -88,7 +88,10 @@ class App {
     search.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>';
     // search example: a cable, a passive part of this bench (attenuator or pad stack) and a switch port
     const exPart = ['ATT-03', ...this.scene.devices.filter((d) => d.kind === 'padstack' || d.kind === 'ztdat').map((d) => d.id)].find((id) => this.model.devices.has(id)) || 'SB2';
-    const inp = h('input', { type: 'search', placeholder: `Find R057, ${exPart}, SW-DATA.P7…`, list: 'twin-ids', spellcheck: 'false' });
+    // example cable from the scene: an RF cable that starts on a pad stack (PoC 1), else R057 if it exists, else the first RF cable
+    const rfc = this.scene.cables.filter((c) => c.cls === 'RF');
+    const exCable = (rfc.find((c) => (c.pad_ends || []).length) || rfc.find((c) => c.id === 'R057') || rfc[0] || { id: 'R001' }).id;
+    const inp = h('input', { type: 'search', placeholder: `Find ${exCable}, ${exPart}, SW-DATA.P7…`, list: 'twin-ids', spellcheck: 'false' });
     const dl = h('datalist', { id: 'twin-ids' });
     dl.innerHTML = this.model.allIds.map((id) => `<option value="${esc(id)}">`).join('');
     const msg = h('div', { class: 'msg' });

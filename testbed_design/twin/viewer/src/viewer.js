@@ -347,7 +347,8 @@ export class Viewer {
         addMesh(this._box(x, y, z, x + w, y + h, z + 3, [plain, plain, plain, plain, face, plain]));
         // flange behind
         addMesh(this._box(x + BODY_INSET, y + 2, z + 3, x + w - BODY_INSET, y + h - 2, z + dp, plain), false);
-      } else if (isRackFull && (['shelf', 'tray', 'attshelf'].includes(d.kind) || this.model.children.has(d.id))) {
+      } else if (isRackFull && (['shelf', 'tray', 'attshelf'].includes(d.kind) || (this.model.children.get(d.id) || []).some((cid) => (this.model.devices.get(cid) || {}).kind !== 'padstack'))) {
+        // a unit that carries parts on it is drawn as a shelf; pad stacks screwed onto a Spider box's tiles do not make it one
         const plain = mk(null, color);
         const lipH = Math.min(14, h);
         const lipTex = drawFace({ dev: d, face: 'front', W: w - 2 * EAR, H: lipH, S: 4, bg: color, ports: [], ears: false });

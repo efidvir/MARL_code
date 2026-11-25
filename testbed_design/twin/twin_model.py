@@ -109,8 +109,8 @@ class Scene:
                        f"{', '.join(str(v) for v in BS.BW_S_DB)} dB), sized from the A7 attenuator setting (hub paths the "
                        "'before' value, they die with the hub; bridges the 'after' value, as MARL engages them), rounded to "
                        "the nearest whole dB (a tie rounds up, toward more loss); a value no stack makes takes the nearest "
-                       f"total that one does (a tie toward more loss): {rows}. Confirm each link's margin at the port check "
-                       "and swap a pad if it differs")
+                       f"total that one does (a tie toward more loss): {rows}. The port check confirms each link against "
+                       "its expected SNR (see below)")
             out.append(f"Pad stacks: BW-S pad about {P['len']:g} mm long and {P['dia']:g} mm across (estimate; the "
                        "device research gives the FF658 case as 21.6 mm long and 9.1 mm across, which would make a stack "
                        f"about 43 mm: the twin keeps the larger estimate until a pad is measured), a two-pad stack drawn "
@@ -120,16 +120,21 @@ class Scene:
                        "onto the tray, and lie on the tray ({tray_pad_pitch} mm between the P1 and P2 stacks, about "
                        "{tray_pad_gap} mm "
                        "between their bodies, no wrench fits there on the tray; if two stacks foul, fit P2's through a short "
-                       "SMA M-F adapter so its nuts stand staggered beyond P1's); their cables are torqued with the splitter "
-                       "lifted off the tray. Every other link's stack screws onto its A-end tile (the first site of the "
+                       "SMA M-F adapter so its nuts stand staggered beyond P1's, parts list 'if needed'). The tray ends of "
+                       "their cables (the S cable and both stack OUT cables) are torqued in the hand in the same step, "
+                       "before the splitter goes onto the tray: once the Spider boxes are in, the lowest one sits about "
+                       "{tray_headroom} mm above the tray floor and no tray joint can be reached; the IF-link steps only "
+                       "route those cables and land their tile ends. Every other link's stack screws onto its A-end tile (the first site of the "
                        f"link name) and stands about {2 * P['len']:g} mm proud of the Spider box: its cable is strapped to "
                        "the seam bundle at the unit's lower edge (or the cable manager) within 150 mm, then to the side "
                        "lane, so the tile carries only the stack (two pads, about 60 g, estimate), never the cable")
             out.append("Each pad stack stands in for the A7 attenuator setting alone: the programmable attenuator's own "
                        f"insertion loss (about {BS.ARM_BUDGET['att_il_db']:g} dB, bench_spec ARM_BUDGET) and the second "
                        "cable of each path are gone, so every IF path is a few dB stronger than on the attenuator bench at "
-                       "the same setting. Read each link's margin at the port check and swap a pad (spares per value) if a "
-                       "path needs about 5 dB more")
+                       "the same setting. The port check (after the nodes are up, before the radios) reads every link's "
+                       "SNR against the A7 model's expected value (lowest data-MCS threshold + the link's margin); a link "
+                       f"more than {BS.PORT_CHECK_TOL_DB:g} dB strong gets trim pads at its B tiles "
+                       f"({' / '.join(str(v) for v in BS.TRIM_PADS)} dB, {b.tiles} of each in the parts list)")
             if b.bridges:
                 out.append("Bridges (links between surviving nodes) are held down before t0: " +
                            BS.bridge_hold_text(b.bridges) + ", after SRV-E2E boots and before the nodes do. " +
@@ -139,7 +144,7 @@ class Scene:
             Q = C.PAD[BS.MW_PAD_HI[0]]
             out.append(f"IP-50 chains without a programmable attenuator: {BS.MW_PAD_HI[0]} ({BS.MW_PAD_HI[1]} dB 10 W, about "
                        f"{Q['len']:g} x {Q['dia']:g} mm, estimate; the device research gives 47.2 mm long and 15.75 mm "
-                       "across) on each transition and one {BS.MW_PAD_LO[0]} "
+                       f"across) on each transition and one {BS.MW_PAD_LO[0]} "
                        f"({BS.MW_PAD_LO[1]} dB) on the A side after it, then one SMA cable: "
                        f"{2 * BS.MW_PAD_HI[1] + BS.MW_PAD_LO[1]} dB fixed plus the cable; the 10 dB pad stands in for the "
                        "former J7204B rest value. If the band turns out to be 23 GHz: WR-42 transitions, 2.92 mm pads and "
@@ -723,14 +728,16 @@ class Scene:
             if v["chain"] == "if":
                 where = (f"on {hd['id']} {H['name']}, lying on the splitter tray" if hd["kind"] == "splitter" else
                          f"on tile {H['name']} of {hd['id']}, {L:g} mm proud of the box front")
-                sub = f"IF link {v['link']} tile {v['tile']}: {v['text']} = {v['db']} dB (target {v['target']:g} dB) {where}"
-                support = ("fitted onto the splitter in the hand before it goes on the tray (splitter-tray step); lies "
-                           "on the tray; its cable is torqued with the splitter lifted off the tray"
+                val = f"{v['text']} = {v['db']} dB" if len(v["parts"]) > 1 else f"{v['db']} dB"
+                sub = f"IF link {v['link']} tile {v['tile']}: {val} (target {v['target']:g} dB) {where}"
+                support = ("fitted onto the splitter in the hand before it goes on the tray (splitter-tray step), and its "
+                           "cable's tray end torqued onto its OUT in the hand in the same step; lies on the tray"
                            if hd["kind"] == "splitter" else
                            "cable strapped to the seam bundle at the unit's lower edge (or the cable manager) within "
                            "150 mm of the stack, then to the side lane, so the tile carries only the stack")
             else:
-                sub = f"IP-50 hop {v['link']}, {v['side'].upper()} side: {v['text']} = {v['db']} dB on {H['device']}"
+                val = f"{v['text']} = {v['db']} dB" if len(v["parts"]) > 1 else f"{v['db']} dB"
+                sub = f"IP-50 hop {v['link']}, {v['side'].upper()} side: {val} on {H['device']}"
                 support = "carried by the transition, which is bolted to the radio flange"
             note = (f"{pads} screwed together, IN onto {v['host']}; about {L:g} mm long, {D:g} mm across (estimate)")
             kw = {}
@@ -1452,6 +1459,19 @@ class Scene:
                         best = (pitch, gap)
         return best or (0.0, 0.0)
 
+    def tray_headroom(self):
+        """mm between the splitter-tray floor (the splitters' underside) and the underside of the rack unit just above the
+        tray: what is left for hands and a wrench once that unit is in (0 when the bench has no splitter tray)."""
+        spl = [v for v in self.dev.values() if v["kind"] == "splitter"]
+        if not spl:
+            return 0.0
+        tr = self.dev[spl[0]["parent"]]
+        floor = min(v["pos"][1] for v in spl)
+        top = tr["pos"][1] + tr["size"][1]
+        above = [v["pos"][1] for v in self.dev.values() if v["group"] == "rack" and not v.get("parent")
+                 and v["kind"] != "blank" and v["pos"][1] >= top - 1]
+        return (min(above) - floor) if above else 0.0
+
     def min_gap(self, parent):
         kids = [v for v in self.dev.values() if v.get("parent") == parent]
         g = 1e9
@@ -1553,6 +1573,7 @@ class Scene:
         trays = by(lambda k: k.endswith("TRAY"))
         for tr in trays:
             parts = [k for k, v in devs.items() if v.get("parent") == tr]
+            ends = []                   # tray cable ends fitted in this step (fixed pads: in the hand, before the tray)
             if b.split and b.if_pads:
                 title = f"Splitter tray ({len(parts)} splitters)"
                 # the hub W / E links' pad stacks are fitted onto the splitters here, in the hand, before the splitters
@@ -1564,23 +1585,55 @@ class Scene:
                     return f"PAD-{name}.tn ({b.pad_links[name]['text']} dB)"
                 per = "; ".join(f"{sid}.tn P1 takes {stk(d['splitters'][sec][0])}, P2 {stk(d['splitters'][sec][1])}"
                                 for sec, sid in b.split.items())
+                # every tray joint (pad onto port, pad onto pad, cable onto S and onto each stack's OUT) is made in the
+                # hand here: once the Spider boxes are in, the lowest one sits {headroom} mm over the tray floor
+                ends, per_spl = [], []
+                for sec, sid in b.split.items():
+                    l1, l2 = d["splitters"][sec]
+                    rows_ = []
+                    for n_ in range(1, b.tiles + 1):
+                        sp = f"{sid}.t{n_}"
+                        cs = next((c for c in self.cables if c["b"] == f"{sp}.S" or c["a"] == f"{sp}.S"), None)
+                        c1 = next((c for c in self.cables if c["a"] == f"PAD-{l1}.t{n_}.out"), None)
+                        c2 = next((c for c in self.cables if c["a"] == f"PAD-{l2}.t{n_}.out"), None)
+                        for c, port, lk in ((cs, f"{sp}.S", f"{l1} + {l2}"), (c1, f"PAD-{l1}.t{n_}.out", l1),
+                                            (c2, f"PAD-{l2}.t{n_}.out", l2)):
+                            if c:
+                                far = c["a"] if c["b"] == port else c["b"]
+                                ends.append(dict(cable=c["id"], port=port, splitter=sp, link=lk, far=far,
+                                                 stack=port[:-4] if port.endswith(".out") else None))
+                        rows_.append((cs, c1, c2))
+                    ids = lambda k: [r_[k]["id"] for r_ in rows_ if r_[k]]
+                    rng_ = lambda xs: f"{xs[0]}-{xs[-1]}" if len(xs) > 1 else (xs[0] if xs else "-")
+                    per_spl.append(f"{sid}.tn: S cable {rng_(ids(0))} (to {sec[0]}.{sec[1]} tile n), P1 stack's OUT "
+                                   f"{rng_(ids(1))} ({l1}), P2 stack's OUT {rng_(ids(2))} ({l2})")
+                headroom = self.tray_headroom()
                 txt = (f"Fit the 1U tray at {u(tr)}, directly under the Spider boxes (front posts, 4 cage nuts). Then, on "
-                       f"a work surface and BEFORE any splitter goes onto the tray or any tray cable is laid, fit the "
-                       f"{len(tp)} fixed pad stacks onto the {len(parts)} splitters in the hand (n = tile 1-{b.tiles}): "
-                       f"{per}; the larger pad on the port, each pad's male nut onto the female port in front of it; read "
-                       "the value printed on each pad first. Hold the splitter body with the backing wrench and torque "
-                       "every joint to 8 in-lb (0.9 N m), the torque wrench's handle in the plane of the two stacks and "
-                       "pointing away from the other stack (jaws above and below the nut); P1's stack first, then P2's. "
-                       f"The stacks end up {pitch:.0f} mm apart (about {gap:.0f} mm between bodies); if they foul, fit "
-                       "P2's through a short SMA M-F adapter so its nuts stand beyond P1's (assumptions); never bend a "
-                       f"stack. Then lay the {len(parts)} splitters flat, all the same way round: S to the LEFT, ports 1 "
-                       "and 2 with their stacks to the RIGHT (port 1 toward the front), label up; one column per split hub "
-                       f"module, left to right {', '.join(f'{sid} ({sec[0]}.{sec[1]})' for sec, sid in b.split.items())}; "
-                       f"rows front to back = tile 1-{b.tiles}; the stacks lie on the tray, up to "
+                       f"a padded work surface and BEFORE any splitter goes onto the tray, make every tray joint in the hand: "
+                       f"once the Spider boxes are in (next step) the lowest one sits about {headroom:.0f} mm above the tray "
+                       f"floor and no tray joint can be reached again. (1) Fit the {len(tp)} fixed pad stacks onto the "
+                       f"{len(parts)} splitters (n = tile 1-{b.tiles}): {per}; the larger pad on the port, each pad's male "
+                       "nut onto the female port in front of it; read the value printed on each pad first. Hold the "
+                       "splitter in your hand (or flat on the padded surface), put the backing wrench on the body of the pad you are "
+                       "screwing on and torque its nut to 8 in-lb (0.9 N m), the torque wrench's handle in the plane of "
+                       "the two stacks and pointing away from the other stack (jaws above and below the nut); P1's stack "
+                       f"first, then P2's. The stacks end up {pitch:.0f} mm apart (about {gap:.0f} mm between bodies); if "
+                       "they foul, fit P2's through a short SMA M-F adapter (parts list, 'if needed') so its nuts stand "
+                       "beyond P1's; never bend a stack. (2) Still in the hand, tag both ends of the splitter's three "
+                       "cables and screw their tray ends on: " + "; ".join(per_spl) + ". Torque each to 8 in-lb with the "
+                       "backing wrench on the cable plug's body (never on the splitter). (3) Lay the splitters flat, all "
+                       "the same way round: S to the LEFT, ports 1 and 2 with their stacks to the RIGHT (port 1 toward the "
+                       "front), label up; one column per split hub module, left to right "
+                       f"{', '.join(f'{sid} ({sec[0]}.{sec[1]})' for sec, sid in b.split.items())}; rows front to back = "
+                       f"tile 1-{b.tiles}, front row (t1) first, so that each row further back lays its cables over the "
+                       f"rows in front. The stacks lie on the tray, up to "
                        f"{max(v['stack_mm'] for v in b.pads.values() if v['chain'] == 'if'):g} mm right of their "
-                       "splitter. The tile cables reach S from the left side lane. Cable lanes: every cable leaves its "
-                       "port or stack straight out; the port-2 stack's cable runs 8 mm further out than port 1's; each row "
-                       "further back rises 10 mm more before running forward, over the front rows' plugs.")
+                       "splitter. Cable lanes: every cable leaves its port or stack straight out; the port-2 stack's "
+                       "cable runs 8 mm further out than port 1's; each row further back rises 10 mm more before running "
+                       "forward, over the front rows' plugs; the S cables run to the tray front on the left, the link "
+                       "cables on the right. (4) Coil the far (tile) ends loosely at the tray front, one coil per link, "
+                       "and Velcro each coil to the tray's front lip, clear of the unit above: the IF-link steps uncoil "
+                       "them, route them and land the tile ends only.")
                 parts = parts + tp
             elif b.split:
                 grp = [f"{sid} t1-t{b.tiles}" for sid in b.split.values()]
@@ -1616,6 +1669,8 @@ class Scene:
                        f"out before running forward; the arm cables move 12 mm to the right of their stack, plus "
                        f"{self.LANE_X:g} mm per row, and run forward side by side.")
             step(title, txt, [tr] + [k for k in parts if devs[k]["kind"] != "armstack"], view="front")
+            if ends:                    # additive step field: cable ends fitted here, the rest of each cable later
+                S[-1]["cable_ends"] = ends
             self.step_no["Splitter tray"] = S[-1]["n"]
         sbs = by(lambda k: k.startswith("SB"))
         dcin = [c for c in self.cables if c["cls"] == "DC" and c["b"].endswith(".DCIN")]
@@ -1765,13 +1820,13 @@ class Scene:
                 done = [x for x in tile if x in taken]
                 if done:                       # a tile-to-splitter cable shared by two links: in the first link's step
                     n0 = min(st["n"] for st in S if set(done) & set(st["cables"]))
-                    shared = f" (already fitted in step {n0}: {done[0]}-{done[-1]}, shared)"
+                    shared = f" (landed in step {n0}: {done[0]}-{done[-1]}, shared)"
                     s_route = ""
                 else:
-                    shared = " (fitted now, shared by " + " and ".join(d["splitters"][sa]) + ")"
-                    s_route = (f" The S cables ({tile[0]}-{tile[-1]}) run from the hub tile straight out, down to the "
-                               f"seam under {bx}, left to the left side lane, down to the tray and in along the tray "
-                               "front, then back to S at the left end of each splitter.")
+                    shared = (f" (its tray end on S since step {n_tray or '?'}; landed now, shared by " +
+                              " and ".join(d["splitters"][sa]) + ")")
+                    s_route = (f" The S cables ({tile[0]}-{tile[-1]}) run from the tray front to the left side lane, up "
+                               f"it to the seam under {bx}, in along that seam and up into the hub tile n.")
                 ids += [x for x in tile if x not in taken]
                 # a stack column whose cables leave through the far side lane passes in front of the other column
                 other = [o for o in b.split.values() if o != sid]
@@ -1780,19 +1835,17 @@ class Scene:
                 across = (f", passing in front of {other[0]}'s column" if other and len(sides) == 1 and sides[0] != col
                           else "")
                 txt = (f"For each tile n = 1-{b.tiles}: {A} tile n ({bx}.{m}.Tn) to {sid}.tn S{shared}; pad stack "
-                       f"PAD-{name}.tn on {sid}.tn P{k}, fitted in step {n_tray or '?'} ({value}); cable from the stack's "
-                       f"OUT to {B} tile n ({bxb}.{mb}.Tn). Make every tray joint in the hand, never on the tray: lift the "
-                       "splitter with its stacks a few centimetres off the tray, screw the cable's plug onto the stack's "
-                       "OUT (or onto S), hold the stack's outer pad (for S the splitter body) with the backing wrench and "
-                       f"{self.SMA_TORQUE.split(' while')[0]}, then lay the splitter back in its place; never bend a stack "
-                       f"or lever it against the tray or a fitted cable.{job} Route: from the stack's OUT the cable runs on "
-                       "to the right, turns toward the front at its lane (the port-2 stacks' lane 8 mm further right than "
-                       "port 1's; each row further back rises 10 mm more, over the front rows' plugs), runs along the tray "
-                       f"front edge to the {side_txt}{across}, up the side to the lower edge of {bxb} (the seam with the "
-                       f"unit below), in along that seam and up into the tile; never across the face of another box."
-                       f"{s_route} Connect in tile order, t1 (front row) first and t{b.tiles} (back row) last. The four "
-                       "link cables are one stock length (equal length, not phase-matched: assumptions); coil slack in "
-                       "the side lane.")
+                       f"PAD-{name}.tn on {sid}.tn P{k} ({value}); cable from the stack's OUT to {B} tile n "
+                       f"({bxb}.{mb}.Tn). The stacks and every tray end were fitted and torqued in the hand in step "
+                       f"{n_tray or '?'}: leave the tray alone now (the Spider box above it is about "
+                       f"{self.tray_headroom():.0f} mm over the tray floor). Uncoil this link's cables from the tray "
+                       f"front, check each tag, and route them: along the tray front edge to the {side_txt}{across}, up "
+                       f"the side to the lower edge of {bxb} (the seam with the unit below), in along that seam and up "
+                       f"into the tile; never across the face of another box.{s_route} Land the tile ends in tile order, "
+                       f"t1 first: screw the plug onto the tile jack, hold the jack with the backing wrench and "
+                       f"{self.SMA_TORQUE.split(' while')[0]}; never pull on a cable toward the tray.{job} The four link "
+                       "cables are one stock length (equal length, not phase-matched: assumptions); coil slack in the "
+                       "side lane.")
                 devices = []                   # the stacks went on in the splitter-tray step
             else:
                 bxa, ma = d["module"][sa]
@@ -2102,7 +2155,9 @@ class Scene:
               (f"the bridges {', '.join(bridges)} stay down (ignition disabled before the first breaker): check on the "
                "E2E controller that they are not ignited and that every other link comes up on its fixed pads; "
                if bridges else "") + cur +
-              (f" ({', '.join(tight)} is within 10 % of its limit on the estimates: read it first)" if tight else ""),
+              (f" ({', '.join(tight)} is within 10 % of its limit on the estimates: read it first)" if tight else "") +
+              ("; then the port check before the radios: every IF link's SNR against its expected value (guide section "
+               "6, 'Port check'; the bridges one at a time, ignition enabled only while read)" if b.if_pads else ""),
               boxes + [c["b"].split(".")[0] for c in nodes] + list(b.inj.values()),
               [c["a"] for c in cbs] + [o for o, _, _ in ip], nodes=list(b.dc_nodes) + list(b.inj))
         if b.ip50:
@@ -2478,8 +2533,9 @@ class Scene:
                         f"{len(pre)} pairs, closest {min(g for g, _, _ in pre):.1f} mm ({min(pre)[1]} / {min(pre)[2]}); "
                         "torqued off the tray, P2 on a short M-F adapter if they foul")] if pre else []),
                 dict(name="Every part sits on its shelf, tray or the table", ok=not out, detail="; ".join(out) or "all inside"),
-                dict(name="Stacked items are seated on the item below (upper y = lower y + height + spacer)", ok=not stk,
-                     detail="; ".join(stk) or f"{nst} stacked"),
+                # (only where something is stacked: a bench with every item on its own footing has nothing to check)
+                *([dict(name="Stacked items are seated on the item below (upper y = lower y + height + spacer)", ok=not stk,
+                        detail="; ".join(stk) or f"{nst} stacked")] if nst else []),
                 dict(name="No two bodies share a position", ok=len({tuple(v["pos"]) for v in D}) == len(D),
                      detail=f"{len({tuple(v['pos']) for v in D})} distinct positions for {len(D)} bodies")]
 
@@ -2536,6 +2592,8 @@ class Scene:
         if "{tray_pad_" in text:
             pitch, gap = self.tray_pad_gap()
             text = text.replace("{tray_pad_pitch}", f"{pitch:.0f}").replace("{tray_pad_gap}", f"{gap:.0f}")
+        if "{tray_headroom}" in text:
+            text = text.replace("{tray_headroom}", f"{self.tray_headroom():.0f}")
         return text.replace("{if_slack}", self.if_slack())
 
     def to_json(self):
@@ -2575,7 +2633,13 @@ class Scene:
                              a_sector=f"{sa[0]}.{sa[1]}", b_sector=f"{sb[0]}.{sb[1]}",
                              a_tiles=["{}.{}.T{}".format(*d["module"][sa], t) for t in range(1, b.tiles + 1)],
                              b_tiles=["{}.{}.T{}".format(*d["module"][sb], t) for t in range(1, b.tiles + 1)],
-                             cables=[c["id"] for c in self.cables if c["a"].rsplit(".", 1)[0] in pids]))
+                             cables=[c["id"] for c in self.cables if c["a"].rsplit(".", 1)[0] in pids],
+                             # port check (A7 model): margin above the lowest data MCS, expected SNR / MCS, band
+                             **{k: pl[k] for k in ("margin_model_db", "margin_db", "snr_exp_db", "mcs_exp", "snr_min_db",
+                                                   "snr_max_db") if k in pl},
+                             stack_step=min((st["n"] for st in self.steps if set(pids) & set(st["devices"])), default=None),
+                             cable_steps=sorted({st["n"] for st in self.steps for c in st["cables"]
+                                                 if c in {x["id"] for x in self.cables if x["a"].rsplit(".", 1)[0] in pids}})))
         for k in (d.get("mw_links", {}) if b.mw_pads else ()):
             st = [f"WGP-{k}-A", f"WGP-{k}-B"]
             rows.append(dict(chain="ip50", link=k, db=sum(b.pads[x]["db"] for x in st),
@@ -2584,7 +2648,100 @@ class Scene:
                              hosts=[b.pads[x]["host"] for x in st],
                              cables=[c["id"] for c in self.cables if c["cls"] == "WG" and
                                      c["a"].rsplit(".", 1)[0] in st]))
-        return dict(pad_schedule=rows)
+        out = dict(pad_schedule=rows)
+        if b.split and b.if_pads:
+            out["tray_headroom_mm"] = round(self.tray_headroom(), 1)
+        out.update(self.port_check())
+        return out
+
+    def node_off(self):
+        """{TG node: how to switch it off for a pad change} from the wiring: its adaptor's DC-DIST breaker, or the PDU
+        outlet of its PoE injector."""
+        out = {}
+        for c in self.cables:
+            if c["cls"] == "DC" and c["a"].startswith("DC-DIST.CB") and not c["b"].endswith(".DCIN"):
+                dv = self.dev.get(c["b"].split(".")[0]) or {}
+                if dv.get("feeds"):
+                    out[dv["feeds"]] = (f"open DC-DIST {c['a'].split('.')[1]} ({dv['id']})",
+                                        f"close DC-DIST {c['a'].split('.')[1]}")
+        for node, inj in self.b.inj.items():
+            ac = next((c for c in self.cables if c["cls"] == "AC" and c["b"].split(".")[0] == inj), None)
+            if ac:
+                out[node] = (f"switch {ac['a']} ({inj}) OFF", f"switch {ac['a']} ({inj}) ON")
+        return out
+
+    def port_check(self):
+        """scene field 'port_check' (additive, fixed-pad benches only): after the nodes are up (power-up stage 'nodes')
+        and before the radios, every IF link's SNR is read against its expected value (A7 model margin + the lowest data
+        MCS threshold); a link outside the band gets trim pads at the B tile (too strong) or a smaller outer pad (too
+        weak). Rows per IF link; texts for reading, the bridges and the pad change."""
+        b, d = self.b, self.d
+        if not b.if_pads:
+            return {}
+        off = self.node_off()
+        nodes_n = next((p["n"] for p in getattr(self, "power_up", []) if p["title"] == "nodes"), None)
+        trim = " / ".join(f"BW-S{v}W2+" for v in BS.TRIM_PADS)
+        tol = BS.PORT_CHECK_TOL_DB
+        rows = []
+        for name, pl in b.pad_links.items():
+            if "snr_exp_db" not in pl:
+                continue
+            (an, _), (bn, _) = d["link_ends"][name]
+            sa = d["link_ends"][name][0]
+            tray = sa in b.split
+            nodes = [n for n in (an, bn)]
+            outer = pl["pads"][-1] if len(pl["pads"]) > 1 else None
+            weak = ("a tray stack cannot be reached with the Spider boxes in: if the link is up at MCS 9 or better, "
+                    "accept it and record the reading; otherwise STOP (tray rework, design change)" if tray else
+                    (f"swap the outer {outer} dB pad of each of the {b.tiles} A-tile stacks for the next smaller value "
+                     f"nearest the shortfall (spares, trim pads), or take it off" if outer else
+                     f"swap the {pl['pads'][0]} dB pad of each A-tile stack for a smaller value (order 4)"))
+            rows.append(dict(link=name, job="bridge" if name in b.bridges else pl["job"], db=pl["db"], pads=pl["pads"],
+                             margin_model_db=pl["margin_model_db"], margin_db=pl["margin_db"],
+                             snr_exp_db=pl["snr_exp_db"], snr_min_db=pl["snr_min_db"], snr_max_db=pl["snr_max_db"],
+                             mcs_exp=pl["mcs_exp"], stacks_on="tray" if tray else "A tiles",
+                             b_tiles=["{}.{}.T{}".format(*d["module"][d["link_ends"][name][1]], t)
+                                      for t in range(1, b.tiles + 1)],
+                             nodes=nodes, off=[off.get(n, ("?", "?"))[0] for n in nodes],
+                             on=[off.get(n, ("?", "?"))[1] for n in nodes],
+                             strong=(f"fit trim pads at the B tile of each of the {b.tiles} tile paths (tile jack, "
+                                     f"trim pad, then the cable): {trim}, alone or both, nearest the excess"),
+                             weak=weak))
+        br = [f"{k}: on SRV-E2E tg ignition link -n {v['tg']} --enable, wait until it is up, read it, then "
+              f"tg ignition link -n {v['tg']} --disable; take it down from {v['agent'] or 'its A-end agent PC'} "
+              f"(tg2 minion dissoc, {v['a_sector']} to {v['b_sector']}, TBC) and check on the controller that it is "
+              "down and its ignition reads disabled" for k, v in b.bridges.items()]
+        return dict(port_check=dict(
+            after_stage=nodes_n,
+            when=(f"after power-up stage {nodes_n or '?'} (nodes: every node joined, the bridges held down) and before "
+                  "the radios; again after any pad change"),
+            read=("for every IF link, on the E2E controller / NMS (SRV-E2E), after the link has been up 2 min: SNR and "
+                  "MCS in BOTH directions (the N367's counter names TBC); compare the lower of the two SNRs with the "
+                  "expected value; TX power and link adaptation as the lab's node config (TPC off with fixed TX power, "
+                  "if the lab runs it that way: TBC)"),
+            model=(f"expected SNR = the lowest data-MCS threshold (MCS {BS.TG_MCS_SNR[0][1]}: {BS.TG_MCS_SNR[0][0]:g} dB, "
+                   "Terragraph link adaptation defaults) + the A7 model margin of the link at its fitted pads (the "
+                   "'Margin up' of the A7 table, less the dB the fitted stack adds over the A7 setting); the A7 model "
+                   "follows the MARL paper's radio model, so the band is a first check, not a calibration"),
+            accept=f"the lower SNR within +/- {tol:g} dB of the expected value, at the expected MCS or one below",
+            strong=(f"SNR more than {tol:g} dB above the band centre (expected: the pads leave out the programmable "
+                    f"attenuator's own loss, about {BS.ARM_BUDGET['att_il_db']:g} dB): trim pads at the B tile, the "
+                    f"value nearest the excess ({' or '.join(str(v) for v in BS.TRIM_PADS)} dB, or both = "
+                    f"{sum(BS.TRIM_PADS)} dB; parts list: {b.tiles} of each), the same on all {b.tiles} tile paths"),
+            weak=(f"SNR more than {tol:g} dB below, or the link not up: a smaller outer pad on the A-tile stacks "
+                  "(direct links); a tray link is accepted if up at MCS 9 or better, else STOP"),
+            bridges=br,
+            swap=[("switch both nodes of the link off (the row's 'nodes off'; INJ-HUB also takes every hub link down) "
+                   "and wait 30 s: never open an SMA of a powered node"),
+                  ("trim pad: unscrew the cable at the B tile (backing wrench on the tile jack), screw the trim pad onto "
+                   "the tile jack, the cable onto the trim pad; stack swap: unscrew the cable, then the outer pad (backing "
+                   "wrench on the inner pad's body), fit the new pad and the cable"),
+                  ("torque every joint to 8 in-lb (0.9 N m), backing wrench on the body of the part you screw onto; do "
+                   "the same on all four tile paths of the link; strap the cable within 150 mm as before"),
+                  ("note the change on the pad schedule (link, tile, new stack) and on the cable tag"),
+                  ("switch the nodes on again (the row's 'nodes on'), wait for them to join (the bridges stay held "
+                   "down: ignition is a controller setting) and read the link again")],
+            rows=rows))
 
 
 def build(design, prefix, b=None):

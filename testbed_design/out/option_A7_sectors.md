@@ -4,7 +4,7 @@
 
 A7 - option A on 1 x 4-sector + 6 x 2-sector N367.
 
-No steering emulation: the TG radios point their own beams, so only the final plan is cabled (the pre-event TG links plus the bridges E2–W2, E1–N, W1–S). Programmable attenuators set each path's loss and hold each bridge off-beam until its sites engage; on the bench, CORE and HUB are powered off at t0, which takes their paths down.
+No steering emulation: the TG radios point their own beams, so only the final plan is cabled (the pre-event TG links plus the bridges E2–W2, E1–N, W1–S). Programmable attenuators set each path's loss and hold each bridge off-beam until its sites engage (option model; the PoC 1 bench uses fixed pads and the Terragraph ignition hold, see above); on the bench, CORE and HUB are powered off at t0, which takes their paths down.
 
 ## Sectors per node
 

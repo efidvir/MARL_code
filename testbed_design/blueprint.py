@@ -784,15 +784,15 @@ def front_pads(s, b, sp_ports, split_ports, col, T):
         body_key(s, 30, yj - 20, "spl", pads=True)
     stack = max(v["stack_mm"] for v in b.pads.values() if v["chain"] == "if")
     s.notes(200, 100, [
-        "Tile i of a module goes to tile i of its peer, through tile i's pad stack; never swap tiles.",
+        "Tile n of a module goes to tile n of its peer, through tile n's pad stack; never swap tiles.",
         "No programmable attenuators: each link has a fixed pad stack per tile (values on sheet 6). The stacks are drawn "
         "in one row for clarity; each screws straight onto the port its dotted leader comes from: the hub W / E links on "
         "the splitter's P1 / P2 (they lie on the tray), every other link on its A-end tile (first site of the link name).",
         f"A stack on a tile stands about {stack:g} mm proud of the box: strap its cable to the seam bundle at the unit's "
         "lower edge (or the cable manager) within 150 mm, then to the side lane, so the tile carries only the stack.",
         "Splitter-tray stacks are fitted onto the splitters in the hand before the splitters go on the tray (P1 then P2, "
-        "about 2 mm between the two stacks: no wrench fits there on the tray); their cables are torqued with the "
-        "splitter lifted off the tray.",
+        "about 2 mm between the two stacks: no wrench fits there on the tray), and the tray ends of their cables (S and "
+        "both stack OUTs) are torqued in the same session: once the Spider boxes are in, no tray joint can be reached.",
         "Tag both ends of every cable with the ID shown; torque every SMA and every pad joint to 8 in-lb with a backing "
         "wrench.",
         "Before cabling, measure DC, LO and IF level on one tile port per module; DC blocks if DC is present.",
@@ -1377,7 +1377,8 @@ def table_hops_pads(s, b, y):
                ha="center", va="center")
         if d.get("mw_set", {}).get(k):
             rest, t0 = d["mw_set"][k]
-            s.text(173, yy - 1.4, f"rest {rest} dB · t0: {t0}", fs=3.6,
+            rest_txt = (f"fixed {lo[1]} dB pad ({2 * hi[1] + lo[1]} dB chain)" if b.mw_pads else f"rest {rest} dB")
+            s.text(173, yy - 1.4, f"{rest_txt} · t0: {t0}", fs=3.6,
                    color=OFF if ("max" in t0 or "off" in t0) else DIM, ha="center", va="center")
         for nm, x0 in ((f"IP50-{k}@{a}", 16), (f"IP50-{k}@{bb}", 310)):
             dc = b.cable(cls="DC", b=f"{nm}.dc")
@@ -1477,14 +1478,15 @@ def sheet_pads(b, pdf, n, N, prefix):
         if v["chain"] == "if":
             for p in v["parts"]:
                 cnt[p["pn"]] = cnt.get(p["pn"], 0) + 1
-    per = [[pn, str(q), str(max(1, math.ceil(q * BS.PAD_SPARE))),
-            ", ".join(k for k, v in b.pad_links.items() if pn in v["pn"])]
-           for pn, q in sorted(cnt.items(), key=lambda kv: int(kv[0][4:-3]))]
+    trim = {f"BW-S{v}W2+": b.tiles for v in BS.TRIM_PADS}
+    per = [[pn, str(q) if q else "-", str(max(1, math.ceil(q * BS.PAD_SPARE))) if q else "-", str(trim.get(pn, "-")),
+            ", ".join(k for k, v in b.pad_links.items() if pn in v["pn"]) or "port-check trim only"]
+           for pn, q in sorted({**{k: 0 for k in trim}, **cnt}.items(), key=lambda kv: int(kv[0][4:-3]))]
     s.text(252, yt - 5, "PADS PER VALUE (Mini-Circuits BW-S<n>W2+, SMA M-F, DC-18 GHz, 2 W)", fs=5.6, fontweight="bold")
-    yt2 = s.table(252, yt - 8, ["Part", "Fitted", "Spare", "Links"], per, [20, 11, 10, 101], fs=3.9, rh=3.6)
+    yt2 = s.table(252, yt - 8, ["Part", "Fitted", "Spare", "Trim", "Links"], per, [20, 11, 10, 9, 92], fs=3.9, rh=3.6)
     w1s = [k for k, v in b.pad_links.items() if v["db"] != v["rounded"]]
     nts = [
-        "Tile i to tile i at both ends of a path, through tile i's pad stack; never swap tiles.",
+        "Tile n to tile n at both ends of a path, through tile n's pad stack; never swap tiles.",
         "Target = the A7 attenuator setting (out/option_A7_sectors.md): hub paths the 'before' value (they only go down "
         "with the hub), bridges the 'after' value (as MARL engages them). Fitted = the target to the nearest whole dB "
         f"(a tie rounds up, toward more loss), split into at most {BS.PAD_MAX} available values (1-10, 12, 15, 20, 30 dB "
@@ -1493,8 +1495,11 @@ def sheet_pads(b, pdf, n, N, prefix):
                                                f"({b.pad_links[k]['db']} dB, {abs(b.pad_links[k]['db'] - b.pad_links[k]['target']):.1f} dB "
                                                "from the target; a tie would go toward more loss)" for k in w1s) + "."
          if w1s else ""),
-        "Calibrate on the real radios at the port check: with TPC off, read each link's margin; if it differs from the "
-        "model's, swap a pad (spares per value in the table).",
+        f"Port check (after the nodes are up, before the radios): each link's SNR against its expected value = the "
+        f"MCS {BS.TG_MCS_SNR[0][1]} threshold ({BS.TG_MCS_SNR[0][0]:g} dB) + its A7 margin at the fitted pads: " +
+        ", ".join(f"{k} {v['snr_exp_db']:g}" for k, v in b.pad_links.items() if "snr_exp_db" in v) +
+        f" dB; band +/- {BS.PORT_CHECK_TOL_DB:g} dB. A link that reads strong gets trim pads at its B tiles "
+        f"({' / '.join(str(v) for v in BS.TRIM_PADS)} dB, {b.tiles} of each: 'Trim' column); guide 'Port check'.",
         f"{b.count('RF')} IF cables, length from the twin route: " +
         ", ".join(f"{b.count_pn(pn)} x {pn}" for pn, _ in BS.RF_STOCK if any(c['pn'] == pn and c['cls'] == 'RF'
                                                                            for c in b.cables)) + ".",
@@ -1502,8 +1507,8 @@ def sheet_pads(b, pdf, n, N, prefix):
         "edge within 150 mm so the tile carries only the stack; tray stacks go onto the splitters in the hand. Torque "
         "every pad joint to 8 in-lb with a backing wrench.",
         f"The pads replace the setting only: the attenuator's own insertion loss (about {BS.ARM_BUDGET['att_il_db']:g} "
-        "dB) and its second cable are gone, so each path is a few dB stronger than on the attenuator bench; a path may "
-        "need about 5 dB more once measured.",
+        "dB) and its second cable are gone, so each path is likely a few dB stronger than on the attenuator bench: the "
+        "port check finds out.",
     ]
     yn = s.notes(252, yt2 - 5, nts, fs=4.5, step=3.0, width=68)
     bridges = [k for k, v in b.pad_links.items() if v["job"] == "bridge"]

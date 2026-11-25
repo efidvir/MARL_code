@@ -18,9 +18,11 @@ Attached:
     HUB-W1, HUB-E1: 20 + 8 dB    HUB-W2, HUB-E2: 20 + 3 dB    HUB-S: 30 + 5 dB    HUB-N: 30 + 7 dB
     bridges: E2-W2 30 + 1 dB, E1-N 30 + 4 dB, W1-S 30 + 12 dB
   Order by value (used + spare): 30 dB 20 + 2, 20 dB 16 + 2, 12 dB 4 + 1, 8 dB 8 + 1, 7 dB 4 + 1, 5 dB 4 + 1, 4 dB 4 + 1, 3 dB 8 + 1, 1 dB 4 + 1
+  Plus 8 trim pads for the port check: 4 x 3 dB and 4 x 5 dB (BW-S3W2+, BW-S5W2+), fitted at a link's far-end tiles if it reads more than 3 dB stronger than the model
+- 8 + 1 x SMA male-female adapter, 18 GHz: Mini-Circuits SM-SF50+, only if the two pad stacks on a splitter foul (order once a pad is measured)
 - 44 x SMA cable, 18 GHz (Mini-Circuits CBL-xx-SMSM+): 24 x 0.91 m (CBL-3FT), 4 x 1.0 m (CBL-1M), 16 x 1.22 m (CBL-4FT)
 - 3 x 50-ohm SMA load: Mini-Circuits ANNE-50+ (1 used on the GNSS splitter + 2 spare)
-- Optional: 1 x 4-channel programmable attenuator, only to measure each link's drop-out point once during commissioning and confirm the pad values
+- Optional (not in the parts list; borrow one if the lab has it): 1 x 4-channel programmable attenuator, only to measure each link's drop-out point once during commissioning and confirm the pad values
 
 2. IP-50 conducted chain (on the bench table; one chain per hop, the two radios of a hop side by side, none stacked)
 - Chain per hop: radio -> WR-62 transition -> 30 dB pad -> 10 dB pad -> SMA cable -> 30 dB pad -> WR-62 transition -> radio (70 dB fixed)
@@ -102,7 +104,7 @@ Attached:
 
 Open questions (the answers change the list)
 1. MARL bridges: is it acceptable to emulate MARL engaging a bridge by bringing that link up in Terragraph (the link sits behind fixed pads, held down until then)? The E2E controller is one of the devices switched off at t0, so after t0 the bridge cannot be enabled through it. My plan: before t0 the three bridges are ignition-disabled on the controller; after t0 the MARL agent of the bridge's A-end node associates the link directly at node level (Terragraph minion command, tg2 minion assoc). Does the N367 firmware accept that with no controller running? If not, we either run a standby E2E controller on the bench PC (not switched) or keep the E2E server powered through the event. If we want the change to happen at RF level instead, we need 3 programmable attenuators (one 4-channel box per bridge).
-2. IP-50 fades: the Keysight J7204B was only there to add slow fades to the IP-50 hops. Can we drop them? If DPIR has to see an IP-50 hop degrade before it fails, not just fail, we keep the J7204B.
+2. IP-50 hops: the bench has no Keysight J7204B. Each hop is a fixed 70 dB chain and goes down only when CORE's radios lose power at t0 (W1-W2 and E1-E2 never change). Please confirm DPIR does not need to see an IP-50 hop degrade (slow fades) before it fails; if it does, a 4-channel programmable attenuator goes back on the table for those hops.
 3. Spider box DC header: the rear photo shows a green 4-pole pluggable header with a screw flange on each box, no plug fitted. What does it feed (the nodes, or only the fans and the Raspberry Pi), at what voltage, and which pin is which? What is its pitch (5.08 or 7.62 mm)? If it powers the nodes, the 6 DC/PoE adaptors, their PoE cords and the hub's PoE injector go away, and the hub box gets its own switched 48 V supply instead. Also: which of the two RJ-45 ports in each node window is ETH1?
 4. GNSS: do the N367 nodes need an external antenna, or is their internal GPS enough? If it is enough, section 7 is dropped. The hub box shows no SMA next to its node window in the photo: does the hub node take GNSS at all? If not, 6 jumpers instead of 7.
 5. IP-50CX band: if the radios are 23 GHz, the WR-62 transitions and the 18 GHz pads do not fit, and the 18-26.5 GHz parts are needed. Does a DC connector ship with each radio, and what is the waveguide / antenna interface?

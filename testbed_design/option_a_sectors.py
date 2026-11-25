@@ -151,7 +151,8 @@ def main(key="A"):
          f"{cfg['name']}.", "",
          "No steering emulation: the TG radios point their own beams, so only the final plan is "
          f"cabled (the pre-event TG links plus the bridges {br}). Programmable "
-         "attenuators set each path's loss and hold each bridge off-beam until its sites engage; on the "
+         "attenuators set each path's loss and hold each bridge off-beam until its sites engage (option model; the "
+         "PoC 1 bench uses fixed pads and the Terragraph ignition hold, see above); on the "
          "bench, CORE and HUB are powered off at t0, which takes their paths down.", "",
          "## Sectors per node", "",
          "| Node | Type | Unit (sectors it faces) | Sectors used | Before the event | Final (after recovery) | Polarity |",

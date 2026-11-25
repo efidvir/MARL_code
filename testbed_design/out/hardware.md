@@ -8,11 +8,11 @@ the validator's bridge candidates.
 | 1 | Microwave | Ceragon IP-50 radio unit (e.g. IP-50C) | 8 | 8 | 6 | 4 | 4 | one per microwave link end |
 | 2 | Microwave | Waveguide-to-coax transition, IP-50 band | 8 | 8 | 6 | 4 | 4 | conducted: replaces the dish |
 | 3 | Microwave | Fixed attenuator pad, ~30 dB, IP-50 band | 8 | 8 | 6 | 4 | 4 | two per link: receiver protection, nominal hop loss |
-| 4 | Microwave | Programmable attenuator, 0-95 dB, IP-50 band | 4 | 4 | 3 | 2 | 2 | one per link: fades for DPIR, cut at the event |
-| 5 | Microwave | Low-loss coax jumper, IP-50 band | 8 | 8 | 6 | 4 | 4 |  |
+| 4 | Microwave | Programmable attenuator, 0-95 dB, IP-50 band | 4 | 4 (PoC 1: 0) | 3 | 2 | 2 | one per link: fades for DPIR, cut at the event |
+| 5 | Microwave | Low-loss coax jumper, IP-50 band | 8 | 8 (PoC 1: 4) | 6 | 4 | 4 |  |
 | 6 | 60 GHz | Siklu TG node (N366/N367 class; A7: 1 x 4-sector + 6 x 2-sector), RF-port build | 6 | 7 | 5 | 5 | 4 | the hub and every site that steers (A also the core spur) |
 | 7 | 60 GHz | Siklu TG terminal (T265 class), RF-port build | 2 | 0 | 1 | 1 | 0 | shelter / field-hospital pockets |
-| 8 | 60 GHz | V-band programmable attenuator (one per cabled TG link) | 9 | 9 | 14 | 15 | 6 | hub links and the chosen bridges (A, A7) or every feasible bridge (B-D); takes links down at the event |
+| 8 | 60 GHz | V-band programmable attenuator (one per cabled TG link) | 9 | 9 (PoC 1: 0) | 14 | 15 | 6 | hub links and the chosen bridges (A, A7) or every feasible bridge (B-D); takes links down at the event |
 | 9 | 60 GHz | V-band splitter / combiner | 6 | 6 | 8 | 9 | 4 | one per sector port that reaches more than one peer |
 | 10 | 60 GHz | V-band fixed pad (one per used sector port) | 12 | 12 | 13 | 14 | 7 |  |
 | 11 | 60 GHz | V-band waveguide / mm-wave cable jumpers | 24 | 24 | 36 | 39 | 16 | two per path + one per splitter |
@@ -22,7 +22,7 @@ the validator's bridge candidates.
 | 15 | Compute | Edge agent PC per surviving TG site | 6 | 6 | 5 | 5 | 3 | frozen MARL actor, local TG control, logs |
 | 16 | Compute | Traffic generator / sink host (iperf3, TRex) | 6 | 6 | 5 | 5 | 3 | at every flow and service endpoint |
 | 17 | Compute | Servers: DPIR controller + predictor (GPU); TG E2E controller + NMS | 2 | 2 | 2 | 2 | 2 | the TG controller sits at CORE and is lost with it |
-| 18 | Network | Out-of-band switch (logging only) | 1 | 1 | 1 | 1 | 1 | never a control path during the event |
+| 18 | Network | Out-of-band switch (logging only) | 1 | 1 | 1 | 1 | 1 | never a control path for the radios during the event; on PoC 1 it also carries BENCH-CTL's PDU outlet commands at t0 |
 | 19 | Network | PTP / GNSS time server | 1 | 1 | 1 | 1 | 1 |  |
 | 20 | Power | -48 VDC supply + distribution for IP-50 | 1 | 1 | 1 | 1 | 1 | lab bench supply |
 | 21 | Cabling | SFP+ 10G modules / LC fibre patch cords | 16 / 8 | 14 / 7 | 12 / 6 | 12 / 6 | 8 / 4 | TG data uplinks |
@@ -30,8 +30,9 @@ the validator's bridge candidates.
 | 23 | Test | Microwave + V-band power meters (calibration) | 1 | 1 | 1 | 1 | 1 | one set |
 
 A7 is built as PoC 1 (bench_spec.py, out/poc1_parts_list.md), which supersedes its column here: no
-programmable attenuators (rows 4 and 8 are 0 for PoC 1); every IF tile path has a fixed BW-S pad stack, and
-each IP-50 hop is a fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+, one SMA cable).
+programmable attenuators (rows 4 and 8 are 0 for PoC 1, and row 5 is one SMA cable per hop, no J7204B: the
+'PoC 1:' figures in the A7 column); every IF tile path has a fixed BW-S pad stack, and each IP-50 hop is a
+fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+, one SMA cable).
 
 ## V-band RF mesh per option
 

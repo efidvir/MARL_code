@@ -722,7 +722,7 @@ function buildSpecs(scene) {
   specs.push({ name: 'data_mgmt', title: 'Data (SW-DATA) and management (SW-OOB) only (from the rear)', opts: { classes: ['FIB', 'ETH'] }, subject: 'all', dir: rearIso });
   const wg = idsOf(['WG']);
   if (wg.length) {
-    const ip = scene.devices.filter((d) => d.group === 'table' && ['ip50', 'transition', 'mwatt', 'psu'].includes(d.kind)).map((d) => d.id);
+    const ip = scene.devices.filter((d) => d.group === 'table' && ['ip50', 'transition', 'padstack', 'mwatt', 'psu'].includes(d.kind)).map((d) => d.id);
     const box = { boxIds: [...ip.map((id) => ['device', id]), ...wg.map((id) => ['cable', id])], boxPad: [60, 20, 60] };
     const anchors = [...wg.map((id) => ({ kind: 'cable', id })), ...devAnchors(ip, 'top')];
     specs.push({ name: 'ip50_chains', title: 'IP-50 conducted chains on the bench table', opts: { classes: ['WG'] }, hl: { devices: ip, cables: wg }, ...box, dir: [0, 1.05, -1], margin: 1.05, anchors });
