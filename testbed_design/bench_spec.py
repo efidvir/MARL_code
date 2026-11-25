@@ -90,14 +90,22 @@ MW_PAD_LO_K = "2.92 mm 10 dB fixed attenuator DC-40 GHz (part TBC)"   # replaces
 # the calibration kit (CAL_KIT: CAL_KIT_N of each value, one link's tile paths at a time; owner, 2026-11-25)
 TG_MCS_SNR = [(4.5, 2), (5.5, 3), (6.5, 4), (7.5, 6), (8.5, 7), (9.5, 8), (10.5, 9), (13.5, 10), (14.5, 11), (16.5, 12)]
 PORT_CHECK_TOL_DB = 3.0
-# one rule for every SMA joint of a fixed-pad bench (guide, steps, blueprint notes): which part the backing wrench holds
-BACKING_RULE = ("the torque wrench turns only the male coupling nut, to 8 in-lb (0.9 N m); the backing wrench holds the "
-                "body of the part that nut belongs to (the pad's body, or the cable plug's body) so it cannot turn with "
-                "the nut; never a wrench on a splitter or on a tile jack (if a tile jack turns, stop: its panel nut is "
-                "loose)")
-CAL_KIT = (1, 2, 3, 5, 10)      # BW-S<n>W2+: together any 1-21 dB change
+# one rule for every SMA joint of a fixed-pad bench (owner, 2026-11-25): stated once in full (guide 'How to read',
+# blueprint sheet 6) and referenced by name elsewhere (steps, IP-50 box, pad schedule, pad change, blueprint sheet 2)
+BACKING_RULE = ("The torque wrench turns only the male coupling nut. The backing wrench holds whatever would turn with it: "
+                "when the female side is a pad stack (a cable or a kit pad going onto a stack's OUT), hold the body of the "
+                "stack's outer pad so the stack cannot turn on its tile; otherwise hold the body of the part whose nut is "
+                "turned (the pad or the cable plug). Never put a wrench on a tile jack (the panel holds it) or on a "
+                "splitter housing.")
+CAL_KIT = (1, 2, 3, 5, 10)      # BW-S<n>W2+ values of the port-check kit
 CAL_KIT_N = 4                   # of each value: one link's four tile paths at a time
 PAD_MAX_FIX = 3                 # pads on one tile path after a port-check correction (schedule stacks: PAD_MAX)
+# what the kit can do within PAD_MAX_FIX (a fitted path already has PAD_MAX pads; CAL_KIT_N of a value = one per path)
+CAL_KIT_TEXT = (f"one kit pad adds {', '.join(map(str, CAL_KIT[:-1]))} or {CAL_KIT[-1]} dB per tile path, or the outer pad "
+                f"is swapped for up to two kit pads (at most {PAD_MAX_FIX} pads on a path); a larger offset means re-sized "
+                "pads (a bench-wide shift)")
+CAL_KIT_TEXT_SHORT = (f"one kit pad adds its value to a path, or the outer pad is swapped for up to two (at most "
+                      f"{PAD_MAX_FIX} pads on a path; a larger offset means re-sized pads)")
 BELDEN_SPOOL_M = 30.48          # Belden 8461, 100 ft spool
 DC_WASTE = 0.10                 # stripping, dressing and offcuts on bulk DC cable
 DC_CUT = ("Belden 8461", "bus link", "bus strap", "PE 6 mm2", "PE 2.5 mm2")   # cut from bulk to the twin route + 10 %
@@ -1279,9 +1287,9 @@ def parts(b):
             add("Port-check kit", "-", f"Fixed attenuator (pad) DC-18 GHz 2 W, SMA M-F, {v} dB", f"BW-S{v}W2+",
                 "Mini-Circuits", CAL_KIT_N,
                 f"port-check calibration kit ({len(CAL_KIT) * CAL_KIT_N} pads: {CAL_KIT_N} each of "
-                f"{', '.join(map(str, CAL_KIT))} dB, one link's {b.tiles} tile paths at a time; together any 1-"
-                f"{sum(CAL_KIT)} dB change): corrects a link that reads outside its band (guide 'Port check'); "
-                "not part of the pad schedule", "likely")
+                f"{', '.join(map(str, CAL_KIT))} dB; not part of the pad schedule): corrects a link that reads outside "
+                f"its band, one link's {b.tiles} tile paths at a time; {CAL_KIT_TEXT_SHORT} (guide 'Port check')",
+                "likely")
     if hops:
         add("IP-50 chain", "-", "Waveguide-to-coax transition, WR-62 12.4-18 GHz (<=18 GHz set)", "PEWCA1003", "Pasternack",
             2 * hops, "band and flange mating TBC", "likely", cab={"PEWCA1003": b.count_pn("PEWCA1003")})
@@ -1390,7 +1398,10 @@ def parts(b):
             ("Cage-nut insertion tool", "part TBC", "-", 2, "fitting the M6 cage nuts"),
             ("ESD wrist strap", "part TBC", "-", 2, "bonded to the rack earth while handling the Spider boxes and IF parts"),
             ("SMA torque wrench 8 in-lb (0.9 N m), 5/16 in", "ST-SMA3", "Fairview", 2, "every SMA joint"),
-            ("SMA 5/16 in open-end backing (hold) wrench", "part TBC", "-", 2, "holds the jack while torquing"),
+            ("SMA 5/16 in open-end backing (hold) wrench", "part TBC", "-", 2,
+             "holds the body of the part the nut screws onto or belongs to, per the backing-wrench rule; never on a tile "
+             "jack or a splitter. 5/16 in flats on the BW-S / SA18S10W-30 bodies TBC (open question 9); else hold the "
+             "body by hand" if b.if_pads else "holds the jack while torquing"),
             ("Torque screwdriver 0.5-5 N m", "part TBC", "-", 1,
              "DC breaker, fuse, adaptor and Spider DCIN terminals (value marked on each)"),
             ("Torque wrench 2-25 N m with 10 and 13 mm sockets", "part TBC", "-", 1,
@@ -1411,6 +1422,17 @@ def parts(b):
         "port checks, calibration", "confirmed")
     add("Test", "-", "N-F to SMA-F adapter for the power sensor", "NF-SF50+", "Mini-Circuits", 1, "NRP18S input is N-male",
         "confirmed")
+    if b.if_pads:
+        # a pad part number sits on up to 3 lines (pad schedule, IP-50 chain, port-check kit): every pad line carries its
+        # part number's order total over all lines, so nobody orders from one line alone (owner, 2026-11-25)
+        is_pad = lambda pn: bool(re.match(r"^BW-S\d+W2\+$", pn)) or pn == MW_PAD_HI[0]
+        tot = Counter()
+        for p in P:
+            if is_pad(p["pn"]):
+                tot[p["pn"]] += sum(int(x) for x in re.findall(r"\d+", str(p["qty"])))
+        for p in P:
+            if is_pad(p["pn"]):
+                p["use"] += f"; order total for {p['pn']}: {tot[p['pn']]} (all lines)"
     return P
 
 

@@ -26,8 +26,12 @@
 //   link_<NAME>_pads.png     (fixed-pad benches) the link's pad stacks close up: on the splitter
 //                            tray seen from above (the units above it left out), or on the tiles
 //                            seen from the front right
-//   tray_<ID>.png            (fixed-pad benches) the splitter tray from above with the pad stacks
-//                            on its splitters, the units above and below left out, no cables
+//   tray_<ID>.png            (fixed-pad benches) the splitter tray from above: its splitters (and any
+//                            pad stacks on their ports; PoC 1 has none), the units above and below
+//                            left out, no cables
+//   tray_<ID>_ends.png       (fixed-pad benches whose tray step fits the cables' tray ends in the hand)
+//                            the same view with those cables in their lanes, the rest of the bench
+//                            left out
 //   power.png, data_mgmt.png       AC + DC + POE only / FIB + ETH only
 //   ip50_chains.png, ip50_chains_top.png    IP-50 conducted chains
 //   ip50_col_1/2.png         (with an MWATT) one close-up per radio column beside it
@@ -120,6 +124,11 @@ function pageApply(spec) {
   app.setStep(null);
   app.clearSelection();
   V.currentView = null; // set again only by a named view below
+  if (V._cableClip) {
+    // a previous spec cut the cables at a height (cableClipY): whole cables again
+    for (const e of V.cab.values()) { e.mat.clippingPlanes = null; e.mat.needsUpdate = true; }
+    V._cableClip = false;
+  }
   // ---- apply
   const o = spec.opts || {};
   if (o.classes) app.setClasses(o.classes);
@@ -187,6 +196,19 @@ function pageApply(spec) {
       const pe = V.portObj.get(pid);
       if (pe) pe.mesh.visible = false;
     }
+  }
+  // cables cut above a height (e.g. the tray ends only, without their rises to the boxes above the tray)
+  if (spec.cableClipY != null) {
+    const Vec3 = V.camera.position.constructor;
+    V.renderer.localClippingEnabled = true;
+    for (const e of V.cab.values()) { e.mat.clippingPlanes = [{ normal: new Vec3(0, -1, 0), constant: spec.cableClipY }]; e.mat.needsUpdate = true; }
+    V._cableClip = true;
+  }
+  // tall items that would hide what stands behind them from this camera (the bench monitor): drawn see-through
+  for (const id of spec.seeThrough || []) {
+    const e = V.dev.get(id);
+    if (!e || !e.grp.visible || !['normal', 'hi'].includes(e.mode)) continue;
+    V._applyDevice(e, true, e.mode === 'hi' ? 'hi-x' : 'xray', e.off, 0.2, e.dark);
   }
   V.renderNow();
   // ---- projections (CSS px of the page)
@@ -442,6 +464,7 @@ function buildSpecs(scene) {
     };
   };
   const tableTop = () => ({
+    seeThrough: tableDevs.filter((id) => devs.get(id).kind === 'monitor'),
     box: [[T.x0, T.top, T.z0], [T.x1, T.top + 330, T.z1]],
     dir: [0, 1.2, -1], fov: 24, margin: 1.02, insets: INS,
     clip: { box: [[T.x0 - 20, T.top - 30, T.z0 - 20], [T.x1 + 20, T.top + 330, T.z1 + 20]], pad: 8 },
@@ -568,7 +591,7 @@ function buildSpecs(scene) {
     specs.push({ name: `sb_rear_${d.id}`, title: `${d.id} rear panel (${d.u}), seen from the rear`, ...rp });
   }
 
-  // ---------------- splitter tray from above, with any pad stacks on its splitters (fixed-pad benches: the tray step's
+  // ---------------- splitter tray from above, with any pad stacks on its splitters (PoC 1 has none; fixed-pad benches: the tray step's
   // picture, its joints made in the hand)
   for (const tr of scene.devices.filter((d) => d.kind === 'tray')) {
     const spl = scene.devices.filter((d) => d.parent === tr.id && d.kind === 'splitter');
@@ -590,6 +613,31 @@ function buildSpecs(scene) {
         ...spl.flatMap((d) => (d.ports || []).map((pid) => ({ kind: 'port', id: pid })))],
       pads: pads.map((d) => d.id),
     });
+    // the tray step's cables (their tray ends fitted in the hand): the same view with those cables in their lanes, each
+    // tagged at its tray end; the rest of the bench left out
+    const trayStep = scene.steps.find((st) => (st.devices || []).includes(tr.id) && (st.cable_ends || []).length);
+    if (trayStep) {
+      const ends = trayStep.cable_ends.filter((e) => cabs.get(e.cable));
+      const endCabs = ends.map((e) => e.cable);
+      specs.push({
+        name: `tray_${tr.id}_ends`, title: `${tr.id} from above: the tray ends of its ${endCabs.length} cables (step ${trayStep.n})`, device: tr.id,
+        opts: { classes: ['RF'] }, hideLabels: true, cableLabelMax: 0, hideDevices: [...away, ...kids, 'WALL'],
+        hl: { devices: spl.map((d) => d.id), cables: endCabs, ports: [] },
+        cableClipY: Math.max(...ys) + 30,                     // the tray ends only: the rises to the boxes above cut off
+        // the same camera and frame as tray_<ID> (the two pictures compare one to one); the lanes along the tray front edge
+        // at the bottom, the drops to the side lanes clipped by the frame
+        box: [[tr.pos[0] - 5, Math.min(...ys) - 5, Math.min(...zs) - 20], [tr.pos[0] + tr.size[0] + 5, Math.max(...ys) + 10, Math.max(...zs) + 15]],
+        dir: [0.06, 2.6, -1], fov: 18, margin: 1.04, insets: INS, clip: { box: 'frame', pad: 6 },
+        badge: ['VIEW FROM ABOVE', 'front edge at the bottom; the units above and below the tray left out; this step\'s cables highlighted'],
+        anchors: [...spl.map((d) => ({ kind: 'device', id: d.id, face: 'top' })),
+          ...ends.map((e) => {
+            const c = cabs.get(e.cable);
+            const L = Math.max(1, c.route_mm || 1000);
+            const f = Math.min(0.5, 70 / L);                     // about 70 mm from the splitter port
+            return { kind: 'cable', id: e.cable, at: c.a === e.port ? f : 1 - f };
+          })],
+      });
+    }
   }
 
   // ---------------- unit faces the guide tags port by port

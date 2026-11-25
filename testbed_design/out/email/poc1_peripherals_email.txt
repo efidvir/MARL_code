@@ -6,19 +6,20 @@ Below is the peripheral equipment needed for PoC 1, the conducted bench where th
 
 Key point: the scenario only needs links to go down, and that happens because whole devices are switched off at t0 (switched PDU outlets cut the hub node, the two CORE radios and the two servers). No link has to be faded, so the bench needs NO programmable attenuators. Fixed SMA pads set the path loss on every link, and the three MARL bridges are held down in Terragraph and enabled when MARL engages them. This removes the 9 attenuator boxes and the Keysight J7204B, frees 10U of rack space, 10 power outlets and 10 switch ports, and cuts the SMA cables from 88 to 48.
 
-The quantities come from the bench's digital twin, regenerated with the pads in place. Cable lengths are the routed paths plus about 10 % slack. Please mark what we already have, and I will turn the rest into an order.
+The quantities come from the bench's digital twin, regenerated with the pads in place. Cable lengths are the routed paths plus 5 % for the SMA cables (rounded up to stock lengths) and 10 % for the other cables. Please mark what we already have, and I will turn the rest into an order.
 
 Attached:
-1. Schematic: IF wiring with fixed pads. One row per link: Spider box / module at each end, the splitter, the pad values, and what happens to the link at t0.
+1. Schematic: IF wiring with fixed pads. One row per link: Spider box / module at each end, the splitter, the pad values (each drawn on the tile its stack screws onto), and what happens to the link at t0.
 2. Figure: the scenario (before the event, the event, MARL's three bridges).
 
 1. RF / IF chain (splitters and fixed pads)
 - 8 x 2-way splitter, 2-18 GHz: Mini-Circuits ZN2PD-02183-S+
-- 72 x fixed SMA attenuator (pad), DC-18 GHz, 2 W: Mini-Circuits BW-SxW2+. At most two pads per tile path, screwed together onto a Spider tile (the hub W / E links on their far-end tiles, after the splitter; the others on their near-end tiles). The splitter tray carries only splitters:
+- 72 fitted (+ 11 spare) x fixed SMA attenuator (pad), DC-18 GHz, 2 W: Mini-Circuits BW-SxW2+. At most two pads per tile path as fitted, screwed together onto a Spider tile (the hub W / E links on their far-end tiles, after the splitter; the others on their near-end tiles). The splitter tray carries only splitters:
     HUB-W1, HUB-E1: 20 + 8 dB    HUB-W2, HUB-E2: 20 + 3 dB    HUB-S: 30 + 5 dB    HUB-N: 30 + 7 dB
     bridges: E2-W2 30 + 1 dB, E1-N 30 + 4 dB, W1-S 30 + 12 dB
-  Order by value (used + spare): 30 dB 20 + 2, 20 dB 16 + 2, 12 dB 4 + 1, 8 dB 8 + 1, 7 dB 4 + 1, 5 dB 4 + 1, 4 dB 4 + 1, 3 dB 8 + 1, 1 dB 4 + 1
-- Port-check calibration kit, 20 more BW-SxW2+ pads: 4 each of 1, 2, 3, 5 and 10 dB (BW-S1W2+, BW-S2W2+, BW-S3W2+, BW-S5W2+, BW-S10W2+), its own parts-list group. The pad values come from the paper radio model and the bench's real loss is not measured yet: after the nodes are up, every link's SNR is checked against its expected value, and a link more than 3 dB off has its pads changed by the difference, one link's four tile paths at a time (any 1-21 dB change in combination). If the first links are all off by the same amount, the whole pad schedule shifts and the re-sized pads are ordered then.
+  Schedule pads by value (used + spare): 30 dB 20 + 2, 20 dB 16 + 2, 12 dB 4 + 1, 8 dB 8 + 1, 7 dB 4 + 1, 5 dB 4 + 1, 4 dB 4 + 1, 3 dB 8 + 1, 1 dB 4 + 1
+  Order total per part number (one value can sit on up to three parts-list lines: the pad schedule above, the IP-50 chain in section 2 and the port-check kit below): 30 dB (BW-S30W2+) 20 + 2 = 22, 20 dB (BW-S20W2+) 16 + 2 = 18, 12 dB (BW-S12W2+) 4 + 1 = 5, 10 dB (BW-S10W2+) 4 + 1 IP-50 + 4 kit = 9, 8 dB (BW-S8W2+) 8 + 1 = 9, 7 dB (BW-S7W2+) 4 + 1 = 5, 5 dB (BW-S5W2+) 4 + 1 + 4 kit = 9, 4 dB (BW-S4W2+) 4 + 1 = 5, 3 dB (BW-S3W2+) 8 + 1 + 4 kit = 13, 2 dB (BW-S2W2+) 4 kit = 4, 1 dB (BW-S1W2+) 4 + 1 + 4 kit = 9; 108 BW-SxW2+ pads in all
+- Port-check calibration kit, 20 more BW-SxW2+ pads: 4 each of 1, 2, 3, 5 and 10 dB (BW-S1W2+, BW-S2W2+, BW-S3W2+, BW-S5W2+, BW-S10W2+), its own parts-list group (already counted in the order totals above). The pad values come from the paper radio model and the bench's real loss is not measured yet: after the nodes are up, every link's SNR is checked against its expected value, and a link more than 3 dB off has its pads changed by the difference, one link's four tile paths at a time (one kit pad adds 1, 2, 3, 5 or 10 dB per tile path, or the outer pad is swapped for up to two kit pads; at most 3 pads on a path, so a larger offset means re-sized pads). If the first links are all off by the same amount, the whole pad schedule shifts and the re-sized pads are ordered then.
 - 44 x SMA cable, 18 GHz (Mini-Circuits CBL-xx-SMSM+): 20 x 0.91 m (CBL-3FT), 16 x 1.22 m (CBL-4FT), 8 x 1.52 m (CBL-5FT)
 - 3 x 50-ohm SMA load: Mini-Circuits ANNE-50+ (1 used on the GNSS splitter + 2 spare)
 - Optional (not in the parts list; borrow one if the lab has it): 1 x 4-channel programmable attenuator, only to speed up the port check: one link's four tile paths at a time, find the drop-out point and size the pads from it
@@ -27,7 +28,7 @@ Attached:
 - Chain per hop: radio -> WR-62 transition -> 30 dB pad -> 10 dB pad -> SMA cable -> 30 dB pad -> WR-62 transition -> radio (70 dB fixed)
 - 8 x waveguide-to-SMA transition, WR-62 (12.4-18 GHz): Pasternack PEWCA1003
 - 8 + 1 spare x 30 dB 10 W pad, DC-18 GHz: Fairview SA18S10W-30
-- 4 + 1 spare x 10 dB pad, DC-18 GHz: Mini-Circuits BW-S10W2+ (replaces the Keysight J7204B)
+- 4 + 1 spare x 10 dB pad, DC-18 GHz: Mini-Circuits BW-S10W2+ (replaces the Keysight J7204B; with the 4 of the port-check kit, 9 BW-S10W2+ in all: section 1 order totals)
 - 4 x SMA cable, 0.30 m: Mini-Circuits CBL-1FT-SMSM+
 - If the radios are 23 GHz: PEWCA1018 transitions, FMAT4009-30 pads and a 2.92 mm 10 dB pad instead
 
@@ -90,7 +91,7 @@ Attached:
 - 1 x LC fibre end-face cleaner
 
 10. Tools
-- 2 x SMA torque wrench, 8 in-lb (Fairview ST-SMA3), and 2 x 5/16 in backing wrench
+- 2 x SMA torque wrench, 8 in-lb (Fairview ST-SMA3), and 2 x 5/16 in backing wrench (it holds the pad bodies: do the BW-S and SA18S10W-30 have 5/16 in flats? If not, they are held by hand)
 - 2 x ESD wrist strap and 2 x cage-nut tool
 - 1 x torque screwdriver, 0.5-5 N m, and 1 x torque wrench, 2-25 N m with 10 / 13 mm sockets
 - 1 x ferrule crimper (Phoenix CRIMPFOX 6) and 1 x 10 AWG ring-lug crimper

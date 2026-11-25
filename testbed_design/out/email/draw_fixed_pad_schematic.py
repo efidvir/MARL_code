@@ -23,12 +23,13 @@ def splitter(x, y, name, port, col):
     ax.text(x + 2.5, y + 3.0, f"{name} {port}", ha="center", va="bottom", fontsize=7.5, color=MUTED)
 
 ax.text(3, 100.5, "PoC 1 (splitter bench): IF wiring with fixed pads, no programmable attenuators", fontsize=17, weight="bold", color=INK)
-ax.text(3, 97.2, "One row per link. Each link is 4 parallel SMA paths (tiles T1-T4 of the two sector modules), each with its own splitter "
-        "and pad. Values in dB, pads Mini-Circuits BW-SxW2+ (DC-18 GHz, 2 W). TENTATIVE.", fontsize=9.5, color=MUTED)
+ax.text(3, 97.2, "One row per link. Each link is 4 parallel SMA paths (tiles T1-T4 of the two sector modules), each with its own pad "
+        "stack (and, on the hub W / E links, its own splitter). Values in dB, pads Mini-Circuits BW-SxW2+ (DC-18 GHz, 2 W). TENTATIVE.",
+        fontsize=9.5, color=MUTED)
 
 # column headers
-for x, t in ((3, "A end: Spider box . module (node . sector)"), (47, "splitter (hub W / E only)"), (66, "fixed pad, per tile"),
-             (85, "B end: Spider box . module"), (118, "what happens at t0")):
+for x, t in ((3, "A end: Spider box . module"), (28, "pad on the A tile"), (45, "splitter (hub W / E only)"),
+             (70, "pad on the B tile"), (85, "B end: Spider box . module"), (118, "what happens at t0")):
     ax.text(x, 92.5, t, fontsize=9, weight="bold", color=GREY)
 
 rows = [
@@ -45,16 +46,17 @@ rows = [
 y = 87.5
 for name, a_box, a_lab, spl, port, padv, b_box, b_lab, col, fate in rows:
     box(3, y - 2.6, 24, 5.2, f"{a_box}", a_lab, ec=col)
-    ax.text(30, y + 2.9, name, fontsize=9.5, weight="bold", color=col)
-    x0 = 27.5
+    ax.text(41, y + 2.9, name, fontsize=9.5, weight="bold", color=col)
+    # each pad stack is drawn on the tile it screws onto: the hub W / E links' on the B tile (after the splitter and the
+    # cable), the others' on the A tile (the splitter tray carries only splitters)
     if spl:
-        ax.plot([x0, 48], [y, y], color=col, lw=2)
+        ax.plot([27.5, 48], [y, y], color=col, lw=2)
         splitter(48, y, spl, port, col)
-        ax.plot([53, 66], [y, y], color=col, lw=2)
+        ax.plot([53, 73.5], [y, y], color=col, lw=2)
+        pad(73.5, y, padv, col)
     else:
-        ax.plot([x0, 66], [y, y], color=col, lw=2)
-    pad(66, y, padv, col)
-    ax.plot([77, 85], [y, y], color=col, lw=2)
+        pad(27.8, y, padv, col)
+        ax.plot([38.8, 85], [y, y], color=col, lw=2)
     box(85, y - 2.6, 24, 5.2, f"{b_box}", b_lab, ec=col)
     ax.text(111, y, "x 4", fontsize=9, color=MUTED, va="center")
     ax.text(118, y, fate, fontsize=9.5, color=col, va="center")
@@ -93,6 +95,7 @@ ax.plot([52, 58], [ny, ny], color=GREEN, lw=2.4); ax.text(59, ny, "bridge: link 
 ax.text(3, 2.6, "No attenuator moves in the scenario, so fixed pads set every path loss (values = the former attenuator settings, "
         "rounded to what two pads make; corrected at the port check).", fontsize=8.8, color=MUTED)
 ax.text(3, 0.6, "Every pad stack screws onto a Spider tile: the hub W / E links' on the B-end tile (splitter P1 / P2 cabled to it), "
-        "the others' on the A-end tile. Torque SMA to 8 in-lb.", fontsize=8.8, color=MUTED)
+        "the others' on the A-end tile; the splitter tray carries only splitters. Torque SMA to 8 in-lb (backing-wrench rule: install guide).",
+        fontsize=8.8, color=MUTED)
 fig.savefig("/home/user/MARL_code/testbed_design/out/email/poc1_schematic_fixed_pads.png", dpi=160)
 print("ok")

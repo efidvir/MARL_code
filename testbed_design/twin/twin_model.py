@@ -1244,7 +1244,12 @@ class Scene:
                         c["part"] = re.sub(r"CBL-[\w.]+-SMSM\+", pn, c["part"])
                     c["pn"], c["length"] = pn, f"{L / 1000:.2f} m"
                 c["need_mm"] = round(need)
-                c["note"] = re.sub(r"needs [\d.]+ m( \(twin route\))?", f"needs {need / 1000:.2f} m (twin route)", c["note"])
+                if b.if_pads:                   # the figure is the bundle's (longest route + slack), not this cable's
+                    c["note"] = re.sub(r"(bundle )?needs [\d.]+ m( \([^)]*twin route[^)]*\))?",
+                                       f"bundle needs {need / 1000:.2f} m (longest twin route + slack)", c["note"])
+                else:
+                    c["note"] = re.sub(r"needs [\d.]+ m( \(twin route\))?", f"needs {need / 1000:.2f} m (twin route)",
+                                       c["note"])
         b.size_arm_pads()                                   # pads and part texts from the final IF lengths
         for k, v in self.dev.items():                      # the DC-block / pad stacks name the final pad
             if v["kind"] == "armstack":
@@ -1407,16 +1412,8 @@ class Scene:
         if b.if_pads:                       # fixed-pad bench: one backing-wrench rule for every SMA joint (guide, steps)
             out = out.replace("with the SMA torque wrench, holding the jack with the backing wrench.",
                               "with the SMA torque wrench, the backing wrench on the jumper plug's body (backing-wrench "
-                              "rule; never on the jack).")
+                              "rule; never on the node's jack or the splitter housing).")
         return out
-
-    def sma_torque(self):
-        """'torque every SMA ...' for a step text: the fixed-pad bench's backing-wrench rule, else SMA_TORQUE."""
-        if self.b.if_pads:
-            return ("torque every SMA to 8 in-lb (0.9 N m) with the SMA torque wrench on the male coupling nut, the "
-                    "backing wrench on the body of the part that nut belongs to (pad or cable plug), never on a jack "
-                    "(backing-wrench rule)")
-        return self.SMA_TORQUE
 
     def _cid(self, a=None, b_=None, cls=None):
         return next((c["id"] for c in getattr(self, "cables", []) if (a is None or c["a"] == a) and
@@ -1609,8 +1606,9 @@ class Scene:
                         "links' pad stacks go on their far (B-end) tiles in the IF-link steps.")
                 items = [f"Tag both ends of each splitter's three cables (n = tile 1-{b.tiles}): " + "; ".join(per_spl) + ".",
                          "Screw each cable's tray end onto its splitter port (S, P1, P2), holding the splitter in your "
-                         "hand or flat on the padded surface; torque each joint with the backing-wrench rule: "
-                         f"{BS.BACKING_RULE}.",
+                         "hand or flat on the padded surface; torque each joint to 8 in-lb (0.9 N m) with the "
+                         "backing-wrench rule (here: the backing wrench on the cable plug's body; never on the splitter "
+                         "housing).",
                          "Lay the splitters flat, all the same way round: S to the LEFT, ports 1 and 2 to the RIGHT "
                          "(port 1 toward the front), printed label up. Columns left to right = tile 1-"
                          f"{b.tiles}; rows front to back: {', '.join(grp)}. Lay the front row first, so that the back row "
@@ -1732,7 +1730,8 @@ class Scene:
               "the IP-50 radios in hop pairs, the two radios of a hop side by side with their waveguide flanges facing "
               f"each other ({self._hop_pair_text()}), in a front and a back row 120 mm apart and two columns with a "
               f"{self.TABLE_PADS['aisle']:g} mm aisle between them; the gap between the two radios of a hop takes the "
-              "transitions, the pad stacks and the hop's one SMA cable (IP-50 chain step); no radio is stacked")
+              "transitions, the pad stacks and the hop's one SMA cable (IP-50 chain step); no radio is stacked" +
+              ("; " + self._hop_slide_text(later=True)[:-1] if b.mw_pads else ""))
              + (f"; stacked radios sit on two {BS.SPACER_MM:g} mm spacer bars on the lid of the one below (front and "
                 "rear edge), each bar fixed to the lower lid with double-sided foam tape and the upper radio pressed onto "
                 f"tape on the bars so it cannot slide: {', '.join(stacked)}" if stacked else "") +
@@ -1797,7 +1796,7 @@ class Scene:
             side_txt = f"{' and '.join(sides)} side lane{'s' if len(sides) > 1 else ''}"
             value = (f"= {pl['db']} dB, target {pl['target']:g} dB, A7 '{pl['setting']}'; pad schedule")
             job = (f" {name} is a bridge, held down by Terragraph ignition ({b.bridges[name]['tg']}, set at power-up) until "
-                   "MARL engages it after t0 (event procedure); nothing RF changes."
+                   "MARL engages it after t0."
                    if name in b.bridges else
                    f" {name} goes down at t0 with the hub (its PoE injector's outlet is switched off); nothing RF changes.")
             on = "B" if pv["side"] == "b" else "A"
@@ -1805,7 +1804,10 @@ class Scene:
                    ", then ".join(f"{pn} ({db} dB)" + (" on the tile" if i == 0 else " on it")
                                   for i, (pn, db) in enumerate(zip(pl["pn"], pl["pads"]))) +
                    f" ({value}). Read the value printed on each pad; each male nut onto the female jack in front of it; "
-                   "8 in-lb with the backing-wrench rule (on the body of the pad being screwed on, never the tile jack). "
+                   "8 in-lb with the backing-wrench rule (" +
+                   ("the pad onto the tile: the backing wrench on that pad's body; the second pad onto the first pad's "
+                    "OUT: on the first pad's body, so the stack cannot turn on its tile; " if len(pl["pads"]) > 1 else
+                    "the backing wrench on the pad's body; ") + "never on the tile jack). "
                    f"A stack stands {pv['stack_mm']:g} mm proud of {hb} and must not carry the cable: strap the cable to "
                    "the seam bundle at the unit's lower edge (or the cable manager) within 150 mm of the stack; never "
                    "lever a stack sideways.")
@@ -1824,7 +1826,10 @@ class Scene:
                     shared = (f" (its tray end on S since step {n_tray or '?'}; landed now, shared by " +
                               " and ".join(d["splitters"][sa]) + ")")
                     s_route = (f" The S cables ({tile[0]}-{tile[-1]}) run from the tray front to the left side lane, up "
-                               f"it to the seam under {bx}, in along that seam and up into the hub tile n.")
+                               f"it to the seam under {bx}, in along that seam and up into the hub tile n: land each on "
+                               "its hub tile, t1 first, 8 in-lb with the backing-wrench rule (the cable plug onto a tile "
+                               "jack: the backing wrench on the plug's body, never on the tile jack), strapped within "
+                               "150 mm.")
                 ids += [x for x in tile if x not in taken]
                 # a splitter column whose cables leave through the far side lane passes in front of the other row
                 txt = (f"For each tile n = 1-{b.tiles}: {A} tile n ({bx}.{m}.Tn) to {sid}.tn S{shared}; {sid}.tn P{k} to "
@@ -1834,7 +1839,8 @@ class Scene:
                        f"tray front, check each tag and route them along the tray front edge to the {side_txt}, up the "
                        f"side to the lower edge of {bxb} (the seam with the unit below), in along that seam and up to the "
                        f"stack; never across the face of another box.{s_route} Land the far ends in tile order, t1 first: "
-                       "the plug onto the stack's OUT, 8 in-lb with the backing-wrench rule (on the cable plug's body), "
+                       "the plug onto the stack's OUT, 8 in-lb with the backing-wrench rule (the backing wrench on the "
+                       "body of the stack's outer pad, so the stack cannot turn on its tile), "
                        f"strapped within 150 mm; never pull a cable toward the tray.{job} One stock length for the four "
                        "link cables (not phase-matched: assumptions); coil slack in the side lane.")
             else:
@@ -1843,12 +1849,14 @@ class Scene:
                              "rack, along the side and in along the other unit's lower edge; never across the face of "
                              f"another box (every tile keeps {math.floor(clear)} mm clear above and below its SMA; runs pass "
                              "15 mm or more in front). Land the B tiles in order, t1 first, 8 in-lb with the backing-wrench "
-                             "rule (on the cable plug's body, never the tile jack); ease an earlier seam bundle aside by "
+                             "rule (the cable plug onto a tile jack: the backing wrench on the plug's body, never on the "
+                             "tile jack); ease an earlier seam bundle aside by "
                              "hand if it lies close to a tile. One stock length for the four cables (not phase-matched: "
                              "assumptions); coil slack in the side lane.")
                 txt = (f"For each tile n = 1-{b.tiles}: pad stack PAD-{name}.tn screwed onto {A} tile n ({bxa}.{ma}.Tn); "
-                       f"cable from the stack's OUT to {B} tile n ({bxb}.{mb}.Tn). {fit}{job} Then route every cable "
-                       f"through the {side_txt}: {pad_route}")
+                       f"cable from the stack's OUT to {B} tile n ({bxb}.{mb}.Tn). {fit} Screw each cable onto its "
+                       "stack's OUT, 8 in-lb with the backing-wrench rule (the backing wrench on the outer pad's body, so "
+                       f"the stack cannot turn on its tile).{job} Then route every cable through the {side_txt}: {pad_route}")
             step(f"IF link {name} ({pl['text']} dB pads)", txt, pids, cables=sorted(set(ids)), view="front")
         for name, (sa, sb) in (() if b.if_pads else d["link_ends"].items()):
             att = b.att_of[name]
@@ -1917,9 +1925,12 @@ class Scene:
                      "fixed, no programmable attenuator. First screw the pads onto each transition's SMA: the 30 dB 10 W "
                      "pad on every transition, its input (high-power) side on the transition (if it carries an arrow, the "
                      f"arrow points away from the radio), then the {lo[1]} dB pad on the A side's 30 dB pad (stacks "
-                     f"{wp[0]} to {wp[-1]}); the transition carries the stack. "
-                     f"{self.sma_torque()[0].upper() + self.sma_torque()[1:]}, every pad joint included. The SMA cable drops "
-                     "from the A-side stack to the table top and rises to the B-side stack. If the band turns out to be "
+                     f"{wp[0]} to {wp[-1]}); the transition carries the stack. {self._hop_slide_text()} Then the SMA "
+                     "cable: it drops from the A-side stack to the table top and rises to the B-side stack. Every SMA "
+                     "joint 8 in-lb (0.9 N m) with the backing-wrench rule: a 30 dB pad onto its transition, the backing "
+                     "wrench on that pad's body (never on the transition); the 10 dB pad and each cable plug onto a "
+                     "stack's OUT, on the body of the stack's outer pad; a pad body the 5/16 in wrench does not fit "
+                     "(flats TBC: open question 9) is held by hand. If the band turns out to be "
                      f"23 GHz the {lo[1]} dB pad becomes a {BS.MW_PAD_LO_K} (assumptions). The radios stay unpowered "
                      "until the last stage of power-up, after every chain is complete with its pads.", wp, cables=ws,
                      view="table")
@@ -1941,6 +1952,20 @@ class Scene:
              ", ".join(f"{s['title']} ({s['do']})" for s in self.power_up) + ".", view="iso")
         self.steps = S
         self.step_titles = step_of
+
+    def _hop_slide_text(self, later=False):
+        """fixed-pad IP-50 chains: the sentence that sets each hop's B-side radio from the stack OUTs (owner, 2026-11-25);
+        the gap is the twin's (A stack OUT to B stack OUT), the table positions assume the estimated pad lengths."""
+        gaps = [math.dist(self.ports[f"WGP-{k}-A.out"]["pos"], self.ports[f"WGP-{k}-B.out"]["pos"])
+                for k in self.d.get("mw_links", {}) if f"WGP-{k}-A.out" in self.ports and f"WGP-{k}-B.out" in self.ports]
+        ls = sorted({c["length"] for c in getattr(self, "cables", []) if c["cls"] == "WG" and "SMSM" in c["pn"]})
+        gap = f"about {round(max(gaps) / 10) * 10:.0f} mm" if gaps else "the twin's distance"
+        cab = f"the {ls[0]} cable" if len(ls) == 1 else "the SMA cable"
+        return ((f"slide the B-side radio along the table so the two stack OUTs are {gap} apart and {cab} lies in an "
+                 "easy arc (once the pad stacks are on: IP-50 chain step); the mm positions assume the estimated pad "
+                 "lengths.") if later else
+                (f"Slide the B-side radio along the table so the two stack OUTs are {gap} apart and {cab} lies in an "
+                 "easy arc; the mm positions assume the estimated pad lengths."))
 
     def _hop_pair_text(self):
         """'W1-CORE: IP50-W1-CORE@W1 | IP50-W1-CORE@CORE front row, left; ...' for the hop-pair table layout."""
@@ -2655,7 +2680,7 @@ class Scene:
         nodes_n = next((p["n"] for p in getattr(self, "power_up", []) if p["title"] == "nodes"), None)
         kit = ", ".join(f"BW-S{v}W2+" for v in BS.CAL_KIT)
         kit_txt = (f"the port-check calibration kit ({BS.CAL_KIT_N} each of {kit}, {len(BS.CAL_KIT) * BS.CAL_KIT_N} pads: "
-                   f"one link's {b.tiles} tile paths at a time; together any 1-{sum(BS.CAL_KIT)} dB change)")
+                   f"one link's {b.tiles} tile paths at a time; {BS.CAL_KIT_TEXT})")
         tol, mx = BS.PORT_CHECK_TOL_DB, BS.PAD_MAX_FIX
         rows = []
         for name, pl in b.pad_links.items():
@@ -2697,12 +2722,13 @@ class Scene:
                   "if the lab runs it that way: TBC)"),
             model=(f"expected SNR = the lowest data-MCS threshold (MCS {BS.TG_MCS_SNR[0][1]}: {BS.TG_MCS_SNR[0][0]:g} dB, "
                    "Terragraph link adaptation defaults) + the A7 model margin of the link at its fitted pads (the "
-                   "'Margin up' of the A7 table, less the dB the fitted stack adds over the A7 setting). The pad values "
+                   "'Margin up' of the A7 table, less the dB the fitted stack adds over the A7 setting; the table's "
+                   "'Margin dB' column already carries both, so no other document is needed). The pad values "
                    "are the A7 paper model's settings and the bench's real tile-to-tile budget is not measured yet "
                    "(TENTATIVE): the port check measures every link and the pads are corrected from it"),
             accept=f"the lower SNR within +/- {tol:g} dB of the expected value: the link is accepted as fitted",
             correct=(f"outside the band: change that link's {b.tiles} stacks by the difference (measured - expected, "
-                     f"nearest whole dB) with {kit_txt}; at most {mx} pads on a tile path; the cable strapped within "
+                     f"nearest whole dB) with {kit_txt}; the cable strapped within "
                      "150 mm of the stack as before; then read it again"),
             strong=(f"SNR more than {tol:g} dB above the expected value, by X dB: add kit pads making X on each stack's "
                     f"OUT, under the cable (one pad: X = {'/'.join(map(str, BS.CAL_KIT))} dB; else swap the outer pad for "
@@ -2714,23 +2740,29 @@ class Scene:
                   f"{b.tiles} tile paths"),
             bench=("check the links in the order of the table; if the first two or three links checked are off by about "
                    "the same amount (within 2 dB of each other), it is a bench-wide error in the model budget, not a "
-                   "link fault: shift the whole pad schedule by that offset and order the re-sized pads (pad schedule, "
-                   "blueprint sheet 6) before carrying on; the kit holds the links checked so far meanwhile"),
+                   "link fault: shift the whole pad schedule by that offset and order the re-sized pads (the guide's "
+                   f"'Pad schedule' page; blueprint sheet 6, {d['poc'].lower().replace(' ', '')}_blueprint.pdf) before "
+                   "carrying on; the kit holds the links checked so far meanwhile"),
             faster=(f"faster with a borrowed 4-channel programmable attenuator (optional, not in the parts list): one "
                     f"link's {b.tiles} tile paths at a time, in series with the stacks, step it up until the link drops; "
                     "the drop-out point gives the link's real margin, and its pad correction follows from it"),
             kit=kit_txt,
             bridges=br,
-            swap=[("switch both nodes of the link off (the row's 'nodes off'; INJ-HUB also takes every hub link down) "
+            swap=[("switch both nodes of the link off (the row's 'Nodes off for a pad change'; INJ-HUB also takes every "
+                   "hub link down) "
                    "and wait 30 s: never open an SMA of a powered node"),
                   ("add a kit pad: unscrew the cable from the stack's OUT, screw the kit pad onto the OUT, then the cable "
                    "onto the kit pad; swap: unscrew the cable, then the outer pad, fit the new pad(s) and the cable; at "
                    f"most {mx} pads on a tile path"),
-                  (f"torque every joint with the backing-wrench rule ({BS.BACKING_RULE}); do the same on all "
-                   f"{b.tiles} tile paths of the link; strap the cable within 150 mm as before"),
+                  (f"torque every joint to 8 in-lb with the backing-wrench rule (a kit pad or the cable onto a stack's "
+                   "OUT, and the cable coming off it: the backing wrench on the body of the stack's outer pad, so the "
+                   "stack cannot turn on its tile; an outer pad coming off: on the body of the pad it comes off, the "
+                   "one that stays on the tile; the inner pad coming off the tile: on its own body, never on the tile "
+                   f"jack); do the same on all {b.tiles} tile paths of the link; strap the cable within 150 mm as before"),
                   ("note the change on the pad schedule (link, tile, new stack) and on the cable tag"),
-                  ("switch the nodes on again (the row's 'nodes on'), wait for them to join (the bridges stay held "
-                   "down: ignition is a controller setting) and read the link again")],
+                  ("reverse the row's nodes-off action (outlet ON or breaker closed) and wait for the link to come back "
+                   "(a bridge stays held down, ignition being a controller setting: bring it up for the reading as under "
+                   "'Bridges'), then read the link again")],
             rows=rows))
 
 

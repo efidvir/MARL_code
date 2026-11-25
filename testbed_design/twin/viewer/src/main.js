@@ -32,7 +32,7 @@ const KIND_NAMES = {
   mwatt: 'multi-channel attenuator', ip50: 'IP-50 radio', server: 'server', pc: 'PC', specan: 'spectrum analyser',
   strip: 'mains strip', psu: 'power supply', wall: 'wall sockets', antenna: 'antenna',
   rackserver: 'rack server', attshelf: 'attenuator shelf', monitor: 'monitor', keyboard: 'keyboard',
-  padstack: 'fixed pad stack (SMA attenuators)', armstack: 'DC block / pad stack', arrestor: 'GNSS surge arrestor',
+  padstack: 'fixed pad stack (SMA pads)', armstack: 'DC block / pad stack', arrestor: 'GNSS surge arrestor',
   bridge: 'cable bridge', earthbar: 'earth bar', spacer: 'spacer bar',
 };
 

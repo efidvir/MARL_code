@@ -1105,6 +1105,14 @@ export class Viewer {
         let ok = false;
         // last resort: well clear to the left (a room item beside the rack whose U tags took its place)
         const nudges = align === 'above' ? [[0, -lh - 3], [lw / 2 + 4, 0], [-lw / 2 - 4, 0], [0, lh + 12], [-lw - 12, lh / 2 + 4]] : [];
+        if (align === 'above' && it.cls === 'cab') {
+          // a cable tag of a step is never dropped for want of room: further rings round its anchor, nearest first
+          for (let k = 2; k <= 5; k++) {
+            const dy = (k - 1) * (lh + 3);
+            nudges.push([0, -lh - 3 - dy], [0, lh + 12 + dy], [lw + 8, -dy], [-lw - 8, -dy], [lw + 8, dy], [-lw - 8, dy],
+              [k * (lw / 2 + 4), 0], [-k * (lw / 2 + 4), 0]);
+          }
+        }
         for (const [dx, dy] of nudges) {
           const rc = [x + dx, y + dy, x + dx + lw, y + dy + lh];
           if (!clash(rc)) {

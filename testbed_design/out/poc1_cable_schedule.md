@@ -138,50 +138,50 @@ Nodes are managed in-band (E2E controller over the radio network); no node ETH2 
 
 | ID | From | To | Part | Length | VLAN | Note |
 |---|---|---|---|---|---|---|
-| R001 | SB2.M1.T1 | SPL-HUBW.t1.S | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB.W tile 1 to its splitter; span 3U, needs 0.82 m (twin route) |
-| R002 | SB2.M1.T2 | SPL-HUBW.t2.S | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB.W tile 2 to its splitter; span 3U, needs 0.82 m (twin route) |
-| R003 | SB2.M1.T3 | SPL-HUBW.t3.S | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB.W tile 3 to its splitter; span 3U, needs 0.82 m (twin route) |
-| R004 | SB2.M1.T4 | SPL-HUBW.t4.S | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB.W tile 4 to its splitter; span 3U, needs 0.82 m (twin route) |
-| R005 | SB2.M2.T1 | SPL-HUBE.t1.S | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB.E tile 1 to its splitter; span 3U, needs 1.00 m (twin route) |
-| R006 | SB2.M2.T2 | SPL-HUBE.t2.S | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB.E tile 2 to its splitter; span 3U, needs 1.00 m (twin route) |
-| R007 | SB2.M2.T3 | SPL-HUBE.t3.S | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB.E tile 3 to its splitter; span 3U, needs 1.00 m (twin route) |
-| R008 | SB2.M2.T4 | SPL-HUBE.t4.S | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB.E tile 4 to its splitter; span 3U, needs 1.00 m (twin route) |
-| R009 | SPL-HUBW.t1.P1 | PAD-HUB-W1.t1.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-W1 tile 1: from SPL-HUBW.t1 P1 to the 20 + 8 dB pad stack on W1.E tile 1 (SB1.M1.T1); span 4U, needs 1.09 m (twin route) |
-| R010 | SPL-HUBW.t2.P1 | PAD-HUB-W1.t2.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-W1 tile 2: from SPL-HUBW.t2 P1 to the 20 + 8 dB pad stack on W1.E tile 2 (SB1.M1.T2); span 4U, needs 1.09 m (twin route) |
-| R011 | SPL-HUBW.t3.P1 | PAD-HUB-W1.t3.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-W1 tile 3: from SPL-HUBW.t3 P1 to the 20 + 8 dB pad stack on W1.E tile 3 (SB1.M1.T3); span 4U, needs 1.09 m (twin route) |
-| R012 | SPL-HUBW.t4.P1 | PAD-HUB-W1.t4.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-W1 tile 4: from SPL-HUBW.t4 P1 to the 20 + 8 dB pad stack on W1.E tile 4 (SB1.M1.T4); span 4U, needs 1.09 m (twin route) |
-| R013 | SPL-HUBW.t1.P2 | PAD-HUB-W2.t1.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-W2 tile 1: from SPL-HUBW.t1 P2 to the 20 + 3 dB pad stack on W2.E tile 1 (SB1.M3.T1); span 4U, needs 1.31 m (twin route) |
-| R014 | SPL-HUBW.t2.P2 | PAD-HUB-W2.t2.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-W2 tile 2: from SPL-HUBW.t2 P2 to the 20 + 3 dB pad stack on W2.E tile 2 (SB1.M3.T2); span 4U, needs 1.31 m (twin route) |
-| R015 | SPL-HUBW.t3.P2 | PAD-HUB-W2.t3.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-W2 tile 3: from SPL-HUBW.t3 P2 to the 20 + 3 dB pad stack on W2.E tile 3 (SB1.M3.T3); span 4U, needs 1.31 m (twin route) |
-| R016 | SPL-HUBW.t4.P2 | PAD-HUB-W2.t4.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-W2 tile 4: from SPL-HUBW.t4 P2 to the 20 + 3 dB pad stack on W2.E tile 4 (SB1.M3.T4); span 4U, needs 1.31 m (twin route) |
-| R017 | SPL-HUBE.t1.P1 | PAD-HUB-E1.t1.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-E1 tile 1: from SPL-HUBE.t1 P1 to the 20 + 8 dB pad stack on E1.W tile 1 (SB4.M1.T1); span 1U, needs 1.08 m (twin route) |
-| R018 | SPL-HUBE.t2.P1 | PAD-HUB-E1.t2.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-E1 tile 2: from SPL-HUBE.t2 P1 to the 20 + 8 dB pad stack on E1.W tile 2 (SB4.M1.T2); span 1U, needs 1.08 m (twin route) |
-| R019 | SPL-HUBE.t3.P1 | PAD-HUB-E1.t3.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-E1 tile 3: from SPL-HUBE.t3 P1 to the 20 + 8 dB pad stack on E1.W tile 3 (SB4.M1.T3); span 1U, needs 1.08 m (twin route) |
-| R020 | SPL-HUBE.t4.P1 | PAD-HUB-E1.t4.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-E1 tile 4: from SPL-HUBE.t4 P1 to the 20 + 8 dB pad stack on E1.W tile 4 (SB4.M1.T4); span 1U, needs 1.08 m (twin route) |
-| R021 | SPL-HUBE.t1.P2 | PAD-HUB-E2.t1.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-E2 tile 1: from SPL-HUBE.t1 P2 to the 20 + 3 dB pad stack on E2.W tile 1 (SB4.M3.T1); span 1U, needs 1.28 m (twin route) |
-| R022 | SPL-HUBE.t2.P2 | PAD-HUB-E2.t2.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-E2 tile 2: from SPL-HUBE.t2 P2 to the 20 + 3 dB pad stack on E2.W tile 2 (SB4.M3.T2); span 1U, needs 1.28 m (twin route) |
-| R023 | SPL-HUBE.t3.P2 | PAD-HUB-E2.t3.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-E2 tile 3: from SPL-HUBE.t3 P2 to the 20 + 3 dB pad stack on E2.W tile 3 (SB4.M3.T3); span 1U, needs 1.28 m (twin route) |
-| R024 | SPL-HUBE.t4.P2 | PAD-HUB-E2.t4.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-E2 tile 4: from SPL-HUBE.t4 P2 to the 20 + 3 dB pad stack on E2.W tile 4 (SB4.M3.T4); span 1U, needs 1.28 m (twin route) |
-| R025 | PAD-HUB-S.t1.out | SB3.M1.T1 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S tile 1: from the 30 + 5 dB pad stack on SB2.M3.T1 to S.N tile 1; span 1U, needs 0.85 m (twin route) |
-| R026 | PAD-HUB-S.t2.out | SB3.M1.T2 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S tile 2: from the 30 + 5 dB pad stack on SB2.M3.T2 to S.N tile 2; span 1U, needs 0.85 m (twin route) |
-| R027 | PAD-HUB-S.t3.out | SB3.M1.T3 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S tile 3: from the 30 + 5 dB pad stack on SB2.M3.T3 to S.N tile 3; span 1U, needs 0.85 m (twin route) |
-| R028 | PAD-HUB-S.t4.out | SB3.M1.T4 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S tile 4: from the 30 + 5 dB pad stack on SB2.M3.T4 to S.N tile 4; span 1U, needs 0.85 m (twin route) |
-| R029 | PAD-HUB-N.t1.out | SB3.M3.T1 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-N tile 1: from the 30 + 7 dB pad stack on SB2.M4.T1 to N.S tile 1; span 1U, needs 0.64 m (twin route) |
-| R030 | PAD-HUB-N.t2.out | SB3.M3.T2 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-N tile 2: from the 30 + 7 dB pad stack on SB2.M4.T2 to N.S tile 2; span 1U, needs 0.64 m (twin route) |
-| R031 | PAD-HUB-N.t3.out | SB3.M3.T3 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-N tile 3: from the 30 + 7 dB pad stack on SB2.M4.T3 to N.S tile 3; span 1U, needs 0.64 m (twin route) |
-| R032 | PAD-HUB-N.t4.out | SB3.M3.T4 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-N tile 4: from the 30 + 7 dB pad stack on SB2.M4.T4 to N.S tile 4; span 1U, needs 0.64 m (twin route) |
-| R033 | PAD-E2-W2.t1.out | SB1.M4.T1 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E2-W2 tile 1: from the 30 + 1 dB pad stack on SB4.M4.T1 to W2.S tile 1; span 3U, needs 0.64 m (twin route) |
-| R034 | PAD-E2-W2.t2.out | SB1.M4.T2 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E2-W2 tile 2: from the 30 + 1 dB pad stack on SB4.M4.T2 to W2.S tile 2; span 3U, needs 0.64 m (twin route) |
-| R035 | PAD-E2-W2.t3.out | SB1.M4.T3 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E2-W2 tile 3: from the 30 + 1 dB pad stack on SB4.M4.T3 to W2.S tile 3; span 3U, needs 0.64 m (twin route) |
-| R036 | PAD-E2-W2.t4.out | SB1.M4.T4 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E2-W2 tile 4: from the 30 + 1 dB pad stack on SB4.M4.T4 to W2.S tile 4; span 3U, needs 0.64 m (twin route) |
-| R037 | PAD-E1-N.t1.out | SB3.M4.T1 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E1-N tile 1: from the 30 + 4 dB pad stack on SB4.M2.T1 to N.W tile 1; span 1U, needs 0.74 m (twin route) |
-| R038 | PAD-E1-N.t2.out | SB3.M4.T2 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E1-N tile 2: from the 30 + 4 dB pad stack on SB4.M2.T2 to N.W tile 2; span 1U, needs 0.74 m (twin route) |
-| R039 | PAD-E1-N.t3.out | SB3.M4.T3 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E1-N tile 3: from the 30 + 4 dB pad stack on SB4.M2.T3 to N.W tile 3; span 1U, needs 0.74 m (twin route) |
-| R040 | PAD-E1-N.t4.out | SB3.M4.T4 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E1-N tile 4: from the 30 + 4 dB pad stack on SB4.M2.T4 to N.W tile 4; span 1U, needs 0.74 m (twin route) |
-| R041 | PAD-W1-S.t1.out | SB3.M2.T1 | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | W1-S tile 1: from the 30 + 12 dB pad stack on SB1.M2.T1 to S.E tile 1; span 2U, needs 1.00 m (twin route) |
-| R042 | PAD-W1-S.t2.out | SB3.M2.T2 | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | W1-S tile 2: from the 30 + 12 dB pad stack on SB1.M2.T2 to S.E tile 2; span 2U, needs 1.00 m (twin route) |
-| R043 | PAD-W1-S.t3.out | SB3.M2.T3 | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | W1-S tile 3: from the 30 + 12 dB pad stack on SB1.M2.T3 to S.E tile 3; span 2U, needs 1.00 m (twin route) |
-| R044 | PAD-W1-S.t4.out | SB3.M2.T4 | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | W1-S tile 4: from the 30 + 12 dB pad stack on SB1.M2.T4 to S.E tile 4; span 2U, needs 1.00 m (twin route) |
+| R001 | SB2.M1.T1 | SPL-HUBW.t1.S | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB.W tile 1 to its splitter; span 3U, bundle needs 0.82 m (longest twin route + slack) |
+| R002 | SB2.M1.T2 | SPL-HUBW.t2.S | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB.W tile 2 to its splitter; span 3U, bundle needs 0.82 m (longest twin route + slack) |
+| R003 | SB2.M1.T3 | SPL-HUBW.t3.S | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB.W tile 3 to its splitter; span 3U, bundle needs 0.82 m (longest twin route + slack) |
+| R004 | SB2.M1.T4 | SPL-HUBW.t4.S | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB.W tile 4 to its splitter; span 3U, bundle needs 0.82 m (longest twin route + slack) |
+| R005 | SB2.M2.T1 | SPL-HUBE.t1.S | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB.E tile 1 to its splitter; span 3U, bundle needs 1.00 m (longest twin route + slack) |
+| R006 | SB2.M2.T2 | SPL-HUBE.t2.S | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB.E tile 2 to its splitter; span 3U, bundle needs 1.00 m (longest twin route + slack) |
+| R007 | SB2.M2.T3 | SPL-HUBE.t3.S | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB.E tile 3 to its splitter; span 3U, bundle needs 1.00 m (longest twin route + slack) |
+| R008 | SB2.M2.T4 | SPL-HUBE.t4.S | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB.E tile 4 to its splitter; span 3U, bundle needs 1.00 m (longest twin route + slack) |
+| R009 | SPL-HUBW.t1.P1 | PAD-HUB-W1.t1.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-W1 tile 1: from SPL-HUBW.t1 P1 to the 20 + 8 dB pad stack on W1.E tile 1 (SB1.M1.T1); span 4U, bundle needs 1.09 m (longest twin route + slack) |
+| R010 | SPL-HUBW.t2.P1 | PAD-HUB-W1.t2.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-W1 tile 2: from SPL-HUBW.t2 P1 to the 20 + 8 dB pad stack on W1.E tile 2 (SB1.M1.T2); span 4U, bundle needs 1.09 m (longest twin route + slack) |
+| R011 | SPL-HUBW.t3.P1 | PAD-HUB-W1.t3.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-W1 tile 3: from SPL-HUBW.t3 P1 to the 20 + 8 dB pad stack on W1.E tile 3 (SB1.M1.T3); span 4U, bundle needs 1.09 m (longest twin route + slack) |
+| R012 | SPL-HUBW.t4.P1 | PAD-HUB-W1.t4.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-W1 tile 4: from SPL-HUBW.t4 P1 to the 20 + 8 dB pad stack on W1.E tile 4 (SB1.M1.T4); span 4U, bundle needs 1.09 m (longest twin route + slack) |
+| R013 | SPL-HUBW.t1.P2 | PAD-HUB-W2.t1.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-W2 tile 1: from SPL-HUBW.t1 P2 to the 20 + 3 dB pad stack on W2.E tile 1 (SB1.M3.T1); span 4U, bundle needs 1.31 m (longest twin route + slack) |
+| R014 | SPL-HUBW.t2.P2 | PAD-HUB-W2.t2.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-W2 tile 2: from SPL-HUBW.t2 P2 to the 20 + 3 dB pad stack on W2.E tile 2 (SB1.M3.T2); span 4U, bundle needs 1.31 m (longest twin route + slack) |
+| R015 | SPL-HUBW.t3.P2 | PAD-HUB-W2.t3.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-W2 tile 3: from SPL-HUBW.t3 P2 to the 20 + 3 dB pad stack on W2.E tile 3 (SB1.M3.T3); span 4U, bundle needs 1.31 m (longest twin route + slack) |
+| R016 | SPL-HUBW.t4.P2 | PAD-HUB-W2.t4.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-W2 tile 4: from SPL-HUBW.t4 P2 to the 20 + 3 dB pad stack on W2.E tile 4 (SB1.M3.T4); span 4U, bundle needs 1.31 m (longest twin route + slack) |
+| R017 | SPL-HUBE.t1.P1 | PAD-HUB-E1.t1.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-E1 tile 1: from SPL-HUBE.t1 P1 to the 20 + 8 dB pad stack on E1.W tile 1 (SB4.M1.T1); span 1U, bundle needs 1.08 m (longest twin route + slack) |
+| R018 | SPL-HUBE.t2.P1 | PAD-HUB-E1.t2.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-E1 tile 2: from SPL-HUBE.t2 P1 to the 20 + 8 dB pad stack on E1.W tile 2 (SB4.M1.T2); span 1U, bundle needs 1.08 m (longest twin route + slack) |
+| R019 | SPL-HUBE.t3.P1 | PAD-HUB-E1.t3.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-E1 tile 3: from SPL-HUBE.t3 P1 to the 20 + 8 dB pad stack on E1.W tile 3 (SB4.M1.T3); span 1U, bundle needs 1.08 m (longest twin route + slack) |
+| R020 | SPL-HUBE.t4.P1 | PAD-HUB-E1.t4.out | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | HUB-E1 tile 4: from SPL-HUBE.t4 P1 to the 20 + 8 dB pad stack on E1.W tile 4 (SB4.M1.T4); span 1U, bundle needs 1.08 m (longest twin route + slack) |
+| R021 | SPL-HUBE.t1.P2 | PAD-HUB-E2.t1.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-E2 tile 1: from SPL-HUBE.t1 P2 to the 20 + 3 dB pad stack on E2.W tile 1 (SB4.M3.T1); span 1U, bundle needs 1.28 m (longest twin route + slack) |
+| R022 | SPL-HUBE.t2.P2 | PAD-HUB-E2.t2.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-E2 tile 2: from SPL-HUBE.t2 P2 to the 20 + 3 dB pad stack on E2.W tile 2 (SB4.M3.T2); span 1U, bundle needs 1.28 m (longest twin route + slack) |
+| R023 | SPL-HUBE.t3.P2 | PAD-HUB-E2.t3.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-E2 tile 3: from SPL-HUBE.t3 P2 to the 20 + 3 dB pad stack on E2.W tile 3 (SB4.M3.T3); span 1U, bundle needs 1.28 m (longest twin route + slack) |
+| R024 | SPL-HUBE.t4.P2 | PAD-HUB-E2.t4.out | Mini-Circuits CBL-5FT-SMSM+ | 1.52 m |  | HUB-E2 tile 4: from SPL-HUBE.t4 P2 to the 20 + 3 dB pad stack on E2.W tile 4 (SB4.M3.T4); span 1U, bundle needs 1.28 m (longest twin route + slack) |
+| R025 | PAD-HUB-S.t1.out | SB3.M1.T1 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S tile 1: from the 30 + 5 dB pad stack on SB2.M3.T1 to S.N tile 1; span 1U, bundle needs 0.85 m (longest twin route + slack) |
+| R026 | PAD-HUB-S.t2.out | SB3.M1.T2 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S tile 2: from the 30 + 5 dB pad stack on SB2.M3.T2 to S.N tile 2; span 1U, bundle needs 0.85 m (longest twin route + slack) |
+| R027 | PAD-HUB-S.t3.out | SB3.M1.T3 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S tile 3: from the 30 + 5 dB pad stack on SB2.M3.T3 to S.N tile 3; span 1U, bundle needs 0.85 m (longest twin route + slack) |
+| R028 | PAD-HUB-S.t4.out | SB3.M1.T4 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-S tile 4: from the 30 + 5 dB pad stack on SB2.M3.T4 to S.N tile 4; span 1U, bundle needs 0.85 m (longest twin route + slack) |
+| R029 | PAD-HUB-N.t1.out | SB3.M3.T1 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-N tile 1: from the 30 + 7 dB pad stack on SB2.M4.T1 to N.S tile 1; span 1U, bundle needs 0.64 m (longest twin route + slack) |
+| R030 | PAD-HUB-N.t2.out | SB3.M3.T2 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-N tile 2: from the 30 + 7 dB pad stack on SB2.M4.T2 to N.S tile 2; span 1U, bundle needs 0.64 m (longest twin route + slack) |
+| R031 | PAD-HUB-N.t3.out | SB3.M3.T3 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-N tile 3: from the 30 + 7 dB pad stack on SB2.M4.T3 to N.S tile 3; span 1U, bundle needs 0.64 m (longest twin route + slack) |
+| R032 | PAD-HUB-N.t4.out | SB3.M3.T4 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | HUB-N tile 4: from the 30 + 7 dB pad stack on SB2.M4.T4 to N.S tile 4; span 1U, bundle needs 0.64 m (longest twin route + slack) |
+| R033 | PAD-E2-W2.t1.out | SB1.M4.T1 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E2-W2 tile 1: from the 30 + 1 dB pad stack on SB4.M4.T1 to W2.S tile 1; span 3U, bundle needs 0.64 m (longest twin route + slack) |
+| R034 | PAD-E2-W2.t2.out | SB1.M4.T2 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E2-W2 tile 2: from the 30 + 1 dB pad stack on SB4.M4.T2 to W2.S tile 2; span 3U, bundle needs 0.64 m (longest twin route + slack) |
+| R035 | PAD-E2-W2.t3.out | SB1.M4.T3 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E2-W2 tile 3: from the 30 + 1 dB pad stack on SB4.M4.T3 to W2.S tile 3; span 3U, bundle needs 0.64 m (longest twin route + slack) |
+| R036 | PAD-E2-W2.t4.out | SB1.M4.T4 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E2-W2 tile 4: from the 30 + 1 dB pad stack on SB4.M4.T4 to W2.S tile 4; span 3U, bundle needs 0.64 m (longest twin route + slack) |
+| R037 | PAD-E1-N.t1.out | SB3.M4.T1 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E1-N tile 1: from the 30 + 4 dB pad stack on SB4.M2.T1 to N.W tile 1; span 1U, bundle needs 0.74 m (longest twin route + slack) |
+| R038 | PAD-E1-N.t2.out | SB3.M4.T2 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E1-N tile 2: from the 30 + 4 dB pad stack on SB4.M2.T2 to N.W tile 2; span 1U, bundle needs 0.74 m (longest twin route + slack) |
+| R039 | PAD-E1-N.t3.out | SB3.M4.T3 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E1-N tile 3: from the 30 + 4 dB pad stack on SB4.M2.T3 to N.W tile 3; span 1U, bundle needs 0.74 m (longest twin route + slack) |
+| R040 | PAD-E1-N.t4.out | SB3.M4.T4 | Mini-Circuits CBL-3FT-SMSM+ | 0.91 m |  | E1-N tile 4: from the 30 + 4 dB pad stack on SB4.M2.T4 to N.W tile 4; span 1U, bundle needs 0.74 m (longest twin route + slack) |
+| R041 | PAD-W1-S.t1.out | SB3.M2.T1 | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | W1-S tile 1: from the 30 + 12 dB pad stack on SB1.M2.T1 to S.E tile 1; span 2U, bundle needs 1.00 m (longest twin route + slack) |
+| R042 | PAD-W1-S.t2.out | SB3.M2.T2 | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | W1-S tile 2: from the 30 + 12 dB pad stack on SB1.M2.T2 to S.E tile 2; span 2U, bundle needs 1.00 m (longest twin route + slack) |
+| R043 | PAD-W1-S.t3.out | SB3.M2.T3 | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | W1-S tile 3: from the 30 + 12 dB pad stack on SB1.M2.T3 to S.E tile 3; span 2U, bundle needs 1.00 m (longest twin route + slack) |
+| R044 | PAD-W1-S.t4.out | SB3.M2.T4 | Mini-Circuits CBL-4FT-SMSM+ | 1.22 m |  | W1-S tile 4: from the 30 + 12 dB pad stack on SB1.M2.T4 to S.E tile 4; span 2U, bundle needs 1.00 m (longest twin route + slack) |
 
 ## GNSS (9)
 

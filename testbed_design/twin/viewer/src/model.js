@@ -142,8 +142,8 @@ export function isPassive(kind) {
   return ['ztdat', 'mwatt', 'splitter', 'coupler', 'transition', 'gnss', 'padstack'].includes(kind);
 }
 
-// Ports screwed straight onto each other (a pad stack's IN on a tile or a
-// splitter port) carry `mate` instead of a cable.
+// Ports screwed straight onto each other (a pad stack's IN on a tile, or on a
+// splitter port if a bench puts one there) carry `mate` instead of a cable.
 export function mateOf(model, pid) {
   const p = model.ports.get(pid);
   return p && p.mate && model.ports.has(p.mate) ? p.mate : null;
@@ -184,7 +184,7 @@ export function traceCable(model, cableId) {
       const cq = model.portCable.get(q);
       const mq = cq ? null : mateOf(model, q);
       if (mq && !mated.has(q)) {
-        // screwed straight onto the next part (pad stack on a tile or splitter port): no cable between
+        // screwed straight onto the next part (a pad stack's IN on a tile, or on a splitter port if a bench puts one there): no cable between
         mated.add(q);
         mated.add(mq);
         res.ports.add(q);
@@ -351,7 +351,7 @@ export function computeDark(model) {
 function findOverlaps(devs) {
   const out = [];
   const byId = new Map(devs.map((d) => [d.id, d]));
-  // a part on a part on a shelf (a pad stack on a splitter on the tray) sits inside its ancestors' boxes
+  // a part on a part on a shelf (e.g. a splitter on the tray, or a pad stack on it) sits inside its ancestors' boxes
   const ancestor = (a, d) => {
     for (let p = d.parent, k = 0; p && k < 8; p = (byId.get(p) || {}).parent, k++) if (p === a.id) return true;
     return false;

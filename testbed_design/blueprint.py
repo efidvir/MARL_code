@@ -797,8 +797,8 @@ def front_pads(s, b, sp_ports, split_ports, col, T):
         "lower edge (or the cable manager) within 150 mm, then to the side lane, so the tile carries only the stack.",
         "The tray ends of the splitter cables (S, P1, P2) are torqued in the hand before the splitters go on the tray: "
         "once the Spider boxes are in, no tray joint can be reached.",
-        "Tag both ends of every cable with the ID shown; torque every SMA and every pad joint to 8 in-lb, backing wrench "
-        "on the body of the part whose nut turns (pad or cable plug), never on a jack or a splitter.",
+        "Tag both ends of every cable with the ID shown; torque every SMA and every pad joint to 8 in-lb with the "
+        "backing-wrench rule (sheet 6).",
         "Before cabling, measure DC, LO and IF level on one tile port per module; DC blocks if DC is present.",
         "Pad values, cable lengths and U spans: sheet 6 and the cable schedule.",
         "Schematic: tray bodies are drawn under their tiles; the physical tray layout (columns = tiles 1-4, one row per "
@@ -1404,9 +1404,9 @@ def rng(cs):
 
 
 def sheet_pads(b, pdf, n, N, prefix):
-    """Sheet 6 with fixed pads (if_pads): the RF ladder (A module -> (splitter) -> pad stack -> cable -> B module, one row
-    per link), the pad schedule (link, target, pads, where the stacks sit, tiles, cables), pads per value, how links go
-    down, and DETAIL A tile by tile."""
+    """Sheet 6 with fixed pads (if_pads): the RF ladder (A module -> pad stack -> cable -> B module, or for a split hub
+    link A module -> splitter S, P<k> -> cable -> pad stack -> B module; one row per link), the pad schedule (link,
+    target, pads, where the stacks sit, tiles, cables), pads per value, how links go down, and DETAIL A tile by tile."""
     d = b.d
     s = Sheet(b, n, N, "RF ladder and pad schedule",
               "one row per link; each line = 4 tile cables (ID range); fixed pads sized from the A7 radio model")
@@ -1476,24 +1476,46 @@ def sheet_pads(b, pdf, n, N, prefix):
         h0 = b.pads[pids[0]]["host"]
         on = f"{h0.rsplit('.', 1)[0]}.T1-{b.tiles} ({'B' if b.pads[pids[0]]['side'] == 'b' else 'A'})"
         cs = [c for c in b.cables if c["cls"] == "RF" and {c["a"].rsplit(".", 1)[0], c["b"].rsplit(".", 1)[0]} & set(pids)]
+        # the far end of the stack's path: the splitter port for a split hub link (stacks on the B tiles), else the B tiles
         a_on = (f"{b.split[sa]}.t1-{b.tiles} P{d['splitters'][sa].index(name) + 1}" if sa in b.split else
-                "{}.{}.T1-{}".format(*d["module"][sa], b.tiles))
+                "{}.{}.T1-{}".format(*d["module"][sb], b.tiles))
         trs.append([name, pl["job"].replace("hub off at t0", "dies with hub"), f"{pl['target']:g} ({pl['setting'][:3]}.)",
                     f"{pl['db']}" + ("*" if pl["db"] != pl["rounded"] else ""), pl["text"], on, a_on, rng(cs)])
     s.text(252, 276, "PAD SCHEDULE (dB; one stack per tile path)", fs=6.5, fontweight="bold")
     yt = s.table(252, 272, ["Link", "Job", "Target", "Fitted", "Pads", "Stacks on (end)", "Other end", "Cables"], trs,
                  [13, 18, 16, 10, 12, 27, 28, 18], fs=3.9, rh=3.8)
-    cnt = {}
-    for v in b.pads.values():
-        if v["chain"] == "if":
-            for p in v["parts"]:
-                cnt[p["pn"]] = cnt.get(p["pn"], 0) + 1
+    # every BW-S pad the bench orders, as the parts list counts it: the IF pad schedule and the IP-50 chains (fitted,
+    # ~10 % spare per chain, at least 1) and the port-check kit
+    cnt, spare, hops = {}, {}, {}
+    for chain in ("if", "ip50"):
+        cc = {}
+        for k, v in b.pads.items():
+            if v["chain"] == chain:
+                for p in v["parts"]:
+                    if p["pn"].startswith("BW-S"):
+                        cc[p["pn"]] = cc.get(p["pn"], 0) + 1
+                        if chain == "ip50":
+                            hops.setdefault(p["pn"], []).append(v["link"])
+        for pn, q in cc.items():
+            cnt[pn] = cnt.get(pn, 0) + q
+            spare[pn] = spare.get(pn, 0) + max(1, math.ceil(q * BS.PAD_SPARE))
     kit = {f"BW-S{v}W2+": BS.CAL_KIT_N for v in BS.CAL_KIT}
-    per = [[pn, str(q) if q else "-", str(max(1, math.ceil(q * BS.PAD_SPARE))) if q else "-", str(kit.get(pn, "-")),
-            ", ".join(k for k, v in b.pad_links.items() if pn in v["pn"]) or "port-check kit only"]
+
+    def used_on(pn):
+        u = [", ".join(k for k, v in b.pad_links.items() if pn in v["pn"])]
+        if pn in hops:
+            u.append(f"IP-50 hops {', '.join(dict.fromkeys(hops[pn]))} (A side)")
+        if pn in kit:
+            u.append("port-check kit")
+        u = [x for x in u if x]
+        return " + ".join(u) if len(u) > 1 or pn not in kit else "port-check kit only"
+    per = [[pn, str(q) if q else "-", str(spare[pn]) if q else "-", str(kit.get(pn, "-")),
+            str(q + spare.get(pn, 0) + kit.get(pn, 0)), used_on(pn)]
            for pn, q in sorted({**{k: 0 for k in kit}, **cnt}.items(), key=lambda kv: int(kv[0][4:-3]))]
-    s.text(252, yt - 5, "PADS PER VALUE (Mini-Circuits BW-S<n>W2+, SMA M-F, DC-18 GHz, 2 W)", fs=5.6, fontweight="bold")
-    yt2 = s.table(252, yt - 8, ["Part", "Fitted", "Spare", "Kit", "Links"], per, [20, 11, 10, 9, 92], fs=3.9, rh=3.6)
+    s.text(252, yt - 5, "PADS PER VALUE (Mini-Circuits BW-S<n>W2+, SMA M-F, DC-18 GHz, 2 W; all lines of the parts list)",
+           fs=5.6, fontweight="bold")
+    yt2 = s.table(252, yt - 8, ["Part", "Fitted", "Spare", "Kit", "Order", "Used on"], per, [20, 10, 10, 8, 10, 84],
+                  fs=3.9, rh=3.6)
     w1s = [k for k, v in b.pad_links.items() if v["db"] != v["rounded"]]
     nts = [
         "Tile n to tile n at both ends of a path, through tile n's pad stack; never swap tiles.",
@@ -1518,7 +1540,7 @@ def sheet_pads(b, pdf, n, N, prefix):
                                                                            for c in b.cables)) + ".",
         "Pad stacks about 62 mm (2 x 31 mm, estimate), each on a Spider tile (the hub W / E links' on their B tiles, the "
         "others on their A tiles); strap the cable to the seam bundle at the unit's lower edge within 150 mm so the tile "
-        "carries only the stack. Backing-wrench rule: " + BS.BACKING_RULE + ".",
+        "carries only the stack. Every SMA joint 8 in-lb; backing-wrench rule: " + BS.BACKING_RULE,
     ]
     yn = s.notes(252, yt2 - 5, nts, fs=4.5, step=3.0, width=68)
     bridges = [k for k, v in b.pad_links.items() if v["job"] == "bridge"]
@@ -1560,8 +1582,8 @@ def sheet_pads(b, pdf, n, N, prefix):
 
 
 def detail_pads(s, b, ytop):
-    """DETAIL A with fixed pads: the first link tile by tile, module -> (splitter S, P<k>) -> pad stack -> cable ->
-    module."""
+    """DETAIL A with fixed pads: the first link tile by tile, module -> splitter S, P<k> -> cable -> pad stack on the B
+    tile -> module (or module -> pad stack -> cable -> module for an unsplit link)."""
     d = b.d
     name, (sa, sb) = next(iter(d["link_ends"].items()))
     pl = b.pad_links[name]

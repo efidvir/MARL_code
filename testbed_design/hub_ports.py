@@ -3,8 +3,11 @@
 A sector is point-to-multipoint: the hub's west sector serves W1 and W2, its
 east sector E1 and E2, its north and south sectors one node each.  On the
 cabled bench a 2-way splitter divides a port that serves two nodes into two
-paths, each with its own fixed pad stack (PoC 1 has no programmable attenuators since
-2026-11-25: bench_spec.pad_stack sizes each stack from the A7 'before' value).
+paths, each with its own fixed pad stack screwed onto the far node's tile, after
+the splitter and the cable (the splitter tray carries only splitters); a port
+serving one node has its stack on the hub tile. PoC 1 has no programmable
+attenuators since 2026-11-25: bench_spec.pad_stack sizes each stack from the A7
+'before' value.
 
 Run:  python3 hub_ports.py    -> out/hub_ports.png
 """
@@ -82,6 +85,8 @@ def main(key="A7"):
             row = poc1_design()["att_set"].get(f"HUB-{peer}")      # the bench's own value (pad schedule)
             ax.text(56, yy, f"{pad_stack(pad_target(row) if row else att)['text']} dB", ha="center", va="center", fontsize=12, fontweight="bold",
                     color="white", zorder=5)
+            ax.text(56, yy - 2.0, "on the hub tile" if len(peers) == 1 else f"on {peer}’s tile", ha="center", va="top",
+                    fontsize=10.5, color=MUTED, zorder=5)
             ax.plot([62, 72], [yy, yy], color=TG, lw=3.2, zorder=2, solid_capstyle="round")
             box(ax, 72, yy - 1.9, 26, 3.8, "#FFFFFF", "#C9CED8", r=0.6, z=4)
             ax.text(74, yy, peer, ha="left", va="center", fontsize=15, fontweight="bold", color=INK, zorder=5)
@@ -102,7 +107,7 @@ def main(key="A7"):
         ("On the bench: two ports or a splitter",
          "If a module’s four SMA ports are taps of one sector, two of them reach W1 and W2 directly; "
          "otherwise a 2-way splitter divides the port. Each path keeps its own fixed pad stack, screwed onto the "
-         "splitter port."),
+         "far node’s tile after the splitter and the cable: the splitter tray carries only splitters."),
         ("Two per sector is the limit",
          "Terragraph allows at most 2 node-to-node links per sector: the W and E ports are full."),
         ("Elsewhere, a second module does it",
