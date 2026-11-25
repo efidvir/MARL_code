@@ -37,9 +37,12 @@ sector has no physical direction: A7 puts each node's hub link on one module
 and its bridge on the other, using all 16 modules. With at most two
 node-to-node links per sector, a 2-sector node holds at most four links, so 9
 of the 12 bridge candidates can be offered and MARL keeps 4 of its 8 recovery
-plans. SMA ports cannot carry 60 GHz, so the attenuators and splitters must
-suit the ports' actual frequency (still to be confirmed with the lab), not
-the V-band parts sized in `option_a_sectors.py`.
+plans. SMA ports cannot carry 60 GHz, so the bench parts (2-way splitters and
+fixed SMA pads, DC-18 GHz) must suit the ports' IF frequency (still to be
+confirmed with the lab), not the V-band parts sized in `option_a_sectors.py`.
+PoC 1 has no programmable attenuators (user, 2026-11-25): every IF tile path
+has a fixed pad stack (pad schedule, `out/poc1_blueprint.pdf` sheet 6), and
+the bridges are held down with Terragraph ignition until MARL engages them.
 
 The configurations are nested on one site plan. B is A without the W1–W2
 IP-50 link (a spare sector of the W1/W2 TG nodes carries it instead) and
@@ -100,16 +103,19 @@ do not face each other, and its strength is whatever the attenuators set.
 
 ## The bench is fully conducted (galvanic)
 
-No radio radiates. Each microwave hop runs cart to cart through a
-waveguide–coax transition, a fixed pad, a programmable attenuator and
-another pad. The TG radios are RF-port builds, cabled into a V-band RF mesh.
-Every possible TG path has its own programmable attenuator, set to the loss
-the geometry gives: the hub links, the spare-sector links and every feasible
-MARL bridge. Splitters are fitted where one sector port reaches more than one
-peer. At t0 the switched PDUs cut CORE and HUB, which takes the paths to them
-down; attenuators drop only links whose two ends survive (a bridge is held
-off-beam until its sites engage). A MARL bridge is a cabled candidate path
-that the engaged site brings up, so nothing is re-cabled during a run.
+No radio radiates. On the PoC 1 bench each IP-50 hop runs radio to radio
+through a waveguide–coax transition, a 30 dB 10 W pad (plus a 10 dB pad on
+the A side), one SMA cable, a 30 dB 10 W pad and a transition: 70 dB fixed.
+The TG nodes are cabled over the Spider boxes' IF SMA tiles. Every cabled TG
+path (the six hub paths and the three MARL bridges) has a fixed pad stack per
+tile, sized from the A7 radio model. The hub's W and E modules feed two peers
+each through 2-way splitters. At t0 switched PDU outlets cut the hub, CORE's
+two radios and the two servers, which takes every path to them down; nothing
+RF moves. A bridge is held down with Terragraph ignition disabled until MARL
+engages it; SRV-E2E is one of the servers cut at t0, so MARL engages a bridge
+at node level from its A-end agent PC (Terragraph minion association, TBC on
+the N367 firmware). Nothing is re-cabled or re-tuned during a run. PoC 2
+keeps programmable attenuators for its links and coupling arms.
 
 Figures: `out/overview.png` (all four), `out/config_{A,B,C,D}.png` (before the
 event / event and islands / MARL recovery, DPIR candidates in the bottom
@@ -205,13 +211,13 @@ row); editable `.svg` next to each. Numbers: `out/tables.md`; every check:
 | `animate.py` | Writes `out/anim_*.gif`: normal → broken → reconnected, with the TG beams turning slowly to their new peers |
 | `option_a_plan.py` | Writes `out/option_A_plan.md`: the option A bench plan (carts, sector ports, V-band attenuator settings per state, microwave chains) |
 | `kit_change.py` | Writes `out/kit_change.png`: option A beside A7 (the delivered N367 kit), each node with its sectors, and the bridges kept, still possible or out of reach |
-| `figures/bench_a7.mjs` | Writes `out/bench_a7.html` (and `.svg`; `out/bench_a7.png` is its capture): the A7 bench as one isometric figure drawn with the Anatomy kit, a 19-inch rack with the switch, agent PCs, the four Spider boxes, the hub splitters, nine IF attenuators, DC drawer and PDU, front cables per link, and the IP-50 bench. `node figures/bench_a7.mjs`; the kit and its capture and line-check scripts are vendored in `vendor/anatomy/` (MIT) |
+| `figures/bench_a7.mjs` | Writes `out/bench_a7.html` (and `.svg`; `out/bench_a7.png` is its capture): the A7 bench as one isometric figure drawn with the Anatomy kit, a 19-inch rack with the switch, agent PCs, the four Spider boxes, the hub splitter tray and the links' fixed pad stacks, DC drawer and PDU, front cables per link, and the IP-50 bench (pad - cable - pad chains). `node figures/bench_a7.mjs`; the kit and its capture and line-check scripts are vendored in `vendor/anatomy/` (MIT) |
 | `poc2.py` | PoC 2 (DPIR only, fixed point-to-point ring on the two GTS003 boxes): design, checks, capacity model, baselines, sweeps, QoS-Null case, dynamic runs; writes `out/poc2_results.json`, `out/poc2_plan.md`, `out/poc2_hardware.md` (`python3 poc2.py`, non-zero exit on failure) |
 | `poc2_render.py` | Writes `out/poc2_topology.png|svg` (hop-count against DPIR on the ring), `out/poc2_sweep.png` (delivered against coupling strength) and `out/poc2_dynamic.png` (bursty runs) |
 | `figures/bench_poc2.mjs` | Writes `out/bench_poc2.html` (and `.svg`; `out/bench_poc2.png` is its capture): the PoC 2 rack (two Spider boxes, coupler tray, six IF attenuators, coupling arms lit) and the table with controllers, time server and spectrum analyser |
 | `hub_ports.py` | Writes `out/hub_ports.png`: how the A7 hub serves six links from four RF ports (point-to-multipoint sectors, splitters on the bench) |
 | `option_a_sectors.py` | Writes `out/option_A_sectors.md`: option A with only the final plan cabled (sectors per node, attenuators that take links down, site-switch port map) |
 | `bench_spec.py` | The bench as data for PoC 1 (A7) and PoC 2: every cable with an ID, part, length (IF lengths from the rack span) and VLAN; the rack layout; the exploded parts list counted from the cables. Nodes are managed in-band, so no node ETH2 is cabled |
-| `blueprint.py` | Writes `out/poc1_blueprint.pdf` and `out/poc2_blueprint.pdf` (7 A3 sheets each, plus one PNG per sheet): rack elevation, front panels and IF cabling, power, data and management (site VLAN clusters), bench table, RF ladder with attenuator settings, parts list; and `out/poc{1,2}_cable_schedule.md|csv` (with switch port plans) and `out/poc{1,2}_parts_list.md|csv` (`python3 blueprint.py`) |
+| `blueprint.py` | Writes `out/poc1_blueprint.pdf` and `out/poc2_blueprint.pdf` (7 A3 sheets each, plus one PNG per sheet): rack elevation, front panels and IF cabling, power, data and management (site VLAN clusters), bench table, RF ladder with the pad schedule (PoC 1) or the attenuator schedule (PoC 2), parts list; and `out/poc{1,2}_cable_schedule.md|csv` (with switch port plans) and `out/poc{1,2}_parts_list.md|csv` (`python3 blueprint.py`) |
 
 Requires `matplotlib` and `networkx`.

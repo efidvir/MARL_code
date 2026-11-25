@@ -3,7 +3,8 @@
 A sector is point-to-multipoint: the hub's west sector serves W1 and W2, its
 east sector E1 and E2, its north and south sectors one node each.  On the
 cabled bench a 2-way splitter divides a port that serves two nodes into two
-paths, each with its own programmable attenuator.
+paths, each with its own fixed pad stack (PoC 1 has no programmable attenuators since
+2026-11-25: bench_spec.pad_stack sizes each stack from the A7 'before' value).
 
 Run:  python3 hub_ports.py    -> out/hub_ports.png
 """
@@ -16,6 +17,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.patches import Ellipse, FancyBboxPatch  # noqa: E402
 
+from bench_spec import pad_stack, pad_target, poc1_design  # noqa: E402
 from option_a_sectors import plan  # noqa: E402
 from render import INK, MUTED, OUT, TG  # noqa: E402
 
@@ -58,7 +60,7 @@ def main(key="A7"):
         ax.text(19, y, f"{SEC[k]} port", ha="center", va="center", fontsize=13, fontweight="bold",
                 color="white", zorder=6)
 
-    # paths: port -> (splitter) -> attenuator -> peer node
+    # paths: port -> (splitter) -> fixed pad stack -> peer node
     for k, y in PORT_Y.items():
         peers = sorted(hub_paths.get(k, []), key=lambda t: t[0])
         if len(peers) == 1:
@@ -77,13 +79,14 @@ def main(key="A7"):
             ax.plot([src[0], 47, 50], [src[1], yy, yy], color=TG, lw=3.2, zorder=2, solid_capstyle="round",
                     solid_joinstyle="round")
             box(ax, 50, yy - 1.7, 12, 3.4, INK, INK, r=0.5, z=4)
-            ax.text(56, yy, f"{att:.1f} dB", ha="center", va="center", fontsize=12, fontweight="bold",
+            row = poc1_design()["att_set"].get(f"HUB-{peer}")      # the bench's own value (pad schedule)
+            ax.text(56, yy, f"{pad_stack(pad_target(row) if row else att)['text']} dB", ha="center", va="center", fontsize=12, fontweight="bold",
                     color="white", zorder=5)
             ax.plot([62, 72], [yy, yy], color=TG, lw=3.2, zorder=2, solid_capstyle="round")
             box(ax, 72, yy - 1.9, 26, 3.8, "#FFFFFF", "#C9CED8", r=0.6, z=4)
             ax.text(74, yy, peer, ha="left", va="center", fontsize=15, fontweight="bold", color=INK, zorder=5)
             ax.text(80.5, yy, "module 1", ha="left", va="center", fontsize=12, color=MUTED, zorder=5)
-    ax.text(56, 52.5, "programmable attenuator (dB before the event)", ha="center", va="bottom", fontsize=11,
+    ax.text(56, 52.5, "fixed pad stack (dB, from the A7 'before' value)", ha="center", va="bottom", fontsize=11,
             color=MUTED)
 
     # explanation
@@ -98,7 +101,8 @@ def main(key="A7"):
          "capacity. That shared airtime is the coupling DPIR plans around."),
         ("On the bench: two ports or a splitter",
          "If a module’s four SMA ports are taps of one sector, two of them reach W1 and W2 directly; "
-         "otherwise a 2-way splitter divides the port. Each path keeps its own attenuator."),
+         "otherwise a 2-way splitter divides the port. Each path keeps its own fixed pad stack, screwed onto the "
+         "splitter port."),
         ("Two per sector is the limit",
          "Terragraph allows at most 2 node-to-node links per sector: the W and E ports are full."),
         ("Elsewhere, a second module does it",

@@ -95,7 +95,7 @@ ITEMS = [
     (14, "Network", "Site router / L3 switch, per-flow policy routing, SFP+", lambda c: c["switches"],
      "every site with wired kit (not the TG-only hub); pins DPIR paths"),
     (15, "Compute", "Edge agent PC per surviving TG site", lambda c: c["agents"],
-     "frozen MARL actor, local TG control, mesh-attenuator control, logs"),
+     "frozen MARL actor, local TG control, logs"),
     (16, "Compute", "Traffic generator / sink host (iperf3, TRex)", lambda c: c["endpoints"],
      "at every flow and service endpoint"),
     (17, "Compute", "Servers: DPIR controller + predictor (GPU); TG E2E controller + NMS", lambda c: 2,
@@ -129,6 +129,9 @@ def main():
              "the validator's bridge candidates.", "", head, "|" + "---|" * (len(keys) + 4)]
     for n, group, item, q, note in rows:
         lines.append(f"| {n} | {group} | {item} | " + " | ".join(str(x) for x in q) + f" | {note} |")
+    lines += ["", "A7 is built as PoC 1 (bench_spec.py, out/poc1_parts_list.md), which supersedes its column here: no",
+              "programmable attenuators (rows 4 and 8 are 0 for PoC 1); every IF tile path has a fixed BW-S pad stack, and",
+              "each IP-50 hop is a fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+, one SMA cable)."]
     lines += ["", "## V-band RF mesh per option", ""]
     for k in keys:
         fo = CONFIGS[k].get("bench_final_only", False)
@@ -142,7 +145,9 @@ def main():
               "", "How the bench emulates the radio layer: each programmable attenuator holds its path at the",
               "loss the geometry gives (the figures' link budget); at t0 the PDUs switch CORE and HUB off, which",
               "takes every path to them down (attenuators drop only links between survivors); a MARL bridge is a cabled candidate path that",
-              "the engaged site brings up. Confirm with Siklu that the TG units are available with RF test",
+              "the engaged site brings up; on the PoC 1 bench fixed pads hold each path at the model loss, the PDUs",
+              "switch the dead devices off at t0, and a bridge is held down with Terragraph ignition until MARL engages it.",
+              "Confirm with Siklu that the TG units are available with RF test",
               "ports, and the port type (waveguide or connector) the V-band parts must match."]
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, "hardware.md"), "w") as fh:

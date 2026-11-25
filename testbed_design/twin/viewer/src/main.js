@@ -850,8 +850,11 @@ class App {
         // alternate mode (elevation drawings): every other item on the other side
         const alt = !!st.rackCallAlt;
         const right = alt && (this.rackOrder.get(id) || 0) % 2 === 1;
-        out.push({ key: 'rf:' + id, cls: cur ? 'rackcall cur' : 'rackcall', html, anchor: right ? e.callFrontR : e.callFront, yFrom: e.faceFront, align: right ? 'right' : 'left', pad: 0, pri: 30, normal: new THREE.Vector3(0, 0, 1), force: alt });
-        out.push({ key: 'rr:' + id, cls: cur ? 'rackcall cur' : 'rackcall', html, anchor: right ? e.callRearR : e.callRear, yFrom: e.faceRear, align: 'auto', away: e.callCenter, pad: 0, pri: 30, normal: new THREE.Vector3(0, 0, -1), force: alt });
+        // elevation / band drawings (rackCallAll): the U tags are placed before the room items beside the rack
+        // (earth bar, arrestor), which then move aside, so every U keeps its tag
+        const pri = st.rackCallAll ? 50 : 30;
+        out.push({ key: 'rf:' + id, cls: cur ? 'rackcall cur' : 'rackcall', html, anchor: right ? e.callFrontR : e.callFront, yFrom: e.faceFront, align: right ? 'right' : 'left', pad: 0, pri, normal: new THREE.Vector3(0, 0, 1), force: alt });
+        out.push({ key: 'rr:' + id, cls: cur ? 'rackcall cur' : 'rackcall', html, anchor: right ? e.callRearR : e.callRear, yFrom: e.faceRear, align: 'auto', away: e.callCenter, pad: 0, pri, normal: new THREE.Vector3(0, 0, -1), force: alt });
         continue;
       }
       if (e.faded) continue;

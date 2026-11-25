@@ -1379,8 +1379,9 @@ class Scene:
                      f"{step_of.get('Servers and traffic hosts', '?')})." if any(x.startswith("SRV-") for x in b.switched)
                      else ""),
             what="Adaptor (or injector)" if b.inj else "Adaptor",
-            dcin_end=(f"Spider DCIN plug: the {self.dcin_plug}, screwed into the {self.dcin_word}" if self.dcin_plug
-                      else "Spider DCIN terminal"),
+            dcin_end=(f"Spider DCIN plug ({self.dcin_plug.split(', ')[1]} 4-pole plug for the "
+                      f"{self.dcin_word.replace('4-pole ', '')}, "
+                      f"{self.dcin_plug.split(', ')[-1]})" if self.dcin_plug else "Spider DCIN terminal"),
             att_lan="the attenuator LAN ports are at the back of each box; " if b.atts else "",
             mwatt=", MWATT" if b.mwatt else "",
             gz=self._gnss_depth(),
@@ -1553,7 +1554,6 @@ class Scene:
         for tr in trays:
             parts = [k for k, v in devs.items() if v.get("parent") == tr]
             if b.split and b.if_pads:
-                cols = [f"{sid} ({sec[0]}.{sec[1]}) t1-t{b.tiles}" for sec, sid in b.split.items()]
                 title = f"Splitter tray ({len(parts)} splitters)"
                 # the hub W / E links' pad stacks are fitted onto the splitters here, in the hand, before the splitters
                 # go onto the tray: on the tray the stacks lie flat 12 mm apart and no wrench reaches their nuts
@@ -1561,30 +1561,26 @@ class Scene:
                 pitch, gap = self.tray_pad_gap()
 
                 def stk(name):
-                    pl = b.pad_links[name]
-                    return (f"PAD-{name}.tn ({' on the port, then '.join(pl['pn'])} on it = {pl['db']} dB)")
-                per = "; ".join(f"on each {sid}.tn, P1 takes {stk(d['splitters'][sec][0])} and P2 takes "
-                                f"{stk(d['splitters'][sec][1])}" for sec, sid in b.split.items())
+                    return f"PAD-{name}.tn ({b.pad_links[name]['text']} dB)"
+                per = "; ".join(f"{sid}.tn P1 takes {stk(d['splitters'][sec][0])}, P2 {stk(d['splitters'][sec][1])}"
+                                for sec, sid in b.split.items())
                 txt = (f"Fit the 1U tray at {u(tr)}, directly under the Spider boxes (front posts, 4 cage nuts). Then, on "
-                       f"a work surface and BEFORE any splitter goes onto the tray or any tray cable is laid, fit the links' "
-                       f"fixed pad stacks onto all {len(parts)} splitters in the hand ({len(tp)} stacks, {tp[0]} to "
-                       f"{tp[-1]}; n = tile 1-{b.tiles}): {per}. Read the value printed on each pad before you fit it "
-                       "(pad schedule). Each pad's male coupling nut screws onto the female port in front of it (the "
-                       "splitter port, then the first pad's female end). Hold the splitter body with the backing wrench "
-                       "and torque every joint (port to pad, pad to pad) to 8 in-lb (0.9 N m) with the SMA torque wrench, "
-                       "its handle in the plane of the two stacks and pointing away from the other stack, so the jaws "
-                       f"close on the nut from above and below; P1's stack first, then P2's. The two stacks of a splitter "
-                       f"end up {pitch:.0f} mm apart, about {gap:.0f} mm between their bodies; if they foul (bodies larger "
-                       "than assumed), fit P2's stack through a short SMA M-F adapter so its nuts stand staggered beyond "
-                       "P1's (fallback, see the assumptions); never bend a stack to make room. Then lay the "
-                       f"{len(parts)} splitters flat, all the same way round: S port to the LEFT, ports 1 and 2 with their "
-                       "stacks to the RIGHT (port 1 toward the front), printed label up. One column per split hub module, "
-                       f"left to right: {'; '.join(cols)}; rows front to back = tile 1-{b.tiles}. The stacks lie on the "
-                       f"tray, up to {max(v['stack_mm'] for v in b.pads.values() if v['chain'] == 'if'):g} mm to the right "
-                       f"of their splitter ({self.TRAY['splitter_pads']['xpitch'] - C.SMALL['splitter']['size'][0]:.0f} "
-                       "mm kept clear). The tile cables reach S from the left side lane. Cable lanes: every cable leaves "
-                       "its port (or pad stack) straight out; the port-2 stack's cable runs 8 mm further out than port "
-                       "1's; each row further back rises 10 mm more before running forward, over the front rows' plugs.")
+                       f"a work surface and BEFORE any splitter goes onto the tray or any tray cable is laid, fit the "
+                       f"{len(tp)} fixed pad stacks onto the {len(parts)} splitters in the hand (n = tile 1-{b.tiles}): "
+                       f"{per}; the larger pad on the port, each pad's male nut onto the female port in front of it; read "
+                       "the value printed on each pad first. Hold the splitter body with the backing wrench and torque "
+                       "every joint to 8 in-lb (0.9 N m), the torque wrench's handle in the plane of the two stacks and "
+                       "pointing away from the other stack (jaws above and below the nut); P1's stack first, then P2's. "
+                       f"The stacks end up {pitch:.0f} mm apart (about {gap:.0f} mm between bodies); if they foul, fit "
+                       "P2's through a short SMA M-F adapter so its nuts stand beyond P1's (assumptions); never bend a "
+                       f"stack. Then lay the {len(parts)} splitters flat, all the same way round: S to the LEFT, ports 1 "
+                       "and 2 with their stacks to the RIGHT (port 1 toward the front), label up; one column per split hub "
+                       f"module, left to right {', '.join(f'{sid} ({sec[0]}.{sec[1]})' for sec, sid in b.split.items())}; "
+                       f"rows front to back = tile 1-{b.tiles}; the stacks lie on the tray, up to "
+                       f"{max(v['stack_mm'] for v in b.pads.values() if v['chain'] == 'if'):g} mm right of their "
+                       "splitter. The tile cables reach S from the left side lane. Cable lanes: every cable leaves its "
+                       "port or stack straight out; the port-2 stack's cable runs 8 mm further out than port 1's; each row "
+                       "further back rises 10 mm more before running forward, over the front rows' plugs.")
                 parts = parts + tp
             elif b.split:
                 grp = [f"{sid} t1-t{b.tiles}" for sid in b.split.values()]
@@ -1754,11 +1750,10 @@ class Scene:
             side_txt = f"{' and '.join(sides)} side lane{'s' if len(sides) > 1 else ''}"
             value = (f"{' + '.join(f'{x} dB' for x in pl['pads'])} = {pl['db']} dB, target {pl['target']:g} dB, the A7 "
                      f"'{pl['setting']}' setting; pad schedule")
-            job = (f" {name} is a bridge: it is cabled now but held down before t0 with Terragraph ignition disabled for "
-                   f"{b.bridges[name]['tg']} on the E2E controller (set at power-up before the nodes boot; TG link name TBC). "
-                   "SRV-E2E is off after t0, so MARL engages it at node level: "
-                   f"{b.bridges[name]['agent'] or 'its A-end agent PC'} sends tg2 minion assoc to {sa[0]} (initiator "
-                   f"{A}, responder {B}; TBC on the N367 firmware, see the event procedure). Nothing RF changes."
+            job = (f" {name} is a bridge: held down before t0 with Terragraph ignition disabled for {b.bridges[name]['tg']} "
+                   "(TG name TBC; set at power-up); after t0 (SRV-E2E off) MARL engages it at node level from "
+                   f"{b.bridges[name]['agent'] or 'its A-end agent PC'} (tg2 minion assoc {A} to {B}, TBC; event "
+                   "procedure). Nothing RF changes."
                    if name in b.bridges else
                    f" {name} goes down at t0 with the hub (its PoE injector's outlet is switched off); nothing RF changes.")
             if sa in b.split:
@@ -1786,35 +1781,40 @@ class Scene:
                           else "")
                 txt = (f"For each tile n = 1-{b.tiles}: {A} tile n ({bx}.{m}.Tn) to {sid}.tn S{shared}; pad stack "
                        f"PAD-{name}.tn on {sid}.tn P{k}, fitted in step {n_tray or '?'} ({value}); cable from the stack's "
-                       f"OUT to {B} tile n ({bxb}.{mb}.Tn). Check the value printed on each stack. Make every tray joint "
-                       "in the hand, never on the tray: lift the splitter with its stacks a few centimetres off the tray, "
-                       "screw the cable's plug onto the stack's OUT (or onto S), hold the stack's outer pad (for S the "
-                       f"splitter body) with the backing wrench and {self.SMA_TORQUE.split(' while')[0]}, then lay the "
-                       "splitter back in its place; never bend a stack or lever it against the tray or a fitted cable."
-                       f"{job} Route: from the stack's OUT the cable runs on to the right, turns toward the front at its "
-                       "lane (the port-2 stacks' lane 8 mm further right than port 1's; each row further back rises 10 mm "
-                       f"more, over the front rows' plugs), runs along the tray front edge to the {side_txt}{across}, up "
-                       f"the side to the lower edge of {bxb} (the seam with the unit below), in along that seam and up "
-                       f"into the tile; never across the face of another box.{s_route} Connect in tile order, t1 (front "
-                       f"row) first and t{b.tiles} (back row) last. The four link cables are one stock length (equal "
-                       "length, not a phase-matched set: see the assumptions); coil slack in the side lane.")
+                       f"OUT to {B} tile n ({bxb}.{mb}.Tn). Make every tray joint in the hand, never on the tray: lift the "
+                       "splitter with its stacks a few centimetres off the tray, screw the cable's plug onto the stack's "
+                       "OUT (or onto S), hold the stack's outer pad (for S the splitter body) with the backing wrench and "
+                       f"{self.SMA_TORQUE.split(' while')[0]}, then lay the splitter back in its place; never bend a stack "
+                       f"or lever it against the tray or a fitted cable.{job} Route: from the stack's OUT the cable runs on "
+                       "to the right, turns toward the front at its lane (the port-2 stacks' lane 8 mm further right than "
+                       "port 1's; each row further back rises 10 mm more, over the front rows' plugs), runs along the tray "
+                       f"front edge to the {side_txt}{across}, up the side to the lower edge of {bxb} (the seam with the "
+                       f"unit below), in along that seam and up into the tile; never across the face of another box."
+                       f"{s_route} Connect in tile order, t1 (front row) first and t{b.tiles} (back row) last. The four "
+                       "link cables are one stock length (equal length, not phase-matched: assumptions); coil slack in "
+                       "the side lane.")
                 devices = []                   # the stacks went on in the splitter-tray step
             else:
                 bxa, ma = d["module"][sa]
-                fit = (f"Fit the pad stacks first, on each tile of {A} ({bxa}.{ma}.T1-T{b.tiles}), straight out to the "
-                       "front: " + ", then ".join(f"{pn} ({db} dB)" + (" on the tile" if i == 0 else " on it")
-                                                  for i, (pn, db) in enumerate(zip(pl["pn"], pl["pads"]))) +
-                       f" ({value}). Read the value printed on each pad before you fit it. Each pad's male coupling nut "
-                       "screws onto the female jack in front of it (the tile, then the first pad's female end). Hold the "
-                       "jack you screw onto with the backing wrench and torque every joint (tile to pad, pad to pad) to "
-                       f"8 in-lb (0.9 N m) with the SMA torque wrench. Each stack stands {pv['stack_mm']:g} mm proud of "
-                       f"{bxa}'s front and must not carry the cable: fit the cable on the stack's OUT, bend it down to the "
-                       "seam bundle at the lower edge of the unit and strap it (Velcro) to that bundle, or to the cable "
-                       "manager, within 150 mm of the stack, then on to the side lane, so the cable hangs on the strap and "
-                       "the tile carries only the stack; hold the stack, never lever it sideways.")
+                fit = (f"Fit the pad stacks first, straight out to the front: " +
+                       ", then ".join(f"{pn} ({db} dB)" + (" on the tile" if i == 0 else " on it")
+                                      for i, (pn, db) in enumerate(zip(pl["pn"], pl["pads"]))) +
+                       f" ({value}); read the value printed on each pad first; each pad's male nut screws onto the "
+                       "female jack in front of it. Hold that jack with the backing wrench and torque every joint to 8 "
+                       f"in-lb (0.9 N m). Each stack stands {pv['stack_mm']:g} mm proud of {bxa}'s front and must not "
+                       "carry the cable: bend the cable down from the stack's OUT to the seam bundle at the unit's lower "
+                       "edge and strap it (Velcro) to that bundle, or to the cable manager, within 150 mm of the stack, "
+                       "then on to the side lane; never lever a stack sideways.")
+                pad_route = ("down to the lower edge of its unit (the seam with the unit below), along it to the side of "
+                             "the rack, along the side and in along the lower edge of the other unit; never across the face "
+                             f"of another box (every tile keeps {math.floor(clear)} mm clear above and below its SMA; runs "
+                             "pass 15 mm or more in front). Connect tile 1 first; at the B tile torque to 8 in-lb with the "
+                             "backing wrench on the jack. If a seam bundle from an earlier step lies close to a tile, ease "
+                             "it aside by hand and fit the wrench sideways. The four cables are one stock length (equal "
+                             "length, not phase-matched: assumptions); coil slack in the side lane.")
                 txt = (f"For each tile n = 1-{b.tiles}: pad stack PAD-{name}.tn screwed onto {A} tile n ({bxa}.{ma}.Tn); "
                        f"cable from the stack's OUT to {B} tile n ({bxb}.{mb}.Tn). {fit}{job} Then route every cable "
-                       f"through the {side_txt}: {route_txt}")
+                       f"through the {side_txt}: {pad_route}")
                 devices = pids
             step(f"IF link {name} ({pl['text']} dB pads)", txt, devices, cables=sorted(set(ids)), view="front")
         for name, (sa, sb) in (() if b.if_pads else d["link_ends"].items()):

@@ -1102,7 +1102,8 @@ export class Viewer {
       if (clash(rect)) {
         // try a few nudges
         let ok = false;
-        const nudges = align === 'above' ? [[0, -lh - 3], [lw / 2 + 4, 0], [-lw / 2 - 4, 0], [0, lh + 12]] : [];
+        // last resort: well clear to the left (a room item beside the rack whose U tags took its place)
+        const nudges = align === 'above' ? [[0, -lh - 3], [lw / 2 + 4, 0], [-lw / 2 - 4, 0], [0, lh + 12], [-lw - 12, lh / 2 + 4]] : [];
         for (const [dx, dy] of nudges) {
           const rc = [x + dx, y + dy, x + dx + lw, y + dy + lh];
           if (!clash(rc)) {

@@ -788,8 +788,11 @@ def front_pads(s, b, sp_ports, split_ports, col, T):
         "No programmable attenuators: each link has a fixed pad stack per tile (values on sheet 6). The stacks are drawn "
         "in one row for clarity; each screws straight onto the port its dotted leader comes from: the hub W / E links on "
         "the splitter's P1 / P2 (they lie on the tray), every other link on its A-end tile (first site of the link name).",
-        f"A stack on a tile stands about {stack:g} mm proud of the box: strap its cable to the side lane within 150 mm so "
-        "the tile carries only the stack, never the cable.",
+        f"A stack on a tile stands about {stack:g} mm proud of the box: strap its cable to the seam bundle at the unit's "
+        "lower edge (or the cable manager) within 150 mm, then to the side lane, so the tile carries only the stack.",
+        "Splitter-tray stacks are fitted onto the splitters in the hand before the splitters go on the tray (P1 then P2, "
+        "about 2 mm between the two stacks: no wrench fits there on the tray); their cables are torqued with the "
+        "splitter lifted off the tray.",
         "Tag both ends of every cable with the ID shown; torque every SMA and every pad joint to 8 in-lb with a backing "
         "wrench.",
         "Before cabling, measure DC, LO and IF level on one tile port per module; DC blocks if DC is present.",
@@ -798,9 +801,9 @@ def front_pads(s, b, sp_ports, split_ports, col, T):
         "= tiles, stacks to the right) and the side-lane IF routing are in the install guide (digital twin).",
         "Splitters: S to the hub module tile; P1 takes the first link's pad stack, P2 the second's (one splitter per tile).",
         "Bridges (" + ", ".join(k for k, v in b.pad_links.items() if v["job"] == "bridge") + ") are held down with "
-        "Terragraph ignition disabled until MARL engages them: no RF change. Only the hub's W and E modules are split, so "
-        "all 16 modules are in use.",
-    ], width=74, fs=4.9)
+        "Terragraph ignition disabled until MARL engages them (at node level after t0, SRV-E2E being off: sheet 6): no "
+        "RF change. Only the hub's W and E modules are split, so all 16 modules are in use.",
+    ], width=96, fs=4.9)
 
 
 # ------------------------------------------------------------------------------------------
@@ -973,11 +976,14 @@ def sheet_power(b, pdf, n, N, prefix):
          if b.ip50 else [])
       + ([f"PDU load (typical, estimates): " + "; ".join(f"{x['supply']} {x['total_w']} W" for x in b.budget) +
           f" (limit {b.budget[0]['limit_w']} W = 80 % of 16 A at 230 V each)."] if getattr(b, "budget", None) else [])
-      + ["Spider rear layout (ETH1/ETH2/SFP+ access, GNSS input, box DC terminal block) is assumed: confirm on the units.",
+      + (["Spider rear layout from the lab photo (2026-11-25); which RJ-45 is ETH1 and what the green 4-pole DC header "
+          "(DCIN) feeds, its pin order and pitch are TBC (plug: " + d["dcin_plug"] + ")."] if d.get("dcin_plug") else
+         ["Spider rear layout (ETH1/ETH2/SFP+ access, GNSS input, box DC terminal block) is assumed: confirm on the units."]) + [
          "BENCH-CTL, monitor, analyser" + (" and MWATT" if b.mwatt else "") + " take mains from the bench-table strip "
          "(sheet 5) on its own wall socket (" + b.cable(cls="AC", b="TABLE-STRIP.inlet")["id"] + "), never a switched PDU "
          "outlet."]
-      + ([f"Event: {d['event']}"] if d.get("event") else []), width=172, fs=4.4, step=2.8 if b.if_pads else 2.95)
+      + ([f"Event: {d['event']}"] if d.get("event") else []), width=250 if b.if_pads else 172, fs=4.4,
+        step=2.8 if b.if_pads else 2.95)
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))
 
 
@@ -1060,7 +1066,10 @@ def sheet_data(b, pdf, n, N, prefix):
     # SW-OOB in one row (RJ-45 then SFP+ cages)
     okinds = ["rj45"] * BS.OOB_RJ45 + ["sfp"] * BS.OOB_SFP
     so, ostep = switch_row(s, "SW-OOB", "GSM4230PX · VLAN 100", 16, 112, 390, okinds)
-    s.text(so[BS.OOB_RJ45 + 1][0] - 2.6, 113.6, "SFP+ (AGM734)", fs=3.2, color=DIM, va="center")
+    # PoC 1 (fixed pads) uses no SW-OOB cage; PoC 2 keeps its label as drawn (out of scope)
+    agm_oob = any("AGM734" in c["part"] and c["b"].startswith("SW-OOB") for c in b.cables)
+    s.text(so[BS.OOB_RJ45 + 1][0] - 2.6, 113.6, "SFP+ (unused)" if b.if_pads and not agm_oob else "SFP+ (AGM734)",
+           fs=3.2, color=DIM, va="center")
     # lab equipment row under SW-OOB
     lab = [(a, "attenuator", f"{a}.lan") for a in b.atts]
     if b.mwatt:
@@ -1310,7 +1319,9 @@ def sheet_table(b, pdf, n, N, prefix):
     wl = ", ".join(sorted({c["length"] for c in b.cables if c["cls"] == "WG" and "SMSM" in c["pn"]},
                           key=lambda v: float(v.split()[0])))
     s.notes(gx, gy - 48, [
-        "IP-50 band, flange (WR-62 / WR-42 / WR-28) and Tx power TBC; >= 110 dB in the chain takes a hop down.",
+        "IP-50 band, flange (WR-62 / WR-42 / WR-28) and Tx power TBC; " +
+        ("a hop goes down only when a radio's supply is switched off (W1-CORE, CORE-E1 at t0)." if b.mw_pads else
+         ">= 110 dB in the chain takes a hop down."),
     ] + ([f"Per hop: {BS.MW_PAD_HI[0]} 30 dB 10 W pads screw onto both transitions, a {BS.MW_PAD_LO[0]} 10 dB pad onto "
           f"the A side's; ONE SMA cable ({wl}, length from the twin route) joins the two stacks: "
           f"{2 * BS.MW_PAD_HI[1] + BS.MW_PAD_LO[1]} dB fixed, no programmable attenuator (the 10 dB pad stands in for "
@@ -1487,17 +1498,25 @@ def sheet_pads(b, pdf, n, N, prefix):
         f"{b.count('RF')} IF cables, length from the twin route: " +
         ", ".join(f"{b.count_pn(pn)} x {pn}" for pn, _ in BS.RF_STOCK if any(c['pn'] == pn and c['cls'] == 'RF'
                                                                            for c in b.cables)) + ".",
-        "Pad stacks about 62 mm (2 x 31 mm, estimate); on a tile, strap the cable to the side lane so the tile carries "
-        "only the stack. Torque every pad joint to 8 in-lb with a backing wrench.",
+        "Pad stacks about 62 mm (2 x 31 mm, estimate); on a tile, strap the cable to the seam bundle at the unit's lower "
+        "edge within 150 mm so the tile carries only the stack; tray stacks go onto the splitters in the hand. Torque "
+        "every pad joint to 8 in-lb with a backing wrench.",
+        f"The pads replace the setting only: the attenuator's own insertion loss (about {BS.ARM_BUDGET['att_il_db']:g} "
+        "dB) and its second cable are gone, so each path is a few dB stronger than on the attenuator bench; a path may "
+        "need about 5 dB more once measured.",
     ]
     yn = s.notes(252, yt2 - 5, nts, fs=4.5, step=3.0, width=68)
     bridges = [k for k, v in b.pad_links.items() if v["job"] == "bridge"]
     rules = [
         "A device that dies loses power at its switched PDU outlet (sheet 3); its links go down with it. Nothing RF "
         "moves at any time: there are no programmable attenuators.",
-        f"Bridges ({', '.join(bridges)}) are held down before t0 with Terragraph ignition disabled for the link on the "
-        "E2E controller (tg ignition link -n <link> --disable), set at power-up before the nodes boot; MARL engages a "
-        "bridge by enabling it (tg ignition link -n <link> --enable).",
+        f"Bridges ({', '.join(bridges)}) are held down before t0: at power-up, before the nodes boot, "
+        + BS.bridge_hold_text(b.bridges) + ".",
+        "SRV-E2E is off after t0, so MARL engages a bridge at node level: its A-end agent PC sends tg2 minion assoc to the "
+        "A-end node (initiator A-end sector, responder B-end sector): " + "; ".join(
+            f"{k} {v['agent']} ({v['a_sector']} to {v['b_sector']})" for k, v in b.bridges.items()) +
+        ". TBC on the N367 firmware; fallback: a standby E2E controller on BENCH-CTL, never switched.",
+        "After a run: SRV-E2E ON first, bridges disabled again and read back, then the hub and CORE, then SRV-DPIR.",
         "Fixed TX power (TPC off) on every node, so each pad sets a known margin.",
         "Raise the no-link watchdog (noLinkTimeout, 15 min by default): bridge modules have no link until MARL "
         "engages them.",
@@ -1505,9 +1524,10 @@ def sheet_pads(b, pdf, n, N, prefix):
         "radio to drop Ethernet on radio loss if detection must be faster.",
         "BENCH-CTL (always powered) switches the PDU outlets; it drives no RF equipment.",
     ]
-    s.notes(252, yn - 3, rules, title="HOW LINKS GO DOWN (Terragraph defaults per Meta's open source; confirm on Siklu "
-            "firmware)", fs=4.4, step=3.0, width=70)
     ydet = min(ladder_bottom - 6, 150)
+    # under the IP-50 hop pads (left), so the notes column stays clear of the title block
+    s.notes(16, ydet - 92 if b.mw_pads else ydet - 62, rules, title="HOW LINKS GO DOWN (Terragraph defaults per Meta's "
+            "open source; confirm on Siklu firmware)", fs=4.4, step=3.0, width=175)
     detail_pads(s, b, ydet)
     if b.mw_pads:                                      # the IP-50 chains' fixed pads, for completeness (sheet 5)
         hr = []

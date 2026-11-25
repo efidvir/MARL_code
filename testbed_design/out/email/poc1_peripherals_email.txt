@@ -25,7 +25,7 @@ Attached:
 2. IP-50 conducted chain (on the bench table; one chain per hop, the two radios of a hop side by side, none stacked)
 - Chain per hop: radio -> WR-62 transition -> 30 dB pad -> 10 dB pad -> SMA cable -> 30 dB pad -> WR-62 transition -> radio (70 dB fixed)
 - 8 x waveguide-to-SMA transition, WR-62 (12.4-18 GHz): Pasternack PEWCA1003
-- 8 x 30 dB 10 W pad, DC-18 GHz: Fairview SA18S10W-30
+- 8 + 1 spare x 30 dB 10 W pad, DC-18 GHz: Fairview SA18S10W-30
 - 4 + 1 spare x 10 dB pad, DC-18 GHz: Mini-Circuits BW-S10W2+ (replaces the Keysight J7204B)
 - 4 x SMA cable, 0.30 m: Mini-Circuits CBL-1FT-SMSM+
 - If the radios are 23 GHz: PEWCA1018 transitions, FMAT4009-30 pads and a 2.92 mm 10 dB pad instead

@@ -484,6 +484,7 @@ function buildSpecs(scene) {
       specs.push({
         name: `overview_${side}_rack_${part}`, title: `Rack ${side} elevation, ${part} half`,
         ...band(y0, y1, side), opts: { classes: [], table: false }, partLabels: false, hideDevices: ['WALL'], fov: 12,
+        rackCallAll: true,   // every U keeps its tag; room items beside the rack (earth bar, arrestor) give way
         anchors: devAnchors(rackDevs, side),
       });
     }
@@ -649,7 +650,8 @@ function buildSpecs(scene) {
       dir: [0.22, 0.1, -1], margin: 1.08,
       anchors: [...rf.map((id) => ({ kind: 'cable', id })), ...devAnchors([...endDevs], 'front')],
     });
-    const padIds = st.devices.filter((id) => (devs.get(id) || {}).kind === 'padstack');
+    // the link's IF pad stacks (the splitter-tray stacks are fitted, and listed, in the tray step)
+    const padIds = scene.devices.filter((d) => d.kind === 'padstack' && d.chain === 'if' && d.link === name).map((d) => d.id);
     if (padIds.length) {
       // the link's pad stacks close up, with their host ports and the first part of each cable
       const pads = padIds.map((id) => devs.get(id));
