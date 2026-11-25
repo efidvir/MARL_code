@@ -38,9 +38,9 @@ rows = [
     ("HUB-E2", "SB2 . M2", "HUB . E", "SPL-HUBE", "P2", "20 + 3", "SB4 . M3", "E2 . W", RED, "down: hub powered off"),
     ("HUB-S", "SB2 . M3", "HUB . S", None, None, "30 + 5", "SB3 . M1", "S . N", RED, "down: hub powered off"),
     ("HUB-N", "SB2 . M4", "HUB . N", None, None, "30 + 7", "SB3 . M3", "N . S", RED, "down: hub powered off"),
-    ("E2-W2", "SB4 . M4", "E2 . N", None, None, "30", "SB1 . M4", "W2 . S", GREEN, "bridge: held down, enabled by MARL"),
+    ("E2-W2", "SB4 . M4", "E2 . N", None, None, "30 + 1", "SB1 . M4", "W2 . S", GREEN, "bridge: held down, enabled by MARL"),
     ("E1-N", "SB4 . M2", "E1 . N", None, None, "30 + 4", "SB3 . M4", "N . W", GREEN, "bridge: held down, enabled by MARL"),
-    ("W1-S", "SB1 . M2", "W1 . S", None, None, "30 + 10", "SB3 . M2", "S . E", GREEN, "bridge: held down, enabled by MARL"),
+    ("W1-S", "SB1 . M2", "W1 . S", None, None, "30 + 12", "SB3 . M2", "S . E", GREEN, "bridge: held down, enabled by MARL"),
 ]
 y = 87.5
 for name, a_box, a_lab, spl, port, padv, b_box, b_lab, col, fate in rows:
@@ -91,6 +91,6 @@ ny = 6.0
 ax.plot([3, 9], [ny, ny], color=RED, lw=2.4); ax.text(10, ny, "goes down at t0 because a device is powered off", va="center", fontsize=9, color=INK)
 ax.plot([52, 58], [ny, ny], color=GREEN, lw=2.4); ax.text(59, ny, "bridge: link disabled in Terragraph until MARL enables it", va="center", fontsize=9, color=INK)
 ax.text(3, 1.8, "No attenuator moves in the scenario, so fixed pads set every path loss (values = the former attenuator settings, "
-        "rounded to 1 dB). Splitters: S to the hub tile, P1 / P2 to the pads. Torque SMA to 8 in-lb.", fontsize=8.8, color=MUTED)
+        "rounded to what two pads make). Splitters: S to the hub tile, P1 / P2 to the pads. Torque SMA to 8 in-lb.", fontsize=8.8, color=MUTED)
 fig.savefig("/home/user/MARL_code/testbed_design/out/email/poc1_schematic_fixed_pads.png", dpi=160)
 print("ok")
