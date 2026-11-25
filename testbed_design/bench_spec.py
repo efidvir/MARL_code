@@ -56,7 +56,7 @@ CLS_PREFIX = {"AC": "A", "DC": "D", "POE": "Q", "FIB": "F", "ETH": "E", "RF": "R
 WALL_SOCKET = "lab wall socket IEC 60309 16 A"
 STRIP_OUT = 6                       # TABLE-STRIP: 6 x C13 outlets; the ones without a load stay empty
 # TENTATIVE equipment choices (user, 2026-11-24): 1U switched PDUs; programmable attenuators are small bench boxes
-# with a dial (4 channels each, two per 2U shelf); servers and traffic hosts are 1U/2U rack servers; the bench
+# with a dial (4 channels each, two per 2U shelf; PoC 2 only: PoC 1 has none since 2026-11-25, fixed pads); servers and traffic hosts are 1U/2U rack servers; the bench
 # controller is a PC with a monitor on the table; the IP-50 radios are Ceragon IP-50CX (band TBC).
 PDU_OUT, PDU_U, PDU_PART = 12, 1, "Raritan PX3-5260R class (1U, 12 x C13, switched, 16 A)"
 ATT_PER_SHELF, ATT_SHELF_U = 2, 2
@@ -172,7 +172,11 @@ def pad_stack(target):
         db, rule = r, "nearest whole dB" + (" (tie rounded up)" if abs(target - math.floor(target) - 0.5) < 1e-9 else "")
     else:
         db = min(PAD_COMBOS, key=lambda v: (abs(v - target), -v))
-        rule = f"{r} dB needs more than {PAD_MAX} pads: nearest total {PAD_MAX} pads make"
+        if min(PAD_COMBOS) < r < max(PAD_COMBOS):
+            rule = f"{r} dB needs more than {PAD_MAX} pads: nearest total {PAD_MAX} pads make"
+        else:                       # under the smallest pad or over the largest stack: no stack of PAD_MAX pads makes it
+            rule = (f"{r} dB is not achievable with at most {PAD_MAX} pads ({min(PAD_COMBOS)}-{max(PAD_COMBOS)} dB): "
+                    "nearest achievable total")
     pads = list(PAD_COMBOS[db])
     return dict(target=round(target, 1), rounded=r, db=db, pads=pads, pn=[f"BW-S{v}W2+" for v in pads],
                 text=" + ".join(str(v) for v in pads), rule=rule)
@@ -186,6 +190,47 @@ def pad_parts(pns):
         m = re.match(r"^(?:BW-S(\d+)W2\+|SA18S10W-(\d+))$", pn)
         out.append(dict(pn=pn, db=int(m.group(1) or m.group(2)), len_mm=L, dia_mm=dia))
     return out
+
+
+def bridge_ops(d):
+    """the MARL bridges of a fixed-pad bench (if_pads: att_set job 'bridge'): one row per bridge with its Terragraph link
+    name (link-<A node>-<B node>, TBC with the lab topology), A-end node and sector, B-end sector and the A-end agent PC
+    (MARL engages the bridge from it at node level: SRV-E2E is off after t0)."""
+    out = OrderedDict()
+    if not d.get("if_pads"):
+        return out
+    for name, row in d.get("att_set", {}).items():
+        if row[0] != "bridge" or name not in d["link_ends"]:
+            continue
+        (an, asec), (bn, bsec) = d["link_ends"][name]
+        out[name] = dict(link=name, tg=f"link-{an}-{bn}", a_node=an, a_sector=f"{an}.{asec}", b_node=bn,
+                         b_sector=f"{bn}.{bsec}", agent=f"AGENT-{an}" if an in d.get("agents", []) else None)
+    return out
+
+
+TG_NAMES_TBC = "TG link names TBC with the lab topology"
+
+
+def bridge_hold_text(br):
+    """'disable ignition ...' for the bridges of bridge_ops (the hold before t0, on the E2E controller)."""
+    tg = [v["tg"] for v in br.values()]
+    names = list(br)
+    return (f"on the E2E controller (SRV-E2E) disable ignition for the bridge links "
+            f"{', '.join(names[:-1]) + ' and ' + names[-1] if len(names) > 1 else names[0]} "
+            f"(tg ignition link -n {tg[0]} --disable" + (f", then the same for {' and '.join(tg[1:])}" if tg[1:] else "") +
+            f"; {TG_NAMES_TBC}) and read the setting back")
+
+
+def bridge_engage_text(br):
+    """how MARL engages a bridge after t0, with no E2E controller (SRV-E2E is switched off at t0)."""
+    return ("MARL engages a bridge at node level, with no E2E controller (SRV-E2E is off after t0): the MARL agent of the "
+            "bridge's A-end node sends the Terragraph minion command tg2 minion assoc to its node (initiator = the A-end "
+            "sector, responder = the B-end sector) from its agent PC, in-band over the site VLAN on SW-DATA (the nodes "
+            "have no SW-OOB port): " +
+            "; ".join(f"{k} from {v['agent'] or 'its A-end agent'} ({v['a_sector']} to {v['b_sector']})" for k, v in br.items())
+            + ". TBC: that the N367 firmware accepts a minion-level association with no controller running (open "
+            "question); fallback: a standby E2E controller on BENCH-CTL (never switched), or SRV-E2E on an unswitched "
+            "outlet")
 
 
 # ------------------------------------------------------------------------------------------
@@ -227,6 +272,7 @@ def poc1_design():
         ("HUB-S", (down, 34.5, "hold", "hold", "14.6 / -13.9")), ("HUB-N", (down, 37.2, "hold", "hold", "11.9 / -13.9")),
         ("E2-W2", ("bridge", 60.7, 60.7, 30.7, "13.9 / -18.4")), ("E1-N", ("bridge", 63.0, 63.0, 34.1, "15.0 / -13.9")),
         ("W1-S", ("bridge", 63.0, 63.0, 41.2, "8.0 / -13.9"))])
+    bridges = [k for k, v in att_set.items() if v[0] == "bridge"]
     return dict(
         name="PoC 1 (A7): DPIR + MARL recovery on 1 x 4-sector + 6 x 2-sector N367 and 8 IP-50",
         poc="PoC 1", drawing="UNITY6G-POC1-BP",
@@ -248,9 +294,13 @@ def poc1_design():
         event="t0: the devices that die lose power at their switched PDU outlets: the hub (its AC PoE injector), "
               "CORE's two IP-50 radios, SRV-E2E and SRV-DPIR. The hub's six paths and the W1-CORE and CORE-E1 hops go "
               "down with them; nothing RF moves at t0 (fixed pads, no programmable attenuators). W1-W2 and E1-E2 "
-              "unchanged. The bridges E2-W2, E1-N and W1-S (links between surviving nodes, on their fixed pads) are held "
-              "down before t0 with Terragraph ignition disabled for the link (tg ignition link -n <link> --disable); "
-              "MARL engages a bridge by enabling it (tg ignition link -n <link> --enable): no RF change.",
+              f"unchanged. The bridges {', '.join(bridges)} (links between surviving nodes, on their fixed pads) are "
+              "held down before t0 with Terragraph ignition disabled on the E2E controller (TG links "
+              f"{', '.join(f'link-{link_ends[k][0][0]}-{link_ends[k][1][0]}' for k in bridges)}, names TBC). SRV-E2E is "
+              "off after t0, so MARL engages a bridge at node level: the A-end node's agent PC sends tg2 minion assoc "
+              "to its node (TBC on the N367 firmware; fallback: a standby E2E controller on BENCH-CTL). No RF change.",
+        dcin_word="green 4-pole DC header",
+        dcin_plug="4-pole pluggable screw-terminal plug, Phoenix MSTB 2.5/4-STF class, pitch TBC",
         event_off=["SRV-E2E", "SRV-DPIR", "HUB", "IP50-W1-CORE@CORE", "IP50-CORE-E1@CORE"],
     )
 
@@ -369,6 +419,29 @@ class Bench:
     def count_pn(self, pn):
         return sum(1 for c in self.cables if c["pn"] == pn)
 
+    def outlet_of(self, ld):
+        """'PDU-C.O2' for a rack load on a PDU outlet (None if it has none)."""
+        o = self.outlet.get(ld)
+        return f"{o[0]}.O{o[1]}" if o else None
+
+    def bridge_after_text(self):
+        """the order to restore the bench after a run (fixed-pad bench with bridges): SRV-E2E first, the bridges held down
+        again and read back, then the hub and CORE, then the rest of the switched loads."""
+        br = self.bridges
+        sw = list(self.switched)
+
+        def on(xs):
+            return ", ".join(f"{x} ({self.outlet_of(x)})" for x in xs)
+        e2e = [x for x in sw if x == "SRV-E2E"]
+        hub = list(self.inj.values()) + list(self.psu.values())
+        rest = [x for x in sw if x not in e2e + hub]
+        return ((f"switch {on(e2e)} ON first and wait for the E2E controller to come up; " if e2e else "") +
+                "disable ignition for the bridges again (" + ", ".join(v["tg"] for v in br.values()) + ") and read it "
+                "back; a bridge MARL associated stays up: take it down from its A-end agent PC (tg2 minion dissoc, TBC) "
+                "and check on the controller that every bridge is down; only then switch ON " + on(hub) +
+                ", so the hub and CORE re-join with the bridges held down" + (f"; then {on(rest)}" if rest else "") +
+                "; let every node and radio re-join before the next run")
+
     def load_w(self, ld):
         """typical mains draw of a rack or table load, W (TENTATIVE: catalog.LOAD_W; a rectifier module from its DC load,
         each module rated for the full load)."""
@@ -452,6 +525,7 @@ class Bench:
             for name in order:
                 self.atts[f"ATT-{len(self.atts) + 1:02d}"] = ("link" if name in d["link_ends"] else "arm", name)
         self.att_of = {v[1]: k for k, v in self.atts.items()}
+        self.bridges = bridge_ops(d)        # fixed pads: the MARL bridges, held down by Terragraph ignition
         self.ip50 = OrderedDict()
         for k, (a, b) in d.get("mw_links", {}).items():
             self.ip50[f"IP50-{k}@{a}"] = (k, a)
@@ -1115,7 +1189,8 @@ def parts(b):
             add("RF/IF", "-", f"Fixed attenuator (pad) DC-18 GHz 2 W, SMA M-F, {pn[4:-3]} dB", pn, "Mini-Circuits",
                 f"{q} + {max(1, math.ceil(q * PAD_SPARE))} spare",
                 f"{' or '.join(map(str, per)) if per != [1] else 'one'} per tile path of {', '.join(links)} "
-                f"({len(links)} link{'s' if len(links) > 1 else ''} x {b.tiles} tiles; pad schedule, sheet 6); "
+                f"({len(links)} link{'s' if len(links) > 1 else ''} x {b.tiles} tiles; pad schedule: guide 'Pad schedule' "
+                f"page and blueprint sheet 6); "
                 f"{max(1, math.ceil(q * PAD_SPARE))} spare", "likely (value from the A7 model; confirm at the port check)")
     if b.coupled:
         add("RF/IF", "-", "10 dB directional coupler 1-18 GHz, SMA-F (one part for all 16 positions)", "KRYTAR 1821", "KRYTAR",
@@ -1152,8 +1227,11 @@ def parts(b):
     if hops:
         add("IP-50 chain", "-", "Waveguide-to-coax transition, WR-62 12.4-18 GHz (<=18 GHz set)", "PEWCA1003", "Pasternack",
             2 * hops, "band and flange mating TBC", "likely", cab={"PEWCA1003": b.count_pn("PEWCA1003")})
-        add("IP-50 chain", "-", "30 dB 10 W pad DC-18 GHz (<=18 GHz set)", "SA18S10W-30", "Fairview", 2 * hops,
-            "one at each radio port, on the transition", "confirmed")
+        add("IP-50 chain", "-", "30 dB 10 W pad DC-18 GHz (<=18 GHz set)", "SA18S10W-30", "Fairview",
+            f"{2 * hops} + {max(1, math.ceil(2 * hops * PAD_SPARE))} spare" if b.mw_pads else 2 * hops,
+            "one at each radio port, on the transition" +
+            (f"; {max(1, math.ceil(2 * hops * PAD_SPARE))} spare (pad schedule: guide 'Pad schedule' page and blueprint "
+             "sheet 6)" if b.mw_pads else ""), "confirmed")
         if b.mwatt:
             add("IP-50 chain", "-", "Programmable attenuator 4 ch DC-18 GHz (<=18 GHz set)", "J7204B opt 002", "Keysight",
                 1, f"{hops} channels used; LAN to SW-OOB", "confirmed")

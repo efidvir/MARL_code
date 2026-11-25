@@ -111,22 +111,35 @@ class Scene:
                        "the nearest whole dB (a tie rounds up, toward more loss); a value no stack makes takes the nearest "
                        f"total that one does (a tie toward more loss): {rows}. Confirm each link's margin at the port check "
                        "and swap a pad if it differs")
-            out.append(f"Pad stacks: BW-S pad about {P['len']:g} mm long and {P['dia']:g} mm across (estimate), "
-                       f"a two-pad stack drawn {2 * P['len']:g} mm (the mated overlap ignored). The hub W / E links' stacks "
-                       "screw onto the splitter's P1 / P2 and lie on the splitter tray (the tray is laid out for them: one "
-                       "column per split module, 12 mm between the P1 and P2 stacks, about 2 mm between their bodies: if two "
-                       "stacks foul, fit one through a short SMA M-F adapter); every other link's stack screws onto its A-end "
-                       "tile (the first site of the link name) and stands about "
-                       f"{2 * P['len']:g} mm proud of the Spider box: its cable is strapped to the side lane so the tile carries "
-                       "only the stack (two pads, about 60 g, estimate), never the cable")
-            out.append("Bridges (links between surviving nodes) are held down before t0 with Terragraph ignition disabled for "
-                       "the link on the E2E controller (tg ignition link -n <link> --disable), set after SRV-E2E boots and "
-                       "before the nodes do; MARL engages a bridge by enabling it (tg ignition link -n <link> --enable): no RF "
-                       "change at any time. Check that the Siklu E2E honours per-link ignition the same way")
+            out.append(f"Pad stacks: BW-S pad about {P['len']:g} mm long and {P['dia']:g} mm across (estimate; the "
+                       "device research gives the FF658 case as 21.6 mm long and 9.1 mm across, which would make a stack "
+                       f"about 43 mm: the twin keeps the larger estimate until a pad is measured), a two-pad stack drawn "
+                       f"{2 * P['len']:g} mm (the mated overlap ignored); SMA male (coupling nut) at the port end, female "
+                       "at the far end. The hub W / E links' stacks screw onto the splitter's P1 / P2: they are fitted and "
+                       "torqued in the hand in the splitter-tray step (step {step:Splitter tray}), before the splitter goes "
+                       "onto the tray, and lie on the tray ({tray_pad_pitch} mm between the P1 and P2 stacks, about "
+                       "{tray_pad_gap} mm "
+                       "between their bodies, no wrench fits there on the tray; if two stacks foul, fit P2's through a short "
+                       "SMA M-F adapter so its nuts stand staggered beyond P1's); their cables are torqued with the splitter "
+                       "lifted off the tray. Every other link's stack screws onto its A-end tile (the first site of the "
+                       f"link name) and stands about {2 * P['len']:g} mm proud of the Spider box: its cable is strapped to "
+                       "the seam bundle at the unit's lower edge (or the cable manager) within 150 mm, then to the side "
+                       "lane, so the tile carries only the stack (two pads, about 60 g, estimate), never the cable")
+            out.append("Each pad stack stands in for the A7 attenuator setting alone: the programmable attenuator's own "
+                       f"insertion loss (about {BS.ARM_BUDGET['att_il_db']:g} dB, bench_spec ARM_BUDGET) and the second "
+                       "cable of each path are gone, so every IF path is a few dB stronger than on the attenuator bench at "
+                       "the same setting. Read each link's margin at the port check and swap a pad (spares per value) if a "
+                       "path needs about 5 dB more")
+            if b.bridges:
+                out.append("Bridges (links between surviving nodes) are held down before t0: " +
+                           BS.bridge_hold_text(b.bridges) + ", after SRV-E2E boots and before the nodes do. " +
+                           BS.bridge_engage_text(b.bridges) + ". No RF change at any time. After a run: " +
+                           b.bridge_after_text() + ". Check that the Siklu E2E honours per-link ignition the same way")
         if b.mw_pads:
             Q = C.PAD[BS.MW_PAD_HI[0]]
             out.append(f"IP-50 chains without a programmable attenuator: {BS.MW_PAD_HI[0]} ({BS.MW_PAD_HI[1]} dB 10 W, about "
-                       f"{Q['len']:g} x {Q['dia']:g} mm, estimate) on each transition and one {BS.MW_PAD_LO[0]} "
+                       f"{Q['len']:g} x {Q['dia']:g} mm, estimate; the device research gives 47.2 mm long and 15.75 mm "
+                       "across) on each transition and one {BS.MW_PAD_LO[0]} "
                        f"({BS.MW_PAD_LO[1]} dB) on the A side after it, then one SMA cable: "
                        f"{2 * BS.MW_PAD_HI[1] + BS.MW_PAD_LO[1]} dB fixed plus the cable; the 10 dB pad stands in for the "
                        "former J7204B rest value. If the band turns out to be 23 GHz: WR-42 transitions, 2.92 mm pads and "
@@ -149,7 +162,7 @@ class Scene:
         nb = len(d["boxes"])
         cbs = sorted({v[0] for v in b.dcin.values()})
         shared = [cb for cb in cbs if sum(1 for v in b.dcin.values() if v[0] == cb) > 1]
-        out.append("Spider box DC terminal block (DCIN, rear) powers only the box fans and the Raspberry Pi, assumed 48 V "
+        out.append(f"Spider box {self.dcin_word} (DCIN, rear) powers only the box fans and the Raspberry Pi, assumed 48 V "
                    f"DC (TBC); the nodes are powered only through ETH1. The {nb} DCIN inputs are fed from DC-DIST "
                    f"CB{cbs[0]}-CB{cbs[-1]}" + "".join(f" ({' and '.join(k for k, v in b.dcin.items() if v[0] == cb)} "
                                                         f"share CB{cb}, twin ferrule)" for cb in shared) +
@@ -172,6 +185,9 @@ class Scene:
         self.b, self.d = b, b.d
         self.dev = OrderedDict()
         self.ports = {}
+        # what the Spider box's rear DC input is called: the lab photo (PoC 1) shows a green 4-pole pluggable header
+        self.dcin_word = b.d.get("dcin_word", "DC terminal block")
+        self.dcin_plug = b.d.get("dcin_plug")
         self.assumed = list(C.RACK["assumed"]) + list(C.TABLE["assumed"]) + list(self.LAYOUT_ASSUMED) + \
             self._layout_assumed()
         self.counters = {}
@@ -708,8 +724,11 @@ class Scene:
                 where = (f"on {hd['id']} {H['name']}, lying on the splitter tray" if hd["kind"] == "splitter" else
                          f"on tile {H['name']} of {hd['id']}, {L:g} mm proud of the box front")
                 sub = f"IF link {v['link']} tile {v['tile']}: {v['text']} = {v['db']} dB (target {v['target']:g} dB) {where}"
-                support = ("lies on the tray" if hd["kind"] == "splitter" else
-                           "cable strapped to the side lane so the tile carries only the stack")
+                support = ("fitted onto the splitter in the hand before it goes on the tray (splitter-tray step); lies "
+                           "on the tray; its cable is torqued with the splitter lifted off the tray"
+                           if hd["kind"] == "splitter" else
+                           "cable strapped to the seam bundle at the unit's lower edge (or the cable manager) within "
+                           "150 mm of the stack, then to the side lane, so the tile carries only the stack")
             else:
                 sub = f"IP-50 hop {v['link']}, {v['side'].upper()} side: {v['text']} = {v['db']} dB on {H['device']}"
                 support = "carried by the transition, which is bolted to the radio flange"
@@ -1286,7 +1305,7 @@ class Scene:
               "both ends with the heat gun (breaker or fuse output, or supply terminal); the unsleeved conductor is the "
               "0 V return. Land each run at its breaker, fuse or supply end only and torque those terminals to the value "
               "marked on them (DCD1M, N250110) with the torque screwdriver; leave the LOAD end (adaptor DC terminal, "
-              "Spider DCIN terminal, radio DC plug) unlanded, tagged and taped with insulating tape: it is landed and "
+              "{dcin_end}, radio DC plug) unlanded, tagged and taped with insulating tape: it is landed and "
               "torqued at the polarity check at power-up. {dcin}Rack runs go up the LEFT side of the rack as seen from "
               "the front (your right-hand side when you stand at the rear), on the rear lacing bars, 50 mm or more from "
               "coax and data. {table_dc}Bend radius 5 x the cable diameter or more; Velcro every 300 mm.",
@@ -1347,7 +1366,9 @@ class Scene:
                       "radio through the row gap and the aisles, away from the data cables. " if b.ip50 else ""),
             dcin=(f"The Spider DCIN runs ({dcin[0]['id']}-{dcin[-1]['id']}, box fans / Pi) are landed at their breakers "
                   "like the others; their box end stays unlanded until the hold point of step "
-                  f"{step_of.get('Spider boxes', '?')} has confirmed DCIN is a 48 V DC input. " + twin_txt
+                  f"{step_of.get('Spider boxes', '?')} has confirmed DCIN is a 48 V DC input" +
+                  (f" and its pin order: then each run goes into the screw terminals of its {self.dcin_plug.split(',')[0]} "
+                   f"(the plug, not the {self.dcin_word}, takes the conductors)" if self.dcin_plug else "") + ". " + twin_txt
                   if dcin else ""),
             table_ac=(" The leads of the switched -48 V supplies (" + ", ".join(b.psu.values()) + ") leave the rack low "
                       "on the RIGHT in their own wrapped power bundle (about 640 mm behind the front rail), 50 mm or more "
@@ -1358,6 +1379,8 @@ class Scene:
                      f"{step_of.get('Servers and traffic hosts', '?')})." if any(x.startswith("SRV-") for x in b.switched)
                      else ""),
             what="Adaptor (or injector)" if b.inj else "Adaptor",
+            dcin_end=(f"Spider DCIN plug: the {self.dcin_plug}, screwed into the {self.dcin_word}" if self.dcin_plug
+                      else "Spider DCIN terminal"),
             att_lan="the attenuator LAN ports are at the back of each box; " if b.atts else "",
             mwatt=", MWATT" if b.mwatt else "",
             gz=self._gnss_depth(),
@@ -1411,6 +1434,22 @@ class Scene:
                     if min(p[0], q[0]) - 10 <= t["pos"][0] <= max(p[0], q[0]) + 10:
                         best = min(best, abs(p[1] - t["pos"][1]))
         return best
+
+    def tray_pad_gap(self):
+        """(axis pitch, body gap) in mm between the P1 and P2 pad stacks of one splitter (the tightest splitter)."""
+        best = None
+        for v in self.dev.values():
+            if v["kind"] != "splitter":
+                continue
+            st = [x for x in self.dev.values() if x["kind"] == "padstack" and x.get("parent") == v["id"]]
+            for i, a in enumerate(st):
+                for c in st[i + 1:]:
+                    pa, pc = self.ports[a["host"]]["pos"], self.ports[c["host"]]["pos"]
+                    pitch = math.dist(pa, pc)
+                    gap = pitch - (a["size"][1] + c["size"][1]) / 2
+                    if best is None or gap < best[1]:
+                        best = (pitch, gap)
+        return best or (0.0, 0.0)
 
     def min_gap(self, parent):
         kids = [v for v in self.dev.values() if v.get("parent") == parent]
@@ -1516,17 +1555,37 @@ class Scene:
             if b.split and b.if_pads:
                 cols = [f"{sid} ({sec[0]}.{sec[1]}) t1-t{b.tiles}" for sec, sid in b.split.items()]
                 title = f"Splitter tray ({len(parts)} splitters)"
-                txt = (f"Fit the 1U tray at {u(tr)}, directly under the Spider boxes (front posts, 4 cage nuts). Lay the "
-                       f"{len(parts)} splitters flat, all the same way round: S port to the LEFT, ports 1 and 2 to the "
-                       "RIGHT (port 1 toward the front), printed label up. One column per split hub module, left to right: "
-                       f"{'; '.join(cols)}; rows front to back = tile 1-{b.tiles}. Leave the "
-                       f"{self.TRAY['splitter_pads']['xpitch'] - C.SMALL['splitter']['size'][0]:.0f} mm right of each "
-                       "splitter clear: ports 1 and 2 take the links' fixed pad stacks (up to "
-                       f"{max(v['stack_mm'] for v in b.pads.values() if v['chain'] == 'if'):g} mm, fitted in the IF-link "
-                       "steps), which lie on the tray. The tile cables reach S from the left side lane. Cable lanes: every "
-                       "cable leaves its port (or pad stack) straight out; the port-2 stack's cable runs 8 mm further out "
-                       "than port 1's; each row further back rises 10 mm more before running forward, over the front rows' "
-                       "plugs.")
+                # the hub W / E links' pad stacks are fitted onto the splitters here, in the hand, before the splitters
+                # go onto the tray: on the tray the stacks lie flat 12 mm apart and no wrench reaches their nuts
+                tp = [k for k, v in devs.items() if v["kind"] == "padstack" and v.get("parent") in parts]
+                pitch, gap = self.tray_pad_gap()
+
+                def stk(name):
+                    pl = b.pad_links[name]
+                    return (f"PAD-{name}.tn ({' on the port, then '.join(pl['pn'])} on it = {pl['db']} dB)")
+                per = "; ".join(f"on each {sid}.tn, P1 takes {stk(d['splitters'][sec][0])} and P2 takes "
+                                f"{stk(d['splitters'][sec][1])}" for sec, sid in b.split.items())
+                txt = (f"Fit the 1U tray at {u(tr)}, directly under the Spider boxes (front posts, 4 cage nuts). Then, on "
+                       f"a work surface and BEFORE any splitter goes onto the tray or any tray cable is laid, fit the links' "
+                       f"fixed pad stacks onto all {len(parts)} splitters in the hand ({len(tp)} stacks, {tp[0]} to "
+                       f"{tp[-1]}; n = tile 1-{b.tiles}): {per}. Read the value printed on each pad before you fit it "
+                       "(pad schedule). Each pad's male coupling nut screws onto the female port in front of it (the "
+                       "splitter port, then the first pad's female end). Hold the splitter body with the backing wrench "
+                       "and torque every joint (port to pad, pad to pad) to 8 in-lb (0.9 N m) with the SMA torque wrench, "
+                       "its handle in the plane of the two stacks and pointing away from the other stack, so the jaws "
+                       f"close on the nut from above and below; P1's stack first, then P2's. The two stacks of a splitter "
+                       f"end up {pitch:.0f} mm apart, about {gap:.0f} mm between their bodies; if they foul (bodies larger "
+                       "than assumed), fit P2's stack through a short SMA M-F adapter so its nuts stand staggered beyond "
+                       "P1's (fallback, see the assumptions); never bend a stack to make room. Then lay the "
+                       f"{len(parts)} splitters flat, all the same way round: S port to the LEFT, ports 1 and 2 with their "
+                       "stacks to the RIGHT (port 1 toward the front), printed label up. One column per split hub module, "
+                       f"left to right: {'; '.join(cols)}; rows front to back = tile 1-{b.tiles}. The stacks lie on the "
+                       f"tray, up to {max(v['stack_mm'] for v in b.pads.values() if v['chain'] == 'if'):g} mm to the right "
+                       f"of their splitter ({self.TRAY['splitter_pads']['xpitch'] - C.SMALL['splitter']['size'][0]:.0f} "
+                       "mm kept clear). The tile cables reach S from the left side lane. Cable lanes: every cable leaves "
+                       "its port (or pad stack) straight out; the port-2 stack's cable runs 8 mm further out than port "
+                       "1's; each row further back rises 10 mm more before running forward, over the front rows' plugs.")
+                parts = parts + tp
             elif b.split:
                 grp = [f"{sid} t1-t{b.tiles}" for sid in b.split.values()]
                 title = f"Splitter tray ({len(parts)} splitters)"
@@ -1561,24 +1620,33 @@ class Scene:
                        f"out before running forward; the arm cables move 12 mm to the right of their stack, plus "
                        f"{self.LANE_X:g} mm per row, and run forward side by side.")
             step(title, txt, [tr] + [k for k in parts if devs[k]["kind"] != "armstack"], view="front")
+            self.step_no["Splitter tray"] = S[-1]["n"]
         sbs = by(lambda k: k.startswith("SB"))
         dcin = [c for c in self.cables if c["cls"] == "DC" and c["b"].endswith(".DCIN")]
         cbs = sorted({int(re.sub(r"\D", "", c["a"].split(".")[1])) for c in dcin})
-        hold = ("Hold point before any DCIN run is landed at its box: confirm what the green DC terminal block (DCIN) on "
-                "each box's rear feeds and at what voltage. The design assumes the box fans and the Raspberry Pi at 48 V "
-                f"DC, fed from DC-DIST CB{cbs[0]}-CB{cbs[-1]} ({dcin[0]['id']}-{dcin[-1]['id']}, " +
+        hold = (f"Hold point before any DCIN run is landed at its box: confirm what the green {self.dcin_word.replace('green ', '')} "
+                "(DCIN) on each box's rear feeds" +
+                (", at what voltage, its pin order and polarity, and its pitch (the plug is in the parts list: "
+                 f"{self.dcin_plug})" if self.dcin_plug else " and at what voltage") + ". The design assumes the box fans and the Raspberry "
+                f"Pi at 48 V DC, fed from DC-DIST CB{cbs[0]}-CB{cbs[-1]} ({dcin[0]['id']}-{dcin[-1]['id']}, " +
                 "; ".join(f"{c['b'].split('.')[0]} on {c['a'].split('.')[1].rstrip('b')}" for c in dcin) +
                 "), landed at power-up only. Any other voltage or function: STOP; the DCIN runs stay unlanded and the "
                 "design changes; if DCIN turns out to feed a node, that node's power path changes" +
                 (" and SB2's feed must go on a switched PDU outlet (the hub dies at t0)" if b.inj else "") + "."
                 if dcin else "")
+        # the boxes' height off the floor: every IF joint is made at the boxes (fixed pads: 36 stacks, 2 joints each)
+        y0 = min(devs[k]["pos"][1] for k in sbs) / 1000
+        y1 = max(devs[k]["pos"][1] + devs[k]["size"][1] for k in sbs) / 1000
+        low = (f"The boxes sit about {y0:.2f}-{y1:.2f} m off the floor: every IF joint (the pad stacks and their cables "
+               "in the IF-link steps) is made down there, so work kneeling on a mat or from a low stool, with the torque "
+               "wrench square to each joint. " if b.if_pads and y1 < 0.9 else "")
         step("Spider boxes", f"Mount the four 1U Spider boxes SB1 (top, {u(sbs[0])}) to SB4 ({u(sbs[-1])}). Which box goes "
              "where: " + "; ".join(f"{k} = {devs[k]['box_label']}, serial {devs[k]['serial']}" for k in sbs) +
              ". Check the serial on each box's label before it goes in. For each box fit a pair of UNIRAILS1U rails "
              "first, bolted to the front AND rear posts with the M5 cage nuts and screws in the rail kit; slide the box "
              "onto them and fix its ears on 4 M6 cage nuts + screws at the front. "
              f"{BS.POLARITY_NOTE[0].upper() + BS.POLARITY_NOTE[1:]}. The module map of each front panel is in the "
-             "close-ups that follow the table of this step. " + hold, sbs, view="front")
+             "close-ups that follow the table of this step. " + low + hold, sbs, view="front")
         srv = by(lambda k: k.startswith(("SRV-", "HOST-")))
         sw_srv = [x for x in b.switched if x.startswith("SRV-")]
         if srv:
@@ -1673,6 +1741,7 @@ class Scene:
                      "hand and fit the torque wrench with its handle sideways; never lever against a fitted cable. The four "
                      "tile cables are one stock length (equal length, not a phase-matched set: see the assumptions); coil "
                      "slack in the side lane.")
+        n_tray = self.step_no.get("Splitter tray")
         for name, (sa, sb) in (d["link_ends"].items() if b.if_pads else ()):
             # fixed pads: tile (-> splitter S, P1 / P2) -> pad stack -> cable -> peer tile, one cable per tile path
             pl = b.pad_links[name]
@@ -1681,6 +1750,17 @@ class Scene:
             A, B = f"{sa[0]}.{sa[1]}", f"{sb[0]}.{sb[1]}"
             bxb, mb = d["module"][sb]
             pv = devs[pids[0]]
+            sides = sorted({lane[i] for i in ids if lane.get(i)})
+            side_txt = f"{' and '.join(sides)} side lane{'s' if len(sides) > 1 else ''}"
+            value = (f"{' + '.join(f'{x} dB' for x in pl['pads'])} = {pl['db']} dB, target {pl['target']:g} dB, the A7 "
+                     f"'{pl['setting']}' setting; pad schedule")
+            job = (f" {name} is a bridge: it is cabled now but held down before t0 with Terragraph ignition disabled for "
+                   f"{b.bridges[name]['tg']} on the E2E controller (set at power-up before the nodes boot; TG link name TBC). "
+                   "SRV-E2E is off after t0, so MARL engages it at node level: "
+                   f"{b.bridges[name]['agent'] or 'its A-end agent PC'} sends tg2 minion assoc to {sa[0]} (initiator "
+                   f"{A}, responder {B}; TBC on the N367 firmware, see the event procedure). Nothing RF changes."
+                   if name in b.bridges else
+                   f" {name} goes down at t0 with the hub (its PoE injector's outlet is switched off); nothing RF changes.")
             if sa in b.split:
                 bx, m = d["module"][sa]
                 sid = b.split[sa]
@@ -1691,39 +1771,52 @@ class Scene:
                 if done:                       # a tile-to-splitter cable shared by two links: in the first link's step
                     n0 = min(st["n"] for st in S if set(done) & set(st["cables"]))
                     shared = f" (already fitted in step {n0}: {done[0]}-{done[-1]}, shared)"
+                    s_route = ""
                 else:
-                    shared = " (fitted once, shared by " + " and ".join(d["splitters"][sa]) + ")"
+                    shared = " (fitted now, shared by " + " and ".join(d["splitters"][sa]) + ")"
+                    s_route = (f" The S cables ({tile[0]}-{tile[-1]}) run from the hub tile straight out, down to the "
+                               f"seam under {bx}, left to the left side lane, down to the tray and in along the tray "
+                               "front, then back to S at the left end of each splitter.")
                 ids += [x for x in tile if x not in taken]
-                path = (f"tile i of {A} to {sid}.ti S{shared}; pad stack PAD-{name}.ti screwed onto {sid}.ti P{k}; "
-                        f"cable from the stack's OUT to tile i of {B} ({bxb}.{mb}.Ti)")
-                where = f"on port {k} (P{k}) of each of {sid}.t1-t{b.tiles}, straight out to the right"
-                support = ("The stacks lie on the tray, straight out from the splitter; the port-1 and port-2 stacks of a "
-                           "splitter sit 12 mm apart: fit and torque P1's stack first, then P2's, and never bend a stack "
-                           "to make room.")
+                # a stack column whose cables leave through the far side lane passes in front of the other column
+                other = [o for o in b.split.values() if o != sid]
+                col = ("left" if not other or devs[f"{sid}.t1"]["pos"][0] < devs[f"{other[0]}.t1"]["pos"][0]
+                       else "right")
+                across = (f", passing in front of {other[0]}'s column" if other and len(sides) == 1 and sides[0] != col
+                          else "")
+                txt = (f"For each tile n = 1-{b.tiles}: {A} tile n ({bx}.{m}.Tn) to {sid}.tn S{shared}; pad stack "
+                       f"PAD-{name}.tn on {sid}.tn P{k}, fitted in step {n_tray or '?'} ({value}); cable from the stack's "
+                       f"OUT to {B} tile n ({bxb}.{mb}.Tn). Check the value printed on each stack. Make every tray joint "
+                       "in the hand, never on the tray: lift the splitter with its stacks a few centimetres off the tray, "
+                       "screw the cable's plug onto the stack's OUT (or onto S), hold the stack's outer pad (for S the "
+                       f"splitter body) with the backing wrench and {self.SMA_TORQUE.split(' while')[0]}, then lay the "
+                       "splitter back in its place; never bend a stack or lever it against the tray or a fitted cable."
+                       f"{job} Route: from the stack's OUT the cable runs on to the right, turns toward the front at its "
+                       "lane (the port-2 stacks' lane 8 mm further right than port 1's; each row further back rises 10 mm "
+                       f"more, over the front rows' plugs), runs along the tray front edge to the {side_txt}{across}, up "
+                       f"the side to the lower edge of {bxb} (the seam with the unit below), in along that seam and up "
+                       f"into the tile; never across the face of another box.{s_route} Connect in tile order, t1 (front "
+                       f"row) first and t{b.tiles} (back row) last. The four link cables are one stock length (equal "
+                       "length, not a phase-matched set: see the assumptions); coil slack in the side lane.")
+                devices = []                   # the stacks went on in the splitter-tray step
             else:
                 bxa, ma = d["module"][sa]
-                path = (f"pad stack PAD-{name}.ti screwed onto tile i of {A} ({bxa}.{ma}.Ti); cable from the stack's OUT "
-                        f"to tile i of {B} ({bxb}.{mb}.Ti)")
-                where = f"on each tile of {A} ({bxa}.{ma}.T1-T{b.tiles}), straight out to the front"
-                support = (f"Each stack stands {pv['stack_mm']:g} mm proud of {bxa}'s front and must not carry the cable: "
-                           "fit the cable on the stack's OUT, run it straight forward, and strap it (Velcro) to the side "
-                           "lane within 150 mm of the stack so it hangs on the strap and the tile carries only the stack; "
-                           "hold the stack, never lever it sideways.")
-            fit = (f"Fit the pad stacks first, {where}: " +
-                   ", then ".join(f"{pn} ({db} dB)" + (" on the port" if i == 0 else " on it")
-                                 for i, (pn, db) in enumerate(zip(pl["pn"], pl["pads"]))) +
-                   f" = {pl['db']} dB (target {pl['target']:g} dB, the A7 '{pl['setting']}' setting; pad schedule). Hold "
-                   "the jack you screw onto with the backing wrench and torque every joint (port to pad, pad to pad) to "
-                   f"8 in-lb (0.9 N m) with the SMA torque wrench. {support}")
-            job = (f" {name} is a bridge: it is held down before t0 with Terragraph ignition disabled for the link (tg "
-                   "ignition link -n <link> --disable on the E2E controller, set at power-up before the nodes boot); "
-                   "MARL engages it by enabling it (tg ignition link -n <link> --enable); nothing RF changes."
-                   if pl["job"] == "bridge" else
-                   f" {name} goes down at t0 with the hub (its PoE injector's outlet is switched off); nothing RF changes.")
-            sides = sorted({lane[i] for i in ids if lane.get(i)})
-            step(f"IF link {name} ({pl['text']} dB pads)", f"{path}. {fit}{job} Then route every cable through the "
-                 f"{' and '.join(sides)} side lane{'s' if len(sides) > 1 else ''}: {route_txt}", pids,
-                 cables=sorted(set(ids)), view="front")
+                fit = (f"Fit the pad stacks first, on each tile of {A} ({bxa}.{ma}.T1-T{b.tiles}), straight out to the "
+                       "front: " + ", then ".join(f"{pn} ({db} dB)" + (" on the tile" if i == 0 else " on it")
+                                                  for i, (pn, db) in enumerate(zip(pl["pn"], pl["pads"]))) +
+                       f" ({value}). Read the value printed on each pad before you fit it. Each pad's male coupling nut "
+                       "screws onto the female jack in front of it (the tile, then the first pad's female end). Hold the "
+                       "jack you screw onto with the backing wrench and torque every joint (tile to pad, pad to pad) to "
+                       f"8 in-lb (0.9 N m) with the SMA torque wrench. Each stack stands {pv['stack_mm']:g} mm proud of "
+                       f"{bxa}'s front and must not carry the cable: fit the cable on the stack's OUT, bend it down to the "
+                       "seam bundle at the lower edge of the unit and strap it (Velcro) to that bundle, or to the cable "
+                       "manager, within 150 mm of the stack, then on to the side lane, so the cable hangs on the strap and "
+                       "the tile carries only the stack; hold the stack, never lever it sideways.")
+                txt = (f"For each tile n = 1-{b.tiles}: pad stack PAD-{name}.tn screwed onto {A} tile n ({bxa}.{ma}.Tn); "
+                       f"cable from the stack's OUT to {B} tile n ({bxb}.{mb}.Tn). {fit}{job} Then route every cable "
+                       f"through the {side_txt}: {route_txt}")
+                devices = pids
+            step(f"IF link {name} ({pl['text']} dB pads)", txt, devices, cables=sorted(set(ids)), view="front")
         for name, (sa, sb) in (() if b.if_pads else d["link_ends"].items()):
             att = b.att_of[name]
             ids = [c["id"] for c in self.cables if c["cls"] == "RF" and (f"{att}." in c["a"] + c["b"])]
@@ -1934,9 +2027,11 @@ class Scene:
                  ("; a switched supply output reads about -48 V (-43 to -56 V)" if psu else "") +
                  "; any other sign or value: stop, open the breaker or pull the fuse and correct the run at its supply end")
         land = ("open the breaker (pull the fuse with the fuse puller) again, then land the red / blue-sleeved conductor "
-                "on the load's + terminal (PA adaptor, Spider DCIN) or -48 V pin (radio) and the unsleeved conductor on "
-                "the other, torque adaptor and DCIN terminals to the value marked on them, and for a radio mate the DC "
-                "connector")
+                "on the load's + terminal (PA adaptor, Spider DCIN" + (" plug" if self.dcin_plug else "") + ") or -48 V "
+                "pin (radio) and the unsleeved conductor on the other, torque adaptor and DCIN " +
+                ("plug terminals" if self.dcin_plug else "terminals") + " to the value marked on them" +
+                (f", push each DCIN plug into its {self.dcin_word} and tighten its flange screws" if self.dcin_plug
+                 else "") + ", and for a radio mate the DC connector")
         stage("DC rectifiers", "earth bonds checked; outlets ON; meter each breaker / fuse output at its free load end "
                                "before landing the load",
               f"with the rectifiers still off, check every earth bond end to end with the meter on ohms (leads nulled), under 0.1 ohm "
@@ -1971,7 +2066,7 @@ class Scene:
                 nds = d["boxes"][[x["id"] for x in d["boxes"]].index(g)]["nodes"]
                 cb += [c["a"].split(".")[1] for c in nodes if self.dev[c["b"].split(".")[0]].get("feeds") in nds]
                 sw_ += [o for (o, lab, _), n in zip(ip, b.inj) if n in nds]
-            txt = ", ".join(cb) + (f" and switch {', '.join(sw_)} OFF" if sw_ else "")
+            txt = " and ".join(x for x in (", ".join(cb), f"switch {', '.join(sw_)} OFF" if sw_ else "") if x)
             if dcin:
                 txt += f", then {', '.join(dcin)}"
                 if len(grp) > 1:
@@ -1989,11 +2084,10 @@ class Scene:
                "or less (80 % of 16 A); if one is above, stop and move a load")
         tight = [s_["supply"] for s_ in self.power_budget() if s_["total_w"] > 0.9 * s_["limit_w"]]
         # fixed pads (if_pads): a bridge has no RF way down, so its ignition is disabled before any node boots
-        bridges = [k for k, v in b.pad_links.items() if v["job"] == "bridge"]
-        ign = (f"before closing any breaker, on the E2E controller (SRV-E2E, up since the last stage) disable ignition "
-               f"for the bridge links {', '.join(bridges)} (tg ignition link -n <link> --disable, one per bridge) and read "
-               "the setting back, so they stay down until MARL engages them (tg ignition link -n <link> --enable); "
-               if bridges else "")
+        bridges = list(b.bridges)
+        ign = ("before closing any breaker, " + BS.bridge_hold_text(b.bridges).replace("(SRV-E2E)", "(SRV-E2E, up since "
+               "the last stage)") + ", so they stay down until MARL engages them after t0 (node level, from the A-end "
+               "agent PC: event procedure); " if bridges else "")
         stage("nodes", (f"close {rng(fan_cb)} (box fans) first and check every fan runs; then " if fan_cb else "") +
               f"{rng(node_cb)} one at a time" + (f"; {' + '.join(b.inj.values())} outlet ON" if b.inj else ""),
               ign +
@@ -2312,14 +2406,22 @@ class Scene:
             out.add(did)
         return out
 
+    PRE_MM = 1.0                # pad stacks pre-assembled on one splitter (fitted in the hand): bodies must not touch
+
     def _loose(self, v):
+        """a part lying loose on a shelf / tray / the table; a pad stack screwed onto a part on a tray (the splitter-tray
+        stacks) counts as loose too: it lies on the tray with its splitter."""
         par = self.dev.get(v.get("parent") or "")
+        if v["kind"] == "padstack" and par and par["kind"] != "spider":
+            gp = self.dev.get(par.get("parent") or "")
+            if gp and gp["kind"] in self.LOOSE_PARENTS:
+                return True
         return (v["group"] == "table") or bool(par and par["kind"] in self.LOOSE_PARENTS)
 
     def _body_checks(self):
         D = list(self.dev.values())
         anc = {v["id"]: self._ancestors(v["id"]) for v in D}
-        over, tight = [], []
+        over, tight, pre = [], [], []
         for i, a in enumerate(D):
             for c in D[i + 1:]:
                 if a["id"] in anc[c["id"]] or c["id"] in anc[a["id"]]:
@@ -2328,6 +2430,8 @@ class Scene:
                      for k in range(3)]
                 if all(v > 0.5 for v in o):
                     over.append(f"{a['id']} x {c['id']} ({' x '.join(str(round(v)) for v in o)} mm)")
+                elif a["kind"] == c["kind"] == "padstack" and a.get("parent") == c.get("parent") and self._loose(a):
+                    pre.append((max(-v for v in o), a["id"], c["id"]))  # one assembly: fitted together in the hand
                 elif self._loose(a) and self._loose(c) and not (a.get("stack") and a.get("stack") == c.get("stack")):
                     gap = max(-v for v in o)
                     if gap < self.CLEAR_MM:
@@ -2368,6 +2472,11 @@ class Scene:
                 dict(name=f"Loose parts keep {self.CLEAR_MM:g} mm clearance (shelves, trays, table)", ok=not tight,
                      detail="; ".join(tight[:30]) or f"{sum(1 for v in D if self._loose(v))} loose parts; explicit stacks "
                                                      f"({nst}) excepted"),
+                *([dict(name=f"Pad stacks on one splitter (fitted together in the hand, splitter-tray step) do not touch "
+                             f"({self.PRE_MM:g} mm or more between bodies)", ok=all(g >= self.PRE_MM for g, _, _ in pre),
+                        detail="; ".join(f"{x} / {y} {g:.1f} mm" for g, x, y in pre if g < self.PRE_MM) or
+                        f"{len(pre)} pairs, closest {min(g for g, _, _ in pre):.1f} mm ({min(pre)[1]} / {min(pre)[2]}); "
+                        "torqued off the tray, P2 on a short M-F adapter if they foul")] if pre else []),
                 dict(name="Every part sits on its shelf, tray or the table", ok=not out, detail="; ".join(out) or "all inside"),
                 dict(name="Stacked items are seated on the item below (upper y = lower y + height + spacer)", ok=not stk,
                      detail="; ".join(stk) or f"{nst} stacked"),
@@ -2422,7 +2531,11 @@ class Scene:
 
     def fill(self, text):
         """'{step:<title>}' -> that step's number; '{if_slack}' -> the lowest IF slack."""
-        text = re.sub(r"\{step:([^}]+)\}", lambda m: str(self.step_titles.get(m.group(1), "?")), text)
+        text = re.sub(r"\{step:([^}]+)\}", lambda m: str(self.step_titles.get(m.group(1)) or
+                                                          getattr(self, "step_no", {}).get(m.group(1), "?")), text)
+        if "{tray_pad_" in text:
+            pitch, gap = self.tray_pad_gap()
+            text = text.replace("{tray_pad_pitch}", f"{pitch:.0f}").replace("{tray_pad_gap}", f"{gap:.0f}")
         return text.replace("{if_slack}", self.if_slack())
 
     def to_json(self):
@@ -2433,7 +2546,18 @@ class Scene:
                               switched=self.b.switched, tentative=True),
                     rack=self.rack, table=self.table, devices=list(self.dev.values()), ports=list(self.ports.values()),
                     cables=self.cables, steps=self.steps, checks=self.checks, assumptions=assumed, legend=legend,
-                    power_up=self.power_up, power_budget=self.budget, **self.pad_schedule())
+                    power_up=self.power_up, power_budget=self.budget, **self.pad_schedule(), **self.bridge_procedure())
+
+    def bridge_procedure(self):
+        """scene field 'bridges' (additive, fixed-pad benches with MARL bridges only): one row per bridge (link, TG link
+        name, A-end node / sector, B-end sector, agent PC) and the hold / engage / after-the-run texts."""
+        b = self.b
+        if not b.bridges:
+            return {}
+        return dict(bridges=dict(rows=[dict(v) for v in b.bridges.values()], hold=BS.bridge_hold_text(b.bridges),
+                                 engage=BS.bridge_engage_text(b.bridges), after=b.bridge_after_text(),
+                                 tbc="TG link names (link-<A node>-<B node>) TBC with the lab topology; minion-level "
+                                     "association with no E2E controller TBC on the N367 firmware (open question)"))
 
     def pad_schedule(self):
         """scene field 'pad_schedule' (additive, fixed-pad benches only): one row per IF link (target, rounded, fitted
