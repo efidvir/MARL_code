@@ -14,8 +14,8 @@ the validator's bridge candidates.
 | 7 | 60 GHz | Siklu TG terminal (T265 class), RF-port build | 2 | 0 | 1 | 1 | 0 | shelter / field-hospital pockets |
 | 8 | 60 GHz | V-band programmable attenuator (one per cabled TG link) | 9 | 9 (PoC 1: 0) | 14 | 15 | 6 | hub links and the chosen bridges (A, A7) or every feasible bridge (B-D); takes links down at the event |
 | 9 | 60 GHz | V-band splitter / combiner | 6 | 6 | 8 | 9 | 4 | one per sector port that reaches more than one peer |
-| 10 | 60 GHz | V-band fixed pad (one per used sector port) | 12 | 12 | 13 | 14 | 7 |  |
-| 11 | 60 GHz | V-band waveguide / mm-wave cable jumpers | 24 | 24 | 36 | 39 | 16 | two per path + one per splitter |
+| 10 | 60 GHz | V-band fixed pad (one per used sector port) | 12 | 12 (PoC 1: 72 BW-S pads in 36 stacks) | 13 | 14 | 7 |  |
+| 11 | 60 GHz | V-band waveguide / mm-wave cable jumpers | 24 | 24 (PoC 1: 44 SMA, one per tile path + 8 splitter S) | 36 | 39 | 16 | two per path + one per splitter |
 | 12 | Power | PoE injector for TG unit (rating per datasheet) | 8 | 7 | 6 | 6 | 4 |  |
 | 13 | Power | Switched, metered PDU (per-outlet, network-controlled) | 8 | 8 | 7 | 7 | 5 | switches CORE and HUB off at t0; energy per site |
 | 14 | Network | Site router / L3 switch, per-flow policy routing, SFP+ | 7 | 7 | 6 | 6 | 4 | every site with wired kit (not the TG-only hub); pins DPIR paths |
@@ -30,9 +30,10 @@ the validator's bridge candidates.
 | 23 | Test | Microwave + V-band power meters (calibration) | 1 | 1 | 1 | 1 | 1 | one set |
 
 A7 is built as PoC 1 (bench_spec.py, out/poc1_parts_list.md), which supersedes its column here: no
-programmable attenuators (rows 4 and 8 are 0 for PoC 1, and row 5 is one SMA cable per hop, no J7204B: the
-'PoC 1:' figures in the A7 column); every IF tile path has a fixed BW-S pad stack, and each IP-50 hop is a
-fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+, one SMA cable).
+programmable attenuators (rows 4 and 8 are 0 for PoC 1, row 5 is one SMA cable per hop, no J7204B, and rows
+10-11 count PoC 1's fixed pads and one IF cable per tile path: the 'PoC 1:' figures in the A7 column); every IF
+tile path has a fixed BW-S pad stack, and each IP-50 hop is a fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+,
+one SMA cable).
 
 ## V-band RF mesh per option
 

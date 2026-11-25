@@ -20,7 +20,8 @@ A design is a plain dict:
                                                   value each link's fixed pads stand in for
   att_reuse  int                                  attenuators carried over from PoC 1 (optional)
   if_pads    bool  (PoC 1) no programmable attenuators: every IF tile path gets a fixed pad stack (BW-S<n>W2+,
-             at most PAD_MAX pads) on its A-end port (the hub splitter's P1/P2, else the A tile), sized from att_set
+             at most PAD_MAX pads) on one end's tile (a split hub module's links: the B tile, after the splitter;
+             every other link: the A tile), sized from att_set
   mw_pads    bool  (PoC 1) no J7204B (MWATT): every IP-50 hop is radio - transition - 30 dB 10 W pad - 10 dB pad -
              one SMA cable - 30 dB 10 W pad - transition - radio
   event      text; event_off [device]   (PoC 1) devices that go down at t0 lose power: servers, TG nodes and
@@ -83,11 +84,20 @@ MW_PAD_LO = ("BW-S10W2+", 10)                       # A side, after the 30 dB pa
 MW_PAD_LO_K = "2.92 mm 10 dB fixed attenuator DC-40 GHz (part TBC)"   # replaces MW_PAD_LO if the band is 23 GHz
 # port check (fixed pads, TENTATIVE): expected link figures from the A7 model (option_A7_sectors.md 'Margin up' = clear-air
 # margin above the lowest data MCS threshold) and Terragraph's link-adaptation SNR thresholds (copied from poc2.MCS:
-# QTI firmware 10.11 defaults, laMinMcs 2, MCS5 disabled); a link outside +/- PORT_CHECK_TOL_DB of its expected SNR gets
-# a trim pad (TRIM_PADS, at the B tile) or a smaller outer pad
+# QTI firmware 10.11 defaults, laMinMcs 2, MCS5 disabled). The pad values are the A7 paper model's settings and the
+# bench's real tile-to-tile budget is not measured yet, so the port check measures every link and corrects its pads
+# from the reading: a link outside +/- PORT_CHECK_TOL_DB of its expected SNR changes its stacks by the difference, with
+# the calibration kit (CAL_KIT: CAL_KIT_N of each value, one link's tile paths at a time; owner, 2026-11-25)
 TG_MCS_SNR = [(4.5, 2), (5.5, 3), (6.5, 4), (7.5, 6), (8.5, 7), (9.5, 8), (10.5, 9), (13.5, 10), (14.5, 11), (16.5, 12)]
 PORT_CHECK_TOL_DB = 3.0
-TRIM_PADS = (3, 5)              # 4 of each (one link's four tile paths): 3, 5 or 3 + 5 = 8 dB at the B tile
+# one rule for every SMA joint of a fixed-pad bench (guide, steps, blueprint notes): which part the backing wrench holds
+BACKING_RULE = ("the torque wrench turns only the male coupling nut, to 8 in-lb (0.9 N m); the backing wrench holds the "
+                "body of the part that nut belongs to (the pad's body, or the cable plug's body) so it cannot turn with "
+                "the nut; never a wrench on a splitter or on a tile jack (if a tile jack turns, stop: its panel nut is "
+                "loose)")
+CAL_KIT = (1, 2, 3, 5, 10)      # BW-S<n>W2+: together any 1-21 dB change
+CAL_KIT_N = 4                   # of each value: one link's four tile paths at a time
+PAD_MAX_FIX = 3                 # pads on one tile path after a port-check correction (schedule stacks: PAD_MAX)
 BELDEN_SPOOL_M = 30.48          # Belden 8461, 100 ft spool
 DC_WASTE = 0.10                 # stripping, dressing and offcuts on bulk DC cable
 DC_CUT = ("Belden 8461", "bus link", "bus strap", "PE 6 mm2", "PE 2.5 mm2")   # cut from bulk to the twin route + 10 %
@@ -243,7 +253,17 @@ def bridge_hold_text(br):
             f"; {TG_NAMES_TBC}) and read the setting back")
 
 
-def bridge_engage_text(br):
+def bridge_fallback_text(br, e2e_outlet=None):
+    """the fallback if the N367 firmware refuses a minion-level association (owner, 2026-11-25): SRV-E2E stays powered
+    at t0 and MARL enables the bridge's ignition through it; wired today, no new parts."""
+    tg = next(iter(br.values()))["tg"] if br else "link-<A>-<B>"
+    return ("if the N367 firmware refuses minion-level association: leave SRV-E2E's outlet" +
+            (f" ({e2e_outlet})" if e2e_outlet else "") + " ON at t0, so the controller stays up and "
+            f"MARL enables the bridge ignition through it (tg ignition link -n {tg} --enable, TBC); the scenario then "
+            "loses only its controller-down part")
+
+
+def bridge_engage_text(br, e2e_outlet=None):
     """how MARL engages a bridge after t0, with no E2E controller (SRV-E2E is switched off at t0)."""
     return ("MARL engages a bridge at node level, with no E2E controller (SRV-E2E is off after t0): the MARL agent of the "
             "bridge's A-end node sends the Terragraph minion command tg2 minion assoc to its node (initiator = the A-end "
@@ -251,8 +271,7 @@ def bridge_engage_text(br):
             "have no SW-OOB port): " +
             "; ".join(f"{k} from {v['agent'] or 'its A-end agent'} ({v['a_sector']} to {v['b_sector']})" for k, v in br.items())
             + ". TBC: that the N367 firmware accepts a minion-level association with no controller running (open "
-            "question); fallback: a standby E2E controller on BENCH-CTL (never switched), or SRV-E2E on an unswitched "
-            "outlet")
+            "question). Fallback " + bridge_fallback_text(br, e2e_outlet))
 
 
 # ------------------------------------------------------------------------------------------
@@ -316,11 +335,10 @@ def poc1_design():
         event="t0: the devices that die lose power at their switched PDU outlets: the hub (its AC PoE injector), "
               "CORE's two IP-50 radios, SRV-E2E and SRV-DPIR. The hub's six paths and the W1-CORE and CORE-E1 hops go "
               "down with them; nothing RF moves at t0 (fixed pads, no programmable attenuators). W1-W2 and E1-E2 "
-              f"unchanged. The bridges {', '.join(bridges)} (links between surviving nodes, on their fixed pads) are "
-              "held down before t0 with Terragraph ignition disabled on the E2E controller (TG links "
-              f"{', '.join(f'link-{link_ends[k][0][0]}-{link_ends[k][1][0]}' for k in bridges)}, names TBC). SRV-E2E is "
-              "off after t0, so MARL engages a bridge at node level: the A-end node's agent PC sends tg2 minion assoc "
-              "to its node (TBC on the N367 firmware; fallback: a standby E2E controller on BENCH-CTL). No RF change.",
+              f"unchanged. The bridges {', '.join(bridges)} (links between surviving nodes) are held down before t0 "
+              "with Terragraph ignition disabled on the E2E controller; SRV-E2E is off after t0, so MARL engages a "
+              "bridge at node level from the A-end node's agent PC (tg2 minion assoc, TBC on the N367 firmware; "
+              "fallback: SRV-E2E stays on at t0 and MARL enables the bridge's ignition). No RF change.",
         dcin_word="green 4-pole DC header",
         dcin_plug="4-pole pluggable screw-terminal plug, Phoenix MSTB 2.5/4-STF class, pitch TBC",
         event_off=["SRV-E2E", "SRV-DPIR", "HUB", "IP50-W1-CORE@CORE", "IP50-CORE-E1@CORE"],
@@ -851,28 +869,36 @@ class Bench:
         self._size_rf()
 
     def _pad_links(self, T, tray):
-        """if_pads: one cable per tile path, from a fixed pad stack screwed straight onto the A-end port (the hub
-        splitter's P1 / P2 for a split hub module, else the A tile) to the B tile; one bundle (4 tiles) per link."""
+        """if_pads: one cable per tile path and one fixed pad stack per tile path, screwed straight onto a Spider tile.
+        A split hub module's links (HUB-W / HUB-E): splitter P1 / P2 -> cable -> pad stack on the B tile (the stacks
+        stay off the splitter tray, which cannot be reached once the Spider boxes are in; owner, 2026-11-25). Every
+        other link: pad stack on the A tile -> cable -> B tile. One bundle (4 tiles) per link."""
         d = self.d
         for name, (sa, sb) in d["link_ends"].items():
             pl = self.pad_links[name]
             parts_ = pad_parts(pl["pn"])
             bx_b, m_b = d["module"][sb]
             for t in T:
-                if sa in self.split:
-                    k = d["splitters"][sa].index(name) + 1
-                    host, ua, xa = f"{self.split[sa]}.t{t}.P{k}", tray, mod_x(d["module"][sa][1], t)
-                else:
-                    bx_a, m_a = d["module"][sa]
-                    host, ua, xa = f"{bx_a}.{m_a}.T{t}", bx_a, mod_x(m_a, t)
                 pid = f"PAD-{name}.t{t}"
-                self.pads[pid] = dict(chain="if", link=name, tile=t, host=host, side="a", parts=parts_, db=pl["db"],
+                if sa in self.split:            # stack on the B tile; the cable from the splitter port to the stack
+                    k = d["splitters"][sa].index(name) + 1
+                    host, side = f"{bx_b}.{m_b}.T{t}", "b"
+                    a_end, b_end = f"{self.split[sa]}.t{t}.P{k}", f"{pid}.out"
+                    geo = (tray, mod_x(d["module"][sa][1], t), bx_b, mod_x(m_b, t))
+                    note = (f"{name} tile {t}: from {self.split[sa]}.t{t} P{k} to the {pl['text']} dB pad stack on "
+                            f"{sb[0]}.{sb[1]} tile {t} ({host})")
+                else:                           # stack on the A tile; the cable from the stack to the B tile
+                    bx_a, m_a = d["module"][sa]
+                    host, side = f"{bx_a}.{m_a}.T{t}", "a"
+                    a_end, b_end = f"{pid}.out", f"{bx_b}.{m_b}.T{t}"
+                    geo = (bx_a, mod_x(m_a, t), bx_b, mod_x(m_b, t))
+                    note = (f"{name} tile {t}: from the {pl['text']} dB pad stack on {host} to {sb[0]}.{sb[1]} "
+                            f"tile {t}")
+                self.pads[pid] = dict(chain="if", link=name, tile=t, host=host, side=side, parts=parts_, db=pl["db"],
                                       target=pl["target"], rounded=pl["rounded"], text=pl["text"],
                                       stack_mm=sum(p["len_mm"] for p in parts_), dia_mm=max(p["dia_mm"] for p in parts_))
                 self.pad_host[host] = pid
-                self.add("RF", f"{pid}.out", f"{bx_b}.{m_b}.T{t}", "{pn}", "",
-                         f"{name} tile {t}: from the {pl['text']} dB pad stack on {host} to {sb[0]}.{sb[1]} tile {t}",
-                         geo=(ua, xa, bx_b, mod_x(m_b, t)), bundle=(name, "pad"), pad=pid)
+                self.add("RF", a_end, b_end, "{pn}", "", note, geo=geo, bundle=(name, "pad"), pad=pid)
 
     def _mw_pad_chain(self, k, ra, rb):
         """mw_pads: radio - transition - 30 dB 10 W pad (- 10 dB pad, A side) - ONE SMA cable - 30 dB 10 W pad -
@@ -991,7 +1017,7 @@ def rack_layout(b):
                       f"{x['kind']} · serial {BOX_SERIAL.get(x['code'], 'TBC')} · TG polarity {'/'.join(pols)} (E2E setting)"))
     if b.split:
         units.append(("SPL-TRAY", 1, "Splitter tray (shelf)", f"{len(b.split) * b.tiles} x 2-way splitters ZN2PD-02183-S+" +
-                      (", the hub links' pad stacks on P1 / P2" if b.if_pads else "")))
+                      ""))
     if b.coupled:
         # 3U: the DC block (+ pad), the plug and the cable bend stand on each coupler's top CPL port (about 95 mm)
         units.append(("CPL-TRAY", 3, "Coupler tray (1U shelf, 2U clear above)",
@@ -1205,30 +1231,16 @@ def parts(b):
     if b.if_pads:
         # fixed pads per value (pad schedule: bench_spec.pad_stack), ~10 % spare per value, at least 1
         cnt = Counter(p["pn"] for v in b.pads.values() if v["chain"] == "if" for p in v["parts"])
-        # port-check trim pads: one link's four tile paths per value, fitted at the B tile if a link reads too strong
-        trim = {f"BW-S{v}W2+": b.tiles for v in TRIM_PADS}
-        for pn in sorted(set(cnt) | set(trim), key=lambda x: int(re.sub(r"\D", "", x.split("W2")[0]))):
-            q = cnt.get(pn, 0)
+        for pn in sorted(cnt, key=lambda x: int(re.sub(r"\D", "", x.split("W2")[0]))):
+            q = cnt[pn]
             links = [k for k, v in b.pad_links.items() if pn in v["pn"]]
             per = sorted({v["pn"].count(pn) for k, v in b.pad_links.items() if k in links})
-            sp = max(1, math.ceil(q * PAD_SPARE)) if q else 0
-            tq = trim.get(pn, 0)
-            qty = " + ".join(x for x in (f"{q}" if q else "", f"{sp} spare" if sp else "", f"{tq} trim" if tq else "") if x)
-            use_ = (f"{' or '.join(map(str, per)) if per != [1] else 'one'} per tile path of {', '.join(links)} "
-                    f"({len(links)} link{'s' if len(links) > 1 else ''} x {b.tiles} tiles; pad schedule: guide 'Pad schedule' "
-                    f"page and blueprint sheet 6); {sp} spare" if q else "")
-            if tq:
-                use_ += ("; " if use_ else "") + (f"{tq} port-check trim pads (one link's {b.tiles} tile paths: fitted at the "
-                                                  "B tile if the link reads too strong; guide 'Port check')")
+            sp = max(1, math.ceil(q * PAD_SPARE))
             add("RF/IF", "-", f"Fixed attenuator (pad) DC-18 GHz 2 W, SMA M-F, {pn[4:-3]} dB", pn, "Mini-Circuits",
-                qty, use_, "likely (value from the A7 model; confirm at the port check)")
-        if b.split:
-            # the P1 / P2 stacks of one splitter lie about 2 mm apart (estimate): P2's through an adapter if they foul
-            ns = len(b.split) * b.tiles
-            add("RF/IF", "-", "SMA male to SMA female adapter DC-18 GHz (short, straight)", "SM-SF50+", "Mini-Circuits",
-                f"{ns} if needed + 1 spare", "P2 stacks only, if the two stacks of a splitter foul: P2's stack screws on "
-                "through the adapter so its nuts stand beyond P1's (splitter-tray step); order once a pad is measured",
-                "if needed")
+                f"{q} + {sp} spare",
+                f"{' or '.join(map(str, per)) if per != [1] else 'one'} per tile path of {', '.join(links)} "
+                f"({len(links)} link{'s' if len(links) > 1 else ''} x {b.tiles} tiles; pad schedule: guide 'Pad schedule' "
+                f"page and blueprint sheet 6); {sp} spare", "likely (value from the A7 model; corrected at the port check)")
     if b.coupled:
         add("RF/IF", "-", "10 dB directional coupler 1-18 GHz, SMA-F (one part for all 16 positions)", "KRYTAR 1821", "KRYTAR",
             len(b.coupled) * b.tiles, "IN from the module tile, THRU to the link attenuator, CPL to the arm "
@@ -1261,6 +1273,15 @@ def parts(b):
         ", ".join(x for x in ((f"{open_tiles} unused Spider tile ports" if open_tiles else ""),
                               (", ".join(f"GNSS-SPL.out{i}" for i in range(len(d["nodes"]) + 1, 9)) if open_gnss > 0 else ""))
                   if x) or "spares only", "confirmed")
+    if b.if_pads:
+        # port-check calibration kit (owner, 2026-11-25): one link's tile paths at a time, kept apart from the schedule pads
+        for v in CAL_KIT:
+            add("Port-check kit", "-", f"Fixed attenuator (pad) DC-18 GHz 2 W, SMA M-F, {v} dB", f"BW-S{v}W2+",
+                "Mini-Circuits", CAL_KIT_N,
+                f"port-check calibration kit ({len(CAL_KIT) * CAL_KIT_N} pads: {CAL_KIT_N} each of "
+                f"{', '.join(map(str, CAL_KIT))} dB, one link's {b.tiles} tile paths at a time; together any 1-"
+                f"{sum(CAL_KIT)} dB change): corrects a link that reads outside its band (guide 'Port check'); "
+                "not part of the pad schedule", "likely")
     if hops:
         add("IP-50 chain", "-", "Waveguide-to-coax transition, WR-62 12.4-18 GHz (<=18 GHz set)", "PEWCA1003", "Pasternack",
             2 * hops, "band and flange mating TBC", "likely", cab={"PEWCA1003": b.count_pn("PEWCA1003")})

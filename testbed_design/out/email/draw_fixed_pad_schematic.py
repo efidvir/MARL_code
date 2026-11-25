@@ -90,7 +90,9 @@ for i, t in enumerate(["INJ-HUB (PoE injector of the hub node)", "PSU of IP-50 W
 ny = 6.0
 ax.plot([3, 9], [ny, ny], color=RED, lw=2.4); ax.text(10, ny, "goes down at t0 because a device is powered off", va="center", fontsize=9, color=INK)
 ax.plot([52, 58], [ny, ny], color=GREEN, lw=2.4); ax.text(59, ny, "bridge: link disabled in Terragraph until MARL enables it", va="center", fontsize=9, color=INK)
-ax.text(3, 1.8, "No attenuator moves in the scenario, so fixed pads set every path loss (values = the former attenuator settings, "
-        "rounded to what two pads make). Splitters: S to the hub tile, P1 / P2 to the pads. Torque SMA to 8 in-lb.", fontsize=8.8, color=MUTED)
+ax.text(3, 2.6, "No attenuator moves in the scenario, so fixed pads set every path loss (values = the former attenuator settings, "
+        "rounded to what two pads make; corrected at the port check).", fontsize=8.8, color=MUTED)
+ax.text(3, 0.6, "Every pad stack screws onto a Spider tile: the hub W / E links' on the B-end tile (splitter P1 / P2 cabled to it), "
+        "the others' on the A-end tile. Torque SMA to 8 in-lb.", fontsize=8.8, color=MUTED)
 fig.savefig("/home/user/MARL_code/testbed_design/out/email/poc1_schematic_fixed_pads.png", dpi=160)
 print("ok")

@@ -6,8 +6,9 @@
 //   U7-U4 the four Siklu Spider boxes (16 SMA ports each: 4 sector modules x 4),
 //   U3 the tray with the hub's two splitters, U2 the DC drawer, U1 the switched PDU.
 // PoC 1 has no programmable attenuators (user, 2026-11-25): each link's front cables run
-// tile to tile through a fixed pad stack at the A end (on the splitter's P1 / P2 for the
-// hub's W and E links, on the A-end tile for the others); one cable drawn per sector side;
+// tile to tile through a fixed pad stack screwed onto a Spider tile (the hub's W and E links:
+// splitter P1 / P2 -> cable -> stack on the B-end tile, so the tray carries only splitters;
+// the others: stack on the A-end tile -> cable -> B tile); one cable drawn per sector side;
 // the E2-W2 bridge is the lit accent.  On the bench beside the rack, the four IP-50 hops in
 // a 2 x 2 grid, the two radios of a hop facing: radio, transition, 30 dB pad, 10 dB pad,
 // one SMA cable, 30 dB pad, transition, radio.
@@ -172,22 +173,19 @@ function splitters(u) {
 const SPLIT_PORT = (which, port) => [(which === "W" ? 60 : 150) + [8, 25, 42][port], FY + 6];
 
 function splitterPorts(u) {
+  // S, P1 and P2 of each splitter group: plain SMA ports (the hub links' pad stacks sit on their B tiles)
   const zc = zU(u) + U / 2;
   const out = [];
   for (const which of ["W", "E"]) for (let p = 0; p < 3; p++) {
     const [x, y] = SPLIT_PORT(which, p);
     out.push(box({ x: x - 1.6, y, w: 3.2, d: 3, r: 0.9 }, zc - 1.6, 3.2, { tone: "mid" }));
-    if (p === 0) {
-      out.push(L(k.sideRing([x, y + 3, zc], 0.9, "y", P, 14), { tone: "lo" }), D([at([x, y + 3, zc])], { size: 0.35, tone: "hi" }));
-    } else {
-      out.push(padStack(x, y + 3, zc));         // P1 / P2: the two links' pad stacks
-    }
+    out.push(L(k.sideRing([x, y + 3, zc], 0.9, "y", P, 14), { tone: "lo" }), D([at([x, y + 3, zc])], { size: 0.35, tone: "hi" }));
   }
   return out.join("");
 }
 
 function tilePads(u, mods, litMods = []) {
-  // pad stacks on the first tile of the A-end modules of a Spider box (one drawn per sector side)
+  // pad stacks on the first tile of the modules that carry them (one drawn per sector side)
   const zc = zU(u) + U / 2;
   return mods.map((m) => padStack(smaX(m, 0), FY + 4.8, zc, { lit: litMods.includes(m) })).join("");
 }
@@ -283,17 +281,18 @@ const W1 = (m) => spiderPort(SB.W, m);          // W1 modules 0,1 ; W2 modules 2
 const HUB = (m) => spiderPort(SB.HUB, m);       // W, E, S, N
 const SN = (m) => spiderPort(SB.SN, m);         // S modules 0,1 ; N modules 2,3
 const E12 = (m) => spiderPort(SB.E, m);         // E1 modules 0,1 ; E2 modules 2,3
-// one cable per tile path: from the pad stack at the A end (splitter P1 / P2, or the A tile) to the B tile
+// one cable per tile path: splitter P1 / P2 to the pad stack on the B tile (hub W / E links), else from the
+// pad stack on the A tile to the B tile
 const CABLES = [
   [HUB(0), splitPort("W", 0)], [HUB(1), splitPort("E", 0)],          // hub W / E tiles -> splitter S
-  [padEnd(splitPort("W", 1)), W1(0)], [padEnd(splitPort("W", 2)), W1(2)],   // HUB-W1, HUB-W2
-  [padEnd(splitPort("E", 1)), E12(0)], [padEnd(splitPort("E", 2)), E12(2)], // HUB-E1, HUB-E2
+  [splitPort("W", 1), padEnd(W1(0))], [splitPort("W", 2), padEnd(W1(2))],   // HUB-W1, HUB-W2
+  [splitPort("E", 1), padEnd(E12(0))], [splitPort("E", 2), padEnd(E12(2))], // HUB-E1, HUB-E2
   [padEnd(HUB(2)), SN(0)], [padEnd(HUB(3)), SN(2)],                         // HUB-S, HUB-N
   [padEnd(E12(3)), W1(3), true],                                            // E2-W2 (the lit bridge)
   [padEnd(E12(1)), SN(3)], [padEnd(W1(1)), SN(1)],                          // E1-N, W1-S
 ];
-// the A-end modules that carry a pad stack, per Spider box
-const TILE_PADS = { [SB.HUB]: [2, 3], [SB.E]: [1, 3], [SB.W]: [1] };
+// the modules that carry a pad stack, per Spider box (A ends, and the hub W / E links' B ends)
+const TILE_PADS = { [SB.HUB]: [2, 3], [SB.E]: [0, 1, 2, 3], [SB.W]: [0, 1, 2] };
 
 function bezier(p0, p1, p2, p3, n = 28) {
   const out = [];
@@ -470,7 +469,7 @@ function front() {
 const svg = k.figureSvg({
   width: WIDTH,
   height: HEIGHT,
-  label: "The A7 conducted bench. A 19-inch rack holds, top to bottom, blanking panels, a Netgear switch, a shelf of six agent PCs, a cable manager, the four Siklu Spider boxes with sixteen SMA ports each, a tray with the hub's splitters, a DC drawer and a PDU. Each link's front cables run tile to tile through fixed pad stacks (on the splitter ports for the hub's W and E links, on the A-end tiles for the others); the E2 to W2 bridge is highlighted. On the bench beside the rack, the four IP-50 hops, each radio to radio through a 30 dB pad, a 10 dB pad, one SMA cable and a 30 dB pad.",
+  label: "The A7 conducted bench. A 19-inch rack holds, top to bottom, blanking panels, a Netgear switch, a shelf of six agent PCs, a cable manager, the four Siklu Spider boxes with sixteen SMA ports each, a tray with the hub's splitters, a DC drawer and a PDU. Each link's front cables run tile to tile through fixed pad stacks screwed onto Spider tiles (on the B-end tiles for the hub's W and E links, after the splitter; on the A-end tiles for the others); the E2 to W2 bridge is highlighted. On the bench beside the rack, the four IP-50 hops, each radio to radio through a 30 dB pad, a 10 dB pad, one SMA cable and a 30 dB pad.",
   body: [rackBack(), bodies(), rackFront(), front(), rackTop(), cables(), bench()],
 });
 

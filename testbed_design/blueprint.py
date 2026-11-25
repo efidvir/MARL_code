@@ -345,7 +345,7 @@ def body_key(s, x, y, kind, pads=False):
                                  ((x - 1.2 * k, y - 2 * k), "P1", -2.6), ((x + 1.2 * k, y - 2 * k), "P2", -2.6)):
             s.ax.add_patch(Circle((px, py), 1.4, fc=PAPER, ec=INK, lw=0.5, zorder=11))
             s.text(px, py + dy, nm, fs=4.4, ha="center", va="center")
-        s.text(x + 9, y, "ZN2PD-02183-S+\nP1 / P2 take the two links'\npad stacks (P1 = first link)" if pads else
+        s.text(x + 9, y, "ZN2PD-02183-S+\nP1 / P2 to the two links'\ncables (P1 = first link)" if pads else
                "ZN2PD-02183-S+\nP1 / P2 to the two links'\nattenuators (P1 = first link)", fs=4.2, va="center", color=DIM)
     else:
         s.rect(x - 1.9 * k, y - 2.0 * k, 3.8 * k, 4.0 * k, fc=PLATE, lw=0.6, z=10, r=1.0)
@@ -573,7 +573,7 @@ def sheet_rack(b, pdf, n, N, prefix):
         off.append(["TABLE-EARTH", "bench-table earth bar (radios)", "table back edge"])
     s.text(302, 276, "OFF-RACK", fs=6.5, fontweight="bold")
     s.table(302, 272, ["ID", "Item", "Where"], off, [24, 50, 30], fs=4.2, rh=3.6)
-    s.notes(128, min(yb - 6, 100), [
+    s.notes(128, min(yb - 6, 106 if b.if_pads else 100), [
         "Spider boxes shaded; their modules and ports are drawn on sheet 2 (front) and sheets 3-4 (rear).",
         "Power at the bottom (PDUs, rectifiers, distribution, adaptors), as in figures/bench_a7.mjs.",
         "IF cable lengths come from the twin routes through the side lanes (sheet 6, cable schedule).",
@@ -581,8 +581,8 @@ def sheet_rack(b, pdf, n, N, prefix):
         b.cable(cls="PE", a="RACK-EARTH.E1")["id"] + ") before anything is powered.",
         f"Keep AC, DC, Ethernet/fibre and SMA bundles apart. Blank the {size - total} empty U (AR8136BLK).",
         "Rack depth, rail type and the Spider boxes' rear panels to confirm before ordering shelves.",
-    ] + (["No programmable attenuators and no J7204B: fixed pad stacks on the splitter tray's P1 / P2 and on the A-end "
-          "tiles (sheet 2), values in the pad schedule (sheet 6); the IP-50 chains' fixed pads are on sheet 5."]
+    ] + (["No programmable attenuators and no J7204B: fixed pad stacks on Spider tiles (sheet 2), values in the pad "
+          "schedule (sheet 6); the IP-50 chains' fixed pads are on sheet 5."]
          if b.if_pads else [])
       + ([f"Event: {b.d['event']}"] if b.d.get("event") else []), width=78)
     s.save(pdf, os.path.join(OUT, f"{prefix}_blueprint_{n}.png"))
@@ -729,8 +729,8 @@ def sheet_front(b, pdf, n, N, prefix):
 
 def front_pads(s, b, sp_ports, split_ports, col, T):
     """Sheet 2 with fixed pads (if_pads): one block per link holds its four pad stacks (drawn out of place); a dotted
-    leader goes from the port each stack screws onto (splitter P1 / P2, or the A tile) to its IN, and the link's cable
-    from its OUT up to the B tile, ID tagged at both ends."""
+    leader goes from the tile each stack screws onto (the B tile after a hub splitter, else the A tile) to its IN, and
+    the link's cable from its OUT to the other end (splitter P1 / P2, or the B tile), ID tagged at both ends."""
     d = b.d
     box_tag = 238.8
     links = list(d["link_ends"].items())
@@ -745,19 +745,23 @@ def front_pads(s, b, sp_ports, split_ports, col, T):
         for t in T:
             pid = f"PAD-{name}.t{t}"
             host = b.pads[pid]["host"]
-            if sa in b.split:
-                h0 = split_ports[(sa, t)][1][d["splitters"][sa].index(name) + 1]
-            else:
-                bxa, ma = d["module"][sa]
-                h0 = sp_ports[(bxa, ma, t)]
-                s.tag(h0[0], box_tag, "pad", c, va="top", fs=3.4)
+            hb, hm = host.split(".")[:2]
+            h0 = sp_ports[(hb, hm, int(host.rsplit("T", 1)[1]))]      # the tile the stack screws onto
+            s.tag(h0[0], box_tag, "pad", c, va="top", fs=3.4)
             pin, pout = pp[(t, "in")], pp[(t, "out")]
             s.cable(h0, (pin[0], pin[1] + 1.0), c, lw=0.55, ls=(0, (1.0, 1.1)), alpha=0.9)
-            cab = b.cable(cls="RF", a=f"{pid}.out")
-            assert host and cab["b"] == f"{bxb}.{mb}.T{t}"
-            p1 = sp_ports[(bxb, mb, t)]
-            s.cable(p1, (pout[0], pout[1] + 1.0), c, lw=0.6)
-            s.tag(p1[0], box_tag, cab["id"], c, va="top")
+            if sa in b.split:                           # splitter P<k> -> cable -> the stack on the B tile
+                assert host == f"{bxb}.{mb}.T{t}"
+                cab = b.cable(cls="RF", b=f"{pid}.out")
+                p1 = split_ports[(sa, t)][1][d["splitters"][sa].index(name) + 1]
+                s.cable(p1, (pout[0], pout[1] + 1.0), c, lw=0.6)
+                s.tag(p1[0], p1[1] - 0.7, cab["id"], c, va="top", fs=3.6)
+            else:                                       # the stack on the A tile -> cable -> the B tile
+                cab = b.cable(cls="RF", a=f"{pid}.out")
+                assert cab["b"] == f"{bxb}.{mb}.T{t}"
+                p1 = sp_ports[(bxb, mb, t)]
+                s.cable(p1, (pout[0], pout[1] + 1.0), c, lw=0.6)
+                s.tag(p1[0], box_tag, cab["id"], c, va="top")
             s.tag(pout[0], top_tag, cab["id"], c, va="bottom")
     for sec, sid in b.split.items():
         bx, m = d["module"][sec]
@@ -779,27 +783,27 @@ def front_pads(s, b, sp_ports, split_ports, col, T):
     s.line([(16, yj), (24, yj)], color=INK, lw=1.8, z=12)
     s.text(26, yj, "module tile -> splitter S (shared by the two links)", fs=4.6, va="center")
     s.line([(110, yj), (118, yj)], color=DIM, lw=1.0, z=12, ls=(0, (1.0, 1.1)))
-    s.text(120, yj, "pad stack screwed onto this port (no cable)", fs=4.6, va="center")
+    s.text(120, yj, "pad stack screwed onto this tile (no cable)", fs=4.6, va="center")
     if b.split:
         body_key(s, 30, yj - 20, "spl", pads=True)
     stack = max(v["stack_mm"] for v in b.pads.values() if v["chain"] == "if")
     s.notes(200, 100, [
         "Tile n of a module goes to tile n of its peer, through tile n's pad stack; never swap tiles.",
         "No programmable attenuators: each link has a fixed pad stack per tile (values on sheet 6). The stacks are drawn "
-        "in one row for clarity; each screws straight onto the port its dotted leader comes from: the hub W / E links on "
-        "the splitter's P1 / P2 (they lie on the tray), every other link on its A-end tile (first site of the link name).",
+        "in one row for clarity; each screws straight onto the tile its dotted leader comes from ('pad'): the hub W / E "
+        "links on their B-end tiles (after the splitter and the cable), every other link on its A-end tile (first site "
+        "of the link name). The splitter tray carries only splitters.",
         f"A stack on a tile stands about {stack:g} mm proud of the box: strap its cable to the seam bundle at the unit's "
         "lower edge (or the cable manager) within 150 mm, then to the side lane, so the tile carries only the stack.",
-        "Splitter-tray stacks are fitted onto the splitters in the hand before the splitters go on the tray (P1 then P2, "
-        "about 2 mm between the two stacks: no wrench fits there on the tray), and the tray ends of their cables (S and "
-        "both stack OUTs) are torqued in the same session: once the Spider boxes are in, no tray joint can be reached.",
-        "Tag both ends of every cable with the ID shown; torque every SMA and every pad joint to 8 in-lb with a backing "
-        "wrench.",
+        "The tray ends of the splitter cables (S, P1, P2) are torqued in the hand before the splitters go on the tray: "
+        "once the Spider boxes are in, no tray joint can be reached.",
+        "Tag both ends of every cable with the ID shown; torque every SMA and every pad joint to 8 in-lb, backing wrench "
+        "on the body of the part whose nut turns (pad or cable plug), never on a jack or a splitter.",
         "Before cabling, measure DC, LO and IF level on one tile port per module; DC blocks if DC is present.",
         "Pad values, cable lengths and U spans: sheet 6 and the cable schedule.",
-        "Schematic: tray bodies are drawn under their tiles; the physical tray layout (one column per split module, rows "
-        "= tiles, stacks to the right) and the side-lane IF routing are in the install guide (digital twin).",
-        "Splitters: S to the hub module tile; P1 takes the first link's pad stack, P2 the second's (one splitter per tile).",
+        "Schematic: tray bodies are drawn under their tiles; the physical tray layout (columns = tiles 1-4, one row per "
+        "split module) and the side-lane IF routing are in the install guide (digital twin).",
+        "Splitters: S to the hub module tile; P1 to the first link's cable, P2 to the second's (one splitter per tile).",
         "Bridges (" + ", ".join(k for k, v in b.pad_links.items() if v["job"] == "bridge") + ") are held down with "
         "Terragraph ignition disabled until MARL engages them (at node level after t0, SRV-E2E being off: sheet 6): no "
         "RF change. Only the hub's W and E modules are split, so all 16 modules are in use.",
@@ -1426,8 +1430,8 @@ def sheet_pads(b, pdf, n, N, prefix):
         s.rect(xa, y - 3.6, 50, 7.2, fc=FACE, lw=0.7, z=4, r=1.0)
         s.text(xa + 25, y + 1.3, f"PAD-{name} · {pl['text']} dB", fs=4.8, fontweight="bold", ha="center", va="center")
         host = b.pads[f"PAD-{name}.t1"]["host"]
-        where = (f"on {b.split[sa]} P{d['splitters'][sa].index(name) + 1}" if sa in b.split else
-                 "on the A tiles {}.{}".format(*d["module"][sa]))
+        bside = b.pads[f"PAD-{name}.t1"]["side"] == "b"
+        where = "on the {} tiles {}.{}".format("B" if bside else "A", *host.split(".")[:2])
         s.text(xa + 25, y - 1.9, f"t1-t{b.tiles}, {where}", fs=3.6, color=DIM, ha="center", va="center")
         assert host
         if sa in b.split:
@@ -1446,51 +1450,57 @@ def sheet_pads(b, pdf, n, N, prefix):
                 s.line([(xm1 + MW, yc), (xs1 - 7, yc)], color=INK, lw=1.4, z=6)
                 s.text((xm1 + MW + xs1 - 7) / 2, yc + 2.4, rng(c1) + f" · {c1[0]['length']}", fs=3.6, ha="center",
                        color=INK)
-            s.line([(xs1 + 7, yc + (0.8 if k == 1 else -0.8)), (xs1 + 11, y), (xa, y)], color=DIM, lw=1.0, z=6, ls=dot)
-            s.text((xs1 + 7 + xa) / 2 + 2, y + 1.9, f"P{k}: screwed on", fs=3.5, ha="center", color=DIM)
+            # P<k> -> cable -> the pad stacks, screwed onto the B tiles
+            c2 = b.bundle(f"{sid}.", f"PAD-{name}.")
+            s.line([(xs1 + 7, yc + (0.8 if k == 1 else -0.8)), (xs1 + 11, y), (xa, y)], color=RF, lw=1.5, z=6)
+            s.text((xs1 + 7 + xa) / 2 + 2, y + 1.9, f"P{k} " + rng(c2) + f" · {c2[0]['length']}", fs=3.5, ha="center",
+                   color=RF)
+            module_box(xm2, y, sb)
+            s.line([(xa + 50, y), (xm2, y)], color=DIM, lw=1.0, z=6, ls=dot)
+            s.text((xa + 50 + xm2) / 2, y + 1.9, "stacks screwed onto the B tiles", fs=3.5, ha="center", color=DIM)
         else:
             module_box(xm1, y, sa)
             s.line([(xm1 + MW, y), (xa, y)], color=DIM, lw=1.0, z=6, ls=dot)
-            s.text((xm1 + MW + xa) / 2, y + 1.9, "stacks screwed onto the tiles", fs=3.5, ha="center", color=DIM)
-        module_box(xm2, y, sb)
-        bxb, mb = d["module"][sb]
-        c2 = b.bundle(f"PAD-{name}.", f"{bxb}.{mb}.T")
-        s.line([(xa + 50, y), (xm2, y)], color=RF, lw=1.5, z=6)
-        s.text((xa + 50 + xm2) / 2, y + 1.9, rng(c2) + f" · {c2[0]['length']}", fs=3.6, ha="center", color=RF)
+            s.text((xm1 + MW + xa) / 2, y + 1.9, "stacks screwed onto the A tiles", fs=3.5, ha="center", color=DIM)
+            module_box(xm2, y, sb)
+            bxb, mb = d["module"][sb]
+            c2 = b.bundle(f"PAD-{name}.", f"{bxb}.{mb}.T")
+            s.line([(xa + 50, y), (xm2, y)], color=RF, lw=1.5, z=6)
+            s.text((xa + 50 + xm2) / 2, y + 1.9, rng(c2) + f" · {c2[0]['length']}", fs=3.6, ha="center", color=RF)
     ladder_bottom = y0 - len(rows) * rh
     # pad schedule
     trs = []
     for name, (sa, sb) in rows:
         pl = b.pad_links[name]
         pids = [k for k, v in b.pads.items() if v["chain"] == "if" and v["link"] == name]
-        h0, h1 = b.pads[pids[0]]["host"], b.pads[pids[-1]]["host"]
-        on = (f"{h0.split('.')[0]}.t1-{b.tiles} {h0.split('.')[-1]}" if sa in b.split else
-              f"{h0.rsplit('.', 1)[0]}.T1-{b.tiles}")
-        cs = [c for c in b.cables if c["cls"] == "RF" and c["a"].rsplit(".", 1)[0] in pids]
+        h0 = b.pads[pids[0]]["host"]
+        on = f"{h0.rsplit('.', 1)[0]}.T1-{b.tiles} ({'B' if b.pads[pids[0]]['side'] == 'b' else 'A'})"
+        cs = [c for c in b.cables if c["cls"] == "RF" and {c["a"].rsplit(".", 1)[0], c["b"].rsplit(".", 1)[0]} & set(pids)]
+        a_on = (f"{b.split[sa]}.t1-{b.tiles} P{d['splitters'][sa].index(name) + 1}" if sa in b.split else
+                "{}.{}.T1-{}".format(*d["module"][sa], b.tiles))
         trs.append([name, pl["job"].replace("hub off at t0", "dies with hub"), f"{pl['target']:g} ({pl['setting'][:3]}.)",
-                    f"{pl['db']}" + ("*" if pl["db"] != pl["rounded"] else ""), pl["text"], on,
-                    "{}.{}.T1-{}".format(*d["module"][sb], b.tiles), rng(cs)])
+                    f"{pl['db']}" + ("*" if pl["db"] != pl["rounded"] else ""), pl["text"], on, a_on, rng(cs)])
     s.text(252, 276, "PAD SCHEDULE (dB; one stack per tile path)", fs=6.5, fontweight="bold")
-    yt = s.table(252, 272, ["Link", "Job", "Target", "Fitted", "Pads", "Stack on (A end)", "B tiles", "Cables"], trs,
-                 [13, 18, 16, 10, 12, 33, 22, 18], fs=3.9, rh=3.8)
+    yt = s.table(252, 272, ["Link", "Job", "Target", "Fitted", "Pads", "Stacks on (end)", "Other end", "Cables"], trs,
+                 [13, 18, 16, 10, 12, 27, 28, 18], fs=3.9, rh=3.8)
     cnt = {}
     for v in b.pads.values():
         if v["chain"] == "if":
             for p in v["parts"]:
                 cnt[p["pn"]] = cnt.get(p["pn"], 0) + 1
-    trim = {f"BW-S{v}W2+": b.tiles for v in BS.TRIM_PADS}
-    per = [[pn, str(q) if q else "-", str(max(1, math.ceil(q * BS.PAD_SPARE))) if q else "-", str(trim.get(pn, "-")),
-            ", ".join(k for k, v in b.pad_links.items() if pn in v["pn"]) or "port-check trim only"]
-           for pn, q in sorted({**{k: 0 for k in trim}, **cnt}.items(), key=lambda kv: int(kv[0][4:-3]))]
+    kit = {f"BW-S{v}W2+": BS.CAL_KIT_N for v in BS.CAL_KIT}
+    per = [[pn, str(q) if q else "-", str(max(1, math.ceil(q * BS.PAD_SPARE))) if q else "-", str(kit.get(pn, "-")),
+            ", ".join(k for k, v in b.pad_links.items() if pn in v["pn"]) or "port-check kit only"]
+           for pn, q in sorted({**{k: 0 for k in kit}, **cnt}.items(), key=lambda kv: int(kv[0][4:-3]))]
     s.text(252, yt - 5, "PADS PER VALUE (Mini-Circuits BW-S<n>W2+, SMA M-F, DC-18 GHz, 2 W)", fs=5.6, fontweight="bold")
-    yt2 = s.table(252, yt - 8, ["Part", "Fitted", "Spare", "Trim", "Links"], per, [20, 11, 10, 9, 92], fs=3.9, rh=3.6)
+    yt2 = s.table(252, yt - 8, ["Part", "Fitted", "Spare", "Kit", "Links"], per, [20, 11, 10, 9, 92], fs=3.9, rh=3.6)
     w1s = [k for k, v in b.pad_links.items() if v["db"] != v["rounded"]]
     nts = [
         "Tile n to tile n at both ends of a path, through tile n's pad stack; never swap tiles.",
         "Target = the A7 attenuator setting (out/option_A7_sectors.md): hub paths the 'before' value (they only go down "
         "with the hub), bridges the 'after' value (as MARL engages them). Fitted = the target to the nearest whole dB "
         f"(a tie rounds up, toward more loss), split into at most {BS.PAD_MAX} available values (1-10, 12, 15, 20, 30 dB "
-        "assumed), the larger pad on the port." +
+        "assumed), the larger pad on the tile." +
         (f" * {', '.join(w1s)}: " + "; ".join(f"{b.pad_links[k]['rounded']} dB needs 3 pads, so the nearest total two make "
                                                f"({b.pad_links[k]['db']} dB, {abs(b.pad_links[k]['db'] - b.pad_links[k]['target']):.1f} dB "
                                                "from the target; a tie would go toward more loss)" for k in w1s) + "."
@@ -1498,17 +1508,17 @@ def sheet_pads(b, pdf, n, N, prefix):
         f"Port check (after the nodes are up, before the radios): each link's SNR against its expected value = the "
         f"MCS {BS.TG_MCS_SNR[0][1]} threshold ({BS.TG_MCS_SNR[0][0]:g} dB) + its A7 margin at the fitted pads: " +
         ", ".join(f"{k} {v['snr_exp_db']:g}" for k, v in b.pad_links.items() if "snr_exp_db" in v) +
-        f" dB; band +/- {BS.PORT_CHECK_TOL_DB:g} dB. A link that reads strong gets trim pads at its B tiles "
-        f"({' / '.join(str(v) for v in BS.TRIM_PADS)} dB, {b.tiles} of each: 'Trim' column); guide 'Port check'.",
+        f" dB; band +/- {BS.PORT_CHECK_TOL_DB:g} dB. The pad values are the A7 paper model's settings and the bench's "
+        "real budget is not measured yet (TENTATIVE): outside the band a link's stacks change by the difference, from "
+        f"the port-check kit ({BS.CAL_KIT_N} each of {' / '.join(str(v) for v in BS.CAL_KIT)} dB: 'Kit' column), at most "
+        f"{BS.PAD_MAX_FIX} pads on a tile path; the same offset on the first links = a model error: shift the whole "
+        "schedule and re-order (guide 'Port check').",
         f"{b.count('RF')} IF cables, length from the twin route: " +
         ", ".join(f"{b.count_pn(pn)} x {pn}" for pn, _ in BS.RF_STOCK if any(c['pn'] == pn and c['cls'] == 'RF'
                                                                            for c in b.cables)) + ".",
-        "Pad stacks about 62 mm (2 x 31 mm, estimate); on a tile, strap the cable to the seam bundle at the unit's lower "
-        "edge within 150 mm so the tile carries only the stack; tray stacks go onto the splitters in the hand. Torque "
-        "every pad joint to 8 in-lb with a backing wrench.",
-        f"The pads replace the setting only: the attenuator's own insertion loss (about {BS.ARM_BUDGET['att_il_db']:g} "
-        "dB) and its second cable are gone, so each path is likely a few dB stronger than on the attenuator bench: the "
-        "port check finds out.",
+        "Pad stacks about 62 mm (2 x 31 mm, estimate), each on a Spider tile (the hub W / E links' on their B tiles, the "
+        "others on their A tiles); strap the cable to the seam bundle at the unit's lower edge within 150 mm so the tile "
+        "carries only the stack. Backing-wrench rule: " + BS.BACKING_RULE + ".",
     ]
     yn = s.notes(252, yt2 - 5, nts, fs=4.5, step=3.0, width=68)
     bridges = [k for k, v in b.pad_links.items() if v["job"] == "bridge"]
@@ -1520,7 +1530,7 @@ def sheet_pads(b, pdf, n, N, prefix):
         "SRV-E2E is off after t0, so MARL engages a bridge at node level: its A-end agent PC sends tg2 minion assoc to the "
         "A-end node (initiator A-end sector, responder B-end sector): " + "; ".join(
             f"{k} {v['agent']} ({v['a_sector']} to {v['b_sector']})" for k, v in b.bridges.items()) +
-        ". TBC on the N367 firmware; fallback: a standby E2E controller on BENCH-CTL, never switched.",
+        ". TBC on the N367 firmware. Fallback " + BS.bridge_fallback_text(b.bridges, b.outlet_of("SRV-E2E")) + ".",
         "After a run: SRV-E2E ON first, bridges disabled again and read back, then the hub and CORE, then SRV-DPIR.",
         "Fixed TX power (TPC off) on every node, so each pad sets a known margin.",
         "Raise the no-link watchdog (noLinkTimeout, 15 min by default): bridge modules have no link until MARL "
@@ -1589,19 +1599,22 @@ def detail_pads(s, b, ytop):
             s.tag(51, y + 1.0, f"{jump['id']} {jump['length']}", INK, rot=0, va="bottom", fs=3.4)
             s.text(74.5, y + 2.2, f"P{k}", fs=3.2, color=DIM, ha="center", va="center")
             x = 72
-        # the pad stack, screwed straight on
+        # the pad stack, screwed straight onto a tile: the B tile after a hub splitter, else the A tile
         bw = 9.0
-        for i, db in enumerate(pl["pads"]):
-            s.rect(x + i * bw + 0.2, y - 1.5, bw - 0.4, 3.0, fc="#d8a657", ec=PAPER, lw=0.4, z=10, r=0.6)
-            s.text(x + i * bw + bw / 2, y, f"{db}", fs=3.4, color=PAPER, ha="center", va="center", zorder=11)
-        xo = x + n * bw
-        cab = b.cable(cls="RF", a=f"PAD-{name}.t{t}.out")
-        s.line([(xo, y), right[t]], color=RF, lw=0.8, z=9)
-        s.tag((xo + right[t][0]) / 2, y + 1.0, f"{cab['id']} {cab['length']}", RF, rot=0, va="bottom", fs=3.6)
+        bside = b.pads[f"PAD-{name}.t{t}"]["side"] == "b"
+        xs = right[t][0] - n * bw if bside else x
+        for i, db in enumerate(pl["pads"][::-1] if bside else pl["pads"]):
+            s.rect(xs + i * bw + 0.2, y - 1.5, bw - 0.4, 3.0, fc="#d8a657", ec=PAPER, lw=0.4, z=10, r=0.6)
+            s.text(xs + i * bw + bw / 2, y, f"{db}", fs=3.4, color=PAPER, ha="center", va="center", zorder=11)
+        cab = b.cable(cls="RF", b=f"PAD-{name}.t{t}.out") if bside else b.cable(cls="RF", a=f"PAD-{name}.t{t}.out")
+        x0, x1 = (x, xs) if bside else (x + n * bw, right[t][0])
+        s.line([(x0, y), (x1, y)], color=RF, lw=0.8, z=9)
+        s.tag((x0 + x1) / 2, y + 1.0, f"{cab['id']} {cab['length']}", RF, rot=0, va="bottom", fs=3.6)
+    bside = b.pads[f"PAD-{name}.t1"]["side"] == "b"
     s.text(16, yc - 22, f"PAD-{name}.t1-t{b.tiles}: " + " + ".join(f"{pn}" for pn in pl["pn"]) +
-           f" = {pl['db']} dB, the {pl['pn'][0]} on the port" +
-           (f"; P{3 - (d['splitters'][sa].index(name) + 1)} of each splitter takes "
-            f"{[x for x in d['splitters'][sa] if x != name][0]}'s stack" if sa in b.split else ""),
+           f" = {pl['db']} dB, the {pl['pn'][0]} on the {'B' if bside else 'A'} tile" +
+           (f"; P{3 - (d['splitters'][sa].index(name) + 1)} of each splitter feeds "
+            f"{[x for x in d['splitters'][sa] if x != name][0]}'s cable" if sa in b.split else ""),
            fs=4.0, color=DIM)
 
 

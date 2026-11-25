@@ -532,7 +532,8 @@ function buildSpecs(scene) {
           dir: [0.35, 0.9, -1], fov: 26, margin: 1.1, anchors,
         });
       } else {
-        const chainKinds = ['ip50', 'mwatt', 'psu'];
+        // the bench-table chain (tableDevs: table group only, so the IP-50 pad stacks, never the IF ones)
+        const chainKinds = ['ip50', 'mwatt', 'psu', 'padstack'];
         const wgStep = st.cables.length && st.cables.every((id) => cabs.get(id).cls === 'WG');
         const ids = !st.devices.length ? tableDevs.filter((id) => chainKinds.includes(devs.get(id).kind))
           : wgStep ? [...tableDevs.filter((id) => chainKinds.includes(devs.get(id).kind)), ...st.devices] : st.devices;
@@ -567,11 +568,12 @@ function buildSpecs(scene) {
     specs.push({ name: `sb_rear_${d.id}`, title: `${d.id} rear panel (${d.u}), seen from the rear`, ...rp });
   }
 
-  // ---------------- splitter tray with pad stacks on its splitters, from above (fixed-pad benches)
+  // ---------------- splitter tray from above, with any pad stacks on its splitters (fixed-pad benches: the tray step's
+  // picture, its joints made in the hand)
   for (const tr of scene.devices.filter((d) => d.kind === 'tray')) {
     const spl = scene.devices.filter((d) => d.parent === tr.id && d.kind === 'splitter');
     const pads = scene.devices.filter((d) => d.kind === 'padstack' && spl.some((x) => x.id === d.parent));
-    if (!pads.length) continue;
+    if (!spl.length || !(pads.length || (scene.pad_schedule || []).length)) continue;
     const top = tr.pos[1] + tr.size[1];
     const away = scene.devices.filter((d) => d.group === 'rack' && !d.parent && d.id !== tr.id
       && (d.pos[1] >= top - 1 || d.pos[1] + d.size[1] <= tr.pos[1] + 1)).map((d) => d.id);
@@ -579,7 +581,7 @@ function buildSpecs(scene) {
     const zs = [...spl, ...pads].flatMap((d) => [d.pos[2], d.pos[2] + d.size[2]]);
     const ys = [...spl, ...pads].flatMap((d) => [d.pos[1], d.pos[1] + d.size[1]]);
     specs.push({
-      name: `tray_${tr.id}`, title: `${tr.id} from above: the splitters and the pad stacks on their ports`, device: tr.id,
+      name: `tray_${tr.id}`, title: `${tr.id} from above: the splitters` + (pads.length ? ' and the pad stacks on their ports' : ''), device: tr.id,
       opts: { classes: [] }, hideLabels: true, hideDevices: [...away, ...kids, 'WALL'],
       box: [[tr.pos[0] - 5, Math.min(...ys) - 5, Math.min(...zs) - 20], [tr.pos[0] + tr.size[0] + 5, Math.max(...ys) + 10, Math.max(...zs) + 15]],
       dir: [0.06, 2.6, -1], fov: 18, margin: 1.04, insets: INS, clip: { box: 'frame', pad: 6 },
@@ -650,7 +652,7 @@ function buildSpecs(scene) {
       dir: [0.22, 0.1, -1], margin: 1.08,
       anchors: [...rf.map((id) => ({ kind: 'cable', id })), ...devAnchors([...endDevs], 'front')],
     });
-    // the link's IF pad stacks (the splitter-tray stacks are fitted, and listed, in the tray step)
+    // the link's IF pad stacks, fitted in its own step (on the A tiles, or on the B tiles after a hub splitter)
     const padIds = scene.devices.filter((d) => d.kind === 'padstack' && d.chain === 'if' && d.link === name).map((d) => d.id);
     if (padIds.length) {
       // the link's pad stacks close up, with their host ports and the first part of each cable

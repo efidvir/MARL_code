@@ -393,7 +393,9 @@ class App {
     });
     if (n != null) {
       const st = this.model.steps.find((s) => s.n === n);
-      this.stepcap.innerHTML = `<b>Step ${st.n} / ${this.model.steps.length} · ${esc(st.title)}</b><div class="tx">${esc(st.text)}</div>`;
+      // a numbered procedure (step fields lead + items) reads as a list; every other step as its text
+      const tx = st.items ? `${esc(st.lead || '')}<ol style="margin:4px 0 0;padding-left:18px">${st.items.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>` : esc(st.text);
+      this.stepcap.innerHTML = `<b>Step ${st.n} / ${this.model.steps.length} · ${esc(st.title)}</b><div class="tx">${tx}</div>`;
       this.stepcap.style.display = 'block';
       if (frame) this.frameStep(n);
       if (fromUI) this.stepItems[n - 1].scrollIntoView({ block: 'nearest' });

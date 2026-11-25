@@ -121,7 +121,13 @@ def table():
     # A7 is built as PoC 1 (fixed pads, no programmable attenuators, no J7204B): its cells say where PoC 1 differs
     if "A7" in keys:
         i = keys.index("A7")
-        poc1 = {4: 0, 5: cs["A7"]["n_mw"], 8: 0}      # row 5: one SMA cable per hop between the two pad stacks
+        import bench_spec as BS                        # PoC 1's fixed pads and IF cables, from its bench design
+        b1 = BS.Bench(BS.poc1_design())
+        st = [v for v in b1.pads.values() if v["chain"] == "if"]
+        n_spl = len(b1.split) * b1.tiles
+        poc1 = {4: 0, 5: cs["A7"]["n_mw"], 8: 0,      # row 5: one SMA cable per hop between the two pad stacks
+                10: f"{sum(len(v['parts']) for v in st)} BW-S pads in {len(st)} stacks",
+                11: f"{b1.count('RF')} SMA, one per tile path + {n_spl} splitter S"}
         rows = [(n, g, it, [f"{v} (PoC 1: {poc1[n]})" if j == i and n in poc1 else v for j, v in enumerate(q)], nt)
                 for n, g, it, q, nt in rows]
     return keys, cs, rows
@@ -137,9 +143,10 @@ def main():
     for n, group, item, q, note in rows:
         lines.append(f"| {n} | {group} | {item} | " + " | ".join(str(x) for x in q) + f" | {note} |")
     lines += ["", "A7 is built as PoC 1 (bench_spec.py, out/poc1_parts_list.md), which supersedes its column here: no",
-              "programmable attenuators (rows 4 and 8 are 0 for PoC 1, and row 5 is one SMA cable per hop, no J7204B: the",
-              "'PoC 1:' figures in the A7 column); every IF tile path has a fixed BW-S pad stack, and each IP-50 hop is a",
-              "fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+, one SMA cable)."]
+              "programmable attenuators (rows 4 and 8 are 0 for PoC 1, row 5 is one SMA cable per hop, no J7204B, and rows",
+              "10-11 count PoC 1's fixed pads and one IF cable per tile path: the 'PoC 1:' figures in the A7 column); every IF",
+              "tile path has a fixed BW-S pad stack, and each IP-50 hop is a fixed 70 dB chain (2 x SA18S10W-30 + BW-S10W2+,",
+              "one SMA cable)."]
     lines += ["", "## V-band RF mesh per option", ""]
     for k in keys:
         fo = CONFIGS[k].get("bench_final_only", False)
