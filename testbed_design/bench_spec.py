@@ -858,6 +858,10 @@ def parts(b):
         f"{DC_WASTE:.0%} stripping and waste = {m * (1 + DC_WASTE):.1f} m; ferrules: 4 per run" +
         (f" less 2 per shared breaker ({len(shared)})" if shared else "") + " + 8 spare", "confirmed",
         cab={"Belden 8461": len(runs)})
+    nbox = len(b.d["boxes"])
+    add("Power", "-", "4-pole pluggable screw-terminal plug with screw flange, mates the Spider box's green DC header",
+        "Phoenix MSTB 2.5/4-STF-5.08 class (pitch 5.08 / 7.62 mm TBC)", "Phoenix Contact (or equal)", f"{nbox} + 1 spare",
+        "one per Spider box (rear photo: the headers are bare); skip if the lab has the plugs", "to confirm")
     if shared:
         add("Power", "10", "Twin ferrule for two 18 AWG conductors in one breaker output terminal",
             "Phoenix AI-TWIN 2 x 1.0 mm2 class (part TBC)", "Phoenix Contact", len(shared) + 2,

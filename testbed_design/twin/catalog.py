@@ -24,10 +24,21 @@ SPIDER_FRONT = {
     "B": ([95, 117, 138, 159, 183, 204, 224, 244, 265, 285, 305, 325, 346, 365, 384, 403], 20.0),
     "C": ([140, 162, 182, 203, 222, 242, 263, 283, 302, 321, 341, 360, 378, 396, 415, 434], 27.0),
 }
-# rear panel (front-view x, mm; seen from inside one GTS003, +/- 10): per node group USB, SFP+, two RJ-45 (ETH1 assumed
-# first), a GNSS SMA per node, the internal Raspberry Pi's RJ-45 and a box DC terminal block (functions to confirm)
+# rear panel (front-view x, mm, +/- 10). Two-node boxes (variants A, C): first measured from inside one GTS003, then
+# confirmed by the lab's rear photo of all four boxes (2026-11-25): seen from the REAR, left to right: node window
+# [RJ-45, RJ-45, SFP+, USB-A, red jumpers], the green 4-pole pluggable DC header (screw flange), one gold SMA, the second
+# node window [RJ-45, RJ-45, SFP+, USB-A], an RJ-45 in its own small bracket (internal Raspberry Pi assumed), and a
+# second SMA at the far edge. Which RJ-45 is ETH1, which SMA serves which node, and what the DC header feeds: TBC.
+# The hub box (variant B, GTST002B, one node) differs: DC header at the far LEFT seen from the rear, vents, ONE node
+# window in the middle, vents, the RJ-45 bracket at the far right; no SMA next to the header (a GNSS SMA beyond the
+# bracket, as on the two-node boxes, is assumed: that edge was out of the photo).
 SPIDER_REAR = dict(node_a=dict(gnss=47, usb=119, sfp=150, eth1=186, eth2=223),
                    node_b=dict(gnss=245, usb=328, sfp=365, eth1=400, eth2=434), pi=69, dcin=267, y=22.0)
+SPIDER_REAR_VARIANT = {"B": dict(node_a=dict(gnss=47, usb=220, sfp=262, eth1=301, eth2=341), pi=69, dcin=455, y=22.0)}
+
+def spider_rear(box):
+    """rear-panel layout (front-view x) of box SBn: the hub box has its own."""
+    return SPIDER_REAR_VARIANT.get(SPIDER_VARIANT.get(box, "C"), SPIDER_REAR)
 
 def spider_tile_x(box, k, t):
     """x of tile t of module M<k> on box SBn (photo-measured)."""

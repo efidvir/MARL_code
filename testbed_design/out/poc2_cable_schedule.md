@@ -60,7 +60,7 @@ Nodes are managed in-band (E2E controller over the radio network); no node ETH2 
 | D015 | DC-DIST2.F6 | IP50-MCD@D.dc | Belden 8461 2 x 18 AWG (IP-50 connector TBC) | 5.25 m (cut) |  | -48 V through a GMT fuse: fuse output (-48 V, blue sleeve) to the radio -48 V pin, RTN to the radio 0 V pin |
 | D016 | DC-DIST2.strapA | DC-DIST2.busB | DC-DIST2 bus A to bus B strap (-48 V and RTN), 2 x 10 AWG with ring lugs | 0.5 m (cut) |  | feeds bus B (fuses F6-F10) from bus A; omit if the panel ships strapped |
 | D017 | DC-DIST.CB8 | SB1.DCIN | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 1.75 m (cut) |  | SB1 box fans + Raspberry Pi: CB8 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change |
-| D018 | DC-DIST.CB9 | SB2.DCIN | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 1.75 m (cut) |  | SB2 box fans + Raspberry Pi: CB9 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change |
+| D018 | DC-DIST.CB9 | SB2.DCIN | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules | 2 m (cut) |  | SB2 box fans + Raspberry Pi: CB9 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change |
 | D019 | DC-DIST.CB10 | SB3.DCIN | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules (twin ferrule at the shared breaker output) | 1.75 m (cut) |  | SB3 box fans + Raspberry Pi: CB10 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CB10 is shared with SB4 (both supply conductors in one twin ferrule); CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change |
 | D020 | DC-DIST.CB10b | SB4.DCIN | Belden 8461 2 x 18 AWG + Phoenix 3200519 ferrules (twin ferrule at the shared breaker output) | 1.75 m (cut) |  | SB4 box fans + Raspberry Pi: CB10 output (+48 V, red sleeve) to the DCIN + terminal, return to its - terminal; CB10 is shared with SB3 (both supply conductors in one twin ferrule); CONDITIONAL: land it only once the Spider-box hold point has confirmed DCIN is a 48 V DC fan / Pi input; any other voltage or function: STOP, design change |
 
@@ -70,7 +70,7 @@ Nodes are managed in-band (E2E controller over the radio network); no node ETH2 
 |---|---|---|---|---|---|---|
 | Q001 | PA-01.rj45 | SB1.B.ETH1 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m |  | power only (passive adaptor); length from the twin route (1204 mm) |
 | Q002 | PA-02.rj45 | SB1.E.ETH1 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m |  | power only (passive adaptor); length from the twin route (1477 mm) |
-| Q003 | PA-03.rj45 | SB2.H.ETH1 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m |  | power only (passive adaptor); length from the twin route (1277 mm) |
+| Q003 | PA-03.rj45 | SB2.H.ETH1 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m |  | power only (passive adaptor); length from the twin route (1392 mm) |
 | Q004 | PA-04.rj45 | SB3.A.ETH1 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m |  | power only (passive adaptor); length from the twin route (1292 mm) |
 | Q005 | PA-05.rj45 | SB3.D.ETH1 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m |  | power only (passive adaptor); length from the twin route (1565 mm) |
 | Q006 | PA-06.rj45 | SB4.C.ETH1 | Panduit STP6X2MBU Cat6A S/FTP 2 m | 2 m |  | power only (passive adaptor); length from the twin route (1365 mm) |
@@ -80,7 +80,7 @@ Nodes are managed in-band (E2E controller over the radio network); no node ETH2 
 
 | ID | From | To | Part | Length | VLAN | Note |
 |---|---|---|---|---|---|---|
-| F001 | SB2.H.SFP+ | SW-DATA.P1 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m | 3 m | 101 | node H data, in-band management; length from the twin route (2105 mm) |
+| F001 | SB2.H.SFP+ | SW-DATA.P1 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m | 3 m | 101 | node H data, in-band management; length from the twin route (1993 mm) |
 | F002 | HOST-H.nic10g | SW-DATA.P2 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 101 | traffic host |
 | F003 | SRV-E2E.data | SW-DATA.P3 | Netgear AXC763-10000S SFP+ DAC 3 m | 3 m | 101 | TG E2E controller + NMS (POP at H) |
 | F004 | SB3.A.SFP+ | SW-DATA.P4 | SFP+ SR at both ends (Siklu AX-SFP+10G-MM / Netgear AXM761) + Panduit FZ2ERLNLNSNM003 OM4 LC-LC 3 m | 3 m | 102 | node A data, in-band management; length from the twin route (2177 mm) |

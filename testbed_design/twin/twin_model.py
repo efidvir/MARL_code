@@ -238,7 +238,7 @@ class Scene:
             for t in range(1, 5):
                 self.add_port(rid, f"M{k}.T{t}", (C.spider_tile_x(rid, k, t), ysma, z - 10), (0, 0, -1), "SMA",
                               f"M{k} T{t}")
-        R = C.SPIDER_REAR
+        R = C.spider_rear(rid)
         yr = y + R["y"]
         for nd, grp in zip(box["nodes"], ("node_a", "node_b")):
             g = R[grp]
@@ -246,7 +246,8 @@ class Scene:
                                 ("GNSS", "gnss", "SMA"), ("USB", "usb", "USB")):
                 self.add_port(rid, f"{nd}.{nm}", (g[key], yr, z + dd), (0, 0, 1), pt, f"{nd} {nm}")
         self.add_port(rid, "PI.LAN", (R["pi"], yr, z + dd), (0, 0, 1), "RJ45", "box controller LAN (Raspberry Pi; use TBC)")
-        self.add_port(rid, "DCIN", (R["dcin"], yr + 6, z + dd), (0, 0, 1), "DC", "box DC terminal block (TBC)")
+        self.add_port(rid, "DCIN", (R["dcin"], yr + 6, z + dd), (0, 0, 1), "DC",
+                      "box DC input: green 4-pole pluggable header with screw flange (what it feeds TBC)")
         dv["nodes"] = box["nodes"]
 
     def _ports_attshelf(self, dv, rid):
